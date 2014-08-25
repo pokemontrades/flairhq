@@ -1,0 +1,50 @@
+<!-- Default home page -->
+<link type="text/css" href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
+<script type="text/javascript">
+  setTimeout(function sunrise() {
+    document.getElementsByClassName('header')[0].style.backgroundColor = '#118798';
+  }, 0);
+</script>
+
+<div class="default-page">
+  <div class="header">
+    <h1 id="main-title" class="container"><%= __('A brand new app.') %></h1>
+
+    <h3 class="container">You're looking at: <code><%= view.pathFromApp + '.' + view.ext %></code></h3>
+  </div>
+  <div class="main container clearfix">
+    <!-- <h1>Getting started</h1>
+    <p>Don't worry, we've got your back.</p> -->
+
+    <div class="content">
+      <h1 id="main-title">Please sign in</h1>
+
+      <a href="/auth/github/" class="btn">with GitHub</a>
+      <a href="/auth/facebook/" class="btn">with Facebook</a>
+      <a href="/auth/google/" class="btn">with Google+</a>
+      <a href="/auth/twitter/" class="btn">with Twitter</a>
+      <a href="/auth/reddit/" class="btn">with Reddit</a>
+    </div>
+
+    <div class="links">
+      <!-- <h3>Links</h3> -->
+      <ul class="link-list">
+
+        <h4>Docs</h4>
+        <a target="_blank" href="http://sailsjs.org/#/documentation/anatomy/myApp"><li>App Structure</li></a>
+        <a target="_blank" href="http://sailsjs.org/#/documentation/reference"><li>Reference</li></a>
+        <a target="_blank" href="http://sailsjs.org/#/documentation/concepts/extending-sails/Adapters/adapterList.html"><li>Supported Databases</li></a>
+
+        <h4>Tutorials</h4>
+        <a target="_blank" href="http://links.sailsjs.org/community/sails101"><li>Sails 101</li></a>
+
+        <h4>Community</h4>
+        <a target="_blank" href="http://stackoverflow.com/search?q=sails.js"><li>StackOverFlow</li></a>
+        <a target="_blank" href="https://github.com/balderdashy/sails"><li>GitHub</li></a>
+        <a target="_blank" href="https://groups.google.com/forum/#!forum/sailsjs"><li>Google Group</li></a>
+        <a target="_blank" href="http://webchat.freenode.net/"><li>IRC (#sailsjs on freenode)</li></a>
+
+      </ul>
+    </div>
+  </div>
+</div>

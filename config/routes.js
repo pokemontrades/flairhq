@@ -44,7 +44,18 @@ module.exports.routes = {
   '/logout' : {
     controller : 'auth',
     action     : 'logout'
-  }
+  },
+
+  '/reference/get/:userid' : {
+    controller: 'reference',
+    action : 'get'
+  },
+
+  '/reference/add/:userid/:url' : {
+    controller: 'reference',
+    action : 'add'
+  },
+  
 
   /***************************************************************************
   *                                                                          *

@@ -28,14 +28,18 @@
 
     <div class="content">
 
-      <h2>User Model</h2>
+      <div id="addNewReference">
+        <input type="url" id="referenceUrl" placeholder="Enter new reference url"></input>
+        <input type="submit" value="Add">
+      </div>
+
+      <h2>References</h2>
       <table class="table">
-        <% for(key in user.toJSON() ) { if (user.hasOwnProperty(key)) { %>
+        <% for(ref in references) { %>
         <tr>
-          <td><%= key %>:</td>
-          <td class="boxy"><%= user[key] %></td>
+          <td><%= references[ref].url %></td>
         </tr>
-        <% }} %>
+        <% } %>
       </table>
 
     </div>

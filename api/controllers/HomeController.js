@@ -8,8 +8,17 @@
 module.exports = {
 
   index: function(req, res) {
-    res.view({
-      user: req.user
+    var user = req.user;
+    Reference.find({user: user.id}, function (err, refs) {
+      if(err) {
+        res.json(400);
+      } else {
+        res.view({
+          user: user,
+          references: refs
+        });
+      }
     });
+
   }
 };

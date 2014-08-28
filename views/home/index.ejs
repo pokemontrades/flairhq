@@ -30,11 +30,12 @@
 
       <div id="addNewReference">
         <input type="url" id="referenceUrl" placeholder="Enter new reference url"></input>
-        <input type="submit" value="Add">
+        <input type="submit" id="addReferenceButton" value="Add">
+	<dev id="submitError" class="alert alert-danger" role="alert" hidden></div>
       </div>
 
       <h2>References</h2>
-      <table class="table">
+      <table class="table" id="referencesTable">
         <% for(ref in references) { %>
         <tr>
           <td><%= references[ref].url %></td>
@@ -45,3 +46,26 @@
     </div>
   </div>
 </div>
+
+<script>
+$("#addReferenceButton").click(function () {
+  var refUrl = $('#referenceUrl').val();
+  var url = "/reference/add/<%= user.id %>/" + encodeURIComponent(refUrl);
+  io.socket.post(url, function (data, res) {
+    console.log(res);
+    if (res.statusCode === 200) {
+      $("#referencesTable tr:last").after("<tr><td>" + refUrl + "</td></tr>");
+    } else {
+      $("#submitError").html("Already added that URL.").show();
+    }
+  });
+});
+
+var getUpdatedReferences = function() {
+  var url = "/reference/get/<%= user.id %>";
+  console.log(url);
+  io.socket.get(url, function (data, res) {
+    console.log(data);
+  });
+}
+</script>

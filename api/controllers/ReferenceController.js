@@ -26,6 +26,7 @@ module.exports = {
   },
 
   add: function (req, res) {
+    req.params = req.allParams();
     user = User.findOne({id: req.params.userid}, function (err, user) {
       if (!user) {
         res.json({error: "Can't find user"}, 404);
@@ -34,14 +35,23 @@ module.exports = {
           if(err || refs) {
             res.json(400);
           } else {
-            Reference.create({url: req.params.url, user: user.id}, function (err, ref) {
-              if (err) {
-                console.log(err);
-                res.json(400);
-              } else {
-                res.json(ref, 200);
+            Reference.create(
+              {
+               url: req.params.url, 
+               user: user.id, 
+               user2: req.params.user2,
+               descrip: req.params.descrip,
+               type: req.params.type
+              }, 
+              function (err, ref) {
+                if (err) {
+                  console.log(err);
+                  res.json(400);
+                } else {
+                  res.json(ref, 200);
+                }
               }
-            });
+            );
           }
         });
       }

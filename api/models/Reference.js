@@ -9,7 +9,10 @@ module.exports = {
 
   attributes: {
     url: 'STRING',
-    user: 'STRING'
+    user: 'STRING',
+    user2: 'STRING',
+    description: 'STRING',
+    type: 'STRING'
   }
 };
 

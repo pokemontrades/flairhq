@@ -30,6 +30,14 @@
 
       <div id="addNewReference">
         <input type="url" id="referenceUrl" placeholder="Enter new reference url"></input>
+        <input type="text" id="user2" placeholder="Other User"></input>
+        <input type="text" id="descrip" placeholder="Description"></input>
+        <select id="type">
+          <option value="event">Event</option>
+          <option value="shiny">Shiny</option>
+          <option value="normal">Normal</option>
+          <option value="hatch">Egg hatch</option>
+        </input>
         <input type="submit" id="addReferenceButton" value="Add">
 	<dev id="submitError" class="alert alert-danger" role="alert" hidden></div>
       </div>
@@ -38,7 +46,10 @@
       <table class="table" id="referencesTable">
         <% for(ref in references) { %>
         <tr>
-          <td><%= references[ref].url %></td>
+          <td><a href="<%= references[ref].url %>">Here</a></td>
+          <td><a href="http://www.reddit.com<%= references[ref].user2 %>"><%= references[ref].user2 %></a></td>
+          <td><%= references[ref].descrip %></td>
+          <td><%= references[ref].type %></td>
         </tr>
         <% } %>
       </table>
@@ -49,12 +60,23 @@
 
 <script>
 $("#addReferenceButton").click(function () {
-  var refUrl = $('#referenceUrl').val();
-  var url = "/reference/add/<%= user.id %>/" + encodeURIComponent(refUrl);
-  io.socket.post(url, function (data, res) {
+  var refUrl = $('#referenceUrl').val(),
+      user2 = $('#user2').val(),
+      descrip = $('#descrip').val(),
+      type = $('#type').val();
+
+  var url = "/reference/add";
+  io.socket.post(url, {"userid": "<%= user.id %>", 
+                       "url": refUrl, 
+                       "user2": user2,
+                       "descrip": descrip,
+                       "type": type}, function (data, res) {
     console.log(res);
     if (res.statusCode === 200) {
-      $("#referencesTable tr:last").after("<tr><td>" + refUrl + "</td></tr>");
+      $("#referencesTable tr:last").after("<tr><td><a href='" + refUrl + "'>Here</a>"
+                                           + "</td><td><a href='" + user2 + "'>" + user2 + "</a>"
+                                           + "</td><td>" + descrip
+                                           + "</td><td>" + type + "</td></tr>");
     } else {
       $("#submitError").html("Already added that URL.").show();
     }

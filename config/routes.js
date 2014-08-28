@@ -51,7 +51,7 @@ module.exports.routes = {
     action : 'get'
   },
 
-  '/reference/add/:userid/:url' : {
+  '/reference/add' : {
     controller: 'reference',
     action : 'add'
   },

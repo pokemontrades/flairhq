@@ -521,6 +521,18 @@
 
 // Inverse navbar
 
+.dropdown-inverse{
+  background-color: @navbar-inverse-bg;
+  border-color: @navbar-inverse-border;
+  &>li>a{
+    color: @navbar-inverse-link-color;
+    &:hover{
+      color: @navbar-inverse-link-hover-color;
+      background-color: @navbar-inverse-link-hover-bg;
+    }
+  }
+}
+
 .navbar-inverse {
   background-color: @navbar-inverse-bg;
   border-color: @navbar-inverse-border;

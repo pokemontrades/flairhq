@@ -8,11 +8,21 @@
 module.exports = {
 
   attributes: {
-    url: 'STRING',
-    user: 'STRING',
-    user2: 'STRING',
-    description: 'STRING',
-    type: 'STRING'
+    url: {
+      type: "string",
+      url: true
+    },
+    user: "string",
+    user2: "string",
+    description: "string",
+    type: {
+      type: "string",
+      enum: ["event", "redemption", "shiny", "casual", "bank", "egg"]
+    },
+    // This defines whether the other user has added the same url
+    verified: "boolean",
+    // This defines if the mods have approved it as a trade that can count
+    approved: "boolean"
   }
 };
 

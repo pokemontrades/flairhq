@@ -13,9 +13,12 @@ module.exports = {
       if(err) {
         res.json(400);
       } else {
-        res.view({
-          user: user,
-          references: refs
+        Game.find({user: user.id}, function (errs, games) {
+          res.view({
+            user: user,
+            references: refs,
+            games: games
+          });
         });
       }
     });

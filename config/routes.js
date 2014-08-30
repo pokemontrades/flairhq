@@ -55,6 +55,12 @@ module.exports.routes = {
     controller: 'reference',
     action : 'add'
   },
+
+  '/user/edit' : {
+    controller: 'user',
+    action : 'edit'
+  },
+
   
 
   /***************************************************************************

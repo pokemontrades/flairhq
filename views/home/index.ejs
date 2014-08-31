@@ -75,9 +75,10 @@
           <div class="col-md-8">
             <select id="type" class="form-control">
               <option value="event">Event</option>
+              <option value="redemption">Redemption</option>
               <option value="shiny">Shiny</option>
               <option value="casual">Casual</option>
-              <option value="hatch">Egg hatch</option>
+              <option value="bank">Bank</option>
             </select>
           </div>
         </div>
@@ -95,17 +96,69 @@
       </form>
 
       <div class="row">
-      <h2>References</h2>
+        <div class="col-md-6">
+          <h2>Trades (<%= references.events.length + references.shinies.length + references.casuals.length %>)</h2>
+        </div>
+      </div>
+      <div class="row">
       <table class="table" id="referencesTable">
-        <% for(ref in references) { %>
+        <tr><td></td><td>Events (<%= references.events.length %>)</td><td></td><td></td></tr>
+        <% for(ref in references.events) { %>
+        <% var event = references.events[ref]; %>
+        <% var refNum = Number(ref) + 1; %>
         <tr>
-          <td><a href="<%= references[ref].url %>"><%= references[ref].gave %> for <%= references[ref].got %></a></td>
-          <td><a href="http://www.reddit.com<%= references[ref].user2 %>"><%= references[ref].user2 %></a></td>
-          <td><%= references[ref].type %></td>
+          <td><strong><%= refNum %>.</strong></td>
+          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
+          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+          <td><%= event.type %></td>
+        </tr>
+        <% } %>
+        <tr><td></td><td>Shinies (<%= references.shinies.length %>)</td><td></td><td></td></tr>
+        <% for(ref in references.shinies) { %>
+        <% var event = references.shinies[ref]; %>
+        <% var refNum = Number(ref) + 1; %>
+        <tr>
+          <td><strong><%= refNum %>.</strong></td>
+          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
+          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+          <td><%= event.type %></td>
+        </tr>
+        <% } %>
+        <tr><td></td><td>Casual (<%= references.casuals.length %>)</td><td></td><td></td></tr>
+        <% for(ref in references.casuals) { %>
+        <% var event = references.casuals[ref]; %>
+        <% var refNum = Number(ref) + 1; %>
+        <tr>
+          <td><strong><%= refNum %>.</strong></td>
+          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
+          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+          <td><%= event.type %></td>
         </tr>
         <% } %>
       </table>
       </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Bank Trades (<%= references.banks.length %>)</h2>
+        </div>
+      </div>
+      <div class="row">
+      <table class="table" id="bankReferencesTable">
+        <% for(ref in references.banks) { %>
+        <% var event = references.banks[ref]; %>
+        <% var refNum = Number(ref) + 1; %>
+        <tr>
+          <td><strong><%= refNum %>.</strong></td>
+          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
+          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+          <td><%= event.type %></td>
+        </tr>
+	<% } %>
+      </table>
+      </div>
+
+
     </div>
   </div>
 </div>

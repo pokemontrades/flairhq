@@ -1,5 +1,6 @@
+<% if (user) { %>
 <%- partial ('editProfile.ejs') %>
-
+<% } %>
 
 <!-- Default home page -->
 <link type="text/css" href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
@@ -16,10 +17,12 @@
         <a href="#" class="navbar-brand"><%= __('Welcome to Fapp.') %></a>
       </div>
 
+
+     <% if (user) { %>
       <div class="collapse navbar-collapse pull-right" id="main-navbar">
         <ul class="nav navbar-nav">
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= user.name %><span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= user ? user.name : "meh" %><span class="caret"></span></a>
             <ul class="dropdown-menu dropdown-inverse" role="menu">
               <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
               <li><a href="/logout">Logout</a></li>          
@@ -27,6 +30,13 @@
           </li>
         </ul>
       </div>
+      <% } else { %>
+      <div class="collapse navbar-collapse pull-right" id="main-navbar">
+        <ul class="nav navbar-nav">
+          <li><a href="/auth/reddit/">Login/Register</a></li>
+        </ul>
+      </div>
+      <% } %>
     </div>
   </nav>
 
@@ -35,66 +45,6 @@
   <div class="main container clearfix">
 
     <div class="content">
-
-      <div class="col-md-7">
-        <h2 class="text-center">This is your reference</h2>
-        <h3 class="text-center">There are many like it, but this one is yours.</h3>
-        <br />
-        <p class="text-center">You can add references to the right, and then they will appear below.</p>
-      </div>
-
-      <form class="form-horizontal col-md-5" role="form">
-      <div id="addNewReference">
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
-          <div class="col-md-8">
-            <input type="url" id="referenceUrl" class="form-control"></input>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">User</label>
-          <div class="col-md-8">
-            <input type="text" id="user2" class="form-control"></input>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="gave" class="col-sm-4 control-label">Gave:</label>
-          <div class="col-md-3">
-            <input type="text" id="gave" class="form-control"></input>
-          </div>
-          <label for="got" class="col-sm-2 control-label">Got:</label>
-          <div class="col-md-3">
-            <input type="text" id="got" class="form-control"></input>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
-          <div class="col-md-8">
-            <select id="type" class="form-control">
-              <option value="event">Event</option>
-              <option value="redemption">Redemption</option>
-              <option value="shiny">Shiny</option>
-              <option value="casual">Casual</option>
-              <option value="bank">Bank</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <div class="col-sm-offset-4 col-sm-2">
-            <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add"></input>
-          </div>
-          <div class="col-sm-6">
-            <div id="submitError" class="alert alert-danger" role="alert" hidden></div>
-          </div>
-        </div>
-
-      </div>
-      </form>
-
       <div class="row">
         <div class="col-md-6">
           <h2>Trades (<%= references.events.length + references.shinies.length + references.casuals.length %>)</h2>
@@ -159,34 +109,8 @@
   </div>
 </div>
 
-
+<% if(user){ %>
 <script>
-$("#addReferenceButton").click(function () {
-  var refUrl = $('#referenceUrl').val(),
-      user2 = $('#user2').val(),
-      gave = $('#gave').val(),
-      got = $('#got').val(),
-      type = $('#type').val();
-
-  var url = "/reference/add";
-  io.socket.post(url, {"userid": "<%= user.id %>", 
-                       "url": refUrl, 
-                       "user2": user2,
-                       "gave": gave,
-                       "got": got,
-                       "type": type}, function (data, res) {
-    console.log(res);
-    if (res.statusCode === 200) {
-      $("#referencesTable tr:last").after("<tr><td><a href='" + refUrl + "'>Here</a>"
-                                           + "</td><td><a href='" + user2 + "'>" + user2 + "</a>"
-                                           + "</td><td>" + gave + " for " + got
-                                           + "</td><td>" + type + "</td></tr>");
-    } else {
-      $("#submitError").html("Already added that URL.").show();
-    }
-  });
-});
-
 $("#saveProfile").click(function () {
   var intro = $('#intro').val(),
       fc = $('#fc1').val(),
@@ -209,13 +133,5 @@ $("#saveProfile").click(function () {
     }
   });
 });
-
-
-var getUpdatedReferences = function() {
-  var url = "/reference/get/<%= user.id %>";
-  console.log(url);
-  io.socket.get(url, function (data, res) {
-    console.log(data);
-  });
-}
 </script>
+<% } %>

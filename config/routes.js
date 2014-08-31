@@ -36,6 +36,11 @@ module.exports.routes = {
     controller : 'home'
   },
 
+  '/reference/:user' : {
+    controller: 'home',
+    action: 'reference'
+  },
+
   '/login' : {
     controller : 'auth',
     action     : 'index'

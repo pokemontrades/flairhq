@@ -33,11 +33,11 @@
           <div class="form-group">
             <label for="ign1" class="col-sm-3 control-label">IGN:</label>
             <div class="col-md-3">
-              <input type="text" id="ign1" class="form-control" value="<%= games ? games[0].ign : ""%>"></input>
+              <input type="text" id="ign1" class="form-control" value="<%= games.length > 0 ? games[0].ign : ""%>"></input>
             </div>
             <label for="tsv1" class="col-sm-2 control-label">TSV:</label>
             <div class="col-md-3">
-              <input type="text" id="tsv1" class="form-control" value="<%= games ? games[0].tsv : "" %>"></input>
+              <input type="text" id="tsv1" class="form-control" value="<%= games.length > 0 ? games[0].tsv : "" %>"></input>
             </div>
           </div>
 <!-- disabled currently until after 0.1

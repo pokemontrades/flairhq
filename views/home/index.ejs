@@ -60,9 +60,13 @@
         </div>
 
         <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Description</label>
-          <div class="col-md-8">
-            <input type="text" id="descrip" class="form-control"></input>
+          <label for="gave" class="col-sm-4 control-label">Gave:</label>
+          <div class="col-md-3">
+            <input type="text" id="gave" class="form-control"></input>
+          </div>
+          <label for="got" class="col-sm-2 control-label">Got:</label>
+          <div class="col-md-3">
+            <input type="text" id="got" class="form-control"></input>
           </div>
         </div>
 
@@ -95,7 +99,7 @@
       <table class="table" id="referencesTable">
         <% for(ref in references) { %>
         <tr>
-          <td><a href="<%= references[ref].url %>"><%= references[ref].descrip %></a></td>
+          <td><a href="<%= references[ref].url %>"><%= references[ref].gave %> for <%= references[ref].got %></a></td>
           <td><a href="http://www.reddit.com<%= references[ref].user2 %>"><%= references[ref].user2 %></a></td>
           <td><%= references[ref].type %></td>
         </tr>
@@ -111,20 +115,22 @@
 $("#addReferenceButton").click(function () {
   var refUrl = $('#referenceUrl').val(),
       user2 = $('#user2').val(),
-      descrip = $('#descrip').val(),
+      gave = $('#gave').val(),
+      got = $('#got').val(),
       type = $('#type').val();
 
   var url = "/reference/add";
   io.socket.post(url, {"userid": "<%= user.id %>", 
                        "url": refUrl, 
                        "user2": user2,
-                       "descrip": descrip,
+                       "gave": gave,
+                       "got": got,
                        "type": type}, function (data, res) {
     console.log(res);
     if (res.statusCode === 200) {
       $("#referencesTable tr:last").after("<tr><td><a href='" + refUrl + "'>Here</a>"
                                            + "</td><td><a href='" + user2 + "'>" + user2 + "</a>"
-                                           + "</td><td>" + descrip
+                                           + "</td><td>" + gave + " for " + got
                                            + "</td><td>" + type + "</td></tr>");
     } else {
       $("#submitError").html("Already added that URL.").show();

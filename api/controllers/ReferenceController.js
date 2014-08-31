@@ -31,8 +31,8 @@ module.exports = {
       if (!user) {
         res.json({error: "Can't find user"}, 404);
       } else {
-	Reference.findOne({url: req.params.url, user: user.id}, function (err, refs) {
-          if(err || refs) {
+	Reference.findOne({url: req.params.url, user: user.id}, function (err, ref) {
+          if(err || ref) {
             res.json(400);
           } else {
             Reference.create(
@@ -40,7 +40,8 @@ module.exports = {
                url: req.params.url, 
                user: user.id, 
                user2: req.params.user2,
-               descrip: req.params.descrip,
+               gave: req.params.gave,
+               got: req.params.got,
                type: req.params.type
               }, 
               function (err, ref) {

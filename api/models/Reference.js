@@ -9,12 +9,12 @@ module.exports = {
 
   attributes: {
     url: {
-      type: "string",
-      url: true
+      type: "string"
     },
     user: "string",
     user2: "string",
-    description: "string",
+    gave: "string",
+    got: "string",
     type: {
       type: "string",
       enum: ["event", "redemption", "shiny", "casual", "bank", "egg"]

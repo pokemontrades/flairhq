@@ -36,7 +36,7 @@ module.exports.routes = {
     controller : 'home'
   },
 
-  '/reference/:user' : {
+  '/u/:user' : {
     controller: 'home',
     action: 'reference'
   },

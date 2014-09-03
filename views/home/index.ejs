@@ -194,6 +194,12 @@ $("#saveProfile").click(function () {
       tsv = $('#tsv1').val(),
       url = "/user/edit";
 
+  var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+  if (!patt.test(fc)) {
+    $("#saveError").html("Your friend code wasn't in the correct format.").show();    
+    return;
+  }
+
   io.socket.post(url, {"userid": "<%= user.id %>", 
                        "intro": intro,
                        "igns": [ign],

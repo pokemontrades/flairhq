@@ -35,7 +35,6 @@ module.exports = {
 
       Game.find()
        .where({user: user.id})
-       .where({type: "casual"})
        .exec(function (err, games) {
 
         res.view({
@@ -88,7 +87,6 @@ module.exports = {
 
       Game.find()
        .where({user: user.id})
-       .where({type: "casual"})
        .exec(function (err, games) {
 
         res.view({

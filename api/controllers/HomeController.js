@@ -89,6 +89,10 @@ module.exports = {
        .where({user: user.id})
        .exec(function (err, games) {
 
+      Comment.find()
+       .where({user: user.id})
+       .exec(function (err, comments) {
+
         res.view({
           user: req.user,
           refUser: user,
@@ -98,8 +102,11 @@ module.exports = {
             casuals: casuals,
             banks: banks
           },
-          games: games
+          games: games,
+          comments: comments
         });
+
+      });
       });
       });
       });

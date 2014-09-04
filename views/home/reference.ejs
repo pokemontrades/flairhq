@@ -104,6 +104,30 @@
       </table>
       </div>
 
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Comments</h2>
+        </div>
+      </div>  
+
+      <div class="row" id="comments">
+       <% for(i in comments) {%>
+       <% var comment = comments[i] %>
+       <div class="comment">
+         This is a comment
+       </div>
+       <% } %>
+      </div>
+
+      <div class="row">
+        <form class="form col-md-6" role="form">
+          <h2>Leave a comment on this user's reference</h2>
+          <p>This will be public for all to see</p>
+          <textarea class="form-control" id="newComment"></textarea>
+          <button type="button" class="btn btn-primary" id="addComment">Comment</button>
+        </form>
+      </div> 
+
 
     </div>
   </div>
@@ -130,6 +154,22 @@ $("#saveProfile").click(function () {
       $("#saveError").html("Your friend code was not correct.").show();
     } else if (res.statusCode === 500) {
       $("#saveError").html("There was some issue saving.").show();
+    }
+  });
+});
+
+$("#addComment").click(function () {
+  var comment = $('#newComment').val(),
+      url = "/reference/comment/add";
+
+  io.socket.post(url, {"userid": "<%= user.id %>",
+                       "refUser": "<%= refUser.id %>",
+                       "comment": comment}, function (data, res) {
+    if (res.statusCode === 200) {
+      $("#comments").append("<div class='comment'>" + comment + "</div>");
+    }
+    else {
+      console.log("Error");
     }
   });
 });

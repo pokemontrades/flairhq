@@ -13,7 +13,7 @@ module.exports = {
     friendCodeFormat: function (codes) {
       for (code in codes) {
         var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
-          if (!patt.test(fc)) {
+          if (!patt.test(codes[code])) {
             return false;
           }
       }

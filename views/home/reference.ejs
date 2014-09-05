@@ -46,6 +46,11 @@
 
     <div class="content">
       <div class="row">
+        <h2><%= user.name %>'s Reference <span class="small text-right"><a href="#profileInformationModal" data-toggle="modal">Information</a></span></h2>
+        <p class="col-md-6"><%=user.intro ? user.intro : "" %><p>
+      </div>
+
+      <div class="row">
         <div class="col-md-6">
           <h2>Trades (<%= references.events.length + references.shinies.length + references.casuals.length %>)</h2>
         </div>
@@ -120,11 +125,14 @@
       </div>
 
       <div class="row">
-        <form class="form col-md-6" role="form">
+        <form class="form-horizontal col-md-6" role="form">
           <h2>Leave a comment on this user's reference</h2>
-          <p>This will be public for all to see</p>
-          <textarea class="form-control" id="newComment"></textarea>
-          <button type="button" class="btn btn-primary" id="addComment">Comment</button>
+          <div class="form-group col-md-10">
+            <textarea class="form-control" id="newComment"></textarea>
+          </div>
+          <div class="col-md-offset-1 col-md-1">
+            <button type="submit" class="btn btn-primary" id="addComment">Comment</button>
+          </div>
         </form>
       </div> 
 
@@ -132,6 +140,38 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="profileInformationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">User information</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>Friend codes:</h4>
+            <ul>
+              <li><%= user.friendCodes ? user.friendCodes[0] : "not entered" %></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>Games:</h4>
+            <ul>
+              <li>IGN: <%= games ? (games[0] ? games[0].ign : "") : "" %>
+              TSV: <%= games ? (games[0] ? games[0].tsv : "") : "" %></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <% if(user){ %>
 <script>
@@ -142,10 +182,16 @@ $("#saveProfile").click(function () {
       tsv = $('#tsv1').val(),
       url = "/user/edit";
 
-  io.socket.post(url, {"userid": "<%= user.id %>", 
+  var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+  if (!patt.test(fc)) {
+    $("#saveError").html("Your friend code wasn't in the correct format.").show();
+    return;
+  }
+
+  io.socket.post(url, {"userid": "<%= user.id %>",
                        "intro": intro,
                        "igns": [ign],
-                       "fcs": [fc], 
+                       "fcs": [fc],
                        "tsvs": [tsv]}, function (data, res) {
     console.log(res);
     if (res.statusCode === 200) {

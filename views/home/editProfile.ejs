@@ -5,39 +5,40 @@
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h4 class="modal-title" id="myModalLabel">Edit Profile</h4>
       </div>
+
       <div class="modal-body">
         <form class="form-horizontal" role="form">
         <div id="editProfile">
           <div class="form-group">
-            <label for="intro" class="col-sm-3 control-label">Introduction:</label>
+            <label class="col-sm-3 control-label">Introduction:</label>
             <div class="col-md-8">
-              <input type="text" id="intro" class="form-control" value="<%= user.intro ? user.intro : "" %>"></input>
+              <input type="text" class="form-control" ng-model="user.intro"></input>
             </div>
           </div>
           <div class="form-group">
             <label for="friendcode1" class="col-sm-3 control-label">Friend Code:</label>
 	    <div class="col-md-8">
-              <input type="text" id="fc1" class="form-control" value="<%= user.friendCodes ? user.friendCodes[0] : "" %>"></input>
+              <input type="text" class="form-control" 
+                ng-repeat="fc in user.friendCodes track by $index" 
+                ng-model="user.friendCodes[$index]"></input>
             </div>
           </div>
-<!-- disabled currently until after 0.1
           <div class="form-group">
             <div class="col-md-8 col-md-offset-3">
-              <button class="btn btn-default btn-xs">
+              <button class="btn btn-default btn-xs" ng-click="addFc">
                 <span class="glyphicon glyphicon-plus-sign"></span>
               </button>
             </div>
           </div>
--->
 
-          <div class="form-group">
-            <label for="ign1" class="col-sm-3 control-label">IGN:</label>
+          <div class="form-group" ng-repeat="game in user.games">
+            <label class="col-sm-3 control-label">IGN:</label>
             <div class="col-md-3">
-              <input type="text" id="ign1" class="form-control" value="<%= games.length > 0 ? games[0].ign : ""%>"></input>
+              <input type="text" class="form-control" ng-model="game.ign"></input>
             </div>
-            <label for="tsv1" class="col-sm-2 control-label">TSV:</label>
+            <label class="col-sm-2 control-label">TSV:</label>
             <div class="col-md-3">
-              <input type="text" id="tsv1" class="form-control" value="<%= games.length > 0 ? games[0].tsv : "" %>"></input>
+              <input type="text" class="form-control" ng-model="game.tsv"></input>
             </div>
           </div>
 <!-- disabled currently until after 0.1
@@ -60,7 +61,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="saveProfile">Save changes</button>
+        <button type="button" class="btn btn-primary" ng-click="saveProfile()">Save changes</button>
       </div>
     </div>
   </div>

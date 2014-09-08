@@ -1,114 +1,67 @@
-<% if (user) { %>
-<%- partial ('editProfile.ejs') %>
-<% } %>
-
-<!-- Default home page -->
-<link type="text/css" href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
-
-  <nav class="navbar navbar-inverse">
-    <div class="container">
-      <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-        <a href="#" class="navbar-brand"><%= __('Welcome to Fapp.') %></a>
-      </div>
-
-
-     <% if (user) { %>
-      <div class="collapse navbar-collapse pull-right" id="main-navbar">
-        <ul class="nav navbar-nav">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= user ? user.name : "meh" %><span class="caret"></span></a>
-            <ul class="dropdown-menu dropdown-inverse" role="menu">
-              <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
-              <li><a href="/logout">Logout</a></li>          
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <% } else { %>
-      <div class="collapse navbar-collapse pull-right" id="main-navbar">
-        <ul class="nav navbar-nav">
-          <li><a href="/auth/reddit/">Login/Register</a></li>
-        </ul>
-      </div>
-      <% } %>
-    </div>
-  </nav>
-
-
-<div class="container">
+<div class="container" ng-controller="referenceCtrl">
   <div class="main container clearfix">
 
     <div class="content">
       <div class="row">
-        <h2><%= user.name %>'s Reference <span class="small text-right"><a href="#profileInformationModal" data-toggle="modal">Information</a></span></h2>
-        <p class="col-md-6"><%=user.intro ? user.intro : "" %><p>
+        <h2>{{refUser.name}}'s Reference <span class="small text-right"><a href="#profileInformationModal" data-toggle="modal">Information</a></span></h2>
+        <p class="col-md-6">{{refUser.intro}}<p>
       </div>
 
       <div class="row">
         <div class="col-md-6">
-          <h2>Trades (<%= references.events.length + references.shinies.length + references.casuals.length %>)</h2>
+          <h2>Trades ({{numberOfTrades()}})</h2>
         </div>
       </div>
       <div class="row">
       <table class="table" id="referencesTable">
-        <tr><td></td><td>Events (<%= references.events.length %>)</td><td></td></tr>
-        <% for(ref in references.events) { %>
-        <% var event = references.events[ref]; %>
-        <% var refNum = Number(ref) + 1; %>
-        <tr>
-          <td><strong><%= refNum %>.</strong></td>
-          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
-          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+
+        <tr data-toggle="collapse" href="#collapseEvents">
+          <td colspan="3">Events ({{refUser.references.events.length}})</td>
         </tr>
-        <% } %>
-        <tr><td></td><td>Shinies (<%= references.shinies.length %>)</td><td></td></tr>
-        <% for(ref in references.shinies) { %>
-        <% var event = references.shinies[ref]; %>
-        <% var refNum = Number(ref) + 1; %>
-        <tr>
-          <td><strong><%= refNum %>.</strong></td>
-          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
-          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+        <tbody id="collapseEvents" class="collapse">
+        <tr ng-repeat="reference in refUser.references.events">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
         </tr>
-        <% } %>
-        <tr><td></td><td>Casual (<%= references.casuals.length %>)</td><td></td></tr>
-        <% for(ref in references.casuals) { %>
-        <% var event = references.casuals[ref]; %>
-        <% var refNum = Number(ref) + 1; %>
-        <tr>
-          <td><strong><%= refNum %>.</strong></td>
-          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
-          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
+        </tbody>
+
+        <tr data-toggle="collapse" href="#collapseShinies">
+          <td colspan="3">Shinies ({{refUser.references.shinies.length}})</td>
         </tr>
-        <% } %>
+        <tbody id="collapseShinies" class="collapse">
+        <tr ng-repeat="reference in refUser.references.shinies">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+        </tr>
+        </tbody>
+
+        <tr data-toggle="collapse" href="#collapseCasuals">
+          <td colspan="3">Casual ({{refUser.references.casuals.length}})</td>
+        </tr>
+        <tbody id="collapseCasuals" class="collapse">
+        <tr ng-repeat="reference in refUser.references.casuals">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+        </tr>
+        </tbody>
+
+        <tr data-toggle="collapse" href="#collapseBanks">
+          <td colspan="3"><h2>Bank trades ({{refUser.references.banks.length}})</h2></td>
+        </tr>
+        <tbody id="collapseBanks" class="collapse">
+        <tr ng-repeat="reference in refUser.references.banks">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+        </tr>
+        </tbody>
+
       </table>
       </div>
       
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Bank Trades (<%= references.banks.length %>)</h2>
-        </div>
-      </div>
-      <div class="row">
-      <table class="table" id="bankReferencesTable">
-        <% for(ref in references.banks) { %>
-        <% var event = references.banks[ref]; %>
-        <% var refNum = Number(ref) + 1; %>
-        <tr>
-          <td><strong><%= refNum %>.</strong></td>
-          <td><a href="<%= event.url %>"><%= event.gave %> for <%= event.got %></a></td>
-          <td><a href="http://www.reddit.com<%= event.user2 %>"><%= event.user2 %></a></td>
-        </tr>
-	<% } %>
-      </table>
-      </div>
-
       <div class="row">
         <div class="col-md-6">
           <h2>Comments</h2>
@@ -116,108 +69,31 @@
       </div>  
 
       <div class="row" id="comments">
-       <% for(i in comments) {%>
-       <% var comment = comments[i] %>
-       <div class="comment">
-         This is a comment
+       <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
+         <div class="panel-heading">
+           <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
+           <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
+         </div>
+         <div class="panel-body">{{comment.message}}</div>
        </div>
-       <% } %>
       </div>
 
       <div class="row">
-        <form class="form-horizontal col-md-6" role="form">
+        <form class="form-horizontal col-md-6" role="form" ng-submit="addComment()">
           <h2>Leave a comment on this user's reference</h2>
           <div class="form-group col-md-10">
-            <textarea class="form-control" id="newComment"></textarea>
+            <textarea class="form-control" id="newComment" ng-model="newComment"></textarea>
           </div>
           <div class="col-md-offset-1 col-md-1">
-            <button type="submit" class="btn btn-primary" id="addComment">Comment</button>
+            <button type="submit" class="btn btn-primary">Comment</button>
           </div>
         </form>
       </div> 
 
+    <%- partial ('profileInfo.ejs') %>
 
     </div>
   </div>
+
+
 </div>
-
-<div class="modal fade" id="profileInformationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">User information</h4>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-6">
-            <h4>Friend codes:</h4>
-            <ul>
-              <li><%= user.friendCodes ? user.friendCodes[0] : "not entered" %></li>
-            </ul>
-          </div>
-          <div class="col-md-6">
-            <h4>Games:</h4>
-            <ul>
-              <li>IGN: <%= games ? (games[0] ? games[0].ign : "") : "" %>
-              TSV: <%= games ? (games[0] ? games[0].tsv : "") : "" %></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<% if(user){ %>
-<script>
-$("#saveProfile").click(function () {
-  var intro = $('#intro').val(),
-      fc = $('#fc1').val(),
-      ign = $('#ign1').val(),
-      tsv = $('#tsv1').val(),
-      url = "/user/edit";
-
-  var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
-  if (!patt.test(fc)) {
-    $("#saveError").html("Your friend code wasn't in the correct format.").show();
-    return;
-  }
-
-  io.socket.post(url, {"userid": "<%= user.id %>",
-                       "intro": intro,
-                       "igns": [ign],
-                       "fcs": [fc],
-                       "tsvs": [tsv]}, function (data, res) {
-    console.log(res);
-    if (res.statusCode === 200) {
-      $("#profileModal").modal("toggle");
-    } else if (res.statusCode === 400) {
-      $("#saveError").html("Your friend code was not correct.").show();
-    } else if (res.statusCode === 500) {
-      $("#saveError").html("There was some issue saving.").show();
-    }
-  });
-});
-
-$("#addComment").click(function () {
-  var comment = $('#newComment').val(),
-      url = "/reference/comment/add";
-
-  io.socket.post(url, {"userid": "<%= user.id %>",
-                       "refUser": "<%= refUser.id %>",
-                       "comment": comment}, function (data, res) {
-    if (res.statusCode === 200) {
-      $("#comments").append("<div class='comment'>" + comment + "</div>");
-    }
-    else {
-      console.log("Error");
-    }
-  });
-});
-</script>
-<% } %>

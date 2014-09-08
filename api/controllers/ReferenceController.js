@@ -65,7 +65,7 @@ module.exports = {
         comment = req.allParams().comment;
 
     User.findOne({id: refUser}, function (err, reference) {
-      Comment.create({user: reference.id, user2: user.id, message: comment}, function (err, com) {
+      Comment.create({user: reference.id, user2: user.name, message: comment}, function (err, com) {
         res.json(com, 200);
       });
     });

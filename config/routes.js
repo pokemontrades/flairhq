@@ -41,6 +41,16 @@ module.exports.routes = {
     action: 'reference'
   },
 
+  '/user/mine' : {
+    controller: 'user',
+    action: 'mine'
+  },
+
+  '/user/get/:name' : {
+    controller: 'user',
+    action: 'get'
+  },
+
   '/login' : {
     controller : 'auth',
     action     : 'index'

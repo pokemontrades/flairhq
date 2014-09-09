@@ -59,6 +59,19 @@ module.exports = {
     });
   },
 
+  delete: function (req, res) {
+    var id = req.allParams().refId;
+
+    Reference.destroy({id: id, user: req.user.id})
+     .exec(function (err, refs) {
+       if (err) {
+         res.json(err, 400);
+       } else {
+         res.json(200);
+       }
+    });
+  },
+
   comment: function (req, res) {
     var user = req.user,
         refUser = req.allParams().refUser,

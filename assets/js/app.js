@@ -73,7 +73,7 @@ fapp.controller("indexCtrl", function ($scope) {
   $scope.addReference = function () {
     $scope.addRefError = "";
     var url = "/reference/add"
-        regexp = /(http:\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
+        regexp = /(http(s?):\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";
@@ -108,16 +108,15 @@ fapp.controller("indexCtrl", function ($scope) {
   };
 
   $scope.deleteRef = function (id, index, type) {
-    var url = "/reference/add";
-    io.socket.post(url, {"userid": $scope.user.id,
-                         "refid": id}, function (data, res) {
+    var url = "/reference/delete";
+    io.socket.post(url, {"refId": id}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.user.references[type].splice(index, 1);
         $scope.$apply();
       } else {
-        console.log(res.status.code + ": " + data);
+        console.log(res.statusCode + ": " + data);
       }
-    });    
+    });
   };
 
 });

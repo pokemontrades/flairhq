@@ -55,7 +55,7 @@
             <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add" ng-click="addReference()"></input>
           </div>
           <div class="col-sm-6">
-            <div id="submitError" class="alert alert-danger" role="alert" hidden></div>
+            <div class="alert alert-danger" role="alert" ng-hide="!addRefError">{{addRefError}}</div>
           </div>
         </div>
 
@@ -71,46 +71,50 @@
       <table class="table" id="referencesTable">
 
         <tr data-toggle="collapse" href="#collapseEvents">
-          <td colspan="3">Events ({{user.references.events.length}})</td>
+          <td colspan="4">Events ({{user.references.events.length}})</td>
         </tr>
 	<tbody id="collapseEvents" class="collapse">
         <tr ng-repeat="reference in user.references.events">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
           <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'events')">Delete</a></td>
         </tr>
 	</tbody>
 
         <tr data-toggle="collapse" href="#collapseShinies">
-          <td colspan="3">Shinies ({{user.references.shinies.length}})</td>
+          <td colspan="4">Shinies ({{user.references.shinies.length}})</td>
         </tr>
 	<tbody id="collapseShinies" class="collapse">
         <tr ng-repeat="reference in user.references.shinies">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
           <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'shinies')">Delete</a></td>
         </tr>
 	</tbody>
 
         <tr data-toggle="collapse" href="#collapseCasuals">
-          <td colspan="3">Casual ({{user.references.casuals.length}})</td>
+          <td colspan="4">Casual ({{user.references.casuals.length}})</td>
         </tr>
 	<tbody id="collapseCasuals" class="collapse">
         <tr ng-repeat="reference in user.references.casuals">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
           <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'casuals')">Delete</a></td>
         </tr>
 	</tbody>
 
         <tr data-toggle="collapse" href="#collapseBanks">
-          <td colspan="3"><h2>Bank trades ({{user.references.banks.length}})</h2></td>
+          <td colspan="4"><h2>Bank trades ({{user.references.banks.length}})</h2></td>
         </tr>
 	<tbody id="collapseBanks" class="collapse">
         <tr ng-repeat="reference in user.references.banks">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
           <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'banks')">Delete</a></td>
         </tr>
 	</tbody>
 

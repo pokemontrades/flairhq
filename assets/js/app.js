@@ -44,6 +44,8 @@ fapp.controller("indexCtrl", function ($scope) {
   $scope.got = "";
   $scope.type = "";
 
+  $scope.addRefError = "";
+
   $scope.numberOfTrades = function () {
     if(!$scope.user || !$scope.user.references){
       return 0;
@@ -69,7 +71,23 @@ fapp.controller("indexCtrl", function ($scope) {
 
 
   $scope.addReference = function () {
-    var url = "/reference/add";
+    $scope.addRefError = "";
+    var url = "/reference/add"
+        regexp = /(http:\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
+
+    if (!$scope.type) {
+      $scope.addRefError = "Please choose a type.";
+      return;
+    }
+    if (!$scope.refUrl || !$scope.user2 || !$scope.gave || !$scope.got) {
+      $scope.addRefError = "Make sure you enter all the information";
+      return;
+    }
+    if (!regexp.test($scope.refUrl)) {
+      $scope.addRefError = "Looks like you didn't input a proper permalink";
+      return;
+    }
+   
     io.socket.post(url, {"userid": $scope.user.id,
                          "url": $scope.refUrl,
                          "user2": $scope.user2,
@@ -80,12 +98,26 @@ fapp.controller("indexCtrl", function ($scope) {
       if (res.statusCode === 200) {
         if(data.type === "event" || data.type === "redemption") {
           $scope.user.references.events.push(res);
+          $scope.$apply();
         }
       } else {
-        $("#submitError").html("Already added that URL.").show();
+        $scope.addRefError = "Already added that URL.";
       }
     });
 
+  };
+
+  $scope.deleteRef = function (id, index, type) {
+    var url = "/reference/add";
+    io.socket.post(url, {"userid": $scope.user.id,
+                         "refid": id}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.user.references[type].splice(index, 1);
+        $scope.$apply();
+      } else {
+        console.log(res.status.code + ": " + data);
+      }
+    });    
   };
 
 });

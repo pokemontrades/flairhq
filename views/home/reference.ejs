@@ -22,7 +22,11 @@
         <tr ng-repeat="reference in refUser.references.events">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
         </tr>
         </tbody>
 
@@ -33,7 +37,11 @@
         <tr ng-repeat="reference in refUser.references.shinies">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
         </tr>
         </tbody>
 
@@ -44,7 +52,11 @@
         <tr ng-repeat="reference in refUser.references.casuals">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
         </tr>
         </tbody>
 
@@ -55,7 +67,11 @@
         <tr ng-repeat="reference in refUser.references.banks">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
         </tr>
         </tbody>
 

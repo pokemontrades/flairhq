@@ -72,7 +72,8 @@ fapp.controller("indexCtrl", function ($scope) {
 
   $scope.addReference = function () {
     $scope.addRefError = "";
-    var url = "/reference/add"
+    var url = "/reference/add",
+        user2 = $scope.user2,
         regexp = /(http(s?):\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
 
     if (!$scope.type) {
@@ -87,10 +88,13 @@ fapp.controller("indexCtrl", function ($scope) {
       $scope.addRefError = "Looks like you didn't input a proper permalink";
       return;
     }
+    if (user2.indexOf("/u/") === -1) {
+      user2 = "/u/" + user2;
+    }
    
     io.socket.post(url, {"userid": $scope.user.id,
                          "url": $scope.refUrl,
-                         "user2": $scope.user2,
+                         "user2": user2,
                          "gave": $scope.gave,
                          "got": $scope.got,
                          "type": $scope.type}, function (data, res) {
@@ -123,6 +127,13 @@ fapp.controller("indexCtrl", function ($scope) {
 
 fapp.controller("userCtrl", function ($scope) {
   $scope.user = undefined;
+  $scope.getRedditUser = function (username) {
+    if (username.indexOf("/u/") === -1) {
+      return "/u/" + username;
+    } else {
+      return username;
+    }
+  };
 
   io.socket.get("/user/mine", function (data, res) {
     if(res.statusCode === 200){

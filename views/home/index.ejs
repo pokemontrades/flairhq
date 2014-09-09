@@ -77,7 +77,11 @@
         <tr ng-repeat="reference in user.references.events">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
           <td><a href="#" ng-click="deleteRef(reference.id, $index, 'events')">Delete</a></td>
         </tr>
 	</tbody>
@@ -89,7 +93,11 @@
         <tr ng-repeat="reference in user.references.shinies">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
           <td><a href="#" ng-click="deleteRef(reference.id, $index, 'shinies')">Delete</a></td>
         </tr>
 	</tbody>
@@ -101,7 +109,11 @@
         <tr ng-repeat="reference in user.references.casuals">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
           <td><a href="#" ng-click="deleteRef(reference.id, $index, 'casuals')">Delete</a></td>
         </tr>
 	</tbody>
@@ -113,7 +125,11 @@
         <tr ng-repeat="reference in user.references.banks">
           <td><strong>{{$index + 1}}.</strong></td>
           <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td><a ng-href="http://www.reddit.com{{reference.user2}}">{{reference.user2}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
           <td><a href="#" ng-click="deleteRef(reference.id, $index, 'banks')">Delete</a></td>
         </tr>
 	</tbody>

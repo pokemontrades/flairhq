@@ -107,6 +107,14 @@ module.exports = {
        .where({type: "bank"})
        .exec(function (err, banks) {
 
+      Egg.find()
+       .where({user: user.id})
+       .exec(function (err, eggs) {
+
+      Giveaway.find()
+       .where({user: user.id})
+       .exec(function (err, giveaways) {
+
       Comment.find()
        .where({user: user.id})
        .exec(function (err, comments) {
@@ -115,12 +123,16 @@ module.exports = {
           events: events,
           shinies: shinies,
           casuals: casuals,
-          banks: banks
+          banks: banks,
+          eggs: eggs,
+          giveaways: giveaways
         }
         user.games = games;
         user.comments = comments;
         res.json(user, 200);
 
+      });
+      });
       });
       });
       });

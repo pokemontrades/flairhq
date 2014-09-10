@@ -20,24 +20,6 @@
         </div>
 
         <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">User</label>
-          <div class="col-md-8">
-            <input type="text" class="form-control" ng-model="user2"></input>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="gave" class="col-sm-4 control-label">Gave:</label>
-          <div class="col-md-3">
-            <input type="text" class="form-control" ng-model="gave"></input>
-          </div>
-          <label class="col-sm-2 control-label">Got:</label>
-          <div class="col-md-3">
-            <input type="text" class="form-control" ng-model="got"></input>
-          </div>
-        </div>
-
-        <div class="form-group">
           <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
           <div class="col-md-8">
             <select id="type" class="form-control" ng-model="type">
@@ -46,7 +28,34 @@
               <option value="shiny">Shiny</option>
               <option value="casual">Casual</option>
               <option value="bank">Bank</option>
+              <option value="egg">Egg</option>
+              <option value="giveaway">Giveaway</option>
             </select>
+          </div>
+        </div>
+
+        <div class="form-group" ng-hide="type === 'giveaway'">
+          <label for="referenceUrl" class="col-sm-4 control-label">User</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" ng-model="user2"></input>
+          </div>
+        </div>
+
+        <div class="form-group" ng-show="type === 'egg' || type === 'giveaway'">
+          <label for="descrip" class="col-sm-4 control-label">Description</label>
+          <div class="col-md-8">
+            <input type="text" class="form-control" ng-model="descrip"></input>
+          </div>
+        </div>
+
+        <div class="form-group" ng-hide="type === 'egg' || type === 'giveaway'">
+          <label for="gave" class="col-sm-4 control-label">Gave:</label>
+          <div class="col-md-3">
+            <input type="text" class="form-control" ng-model="gave"></input>
+          </div>
+          <label class="col-sm-2 control-label">Got:</label>
+          <div class="col-md-3">
+            <input type="text" class="form-control" ng-model="got"></input>
           </div>
         </div>
 
@@ -131,6 +140,33 @@
               </a>
           </td>
           <td><a href="#" ng-click="deleteRef(reference.id, $index, 'banks')">Delete</a></td>
+        </tr>
+	</tbody>
+
+        <tr data-toggle="collapse" href="#collapseEggs">
+          <td colspan="4"><h2>Egg hatches ({{user.references.eggs.length}})</h2></td>
+        </tr>
+	<tbody id="collapseEggs" class="collapse">
+        <tr ng-repeat="reference in user.references.eggs">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'eggs')">Delete</a></td>
+        </tr>
+	</tbody>
+
+        <tr data-toggle="collapse" href="#collapseGiveaways">
+          <td colspan="4"><h2>Giveaways ({{user.references.giveaways.length}})</h2></td>
+        </tr>
+	<tbody id="collapseGiveaways" class="collapse">
+        <tr ng-repeat="reference in user.references.giveaways">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'giveaways')">Delete</a></td>
         </tr>
 	</tbody>
 

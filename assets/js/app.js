@@ -43,6 +43,7 @@ fapp.controller("indexCtrl", function ($scope) {
   $scope.gave = "";
   $scope.got = "";
   $scope.type = "";
+  $scope.descrip = "";
 
   $scope.addRefError = "";
 
@@ -80,7 +81,18 @@ fapp.controller("indexCtrl", function ($scope) {
       $scope.addRefError = "Please choose a type.";
       return;
     }
-    if (!$scope.refUrl || !$scope.user2 || !$scope.gave || !$scope.got) {
+    if ($scope.type === "egg" || $scope.type === "giveaway") {
+      if (!$scope.descrip) {
+        $scope.addRefError = "Make sure you enter all the information";
+        return;
+      }
+    }else {
+      if (!$scope.got || !$scope.gave) {
+        $scope.addRefError = "Make sure you enter all the information";
+        return;
+      }
+    }
+    if (!$scope.refUrl || (($scope.type !== "giveaway") && !$scope.user2)) {
       $scope.addRefError = "Make sure you enter all the information";
       return;
     }
@@ -91,21 +103,35 @@ fapp.controller("indexCtrl", function ($scope) {
     if (user2.indexOf("/u/") === -1) {
       user2 = "/u/" + user2;
     }
-   
-    io.socket.post(url, {"userid": $scope.user.id,
-                         "url": $scope.refUrl,
-                         "user2": user2,
-                         "gave": $scope.gave,
-                         "got": $scope.got,
-                         "type": $scope.type}, function (data, res) {
+
+    var post = {"userid": $scope.user.id,
+                "url": $scope.refUrl,
+                "user2": user2,
+                "type": $scope.type};
+
+    if ($scope.type === "egg" || $scope.type === "giveaway") {
+      post.descrip = $scope.descrip;
+    } else {
+      post.got = $scope.got;
+      post.gave = $scope.gave;
+    }
+
+    io.socket.post(url, post, function (data, res) {
       console.log(res);
       if (res.statusCode === 200) {
-        if(data.type === "event" || data.type === "redemption") {
-          $scope.user.references.events.push(res);
+        if(data.type === "redemption") {
+          $scope.user.references.events.push(data);
+          $scope.$apply();
+        } if (data.type === "shiny") {
+          $scope.user.references.shinies.push(data);
+          $scope.$apply();
+        } else {
+          $scope.user.references[$scope.type + "s"].push(data);
           $scope.$apply();
         }
       } else {
         $scope.addRefError = "Already added that URL.";
+        $scope.$apply();
       }
     });
 
@@ -128,7 +154,7 @@ fapp.controller("indexCtrl", function ($scope) {
 fapp.controller("userCtrl", function ($scope) {
   $scope.user = undefined;
   $scope.getRedditUser = function (username) {
-    if (username.indexOf("/u/") === -1) {
+    if (username && username.indexOf("/u/") === -1) {
       return "/u/" + username;
     } else {
       return username;

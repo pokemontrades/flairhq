@@ -113,7 +113,7 @@ module.exports = {
   delete: function (req, res) {
     var id = req.allParams().refId,
         type = req.allParams().type;
-    if (type === "giveaway") {
+    if (type === "giveaways") {
       Giveaway.destroy({id: id, user: req.user.id})
        .exec(function (err, refs) {
          if (err) {
@@ -122,7 +122,7 @@ module.exports = {
            res.json(200);
          }
       });
-    } else if (type === "egg") {
+    } else if (type === "eggs") {
       Egg.destroy({id: id, user: req.user.id})
        .exec(function (err, refs) {
          if (err) {

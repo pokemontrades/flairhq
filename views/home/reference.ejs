@@ -75,6 +75,33 @@
         </tr>
         </tbody>
 
+        <tr data-toggle="collapse" href="#collapseEggs">
+          <td colspan="4"><h2>Egg hatches ({{refUser.references.eggs.length}})</h2></td>
+        </tr>
+	<tbody id="collapseEggs" class="collapse">
+        <tr ng-repeat="reference in refUser.references.eggs">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
+          <td>
+              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+                {{getRedditUser(reference.user2)}}
+              </a>
+          </td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'eggs')">Delete</a></td>
+        </tr>
+	</tbody>
+
+        <tr data-toggle="collapse" href="#collapseGiveaways">
+          <td colspan="4"><h2>Giveaways ({{refUser.references.giveaways.length}})</h2></td>
+        </tr>
+	<tbody id="collapseGiveaways" class="collapse">
+        <tr ng-repeat="reference in refUser.references.giveaways">
+          <td><strong>{{$index + 1}}.</strong></td>
+          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
+          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'giveaways')">Delete</a></td>
+        </tr>
+	</tbody>
+
       </table>
       </div>
       

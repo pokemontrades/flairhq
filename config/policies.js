@@ -26,14 +26,14 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  '*': 'sessionAuth',
+  '*': ['sessionAuth', 'isMod'],
 
   'auth': {
     '*': true
   },
 
   'home': {
-    'reference': true
+    'reference': ['isMod', true]
   },
 
   'user': {

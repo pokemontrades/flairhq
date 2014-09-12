@@ -16,22 +16,29 @@ module.exports = {
       if (!user) {
         res.json({error: "Can't find user"}, 404);
       } else {
-        User.update({id: user.id}, {intro: req.params.intro}).exec(function (err1, up1) {
-          User.update({id: user.id}, {friendCodes: req.params.fcs}).exec(function (err2, up2) {
-            if (err1) {
-              res.json(err1, 500);
-            } else if (err2) {
-              res.json(err2, 400);
-            } 
+        var updatedUser = {};
+        if (req.params.intro) {
+          updatedUser.intro = req.params.intro;
+        }
+        if (req.params.fcs) {
+          updatedUser.friendCodes = req.params.fcs;
+        }
 
-            var promises = [],
-                games = [];
+        User.update({id: user.id}, updatedUser).exec(function (err, up) {
+          if (err1) {
+            res.json(err1, 500);
+          } else if (err2) {
+            res.json(err2, 400);
+          } 
 
-            req.params.games.forEach(function (game) {
-             console.log(game.id + ":" + game.tsv + ":" + game.ign);
-             if (game.id && game.tsv && game.ign) {
-                promises.push(Game.update(
-                  {id: game.id}, 
+          var promises = [],
+              games = [];
+
+          req.params.games.forEach(function (game) {
+            console.log(game.id + ":" + game.tsv + ":" + game.ign);
+            if (game.id && game.tsv && game.ign) {
+              promises.push(Game.update(
+                {id: game.id}, 
                   {tsv: game.tsv, ign: game.ign})
                   .exec(function (err, game) {
                     if (err) {
@@ -56,13 +63,11 @@ module.exports = {
                   }
                 ));    
              }
-            });
+          });
 
-            Q.all(promises).then(function () {
-              user.games = games;
-              res.json(user, 200);
-            });
-
+          Q.all(promises).then(function () {
+            user.games = games;
+            res.json(user, 200);
           });
         });
       }

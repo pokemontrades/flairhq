@@ -32,6 +32,8 @@ module.exports = {
     friendCodes: {
       type: "array",
       friendCodeFormat: true
-    }
+    },
+    isMod: "boolean",
+    modNote: "string"
   }
 };

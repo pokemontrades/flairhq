@@ -5,8 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-var reddit = require('redwrap'),
-    Q = require('q');
+var Q = require('q');
 
 module.exports = {
 
@@ -23,13 +22,14 @@ module.exports = {
         if (req.params.fcs) {
           updatedUser.friendCodes = req.params.fcs;
         }
+        if (req.user.isMod && req.params.modNotes) {
+          updatedUser.modNotes = req.params.modNotes;
+        }
 
         User.update({id: user.id}, updatedUser).exec(function (err, up) {
-          if (err1) {
-            res.json(err1, 500);
-          } else if (err2) {
-            res.json(err2, 400);
-          } 
+          if (err) {
+            res.json(err, 400);
+          }
 
           var promises = [],
               games = [];

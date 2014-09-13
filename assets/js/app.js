@@ -2,11 +2,12 @@ var fapp = angular.module("fapp", []);
 
 fapp.controller("referenceCtrl", function ($scope) {
   $scope.newComment = "";
+  $scope.modSaveError = "";
   $scope.refUser = {
     name: window.location.pathname.substring(3)
   };
   $scope.numberOfTrades = function () {
-    if(!$scope.refUser.references){
+    if (!$scope.refUser.references) {
       return 0;
     }
     var refs = $scope.refUser.references;
@@ -14,7 +15,7 @@ fapp.controller("referenceCtrl", function ($scope) {
   };
 
   io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
-    if(res.statusCode === 200){
+    if (res.statusCode === 200) {
       $scope.refUser = data;
       $scope.$apply();
     }
@@ -22,10 +23,12 @@ fapp.controller("referenceCtrl", function ($scope) {
 
   $scope.addComment = function () {
     var comment = $scope.newComment,
-        url = "/reference/comment/add";
+      url = "/reference/comment/add";
 
-    io.socket.post(url, {"refUser": $scope.refUser.id,
-                         "comment": comment}, function (data, res) {
+    io.socket.post(url, {
+      "refUser": $scope.refUser.id,
+      "comment": comment
+    }, function (data, res) {
       if (res.statusCode === 200) {
         $scope.refUser.comments.push(data);
         $scope.$apply();
@@ -34,6 +37,44 @@ fapp.controller("referenceCtrl", function ($scope) {
         console.log("Error");
       }
     });
+  };
+
+
+  $scope.modSaveProfile = function () {
+    if (!$scope.user.isMod) {
+      return;
+    }
+    var intro = $scope.refUser.intro,
+      fcs = $scope.refUser.friendCodes,
+      games = $scope.refUser.games,
+      modNotes = $scope.refUser.modNotes,
+      url = "/user/edit";
+
+    var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+    for (fc in fcs) {
+      if (!patt.test(fcs[fc])) {
+        $scope.modSaveError = "One of the friend codes wasn't in the correct format.";
+        return;
+      }
+    }
+
+    io.socket.post(url, {
+      "userid": $scope.refUser.id,
+      "intro": intro,
+      "fcs": fcs,
+      "games": games,
+      "modNotes": modNotes
+    }, function (data, res) {
+      console.log(res);
+      if (res.statusCode === 200) {
+
+      } else if (res.statusCode === 400) {
+        $scope.modSaveError = "Your friend code was not correct.";
+      } else if (res.statusCode === 500) {
+        $scope.modSaveError = "There was some issue saving.";
+      }
+    });
+
   };
 });
 
@@ -48,7 +89,7 @@ fapp.controller("indexCtrl", function ($scope) {
   $scope.addRefError = "";
 
   $scope.numberOfTrades = function () {
-    if(!$scope.user || !$scope.user.references){
+    if (!$scope.user || !$scope.user.references) {
       return 0;
     }
     var refs = $scope.user.references;
@@ -58,7 +99,7 @@ fapp.controller("indexCtrl", function ($scope) {
   $scope.getReferences = function () {
     if ($scope.user) {
       io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
-        if(res.statusCode === 200){
+        if (res.statusCode === 200) {
           $scope.user = data;
           $scope.$apply();
         }
@@ -74,8 +115,8 @@ fapp.controller("indexCtrl", function ($scope) {
   $scope.addReference = function () {
     $scope.addRefError = "";
     var url = "/reference/add",
-        user2 = $scope.user2,
-        regexp = /(http(s?):\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
+      user2 = $scope.user2,
+      regexp = /(http(s?):\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";
@@ -86,7 +127,7 @@ fapp.controller("indexCtrl", function ($scope) {
         $scope.addRefError = "Make sure you enter all the information";
         return;
       }
-    }else {
+    } else {
       if (!$scope.got || !$scope.gave) {
         $scope.addRefError = "Make sure you enter all the information";
         return;
@@ -104,10 +145,12 @@ fapp.controller("indexCtrl", function ($scope) {
       user2 = "/u/" + user2;
     }
 
-    var post = {"userid": $scope.user.id,
-                "url": $scope.refUrl,
-                "user2": user2,
-                "type": $scope.type};
+    var post = {
+      "userid": $scope.user.id,
+      "url": $scope.refUrl,
+      "user2": user2,
+      "type": $scope.type
+    };
 
     if ($scope.type === "egg" || $scope.type === "giveaway") {
       post.descrip = $scope.descrip;
@@ -119,10 +162,11 @@ fapp.controller("indexCtrl", function ($scope) {
     io.socket.post(url, post, function (data, res) {
       console.log(res);
       if (res.statusCode === 200) {
-        if(data.type === "redemption") {
+        if (data.type === "redemption") {
           $scope.user.references.events.push(data);
           $scope.$apply();
-        } if (data.type === "shiny") {
+        }
+        if (data.type === "shiny") {
           $scope.user.references.shinies.push(data);
           $scope.$apply();
         } else {
@@ -162,7 +206,7 @@ fapp.controller("userCtrl", function ($scope) {
   };
 
   io.socket.get("/user/mine", function (data, res) {
-    if(res.statusCode === 200){
+    if (res.statusCode === 200) {
       $scope.user = data;
       if (!$scope.user.friendCodes) {
         $scope.user.friendCodes = [""];
@@ -176,9 +220,9 @@ fapp.controller("userCtrl", function ($scope) {
 
   $scope.saveProfile = function () {
     var intro = $scope.user.intro,
-        fcs = $scope.user.friendCodes,
-        games = $scope.user.games,
-        url = "/user/edit";
+      fcs = $scope.user.friendCodes,
+      games = $scope.user.games,
+      url = "/user/edit";
 
     var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
     for (fc in fcs) {
@@ -188,10 +232,12 @@ fapp.controller("userCtrl", function ($scope) {
       }
     }
 
-    io.socket.post(url, {"userid": $scope.user.id,
-                         "intro": intro,
-                         "fcs": fcs,
-                         "games": games}, function (data, res) {
+    io.socket.post(url, {
+      "userid": $scope.user.id,
+      "intro": intro,
+      "fcs": fcs,
+      "games": games
+    }, function (data, res) {
       console.log(res);
       if (res.statusCode === 200) {
         $("#profileModal").modal("toggle");

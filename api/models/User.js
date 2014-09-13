@@ -34,6 +34,6 @@ module.exports = {
       friendCodeFormat: true
     },
     isMod: "boolean",
-    modNote: "string"
+    modNotes: "string"
   }
 };

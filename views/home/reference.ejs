@@ -3,137 +3,60 @@
 
     <div class="content">
       <div class="row">
-        <h2>{{refUser.name}}'s Reference <span class="small text-right"><a href="#profileInformationModal" data-toggle="modal">Information</a></span></h2>
-        <p class="col-md-6">{{refUser.intro}}<p>
-      </div>
-
-      <div class="row">
         <div class="col-md-6">
-          <h2>Trades ({{numberOfTrades()}})</h2>
+          <h2>{{refUser.name}}'s Reference</h2>
         </div>
       </div>
-      <div class="row">
-      <table class="table" id="referencesTable">
 
-        <tr data-toggle="collapse" href="#collapseEvents">
-          <td colspan="3">Events ({{refUser.references.events.length}})</td>
-        </tr>
-        <tbody id="collapseEvents" class="collapse">
-        <tr ng-repeat="reference in refUser.references.events">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-        </tr>
-        </tbody>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#references" role="tab" data-toggle="tab">References</a></li>
+        <li><a href="#comments" role="tab" data-toggle="tab">Comments</a></li>
+        <li><a href="#info" role="tab" data-toggle="tab">Information</a></li>
+        <li ng-if="user.isMod"><a href="#modEdit" role="tab" data-toggle="tab">Edit User</a></li>
+      </ul>
 
-        <tr data-toggle="collapse" href="#collapseShinies">
-          <td colspan="3">Shinies ({{refUser.references.shinies.length}})</td>
-        </tr>
-        <tbody id="collapseShinies" class="collapse">
-        <tr ng-repeat="reference in refUser.references.shinies">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-        </tr>
-        </tbody>
-
-        <tr data-toggle="collapse" href="#collapseCasuals">
-          <td colspan="3">Casual ({{refUser.references.casuals.length}})</td>
-        </tr>
-        <tbody id="collapseCasuals" class="collapse">
-        <tr ng-repeat="reference in refUser.references.casuals">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-        </tr>
-        </tbody>
-
-        <tr data-toggle="collapse" href="#collapseBanks">
-          <td colspan="3"><h2>Bank trades ({{refUser.references.banks.length}})</h2></td>
-        </tr>
-        <tbody id="collapseBanks" class="collapse">
-        <tr ng-repeat="reference in refUser.references.banks">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-        </tr>
-        </tbody>
-
-        <tr data-toggle="collapse" href="#collapseEggs">
-          <td colspan="4"><h2>Egg hatches ({{refUser.references.eggs.length}})</h2></td>
-        </tr>
-	<tbody id="collapseEggs" class="collapse">
-        <tr ng-repeat="reference in refUser.references.eggs">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'eggs')">Delete</a></td>
-        </tr>
-	</tbody>
-
-        <tr data-toggle="collapse" href="#collapseGiveaways">
-          <td colspan="4"><h2>Giveaways ({{refUser.references.giveaways.length}})</h2></td>
-        </tr>
-	<tbody id="collapseGiveaways" class="collapse">
-        <tr ng-repeat="reference in refUser.references.giveaways">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'giveaways')">Delete</a></td>
-        </tr>
-	</tbody>
-
-      </table>
-      </div>
-      
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Comments</h2>
+      <div class="tab-content">
+        <div class="tab-pane active" id="references">
+          <%- partial('references.ejs', {theUser: "refUser"}) %>
         </div>
-      </div>  
+        <div class="tab-pane" id="comments">
+          <div class="row">
+            <div class="col-md-6">
+              <h2>Comments</h2>
+            </div>
+          </div>
 
-      <div class="row" id="comments">
-       <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
-         <div class="panel-heading">
-           <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
-           <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
-         </div>
-         <div class="panel-body">{{comment.message}}</div>
-       </div>
+          <div class="row" id="comments">
+            <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
+              <div class="panel-heading">
+                <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
+                <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
+              </div>
+              <div class="panel-body">{{comment.message}}</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <form class="form-horizontal col-md-6" role="form" ng-submit="addComment()">
+              <h2>Leave a comment on this user's reference</h2>
+
+              <div class="form-group col-md-10">
+                <textarea class="form-control" id="newComment" ng-model="newComment"></textarea>
+              </div>
+              <div class="col-md-offset-1 col-md-1">
+                <button type="submit" class="btn btn-primary">Comment</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="tab-pane" id="info">
+          <%- partial('profileInfo.ejs') %>
+        </div>
+        <div class="tab-pane" id="modEdit" ng-if="user.isMod">
+          <%- partial('modEdit.ejs') %>
+        </div>
       </div>
-
-      <div class="row">
-        <form class="form-horizontal col-md-6" role="form" ng-submit="addComment()">
-          <h2>Leave a comment on this user's reference</h2>
-          <div class="form-group col-md-10">
-            <textarea class="form-control" id="newComment" ng-model="newComment"></textarea>
-          </div>
-          <div class="col-md-offset-1 col-md-1">
-            <button type="submit" class="btn btn-primary">Comment</button>
-          </div>
-        </form>
-      </div> 
-
-    <%- partial ('profileInfo.ejs') %>
 
     </div>
   </div>

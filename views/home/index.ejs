@@ -5,172 +5,82 @@
 
       <div class="col-md-7">
         <h2 class="text-center">This is your reference</h2>
+
         <h3 class="text-center">There are many like it, but this one is yours.</h3>
-        <br />
+        <br/>
+
         <p class="text-center">You can add references to the right, and then they will appear below.</p>
       </div>
 
       <form class="form-horizontal col-md-5" role="form">
-      <div id="addNewReference">
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
-          <div class="col-md-8">
-            <input type="url" class="form-control" ng-model="refUrl"></input>
-          </div>
-        </div>
+        <div id="addNewReference">
+          <div class="form-group">
+            <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
 
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
-          <div class="col-md-8">
-            <select id="type" class="form-control" ng-model="type">
-              <option value="event">Event</option>
-              <option value="redemption">Redemption</option>
-              <option value="shiny">Shiny</option>
-              <option value="casual">Casual</option>
-              <option value="bank">Bank</option>
-              <option value="egg">Egg</option>
-              <option value="giveaway">Giveaway</option>
-            </select>
+            <div class="col-md-8">
+              <input type="url" class="form-control" ng-model="refUrl"></input>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group" ng-hide="type === 'giveaway'">
-          <label for="referenceUrl" class="col-sm-4 control-label">User</label>
-          <div class="col-md-8">
-            <input type="text" class="form-control" ng-model="user2"></input>
-          </div>
-        </div>
+          <div class="form-group">
+            <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
 
-        <div class="form-group" ng-show="type === 'egg' || type === 'giveaway'">
-          <label for="descrip" class="col-sm-4 control-label">Description</label>
-          <div class="col-md-8">
-            <input type="text" class="form-control" ng-model="descrip"></input>
+            <div class="col-md-8">
+              <select id="type" class="form-control" ng-model="type">
+                <option value="event">Event</option>
+                <option value="redemption">Redemption</option>
+                <option value="shiny">Shiny</option>
+                <option value="casual">Casual</option>
+                <option value="bank">Bank</option>
+                <option value="egg">Egg</option>
+                <option value="giveaway">Giveaway</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group" ng-hide="type === 'egg' || type === 'giveaway'">
-          <label for="gave" class="col-sm-4 control-label">Gave:</label>
-          <div class="col-md-3">
-            <input type="text" class="form-control" ng-model="gave"></input>
-          </div>
-          <label class="col-sm-2 control-label">Got:</label>
-          <div class="col-md-3">
-            <input type="text" class="form-control" ng-model="got"></input>
-          </div>
-        </div>
+          <div class="form-group" ng-hide="type === 'giveaway'">
+            <label for="referenceUrl" class="col-sm-4 control-label">User</label>
 
-        <div class="form-group">
-          <div class="col-sm-offset-4 col-sm-2">
-            <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add" ng-click="addReference()"></input>
+            <div class="col-md-8">
+              <input type="text" class="form-control" ng-model="user2"></input>
+            </div>
           </div>
-          <div class="col-sm-6">
-            <div class="alert alert-danger" role="alert" ng-hide="!addRefError">{{addRefError}}</div>
-          </div>
-        </div>
 
-      </div>
+          <div class="form-group" ng-show="type === 'egg' || type === 'giveaway'">
+            <label for="descrip" class="col-sm-4 control-label">Description</label>
+
+            <div class="col-md-8">
+              <input type="text" class="form-control" ng-model="descrip"></input>
+            </div>
+          </div>
+
+          <div class="form-group" ng-hide="type === 'egg' || type === 'giveaway'">
+            <label for="gave" class="col-sm-4 control-label">Gave:</label>
+
+            <div class="col-md-3">
+              <input type="text" class="form-control" ng-model="gave"></input>
+            </div>
+            <label class="col-sm-2 control-label">Got:</label>
+
+            <div class="col-md-3">
+              <input type="text" class="form-control" ng-model="got"></input>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-2">
+              <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add"
+                     ng-click="addReference()"></input>
+            </div>
+            <div class="col-sm-6">
+              <div class="alert alert-danger" role="alert" ng-hide="!addRefError">{{addRefError}}</div>
+            </div>
+          </div>
+
+        </div>
       </form>
 
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Trades ({{numberOfTrades()}})</h2>
-        </div>
-      </div>
-      <div class="row">
-      <table class="table" id="referencesTable">
-
-        <tr data-toggle="collapse" href="#collapseEvents">
-          <td colspan="4">Events ({{user.references.events.length}})</td>
-        </tr>
-	<tbody id="collapseEvents" class="collapse">
-        <tr ng-repeat="reference in user.references.events">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'events')">Delete</a></td>
-        </tr>
-	</tbody>
-
-        <tr data-toggle="collapse" href="#collapseShinies">
-          <td colspan="4">Shinies ({{user.references.shinies.length}})</td>
-        </tr>
-	<tbody id="collapseShinies" class="collapse">
-        <tr ng-repeat="reference in user.references.shinies">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'shinies')">Delete</a></td>
-        </tr>
-	</tbody>
-
-        <tr data-toggle="collapse" href="#collapseCasuals">
-          <td colspan="4">Casual ({{user.references.casuals.length}})</td>
-        </tr>
-	<tbody id="collapseCasuals" class="collapse">
-        <tr ng-repeat="reference in user.references.casuals">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'casuals')">Delete</a></td>
-        </tr>
-	</tbody>
-
-        <tr data-toggle="collapse" href="#collapseBanks">
-          <td colspan="4"><h2>Bank trades ({{user.references.banks.length}})</h2></td>
-        </tr>
-	<tbody id="collapseBanks" class="collapse">
-        <tr ng-repeat="reference in user.references.banks">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'banks')">Delete</a></td>
-        </tr>
-	</tbody>
-
-        <tr data-toggle="collapse" href="#collapseEggs">
-          <td colspan="4"><h2>Egg hatches ({{user.references.eggs.length}})</h2></td>
-        </tr>
-	<tbody id="collapseEggs" class="collapse">
-        <tr ng-repeat="reference in user.references.eggs">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
-          <td>
-              <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
-                {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'eggs')">Delete</a></td>
-        </tr>
-	</tbody>
-
-        <tr data-toggle="collapse" href="#collapseGiveaways">
-          <td colspan="4"><h2>Giveaways ({{user.references.giveaways.length}})</h2></td>
-        </tr>
-	<tbody id="collapseGiveaways" class="collapse">
-        <tr ng-repeat="reference in user.references.giveaways">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
-          <td><a href="#" ng-click="deleteRef(reference.id, $index, 'giveaways')">Delete</a></td>
-        </tr>
-	</tbody>
-
-      </table>
+      <%- partial('references.ejs', {theUser: "user"}) %>
 
 
     </div>

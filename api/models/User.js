@@ -33,7 +33,6 @@ module.exports = {
       type: "array",
       friendCodeFormat: true
     },
-    isMod: "boolean",
-    modNotes: "string"
+    isMod: "boolean"
   }
 };

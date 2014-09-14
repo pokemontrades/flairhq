@@ -42,13 +42,23 @@ module.exports.routes = {
   },
 
   '/user/mine' : {
-    controller: 'user',
-    action: 'mine'
+    controller : 'user',
+    action     : 'mine'
   },
 
   '/user/get/:name' : {
-    controller: 'user',
-    action: 'get'
+    controller : 'user',
+    action     : 'get'
+  },
+
+  '/user/addNote' : {
+    controller : 'user',
+    action     : 'addNote'
+  },
+
+  '/user/delNote' : {
+    controller : 'user',
+    action     : 'delNote'
   },
 
   '/login' : {

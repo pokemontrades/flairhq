@@ -1,7 +1,7 @@
 <form class="form-horizontal" role="form">
 
   <div class="row">
-    <h3>You are a mod. Feel free to muck around with this user's information.</h3>
+    <h3>Moderation of user stuff</h3>
   </div>
   <div class="row">
 
@@ -11,7 +11,29 @@
         <label class="col-sm-3 control-label">Mod notes:</label>
 
         <div class="col-md-8">
-          <textarea type="text" class="form-control" ng-model="refUser.modNotes" rows="8"></textarea>
+          <div class="row" id="comments">
+            <div class="comment panel panel-default" ng-repeat="note in refUser.modNotes">
+              <div class="panel-heading">
+                <a ng-href="/u/{{note.user}}">{{note.user}}</a>
+                <span class="pull-right">
+                  {{note.createdAt | date: "medium"}}
+                  <a href="#" ng-click="delNote(note.id)">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </a>
+                </span>
+              </div>
+              <div class="panel-body">
+                {{note.note}}
+              </div>
+            </div>
+          </div>
+          <textarea class="form-control" ng-model="newStuff.newNote"
+                    placeholder="Add Note"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3 col-md-offset-3">
+          <button type="button" class="btn btn-primary" ng-click="addNote()">Add note</button>
         </div>
       </div>
     </div>
@@ -22,7 +44,7 @@
         <label class="col-sm-3 control-label">Introduction:</label>
 
         <div class="col-md-8">
-          <textarea type="text" class="form-control" ng-model="refUser.intro"></textarea>
+          <textarea class="form-control" ng-model="refUser.intro"></textarea>
         </div>
       </div>
 
@@ -33,14 +55,6 @@
           <input type="text" class="form-control"
                  ng-repeat="fc in refUser.friendCodes track by $index"
                  ng-model="refUser.friendCodes[$index]"></input>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <div class="col-md-8 col-md-offset-3">
-          <button class="btn btn-default btn-xs" ng-click="addFc">
-            <span class="glyphicon glyphicon-plus-sign"></span>
-          </button>
         </div>
       </div>
 
@@ -56,16 +70,7 @@
           <input type="text" class="form-control" ng-model="game.tsv"></input>
         </div>
       </div>
-      <!-- disabled currently until after 0.1
-                <div class="form-group">
-                  <div class="col-md-8 col-md-offset-3">
-                    <button class="btn btn-default btn-xs">
-                      <span class="glyphicon glyphicon-plus-sign"></span>
-                    </button>
-                  </div>
-                </div>
-      -->
-      <div class="form-group" ng-repeat="game in refUser.games">
+      <div class="form-group">
         <div class="col-md-3 col-md-offset-3">
           <button type="button" class="btn btn-primary" ng-click="modSaveProfile()">Save changes</button>
         </div>

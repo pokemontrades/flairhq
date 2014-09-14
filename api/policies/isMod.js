@@ -1,6 +1,9 @@
 var http = require("http");
 
 module.exports = function(req, res, next){
+  if (!req.user) {
+    return next();
+  }
   http.get("http://www.reddit.com/r/pokemontrades/about/moderators.json?user=" + req.user.name, function (res) {
     res.setEncoding("utf8");
     res.on("data", function (body) {

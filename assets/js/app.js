@@ -3,6 +3,7 @@ var fapp = angular.module("fapp", []);
 fapp.controller("referenceCtrl", function ($scope) {
   $scope.newComment = "";
   $scope.modSaveError = "";
+  $scope.newStuff = {};
   $scope.refUser = {
     name: window.location.pathname.substring(3)
   };
@@ -17,6 +18,12 @@ fapp.controller("referenceCtrl", function ($scope) {
   io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
     if (res.statusCode === 200) {
       $scope.refUser = data;
+      if(!$scope.refUser.friendCodes || $scope.refUser.friendCodes.length === 0) {
+        $scope.refUser.friendCodes = [""];
+      }
+      if($scope.refUser.games.length === 0) {
+        $scope.refUser.games = [{tsv: "", ign: ""}];
+      }
       $scope.$apply();
     }
   });
@@ -47,7 +54,6 @@ fapp.controller("referenceCtrl", function ($scope) {
     var intro = $scope.refUser.intro,
       fcs = $scope.refUser.friendCodes,
       games = $scope.refUser.games,
-      modNotes = $scope.refUser.modNotes,
       url = "/user/edit";
 
     var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
@@ -62,8 +68,7 @@ fapp.controller("referenceCtrl", function ($scope) {
       "userid": $scope.refUser.id,
       "intro": intro,
       "fcs": fcs,
-      "games": games,
-      "modNotes": modNotes
+      "games": games
     }, function (data, res) {
       console.log(res);
       if (res.statusCode === 200) {
@@ -76,6 +81,47 @@ fapp.controller("referenceCtrl", function ($scope) {
     });
 
   };
+
+  $scope.addNote = function () {
+    var newNote = $scope.newStuff.newNote,
+      url = "/user/addNote";
+
+    if (newNote) {
+      io.socket.post(url, {
+        "userid": $scope.refUser.id,
+        "note": newNote
+      }, function (data, res) {
+        console.log(res);
+        if (res.statusCode === 200) {
+          console.log(data);
+        } else if (res.statusCode === 400) {
+          $scope.modSaveError = "Your friend code was not correct.";
+        } else if (res.statusCode === 500) {
+          $scope.modSaveError = "There was some issue saving.";
+        }
+      });
+    }
+  };
+
+  $scope.delNote = function (id) {
+    var url = "/user/delNote";
+
+    io.socket.post(url, {
+      "userid": $scope.refUser.id,
+      "id": id
+    }, function (data, res) {
+      console.log(res);
+      if (res.statusCode === 200) {
+        console.log(data);
+      } else if (res.statusCode === 400) {
+        $scope.modSaveError = "Your friend code was not correct.";
+      } else if (res.statusCode === 500) {
+        $scope.modSaveError = "There was some issue saving.";
+      }
+    });
+  };
+
+
 });
 
 fapp.controller("indexCtrl", function ($scope) {
@@ -217,6 +263,14 @@ fapp.controller("userCtrl", function ($scope) {
       $scope.$apply();
     }
   });
+
+  $scope.addFc = function () {
+    $scope.user.friendCodes.push("");
+  };
+
+  $scope.addGame = function () {
+    $scope.user.games.push({tsv: "", ign: ""});
+  };
 
   $scope.saveProfile = function () {
     var intro = $scope.user.intro,

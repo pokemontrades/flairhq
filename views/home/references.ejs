@@ -39,6 +39,12 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
+      <% if (refPage) {%>
+      <td ng-if="user.isMod">
+        Approved: <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                         ng-model="reference.approved" />
+      </td>
+      <% }%>
     </tr>
     </tbody>
 
@@ -54,6 +60,12 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
+      <% if (refPage) {%>
+      <td ng-if="user.isMod">
+        Approved: <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                         ng-model="reference.approved" />
+      </td>
+      <% }%>
     </tr>
     </tbody>
 
@@ -84,7 +96,12 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
-      <td><a href="#" ng-click="deleteRef(reference.id, $index, 'eggs')">Delete</a></td>
+      <% if (refPage) {%>
+      <td ng-if="user.isMod">
+        Approved: <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                         ng-model="reference.approved" />
+      </td>
+      <% }%>
     </tr>
     </tbody>
 
@@ -95,7 +112,12 @@
     <tr ng-repeat="reference in <%= theUser %>.references.giveaways">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
-      <td><a href="#" ng-click="deleteRef(reference.id, $index, 'giveaways')">Delete</a></td>
+      <% if (refPage) {%>
+      <td ng-if="user.isMod">
+        Approved: <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                         ng-model="reference.approved" />
+      </td>
+      <% }%>
     </tr>
     </tbody>
 

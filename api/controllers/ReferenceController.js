@@ -154,6 +154,59 @@ module.exports = {
       });
     });
         
+  },
+
+  approve: function (req, res) {
+    if (!req.user.isMod) {
+      res.json("Not a mod", 403);
+      return;
+    }
+
+    var refUserId = req.allParams().userId,
+        id = req.allParams().id,
+        approve = req.allParams().approve;
+
+    User.findOne(refUserId, function (err, refUser) {
+      if (!user) {
+        res.json("User not found", 404);
+        return;
+      }
+      Reference.findOne(id, function (err, ref) {
+        if (!ref) {
+          Egg.findOne(id, function (err, ref) {
+            if (!ref) {
+              Giveaway.findOne(id, function (err, ref) {
+                if (!ref) {
+                  res.json("Reference not found", 404);
+                  return;
+                }
+                ref.approved = approve;
+                ref.save(function(err) {
+                  if (!err) {
+                    res.json(ref, 200);
+                    return;
+                  }
+                });
+              });
+            }
+            ref.approved = approve;
+            ref.save(function(err) {
+              if (!err) {
+                res.json(ref, 200);
+                return;
+              }
+            });
+          });
+        }
+        ref.approved = approve;
+        ref.save(function(err) {
+          if (!err) {
+            res.json(ref, 200);
+            return;
+          }
+        });
+      })
+    });
   }
 };
 

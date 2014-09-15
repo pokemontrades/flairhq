@@ -121,6 +121,20 @@ fapp.controller("referenceCtrl", function ($scope) {
     });
   };
 
+  $scope.approve = function (id, approve) {
+    var url = "/reference/approve"
+
+    io.socket.post(url, {
+      userid: $scope.refUser.id,
+      id: id,
+      approve: approve
+    }, function (data, res) {
+      if (res.statusCode !== 200) {
+        console.log(res.statusCode + ": " + data);
+      }
+    });
+  };
+
 
 });
 

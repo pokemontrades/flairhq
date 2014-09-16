@@ -587,6 +587,9 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // Whether to use JSONP to get a cookie for cross-origin requests
       useCORSRouteToGetCookie: true,
 
+        url: "fapp.yamanickill.com:8080",
+        fallbackUrl: "fapp.yamanickill.com:80",
+
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
       // 
@@ -612,7 +615,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       opts = opts || {};
 
       // If explicit connection url is specified, use it
-      url = url || io.sails.url || undefined;
+      url = url || (io.sails.useFallback ? io.sails.fallbackUrl : io.sails.url) || undefined;
 
       // Ensure URL has no trailing slash
       url = url ? url.replace(/(\/)$/, '') : undefined;
@@ -788,6 +791,11 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
             });
           }
         });
+          io.socket.on('connect_failed', function() {
+              io.transports = ['xhr-polling'];
+              io.sails.useFallback = true;
+              goAheadAndActuallyConnect();
+          });
 
       }
 

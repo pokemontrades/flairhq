@@ -7,10 +7,10 @@
 <div class="row">
   <table class="table" id="referencesTable">
 
-    <tr data-toggle="collapse" href="#collapseEvents">
+    <tr data-toggle="collapse" href="#collapseevents">
       <td colspan="4">Events ({{<%= theUser %>.references.events.length}})</td>
     </tr>
-    <tbody id="collapseEvents" class="collapse">
+    <tbody id="collapseevents" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.events">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
@@ -22,16 +22,16 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span class="glyphicon glyphicon-ok"
-              ng-if="!user.isMod || (user.isMod && !refUser)"></span>
+        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
+              class="glyphicon glyphicon-ok"></span>
       </td>
     </tr>
     </tbody>
 
-    <tr data-toggle="collapse" href="#collapseShinies">
+    <tr data-toggle="collapse" href="#collapseshinies">
       <td colspan="4">Shinies ({{<%= theUser %>.references.shinies.length}})</td>
     </tr>
-    <tbody id="collapseShinies" class="collapse">
+    <tbody id="collapseshinies" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.shinies">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
@@ -43,16 +43,16 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span class="glyphicon glyphicon-ok"
-              ng-if="!user.isMod || (user.isMod && !refUser)"></span>
+        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
+              class="glyphicon glyphicon-ok"></span>
       </td>
     </tr>
     </tbody>
 
-    <tr data-toggle="collapse" href="#collapseCasuals">
+    <tr data-toggle="collapse" href="#collapsecasuals">
       <td colspan="4">Casual ({{<%= theUser %>.references.casuals.length}})</td>
     </tr>
-    <tbody id="collapseCasuals" class="collapse">
+    <tbody id="collapsecasuals" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.casuals">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
@@ -64,16 +64,16 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span class="glyphicon glyphicon-ok"
-              ng-if="!user.isMod || (user.isMod && !refUser)"></span>
+        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
+              class="glyphicon glyphicon-ok"></span>
       </td>
     </tr>
     </tbody>
 
-    <tr data-toggle="collapse" href="#collapseBanks">
+    <tr data-toggle="collapse" href="#collapsebanks">
       <td colspan="4"><h2>Bank trades ({{<%= theUser %>.references.banks.length}})</h2></td>
     </tr>
-    <tbody id="collapseBanks" class="collapse">
+    <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.banks">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
@@ -85,10 +85,10 @@
     </tr>
     </tbody>
 
-    <tr data-toggle="collapse" href="#collapseEggs">
+    <tr data-toggle="collapse" href="#collapseeggs">
       <td colspan="4"><h2>Egg hatches ({{<%= theUser %>.references.eggs.length}})</h2></td>
     </tr>
-    <tbody id="collapseEggs" class="collapse">
+    <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.eggs">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
@@ -100,24 +100,24 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span class="glyphicon glyphicon-ok"
-              ng-if="!user.isMod || (user.isMod && !refUser)"></span>
+        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
+              class="glyphicon glyphicon-ok"></span>
       </td>
     </tr>
     </tbody>
 
-    <tr data-toggle="collapse" href="#collapseGiveaways">
+    <tr data-toggle="collapse" href="#collapsegiveaways">
       <td colspan="4"><h2>Giveaways ({{<%= theUser %>.references.giveaways.length}})</h2></td>
     </tr>
-    <tbody id="collapseGiveaways" class="collapse">
+    <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.giveaways">
       <td><strong>{{$index + 1}}.</strong></td>
       <td colspan="2"><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span class="glyphicon glyphicon-ok"
-              ng-if="!user.isMod || (user.isMod && !refUser)"></span>
+        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
+              class="glyphicon glyphicon-ok"></span>
       </td>
     </tr>
     </tbody>

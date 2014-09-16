@@ -222,15 +222,41 @@ fapp.controller("indexCtrl", function ($scope) {
     io.socket.post(url, post, function (data, res) {
       console.log(res);
       if (res.statusCode === 200) {
+        $scope.refUrl = "";
+        $scope.descrip = "";6
+        $scope.got = "";
+        $scope.gave = "";
+        $scope.user2 = "";
+
         if (data.type === "redemption") {
           $scope.user.references.events.push(data);
+          $('#collapseevents').prev().children().animate({
+            backgroundColor: "yellow"
+          }, 200, function () {
+            $('#collapseevents').prev().children().animate({
+              backgroundColor: "white"
+            }, 200);
+          });
           $scope.$apply();
-        }
-        if (data.type === "shiny") {
+        } else if (data.type === "shiny") {
           $scope.user.references.shinies.push(data);
+          $('#collapseshinies').prev().children().animate({
+            backgroundColor: "yellow"
+          }, 200, function () {
+            $('#collapseshinies').prev().children().animate({
+              backgroundColor: "white"
+            }, 200);
+          });
           $scope.$apply();
         } else {
           $scope.user.references[$scope.type + "s"].push(data);
+          $('#collapse' + $scope.type + "s").prev().children().animate({
+            backgroundColor: "yellow"
+          }, 200, function () {
+            $('#collapse' + $scope.type + "s").prev().children().animate({
+              backgroundColor: "white"
+            }, 200);
+          });
           $scope.$apply();
         }
       } else {

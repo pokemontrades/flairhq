@@ -1,13 +1,14 @@
 /**
-* Reference.js
+* Egg.js
 *
 * @description :: TODO: You might write a short summary of how this model works and what it represents here.
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-var base = require('./Reference.js');
+var base = require('./Reference.js'),
+    _ = require('lodash');
 
-module.exports = _.merge(base, {
+module.exports = _.merge(_.cloneDeep(base), {
 
   attributes: {
     description: "string",
@@ -15,7 +16,7 @@ module.exports = _.merge(base, {
       type: "string",
       enum: ["egg"],
       defaultsTo: "egg"
-    },
+    }
   }
 });
 

@@ -12,12 +12,10 @@ module.exports = {
   types: {
     friendCodeFormat: function (codes) {
       for (code in codes) {
-        if (codes[code].length !== 12) {
-          return false;
-        }
-        if (isNaN(parseFloat(codes[code])) || !isFinite(codes[code])) {
-          return false;
-        }
+        var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+          if (!patt.test(codes[code])) {
+            return false;
+          }
       }
       return true;
     }
@@ -34,6 +32,7 @@ module.exports = {
     friendCodes: {
       type: "array",
       friendCodeFormat: true
-    }
+    },
+    isMod: "boolean"
   }
 };

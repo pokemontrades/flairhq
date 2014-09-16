@@ -1,172 +1,88 @@
-<%- partial ('editProfile.ejs') %>
-
-
-<!-- Default home page -->
-<link type="text/css" href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
-
-  <nav class="navbar navbar-inverse">
-    <div class="container">
-      <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-        <a href="#" class="navbar-brand"><%= __('Welcome to Fapp.') %></a>
-      </div>
-
-      <div class="collapse navbar-collapse pull-right" id="main-navbar">
-        <ul class="nav navbar-nav">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= user.name %><span class="caret"></span></a>
-            <ul class="dropdown-menu dropdown-inverse" role="menu">
-              <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
-              <li><a href="/logout">Logout</a></li>          
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-
-<div class="container">
+<div class="container" ng-controller="indexCtrl">
   <div class="main container clearfix">
 
     <div class="content">
 
       <div class="col-md-7">
         <h2 class="text-center">This is your reference</h2>
+
         <h3 class="text-center">There are many like it, but this one is yours.</h3>
-        <br />
+        <br/>
+
         <p class="text-center">You can add references to the right, and then they will appear below.</p>
       </div>
 
       <form class="form-horizontal col-md-5" role="form">
-      <div id="addNewReference">
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
-          <div class="col-md-8">
-            <input type="url" id="referenceUrl" class="form-control"></input>
-          </div>
-        </div>
+        <div id="addNewReference">
+          <div class="form-group">
+            <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
 
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">User</label>
-          <div class="col-md-8">
-            <input type="text" id="user2" class="form-control"></input>
+            <div class="col-md-8">
+              <input type="url" class="form-control" ng-model="refUrl"></input>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="gave" class="col-sm-4 control-label">Gave:</label>
-          <div class="col-md-3">
-            <input type="text" id="gave" class="form-control"></input>
-          </div>
-          <label for="got" class="col-sm-2 control-label">Got:</label>
-          <div class="col-md-3">
-            <input type="text" id="got" class="form-control"></input>
-          </div>
-        </div>
+          <div class="form-group">
+            <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
 
-        <div class="form-group">
-          <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
-          <div class="col-md-8">
-            <select id="type" class="form-control">
-              <option value="event">Event</option>
-              <option value="shiny">Shiny</option>
-              <option value="casual">Casual</option>
-              <option value="hatch">Egg hatch</option>
-            </select>
+            <div class="col-md-8">
+              <select id="type" class="form-control" ng-model="type">
+                <option value="event">Event</option>
+                <option value="redemption">Redemption</option>
+                <option value="shiny">Shiny</option>
+                <option value="casual">Casual</option>
+                <option value="bank">Bank</option>
+                <option value="egg">Egg</option>
+                <option value="giveaway">Giveaway</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <div class="col-sm-offset-4 col-sm-2">
-            <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add"></input>
-          </div>
-          <div class="col-sm-6">
-            <div id="submitError" class="alert alert-danger" role="alert" hidden></div>
-          </div>
-        </div>
+          <div class="form-group" ng-hide="type === 'giveaway'">
+            <label for="referenceUrl" class="col-sm-4 control-label">User</label>
 
-      </div>
+            <div class="col-md-8">
+              <input type="text" class="form-control" ng-model="user2"></input>
+            </div>
+          </div>
+
+          <div class="form-group" ng-show="type === 'egg' || type === 'giveaway'">
+            <label for="descrip" class="col-sm-4 control-label">Description</label>
+
+            <div class="col-md-8">
+              <input type="text" class="form-control" ng-model="descrip"></input>
+            </div>
+          </div>
+
+          <div class="form-group" ng-hide="type === 'egg' || type === 'giveaway'">
+            <label for="gave" class="col-sm-4 control-label">Gave:</label>
+
+            <div class="col-md-3">
+              <input type="text" class="form-control" ng-model="gave"></input>
+            </div>
+            <label class="col-sm-2 control-label">Got:</label>
+
+            <div class="col-md-3">
+              <input type="text" class="form-control" ng-model="got"></input>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-2">
+              <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add"
+                     ng-click="addReference()"></input>
+            </div>
+            <div class="col-sm-6">
+              <div class="alert alert-danger" role="alert" ng-hide="!addRefError">{{addRefError}}</div>
+            </div>
+          </div>
+
+        </div>
       </form>
 
-      <div class="row">
-      <h2>References</h2>
-      <table class="table" id="referencesTable">
-        <% for(ref in references) { %>
-        <tr>
-          <td><a href="<%= references[ref].url %>"><%= references[ref].gave %> for <%= references[ref].got %></a></td>
-          <td><a href="http://www.reddit.com<%= references[ref].user2 %>"><%= references[ref].user2 %></a></td>
-          <td><%= references[ref].type %></td>
-        </tr>
-        <% } %>
-      </table>
-      </div>
+      <%- partial('references.ejs', {theUser: "user", refPage: false}) %>
+
+
     </div>
   </div>
 </div>
-
-
-<script>
-$("#addReferenceButton").click(function () {
-  var refUrl = $('#referenceUrl').val(),
-      user2 = $('#user2').val(),
-      gave = $('#gave').val(),
-      got = $('#got').val(),
-      type = $('#type').val();
-
-  var url = "/reference/add";
-  io.socket.post(url, {"userid": "<%= user.id %>", 
-                       "url": refUrl, 
-                       "user2": user2,
-                       "gave": gave,
-                       "got": got,
-                       "type": type}, function (data, res) {
-    console.log(res);
-    if (res.statusCode === 200) {
-      $("#referencesTable tr:last").after("<tr><td><a href='" + refUrl + "'>Here</a>"
-                                           + "</td><td><a href='" + user2 + "'>" + user2 + "</a>"
-                                           + "</td><td>" + gave + " for " + got
-                                           + "</td><td>" + type + "</td></tr>");
-    } else {
-      $("#submitError").html("Already added that URL.").show();
-    }
-  });
-});
-
-$("#saveProfile").click(function () {
-  var intro = $('#intro').val(),
-      fc = $('#fc1').val(),
-      ign = $('#ign1').val(),
-      tsv = $('#tsv1').val(),
-      url = "/user/edit";
-
-  io.socket.post(url, {"userid": "<%= user.id %>", 
-                       "intro": intro,
-                       "igns": [ign],
-                       "fcs": [fc], 
-                       "tsvs": [tsv]}, function (data, res) {
-    console.log(res);
-    if (res.statusCode === 200) {
-      $("#profileModal").modal("toggle");
-    } else if (res.statusCode === 400) {
-      $("#saveError").html("Your friend code was not correct.").show();
-    } else if (res.statusCode === 500) {
-      $("#saveError").html("There was some issue saving.").show();
-    }
-  });
-});
-
-
-var getUpdatedReferences = function() {
-  var url = "/reference/get/<%= user.id %>";
-  console.log(url);
-  io.socket.get(url, function (data, res) {
-    console.log(data);
-  });
-}
-</script>

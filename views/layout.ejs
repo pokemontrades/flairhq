@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="fapp">
   <head>
     <title>Flair-apps App</title>
 
@@ -34,7 +34,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   </head>
 
-  <body>
+  <body ng-controller="userCtrl">
+    <%- partial ('home/header.ejs') %>
     <%- body %>
 
 
@@ -90,9 +91,14 @@
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/dependencies/angular.min.js"></script>
+    <script src="/js/dependencies/angular-ui-router.js"></script>
+    <script src="/js/dependencies/collapse.js"></script>
     <script src="/js/dependencies/dropdown.js"></script>
     <script src="/js/dependencies/lodash.min.js"></script>
     <script src="/js/dependencies/modal.js"></script>
+    <script src="/js/dependencies/tab.js"></script>
+    <script src="/js/app.js"></script>
     <!--SCRIPTS END-->
   </body>
 </html>

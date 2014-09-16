@@ -1,0 +1,86 @@
+<form class="form-horizontal" role="form">
+
+  <div class="row">
+    <h3>Moderation of user stuff</h3>
+  </div>
+  <div class="row">
+
+    <!-- Mod notes!!! -->
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Mod notes:</label>
+
+        <div class="col-md-8">
+          <div class="row" id="comments">
+            <div class="comment panel panel-default" ng-repeat="note in refUser.modNotes">
+              <div class="panel-heading">
+                <a ng-href="/u/{{note.user}}">{{note.user}}</a>
+                <span class="pull-right">
+                  {{note.createdAt | date: "medium"}}
+                  <a href="#" ng-click="delNote(note.id)">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </a>
+                </span>
+              </div>
+              <div class="panel-body">
+                {{note.note}}
+              </div>
+            </div>
+          </div>
+          <textarea class="form-control" ng-model="newStuff.newNote"
+                    placeholder="Add Note"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3 col-md-offset-3">
+          <button type="button" class="btn btn-primary" ng-click="addNote()">Add note</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Introduction:</label>
+
+        <div class="col-md-8">
+          <textarea class="form-control" ng-model="refUser.intro"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="friendcode1" class="col-sm-3 control-label">Friend Code:</label>
+
+        <div class="col-md-8">
+          <input type="text" class="form-control"
+                 ng-repeat="fc in refUser.friendCodes track by $index"
+                 ng-model="refUser.friendCodes[$index]"></input>
+        </div>
+      </div>
+
+      <div class="form-group" ng-repeat="game in refUser.games">
+        <label class="col-sm-3 control-label">IGN:</label>
+
+        <div class="col-md-3">
+          <input type="text" class="form-control" ng-model="game.ign"></input>
+        </div>
+        <label class="col-sm-2 control-label">TSV:</label>
+
+        <div class="col-md-3">
+          <input type="text" class="form-control" ng-model="game.tsv"></input>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3 col-md-offset-3">
+          <button type="button" class="btn btn-primary" ng-click="modSaveProfile()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div ng-value="modSaveError" ng-show="modSaveError" class="alert alert-danger" role="alert" hidden></div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,65 @@
+<div class="container" ng-controller="referenceCtrl">
+  <div class="main container clearfix">
+
+    <div class="content">
+      <div class="row">
+        <div class="col-md-6">
+          <h2>{{refUser.name}}'s Reference</h2>
+        </div>
+      </div>
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#references" role="tab" data-toggle="tab">References</a></li>
+        <li><a href="#comments" role="tab" data-toggle="tab">Comments</a></li>
+        <li><a href="#info" role="tab" data-toggle="tab">Information</a></li>
+        <li ng-if="user.isMod"><a href="#modEdit" role="tab" data-toggle="tab">Moderation</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="references">
+          <%- partial('references.ejs', {theUser: "refUser", refPage: true}) %>
+        </div>
+        <div class="tab-pane" id="comments">
+          <div class="row">
+            <div class="col-md-6">
+              <h2>Comments</h2>
+            </div>
+          </div>
+
+          <div class="row" id="comments">
+            <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
+              <div class="panel-heading">
+                <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
+                <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
+              </div>
+              <div class="panel-body">{{comment.message}}</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <form class="form-horizontal col-md-6" role="form" ng-submit="addComment()">
+              <h2>Leave a comment on this user's reference</h2>
+
+              <div class="form-group col-md-10">
+                <textarea class="form-control" id="newComment" ng-model="newComment"></textarea>
+              </div>
+              <div class="col-md-offset-1 col-md-1">
+                <button type="submit" class="btn btn-primary">Comment</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="tab-pane" id="info">
+          <%- partial('profileInfo.ejs') %>
+        </div>
+        <div class="tab-pane" id="modEdit" ng-if="user.isMod">
+          <%- partial('modEdit.ejs') %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>

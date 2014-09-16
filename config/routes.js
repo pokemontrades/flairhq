@@ -36,6 +36,31 @@ module.exports.routes = {
     controller : 'home'
   },
 
+  '/u/:user' : {
+    controller: 'home',
+    action: 'reference'
+  },
+
+  '/user/mine' : {
+    controller : 'user',
+    action     : 'mine'
+  },
+
+  '/user/get/:name' : {
+    controller : 'user',
+    action     : 'get'
+  },
+
+  '/user/addNote' : {
+    controller : 'user',
+    action     : 'addNote'
+  },
+
+  '/user/delNote' : {
+    controller : 'user',
+    action     : 'delNote'
+  },
+
   '/login' : {
     controller : 'auth',
     action     : 'index'
@@ -47,30 +72,33 @@ module.exports.routes = {
   },
 
   '/reference/get/:userid' : {
-    controller: 'reference',
-    action : 'get'
+    controller : 'reference',
+    action     : 'get'
   },
 
   '/reference/add' : {
-    controller: 'reference',
-    action : 'add'
+    controller : 'reference',
+    action     : 'add'
+  },
+
+  '/reference/approve' : {
+    controller : 'reference',
+    action     : 'approve'
+  },
+
+  '/reference/delete' : {
+    controller : 'reference',
+    action     : 'delete'
+  },
+
+  '/reference/comment/add' : {
+    controller : 'reference',
+    action     : 'comment'
   },
 
   '/user/edit' : {
-    controller: 'user',
-    action : 'edit'
-  },
-
-  
-
-  /***************************************************************************
-  *                                                                          *
-  * Custom routes here...                                                    *
-  *                                                                          *
-  *  If a request to a URL doesn't match any of the custom routes above, it  *
-  * is matched against Sails route blueprints. See `config/blueprints.js`    *
-  * for configuration options and examples.                                  *
-  *                                                                          *
-  ***************************************************************************/
+    controller : 'user',
+    action     : 'edit'
+  }
 
 };

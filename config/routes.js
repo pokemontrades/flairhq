@@ -99,6 +99,21 @@ module.exports.routes = {
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'
+  },
+
+  '/user/ban' : {
+    controller : 'user',
+    action     : 'ban'
+  },
+
+  '/user/banned' : {
+    controller : 'user',
+    action     : 'bannedUsers'
+  },
+
+  '/mod/banlist' : {
+    controller : 'home',
+    action     : 'banlist'
   }
 
 };

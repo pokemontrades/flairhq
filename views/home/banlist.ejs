@@ -1,0 +1,21 @@
+<div class="container" ng-controller="adminCtrl">
+  <div class="main container clearfix">
+
+    <div class="content row">
+
+      <h2>Ban list</h2>
+
+      <ul class="list-group col-md-6">
+        <li ng-repeat="user in users" class="list-group-item row">
+          <div class="col-md-9">
+            <h4>{{user.name}}</h4>
+          </div>
+          <div class="col-md-3">
+            <button type="button" class="btn btn-danger"
+                    ng-click="banUser(user, false)">Unban User</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

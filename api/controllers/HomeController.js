@@ -114,5 +114,9 @@ module.exports = {
       });
     }
     });
+  },
+
+  banlist: function (req, res) {
+    res.view();
   }
 };

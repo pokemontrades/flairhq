@@ -77,6 +77,10 @@
                   ng-if="!refUser.banned">Ban User</button>
           <button type="button" class="btn btn-danger" ng-click="banUser(false)"
                   ng-if="refUser.banned">Unban User</button>
+          <span ng-if="ok.modSaveProfile"
+              class="glyphicon glyphicon-ok"></span>
+          <span us-spinner="{radius:5,length:9,width:2,left:'55%'}"
+                spinner-key="modSaveProfile"></span>
         </div>
       </div>
     </div>

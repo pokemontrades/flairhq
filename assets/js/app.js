@@ -1,9 +1,11 @@
-var fapp = angular.module("fapp", []);
+var fapp = angular.module("fapp", ['angularSpinner']);
 
-fapp.controller("referenceCtrl", function ($scope) {
+fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope, spinners) {
   $scope.newComment = "";
   $scope.modSaveError = "";
   $scope.newStuff = {};
+  $scope.ok = {};
+  $scope.saving = {};
   $scope.refUser = {
     name: window.location.pathname.substring(3)
   };
@@ -48,6 +50,8 @@ fapp.controller("referenceCtrl", function ($scope) {
 
 
   $scope.modSaveProfile = function () {
+    $scope.ok.modSaveProfile = false;
+    spinners.spin("modSaveProfile");
     if (!$scope.user.isMod) {
       return;
     }
@@ -70,14 +74,19 @@ fapp.controller("referenceCtrl", function ($scope) {
       "fcs": fcs,
       "games": games
     }, function (data, res) {
-      console.log(res);
+      spinners.stop("modSaveProfile");
       if (res.statusCode === 200) {
-
+        $scope.ok.modSaveProfile = true;
+        setTimeout(function () {
+          $scope.ok.modSaveProfile = false;
+          $scope.$apply();
+        }, 1500);
       } else if (res.statusCode === 400) {
         $scope.modSaveError = "Your friend code was not correct.";
       } else if (res.statusCode === 500) {
         $scope.modSaveError = "There was some issue saving.";
       }
+      $scope.$apply();
     });
 
   };
@@ -93,6 +102,7 @@ fapp.controller("referenceCtrl", function ($scope) {
       }, function (data, res) {
         if (res.statusCode === 200) {
           $scope.refUser.modNotes.push(data);
+          $scope.newStuff.newNote = "";
         } else {
           $scope.modSaveError = "There was some issue adding a note.";
         }
@@ -108,14 +118,19 @@ fapp.controller("referenceCtrl", function ($scope) {
       "userid": $scope.refUser.id,
       "id": id
     }, function (data, res) {
-      console.log(res);
       if (res.statusCode === 200) {
-        console.log(data);
+        for (var note in $scope.refUser.modNotes) {
+          if (id === $scope.refUser.modNotes[note].id) {
+            $scope.refUser.modNotes.splice(note, 1);
+            break;
+          }
+        }
       } else if (res.statusCode === 400) {
         $scope.modSaveError = "Your friend code was not correct.";
       } else if (res.statusCode === 500) {
         $scope.modSaveError = "There was some issue saving.";
       }
+      $scope.$apply();
     });
   };
 
@@ -147,7 +162,7 @@ fapp.controller("referenceCtrl", function ($scope) {
   };
 
 
-});
+}]);
 
 fapp.controller("indexCtrl", function ($scope) {
   $scope.refUrl = "";

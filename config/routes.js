@@ -114,6 +114,11 @@ module.exports.routes = {
   '/mod/banlist' : {
     controller : 'home',
     action     : 'banlist'
+  },
+
+  '/info' : {
+    controller : 'home',
+    action     : 'info'
   }
 
 };

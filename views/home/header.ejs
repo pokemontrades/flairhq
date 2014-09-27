@@ -19,8 +19,7 @@
 
     <div class="collapse navbar-collapse pull-right" id="main-navbar">
       <ul class="nav navbar-nav" ng-show="user">
-        <li><a href="http://www.reddit.com/r/pokemontrades">/r/pokemontrades</a></li>
-        <li><a href="https://github.com/YaManicKill/reddit-flair-apps/issues/">File a bug</a></li>
+        <li><a href="/info">Information</a></li>
         <li class="dropdown" ng-if="user.isMod">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Moderation<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-inverse" role="menu">
@@ -38,8 +37,7 @@
       </ul>
 
       <ul class="nav navbar-nav" ng-hide="user">
-        <li><a href="http://www.reddit.com/r/pokemontrades">/r/pokemontrades</a></li>
-        <li><a href="https://github.com/YaManicKill/reddit-flair-apps/issues/">File a bug</a></li>
+        <li><a href="/info">Information</a></li>
         <li><a href="/auth/reddit/">Login/Register</a></li>
       </ul>
     </div>

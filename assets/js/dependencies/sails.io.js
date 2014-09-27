@@ -589,7 +589,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
       prodUrl: "fapp.yamanickill.com:8080",
       fallbackUrl: "fapp.yamanickill.com:80",
-      localUrl: "localhost:1337",
+      localUrl: "127.0.0.1:1337",
 
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
@@ -616,7 +616,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       opts = opts || {};
 
       // If explicit connection url is specified, use it
-      url = url || (window.location.hostname === 'localhost' ? io.sails.localUrl : (io.sails.useFallback ? io.sails.fallbackUrl : io.sails.prodUrl)) || undefined;
+      url = url || (window.location.hostname === 'localhost' ? io.sails.url : (io.sails.useFallback ? io.sails.fallbackUrl : io.sails.prodUrl)) || undefined;
 
       // Ensure URL has no trailing slash
       url = url ? url.replace(/(\/)$/, '') : undefined;

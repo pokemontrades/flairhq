@@ -8,7 +8,7 @@
   <table class="table" id="referencesTable">
 
     <tr data-toggle="collapse" href="#collapseevents">
-      <td colspan="4">Events ({{<%= theUser %>.references.events.length}})</td>
+      <td colspan="5">Events ({{<%= theUser %>.references.events.length}})</td>
     </tr>
     <tbody id="collapseevents" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.events">
@@ -25,11 +25,17 @@
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
+      <td>
+        <a href="#" ng-click="deleteRef(reference.id, $index, 'events')" class="pull-right"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseshinies">
-      <td colspan="4">Shinies ({{<%= theUser %>.references.shinies.length}})</td>
+      <td colspan="5">Shinies ({{<%= theUser %>.references.shinies.length}})</td>
     </tr>
     <tbody id="collapseshinies" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.shinies">
@@ -46,11 +52,17 @@
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
+      <td>
+        <a href="#" ng-click="deleteRef(reference.id, $index, 'shinies')" class="pull-right"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsecasuals">
-      <td colspan="4">Casual ({{<%= theUser %>.references.casuals.length}})</td>
+      <td colspan="5">Casual ({{<%= theUser %>.references.casuals.length}})</td>
     </tr>
     <tbody id="collapsecasuals" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.casuals">
@@ -67,11 +79,17 @@
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
+      <td>
+        <a href="#" ng-click="deleteRef(reference.id, $index, 'casuals')" class="pull-right"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsebanks">
-      <td colspan="4"><h2>Bank trades ({{<%= theUser %>.references.banks.length}})</h2></td>
+      <td colspan="5"><h2>Bank trades ({{<%= theUser %>.references.banks.length}})</h2></td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.banks">
@@ -82,11 +100,17 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
+      <td>
+        <a href="#" ng-click="deleteRef(reference.id, $index, 'banks')" class="pull-right"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseeggs">
-      <td colspan="4"><h2>Egg hatches ({{<%= theUser %>.references.eggs.length}})</h2></td>
+      <td colspan="5"><h2>Egg hatches ({{<%= theUser %>.references.eggs.length}})</h2></td>
     </tr>
     <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.eggs">
@@ -103,11 +127,17 @@
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
+      <td>
+        <a href="#" ng-click="deleteRef(reference.id, $index, 'eggs')" class="pull-right"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
-      <td colspan="4"><h2>Giveaways ({{<%= theUser %>.references.giveaways.length}})</h2></td>
+      <td colspan="5"><h2>Giveaways ({{<%= theUser %>.references.giveaways.length}})</h2></td>
     </tr>
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.giveaways">
@@ -118,6 +148,12 @@
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
+      </td>
+      <td>
+        <a href="#" ng-click="deleteRef(reference.id, $index, 'giveaways')" class="pull-right"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
       </td>
     </tr>
     </tbody>

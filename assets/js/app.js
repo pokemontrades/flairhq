@@ -173,6 +173,17 @@ fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope
     });
   };
 
+  $scope.deleteRef = function (id, index, type) {
+    var url = "/reference/delete";
+    io.socket.post(url, {refId: id, type: type}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.refUser.references[type].splice(index, 1);
+        $scope.$apply();
+      } else {
+        console.log(res.statusCode + ": " + data);
+      }
+    });
+  };
 
 }]);
 
@@ -315,7 +326,7 @@ fapp.controller("indexCtrl", function ($scope) {
         console.log(res.statusCode + ": " + data);
       }
     });
-  };
+  };;
 
 });
 

@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/yamanickill/reddit-flair-apps.png?label=ready&title=Ready)](https://waffle.io/yamanickill/reddit-flair-apps)
 # Flair Apps App (FAPP)
 
 ## Setup

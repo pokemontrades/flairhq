@@ -135,6 +135,19 @@ fapp.controller("referenceCtrl", function ($scope) {
     });
   };
 
+  $scope.banUser = function (ban) {
+    var url = "/user/ban";
+
+    io.socket.post(url, {userId: $scope.refUser.id, ban: ban}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.refUser.banned = data.banned;
+        $scope.$apply();
+      } else {
+        console.log("Error");
+      }
+    });
+  };
+
 
 });
 
@@ -344,4 +357,32 @@ fapp.controller("userCtrl", function ($scope) {
 
   };
 
+});
+
+fapp.controller("adminCtrl", function ($scope) {
+  $scope.users = [];
+
+  $scope.getBannedUsers = function () {
+    io.socket.get("/user/banned", function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.users = data;
+        $scope.$apply();
+      }
+    });
+  };
+
+  $scope.banUser = function (user, ban) {
+    var url = "/user/ban";
+
+    io.socket.post(url, {userId: user.id, ban: ban}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.getBannedUsers();
+        $scope.$apply();
+      } else {
+        console.log("Error");
+      }
+    });
+  };
+
+  $scope.getBannedUsers();
 });

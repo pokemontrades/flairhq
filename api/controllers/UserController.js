@@ -74,6 +74,10 @@ module.exports = {
   mine: function (req, res) {
     user = req.user;
 
+    if(!user) {
+      return res.json(404);
+    }
+
     Game.find()
       .where({user: user.id})
       .exec(function (err, games) {
@@ -201,6 +205,36 @@ module.exports = {
             res.json(note, 200);
           }
         });
+    });
+  },
+
+  ban: function (req, res) {
+    if (!req.user.isMod) {
+      res.json("Not a mod", 403);
+      return;
+    }
+
+    User.findOne(req.allParams().userId).exec(function (err, user) {
+      if (!user) {
+        res.json("Can't find user", 404);
+        return;
+      }
+
+      user.banned = req.allParams().ban;
+      user.save(function (err) {
+        res.json(user, 200);
+      });
+    });
+  },
+
+  bannedUsers: function (req, res) {
+    if (!req.user.isMod) {
+      res.json("Not a mod", 403);
+      return;
+    }
+
+    User.find({banned: true}).exec(function (err, users) {
+      res.json(users, 200);
     });
   }
 };

@@ -587,6 +587,13 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // Whether to use JSONP to get a cookie for cross-origin requests
       useCORSRouteToGetCookie: true,
 
+<<<<<<< HEAD
+=======
+      prodUrl: "fapp.yamanickill.com:8080",
+      fallbackUrl: "fapp.yamanickill.com:80",
+      localUrl: "localhost:1337",
+
+>>>>>>> 320c8b44e23d5ea9bacf13a3bc06a54dc9a51476
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
       // 
@@ -612,7 +619,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       opts = opts || {};
 
       // If explicit connection url is specified, use it
-      url = "http://fapp.yamanickill.com:8080" || io.sails.url || undefined;
+      url = url || (window.location.hostname === 'localhost' ? io.sails.localUrl : (io.sails.useFallback ? io.sails.fallbackUrl : io.sails.prodUrl)) || undefined;
 
       // Ensure URL has no trailing slash
       url = url ? url.replace(/(\/)$/, '') : undefined;

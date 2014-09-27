@@ -33,6 +33,7 @@ module.exports = {
       type: "array",
       friendCodeFormat: true
     },
-    isMod: "boolean"
+    isMod: "boolean",
+    banned: "boolean"
   }
 };

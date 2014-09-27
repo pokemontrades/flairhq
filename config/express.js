@@ -1,18 +1,17 @@
-var passport = require('passport')
-    , GitHubStrategy = require('passport-github').Strategy
-    , FacebookStrategy = require('passport-facebook').Strategy
-    , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
-    , TwitterStrategy = require('passport-twitter').Strategy
-    , RedditStrategy = require('passport-reddit').Strategy;
+var passport = require('passport'),
+  RedditStrategy = require('passport-reddit').Strategy;
 
 
 var verifyHandler = function(token, tokenSecret, profile, done) {
   process.nextTick(function() {
     User.findOne({uid: profile.id}, function(err, user) {
       if (user) {
+        if (user.banned) {
+          return done("Banned user", user);
+        }
         return done(null, user);
       } else {
-	console.log(profile);
+        console.log(profile);
         var data = {
           provider: profile.provider,
           uid: profile.id,
@@ -56,30 +55,6 @@ passport.deserializeUser(function(uid, done) {
 module.exports.http = {
 
   customMiddleware: function(app) {
-
-    passport.use(new GitHubStrategy({
-      clientID: "86bc39b10f7af30aa85d",
-      clientSecret: "c900e54c49ae6826165281b21fcbd864bd1853c2",
-      callbackURL: "http://localhost:1337/auth/github/callback"
-    }, verifyHandler));
-
-    passport.use(new FacebookStrategy({
-      clientID: "YOUR_CLIENT_ID",
-      clientSecret: "YOUR_CLIENT_SECRET",
-      callbackURL: "http://localhost:1337/auth/facebook/callback"
-    }, verifyHandler));
-
-    passport.use(new GoogleStrategy({
-      clientID: 'YOUR_CLIENT_ID',
-      clientSecret: 'YOUR_CLIENT_SECRET',
-      callbackURL: 'http://localhost:1337/auth/google/callback'
-    }, verifyHandler));
-
-    passport.use(new TwitterStrategy({
-      consumerKey: 'YOUR_CLIENT_ID',
-      consumerSecret: 'YOUR_CLIENT_SECRET',
-      callbackURL: 'http://localhost:1337/auth/twitter/callback'
-    }, verifyHandler));
 
     passport.use(new RedditStrategy({
       clientID: 'PrSdhM2opUJwPg',

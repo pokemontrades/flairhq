@@ -37,7 +37,8 @@ module.exports.policies = {
   },
 
   'user': {
-    get: true
+    get: ['isMod', true],
+    mine: ['isMod', true]
   }
 
   /***************************************************************************

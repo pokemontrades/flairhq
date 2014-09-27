@@ -145,15 +145,36 @@ module.exports = {
 
   comment: function (req, res) {
     var user = req.user,
-        refUser = req.allParams().refUser,
-        comment = req.allParams().comment;
+      refUser = req.allParams().refUser,
+      comment = req.allParams().comment;
 
     User.findOne({id: refUser}, function (err, reference) {
       Comment.create({user: reference.id, user2: user.name, message: comment}, function (err, com) {
         res.json(com, 200);
       });
     });
-        
+
+  },
+
+  delComment: function (req, res) {
+    var user = req.user,
+      refUser = req.allParams().refUser,
+      id = req.allParams().id;
+
+    User.findOne({id: refUser}, function () {
+      Comment.findOne({id: id}, function (err, comment) {
+        if ((user.name === comment.name) || user.isMod) {
+          Comment.destroy({id: id}, function (err, com) {
+            res.json(com, 200);
+            return;
+          });
+        } else {
+          res.json(403);
+          return;
+        }
+      });
+    });
+
   },
 
   approve: function (req, res) {

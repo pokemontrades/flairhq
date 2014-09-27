@@ -36,6 +36,10 @@
             <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
               <div class="panel-heading">
                 <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
+                <a href="#" ng-click="deleteComment(comment.id, $index)" class="pull-right"
+                   ng-if="(comment.name === user.name) || user.isMod">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </a>
                 <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
               </div>
               <div class="panel-body">{{comment.message}}</div>

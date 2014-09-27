@@ -48,6 +48,18 @@ fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope
     });
   };
 
+  $scope.deleteComment = function (id, index) {
+    var url = "/reference/comment/del";
+
+    io.socket.post(url, {refUser: $scope.refUser.id, id: id}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.refUser.comments.splice(index, 1);
+        $scope.$apply();
+      } else {
+        console.log(res.statusCode + ": " + data);
+      }
+    });
+  };
 
   $scope.modSaveProfile = function () {
     $scope.ok.modSaveProfile = false;

@@ -91,14 +91,12 @@ fapp.controller("referenceCtrl", function ($scope) {
         "userid": $scope.refUser.id,
         "note": newNote
       }, function (data, res) {
-        console.log(res);
         if (res.statusCode === 200) {
-          console.log(data);
-        } else if (res.statusCode === 400) {
-          $scope.modSaveError = "Your friend code was not correct.";
-        } else if (res.statusCode === 500) {
-          $scope.modSaveError = "There was some issue saving.";
+          $scope.refUser.modNotes.push(data);
+        } else {
+          $scope.modSaveError = "There was some issue adding a note.";
         }
+        $scope.$apply();
       });
     }
   };

@@ -32,8 +32,7 @@ module.exports = {
             games = [];
 
           req.params.games.forEach(function (game) {
-            console.log(game.id + ":" + game.tsv + ":" + game.ign);
-            if (game.id && game.tsv && game.ign) {
+            if (game.id && (game.tsv || game.ign)) {
               promises.push(Game.update(
                 {id: game.id},
                 {tsv: game.tsv, ign: game.ign})

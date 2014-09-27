@@ -792,7 +792,11 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
             });
           }
         });
-
+        io.socket.on('connect_failed', function() {
+          io.transports = ['xhr-polling'];
+          io.sails.useFallback = true;
+          goAheadAndActuallyConnect();
+        });
       }
 
 

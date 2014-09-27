@@ -587,13 +587,10 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // Whether to use JSONP to get a cookie for cross-origin requests
       useCORSRouteToGetCookie: true,
 
-<<<<<<< HEAD
-=======
       prodUrl: "fapp.yamanickill.com:8080",
       fallbackUrl: "fapp.yamanickill.com:80",
       localUrl: "localhost:1337",
 
->>>>>>> 320c8b44e23d5ea9bacf13a3bc06a54dc9a51476
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
       // 

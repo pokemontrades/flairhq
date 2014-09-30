@@ -326,12 +326,34 @@ fapp.controller("indexCtrl", function ($scope) {
         console.log(res.statusCode + ": " + data);
       }
     });
-  };;
+  };
 
 });
 
 fapp.controller("userCtrl", function ($scope) {
+  $scope.scope = $scope;
   $scope.user = undefined;
+  $scope.flairs = {};
+  $scope.flairNames = [
+    {name: "pokeball"},
+    {name: "greatball"},
+    {name: "ultraball"},
+    {name: "masterball"},
+    {name: "cherishball"},
+    {name: "gsball"},
+    {name: "default"},
+    {name: "premierball"},
+    {name: "safariball"},
+    {name: "luxuryball"},
+    {name: "dreamball"},
+    {name: "ovalcharm"},
+    {name: "shinycharm"}
+  ];
+  $scope.subNames = [
+    {name: "pokemontrades"},
+    {name: "svexchange"}
+  ];
+
   $scope.getRedditUser = function (username) {
     if (username && username.indexOf("/u/") === -1) {
       return "/u/" + username;
@@ -393,6 +415,42 @@ fapp.controller("userCtrl", function ($scope) {
 
   };
 
+  $scope.getFlairs = function () {
+    var url = "/flair/all";
+
+    io.socket.get(url, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.flairs = data;
+        if (data.length === 0) {
+          $scope.flairs[0] = {
+            name: "",
+            trades: "",
+            shinyevents: "",
+            eggs: "",
+            sub: ""
+          };
+        }
+      }
+    });
+  };
+
+  $scope.addFlair = function () {
+    $scope.flairs.push({});
+  };
+
+  $scope.saveFlairs = function () {
+    var url = "/flair/save";
+
+    io.socket.post(url, {flairs: $scope.flairs}, function (data, res) {
+      if (res.statusCode === 200) {
+        console.log(data);
+      } else {
+        console.log(res);
+      }
+    });
+  };
+
+  $scope.getFlairs();
 });
 
 fapp.controller("adminCtrl", function ($scope) {

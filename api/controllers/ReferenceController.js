@@ -5,7 +5,8 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-var reddit = require('redwrap');
+var reddit = require('redwrap'),
+    Q = require('q');
 
 module.exports = {
 
@@ -227,6 +228,41 @@ module.exports = {
           }
         });
       })
+    });
+  },
+
+  saveFlairs: function (req, res) {
+    var flairs = req.allParams().flairs;
+    if(!req.user.isMod) {
+      res.json(403);
+      return;
+    }
+
+    Flair.destroy({}, function (err, removed) {
+      var promises = [],
+          added = [];
+      flairs.forEach(function (flair) {
+        if (flair.name) {
+          promises.push(
+            Flair.create(flair, function (err, newFlair) {
+              added.push(newFlair);
+            })
+          );
+        }
+      });
+
+      Q.all(promises).then(function () {
+        res.json(added, 200);
+      });
+
+    });
+
+
+  },
+
+  getFlairs: function (req, res) {
+    Flair.find().exec(function (err, flairs) {
+      res.json(flairs, 200);
     });
   }
 };

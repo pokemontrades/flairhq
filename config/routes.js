@@ -101,6 +101,16 @@ module.exports.routes = {
     action     : 'delComment'
   },
 
+  '/flair/all' : {
+    controller : 'reference',
+    action     : 'getFlairs'
+  },
+
+  '/flair/save' : {
+    controller : 'reference',
+    action     : 'saveFlairs'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'

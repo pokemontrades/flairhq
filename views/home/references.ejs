@@ -95,7 +95,7 @@
     <tr ng-repeat="reference in <%= theUser %>.references.banks">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td>
+      <td colspan="2">
         <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>

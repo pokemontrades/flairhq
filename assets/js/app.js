@@ -350,8 +350,8 @@ fapp.controller("userCtrl", function ($scope) {
     {name: "shinycharm"}
   ];
   $scope.subNames = [
-    {name: "pokemontrades"},
-    {name: "svexchange"}
+    {name: "pokemontrades", view: "trades"},
+    {name: "svexchange", view: "svex"}
   ];
 
   $scope.getRedditUser = function (username) {

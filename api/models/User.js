@@ -7,8 +7,6 @@
 
 module.exports = {
 
-  adapter: 'mongo',
-
   types: {
     friendCodeFormat: function (codes) {
       for (code in codes) {

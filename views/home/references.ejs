@@ -115,7 +115,7 @@
     <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.eggs">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
+      <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>
         <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
@@ -142,7 +142,7 @@
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references.giveaways">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.descrip}}</a></td>
+      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>

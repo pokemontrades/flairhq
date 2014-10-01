@@ -11,6 +11,7 @@ module.exports = {
     name: "string",
     trades: "integer",
     shinyevents: "integer",
+    events: "integer",
     eggs: "integer",
     sub: "string"
   }

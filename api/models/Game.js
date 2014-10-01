@@ -9,8 +9,8 @@ module.exports = {
 
   attributes: {
     user: "string",
-    IGN: "string",
-    TSV: {
+    ign: "string",
+    tsv: {
       type: "int",
       max: 4095,
       min: 0,

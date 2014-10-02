@@ -225,7 +225,7 @@ fapp.controller("indexCtrl", function ($scope) {
     $scope.addRefError = "";
     var url = "/reference/add",
       user2 = $scope.user2,
-      regexp = /(http(s?):\/\/)?(www|[a-z]*.)?reddit.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([a-z\d_-]*)\/([a-z\d]*)/;
+      regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([^\/]*)\/([a-z\d]*)/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";

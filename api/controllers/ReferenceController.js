@@ -207,6 +207,8 @@ module.exports = {
                     if (!err) {
                       res.json(give, 200);
                       return;
+                    } else {
+                      res.json(err, 500);
                     }
                   });
                 }
@@ -217,6 +219,8 @@ module.exports = {
                 if (!err) {
                   res.json(egg, 200);
                   return;
+                } else {
+                  res.json(err, 500);
                 }
               });
             }
@@ -227,6 +231,8 @@ module.exports = {
             if (!err) {
               res.json(ref, 200);
               return;
+            } else {
+              res.json(err, 500);
             }
           });
         }

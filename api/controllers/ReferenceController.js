@@ -195,38 +195,41 @@ module.exports = {
       }
       Reference.findOne(id, function (err, ref) {
         if (!ref) {
-          Egg.findOne(id, function (err, ref) {
-            if (!ref) {
-              Giveaway.findOne(id, function (err, ref) {
-                if (!ref) {
+          Egg.findOne(id, function (err, egg) {
+            if (!egg) {
+              Giveaway.findOne(id, function (err, give) {
+                if (!give) {
                   res.json("Reference not found", 404);
                   return;
+                } else {
+                  give.approved = approve;
+                  give.save(function (err) {
+                    if (!err) {
+                      res.json(give, 200);
+                      return;
+                    }
+                  });
                 }
-                ref.approved = approve;
-                ref.save(function (err) {
-                  if (!err) {
-                    res.json(ref, 200);
-                    return;
-                  }
-                });
+              });
+            } else {
+              egg.approved = approve;
+              egg.save(function (err) {
+                if (!err) {
+                  res.json(egg, 200);
+                  return;
+                }
               });
             }
-            ref.approved = approve;
-            ref.save(function (err) {
-              if (!err) {
-                res.json(ref, 200);
-                return;
-              }
-            });
+          });
+        } else {
+          ref.approved = approve;
+          ref.save(function (err) {
+            if (!err) {
+              res.json(ref, 200);
+              return;
+            }
           });
         }
-        ref.approved = approve;
-        ref.save(function (err) {
-          if (!err) {
-            res.json(ref, 200);
-            return;
-          }
-        });
       })
     });
   },

@@ -251,13 +251,12 @@ module.exports = {
       var promises = [],
         added = [];
       flairs.forEach(function (flair) {
-        if (flair.name) {
-          promises.push(
-            Flair.create(flair, function (err, newFlair) {
-              added.push(newFlair);
-            })
-          );
-        }
+        promises.push(
+          Flair.create(flair)
+            .exec(function (err, newFlair) {
+            added.push(newFlair);
+          })
+        );
       });
 
       Q.all(promises).then(function () {

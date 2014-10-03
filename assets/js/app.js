@@ -205,22 +205,6 @@ fapp.controller("indexCtrl", function ($scope) {
     return refs.events.length + refs.shinies.length + refs.casuals.length;
   };
 
-  $scope.getReferences = function () {
-    if ($scope.user) {
-      io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
-        if (res.statusCode === 200) {
-          $scope.user = data;
-          $scope.$apply();
-        }
-      })
-    } else {
-      window.setTimeout($scope.getReferences, 1000);
-    }
-  };
-
-  $scope.getReferences();
-
-
   $scope.addReference = function () {
     $scope.addRefError = "";
     var url = "/reference/add",
@@ -334,6 +318,8 @@ fapp.controller("userCtrl", function ($scope) {
   $scope.scope = $scope;
   $scope.user = undefined;
   $scope.flairs = {};
+  $scope.selectedTradeFlair = undefined;
+  $scope.selectedExchFlair = undefined;
   $scope.flairNames = [
     {name: "pokeball"},
     {name: "greatball"},
@@ -354,6 +340,48 @@ fapp.controller("userCtrl", function ($scope) {
     {name: "svexchange", view: "SV Exchange"}
   ];
 
+  $scope.formattedName = function (name) {
+    var formatted = "";
+    if (name.indexOf("ball") > -1) {
+      formatted += name.charAt(0).toUpperCase();
+      formatted += name.slice(1, -4);
+      formatted += " Ball";
+    } else if (name.indexOf("charm") > -1) {
+      formatted += name.charAt(0).toUpperCase();
+      formatted += name.slice(1, -5);
+      formatted += " Charm";
+    }
+    return formatted;
+  };
+
+  $scope.setSelectedTradeFlair = function (id, bool) {
+    if (bool) {
+      $scope.selectedTradeFlair = id;
+    }
+  };
+
+  $scope.setSelectedExchFlair = function (id, bool) {
+    if (bool) {
+      $scope.selectedExchFlair = id;
+    }
+  };
+
+  $scope.inPokemonTradesCasual = function (flair) {
+    return flair.sub === "pokemontrades"
+      && flair.events === 0
+      && flair.shinyevents === 0;
+  };
+
+  $scope.inPokemonTradesCollector = function (flair) {
+    return flair.sub === "pokemontrades"
+      && (flair.events > 0
+      || flair.shinyevents > 0);
+  };
+
+  $scope.inSVExchange = function (flair) {
+    return flair.sub === "svexchange";
+  };
+
   $scope.getRedditUser = function (username) {
     if (username && username.indexOf("/u/") === -1) {
       return "/u/" + username;
@@ -371,9 +399,45 @@ fapp.controller("userCtrl", function ($scope) {
       if (!$scope.user.games.length) {
         $scope.user.games = [{tsv: "", ign: ""}];
       }
+
+      $scope.getReferences();
       $scope.$apply();
     }
   });
+
+  $scope.getReferences = function () {
+    if ($scope.user) {
+      io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
+        if (res.statusCode === 200) {
+          $scope.user = data;
+          $scope.$apply();
+        }
+      })
+    } else {
+      window.setTimeout($scope.getReferences, 1000);
+    }
+  };
+
+  $scope.canUserApply = function (flair) {
+    if (!$scope.user || !$scope.user.references) {
+      return false;
+    }
+    var user = $scope.user,
+        refs = $scope.user.references,
+        trades = flair.trades,
+        shinyevents = flair.shinyevents,
+        events = flair.events,
+        eggs = flair.eggs,
+        userTrades = refs.events.length +
+          refs.shinies.length +
+          refs.casuals.length,
+        usershinyevents = refs.events.length + refs.shinies.length;
+
+    return (userTrades >= trades &&
+      usershinyevents >= shinyevents &&
+      refs.events.length >= events &&
+      refs.eggs.length >= eggs);
+  };
 
   $scope.addFc = function () {
     $scope.user.friendCodes.push("");

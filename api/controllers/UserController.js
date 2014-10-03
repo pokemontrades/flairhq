@@ -86,62 +86,62 @@ module.exports = {
   },
 
   get: function (req, res) {
-    User.findOne({name: req.params.name}, function (err, user) {
-        Game.find()
+    var user = req.user;
+
+    Game.find()
+      .where({user: user.id})
+      .exec(function (err, games) {
+
+        Reference.find()
           .where({user: user.id})
-          .exec(function (err, games) {
+          .where({type: ["event", "redemption"]})
+          .sort("type")
+          .exec(function (err, events) {
 
             Reference.find()
               .where({user: user.id})
-              .where({type: ["event", "redemption"]})
-              .sort("type")
-              .exec(function (err, events) {
+              .where({type: "shiny"})
+              .exec(function (err, shinies) {
 
                 Reference.find()
                   .where({user: user.id})
-                  .where({type: "shiny"})
-                  .exec(function (err, shinies) {
+                  .where({type: "casual"})
+                  .exec(function (err, casuals) {
 
                     Reference.find()
                       .where({user: user.id})
-                      .where({type: "casual"})
-                      .exec(function (err, casuals) {
+                      .where({type: "bank"})
+                      .exec(function (err, banks) {
 
-                        Reference.find()
+                        Egg.find()
                           .where({user: user.id})
-                          .where({type: "bank"})
-                          .exec(function (err, banks) {
+                          .exec(function (err, eggs) {
 
-                            Egg.find()
+                            Giveaway.find()
                               .where({user: user.id})
-                              .exec(function (err, eggs) {
+                              .exec(function (err, giveaways) {
 
-                                Giveaway.find()
+                                Comment.find()
                                   .where({user: user.id})
-                                  .exec(function (err, giveaways) {
+                                  .exec(function (err, comments) {
 
-                                    Comment.find()
-                                      .where({user: user.id})
-                                      .exec(function (err, comments) {
+                                    ModNote.find()
+                                      .where({refUser: user.id})
+                                      .exec(function (err, notes) {
 
-                                        ModNote.find()
-                                          .where({refUser: user.id})
-                                          .exec(function (err, notes) {
+                                        user.references = {
+                                          events: events,
+                                          shinies: shinies,
+                                          casuals: casuals,
+                                          banks: banks,
+                                          eggs: eggs,
+                                          giveaways: giveaways
+                                        }
+                                        user.modNotes = notes;
+                                        user.games = games;
+                                        user.comments = comments;
+                                        res.json(user, 200);
 
-                                            user.references = {
-                                              events: events,
-                                              shinies: shinies,
-                                              casuals: casuals,
-                                              banks: banks,
-                                              eggs: eggs,
-                                              giveaways: giveaways
-                                            }
-                                            user.modNotes = notes;
-                                            user.games = games;
-                                            user.comments = comments;
-                                            res.json(user, 200);
-
-                                          });
                                       });
                                   });
                               });
@@ -150,8 +150,7 @@ module.exports = {
                   });
               });
           });
-      }
-    );
+      });
   },
 
   addNote: function (req, res) {

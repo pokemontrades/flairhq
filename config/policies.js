@@ -32,12 +32,12 @@ module.exports.policies = {
     '*': true
   },
 
-  'home': {
+  HomeController: {
     'reference': ['isMod', true]
   },
 
-  'user': {
-    get: ['isMod', true],
+  UserController: {
+    get: ['isMod', 'sessionAuth'],
     mine: ['isMod', true]
   }
 

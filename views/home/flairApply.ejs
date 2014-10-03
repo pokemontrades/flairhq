@@ -1,0 +1,53 @@
+<div class="modal fade" id="flairApplication" tabindex="-1" role="dialog"
+     aria-labelledby="flairApplication" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title">Apply for Flair</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-8">
+            <h3>/r/pokemontrades</h3>
+            <div class="list-group col-md-6">
+              <a ng-repeat="flair in flairs | filter:inPokemonTradesCasual track by flair.id"
+                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedTradeFlair === flair.id) ? 'active' : '']"
+                 href="#" ng-click="setSelectedTradeFlair(flair.id, canUserApply(flair))">
+                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+              </a>
+            </div>
+            <div class="list-group col-md-6">
+              <a ng-repeat="flair in flairs | filter:inPokemonTradesCollector track by flair.id"
+                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedTradeFlair === flair.id) ? 'active' : '']"
+                 href="#" ng-click="setSelectedTradeFlair(flair.id, canUserApply(flair))">
+                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h3>/r/svexchange</h3>
+            <div class="list-group">
+              <a ng-repeat="flair in flairs | filter:inSVExchange track by flair.id"
+                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedExchFlair === flair.id) ? 'active' : '']"
+                 href="#" ng-click="setSelectedExchFlair(flair.id, canUserApply(flair))">
+                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div><!-- /.modal -->

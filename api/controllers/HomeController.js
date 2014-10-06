@@ -120,6 +120,10 @@ module.exports = {
     res.view();
   },
 
+  applist: function (req, res) {
+    res.view();
+  },
+
   info: function (req, res) {
     res.view();
   }

@@ -333,7 +333,11 @@ fapp.controller("userCtrl", function ($scope) {
     {name: "luxuryball"},
     {name: "dreamball"},
     {name: "ovalcharm"},
-    {name: "shinycharm"}
+    {name: "shinycharm"},
+    {name: "egg"},
+    {name: "eevee"},
+    {name: "togepi"},
+    {name: "manaphy"},
   ];
   $scope.subNames = [
     {name: "pokemontrades", view: "Pokemon Trades"},
@@ -350,9 +354,28 @@ fapp.controller("userCtrl", function ($scope) {
       formatted += name.charAt(0).toUpperCase();
       formatted += name.slice(1, -5);
       formatted += " Charm";
+    } else {
+      formatted += name.charAt(0).toUpperCase();
+      formatted += name.slice(1);
+      formatted += " Egg";
     }
     return formatted;
   };
+
+  $scope.applyFlair = function () {
+    io.socket.post("/flair/apply", {
+      flair: $scope.selectedExchFlair,
+      sub: "svexchange"
+    }, function (data, res) {
+      console.log(data);
+      io.socket.post("/flair/apply", {
+        flair: $scope.selectedExchFlair,
+        sub: "pokemontrades"
+      }, function (data, res) {
+        console.log(data);
+      });
+    });
+  }
 
   $scope.setSelectedTradeFlair = function (id, bool) {
     if (bool) {
@@ -410,6 +433,15 @@ fapp.controller("userCtrl", function ($scope) {
       io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
         if (res.statusCode === 200) {
           $scope.user = data;
+          for (var flairId in $scope.flairs) {
+            var flair = $scope.flairs[flairId];
+            if (flair.name === $scope.user.flair.ptrades.flair_css_class) {
+              $scope.selectedTradeFlair = flair.id;
+            }
+            if (flair.name === $scope.user.flair.svex.flair_css_class) {
+              $scope.selectedExchFlair = flair.id;
+            }
+          }
           $scope.$apply();
         }
       })
@@ -519,6 +551,16 @@ fapp.controller("userCtrl", function ($scope) {
 
 fapp.controller("adminCtrl", function ($scope) {
   $scope.users = [];
+  $scope.flairApps = [];
+
+  $scope.getFlairApps = function () {
+    io.socket.get("/flair/apps/all", function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.flairApps = data;
+        $scope.$apply();
+      }
+    });
+  };
 
   $scope.getBannedUsers = function () {
     io.socket.get("/user/banned", function (data, res) {
@@ -543,4 +585,5 @@ fapp.controller("adminCtrl", function ($scope) {
   };
 
   $scope.getBannedUsers();
+  $scope.getFlairApps();
 });

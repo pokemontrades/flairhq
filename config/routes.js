@@ -111,6 +111,16 @@ module.exports.routes = {
     action     : 'saveFlairs'
   },
 
+  '/flair/apply' : {
+    controller : 'flair',
+    action     : 'apply'
+  },
+
+  '/flair/apps/all' : {
+    controller : 'flair',
+    action     : 'getApps'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'
@@ -124,6 +134,11 @@ module.exports.routes = {
   '/user/banned' : {
     controller : 'user',
     action     : 'bannedUsers'
+  },
+
+  '/mod/applist' : {
+    controller : 'home',
+    action     : 'applist'
   },
 
   '/mod/banlist' : {

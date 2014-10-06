@@ -32,6 +32,8 @@ module.exports = {
       friendCodeFormat: true
     },
     isMod: "boolean",
-    banned: "boolean"
+    banned: "boolean",
+    redToken: "string",
+    flair: "json"
   }
 };

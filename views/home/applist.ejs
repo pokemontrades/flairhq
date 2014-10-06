@@ -1,0 +1,20 @@
+<div class="container" ng-controller="adminCtrl">
+  <div class="main container clearfix">
+
+    <div class="content row">
+
+      <h2>Flair Application list</h2>
+
+      <ul class="list-group col-md-6">
+        <li ng-repeat="app in flairApps" class="list-group-item row">
+          <div class="col-md-9">
+            <h4>{{app.user}}</h4>
+          </div>
+          <div class="col-md-3">
+            <span>{{app.sub}}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

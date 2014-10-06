@@ -140,8 +140,8 @@ module.exports = {
                                         user.modNotes = notes;
                                         user.games = games;
                                         user.comments = comments;
+                                        user.redToken = undefined;
                                         res.json(user, 200);
-
                                       });
                                   });
                               });

@@ -26,7 +26,8 @@ module.exports.policies = {
   },
 
   HomeController: {
-    'reference': ['isMod', true]
+    'reference': ['isMod', true],
+    'info': ['isMod', true]
   },
 
   UserController: {

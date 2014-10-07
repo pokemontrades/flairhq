@@ -450,13 +450,15 @@ fapp.controller("userCtrl", function ($scope) {
       io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
         if (res.statusCode === 200) {
           $scope.user = data;
-          for (var flairId in $scope.flairs) {
-            var flair = $scope.flairs[flairId];
-            if (flair.name === $scope.user.flair.ptrades.flair_css_class) {
-              $scope.selectedTradeFlair = flair.name;
-            }
-            if (flair.name === $scope.user.flair.svex.flair_css_class) {
-              $scope.selectedExchFlair = flair.name;
+          if ($scope.user.flair && $scope.user.flair.ptrades) {
+            for (var flairId in $scope.flairs) {
+              var flair = $scope.flairs[flairId];
+              if (flair.name === $scope.user.flair.ptrades.flair_css_class) {
+                $scope.selectedTradeFlair = flair.name;
+              }
+              if (flair.name === $scope.user.flair.svex.flair_css_class) {
+                $scope.selectedExchFlair = flair.name;
+              }
             }
           }
           $scope.$apply();

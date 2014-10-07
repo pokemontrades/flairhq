@@ -34,27 +34,23 @@ module.exports = {
       } else {
         if (req.params.type === "egg") {
           Egg.findOne({url: req.params.url, user: user.id}, function (err, ref) {
-            if (err || ref) {
-              res.json(400);
-            } else {
-              Egg.create(
-                {
-                  url: req.params.url,
-                  user: user.id,
-                  user2: req.params.user2,
-                  description: req.params.descrip,
-                  type: req.params.type
-                },
-                function (err, ref) {
-                  if (err) {
-                    console.log(err);
-                    res.json(400);
-                  } else {
-                    res.json(ref, 200);
-                  }
+            Egg.create(
+              {
+                url: req.params.url,
+                user: user.id,
+                user2: req.params.user2,
+                description: req.params.descrip,
+                type: req.params.type
+              },
+              function (err, ref) {
+                if (err) {
+                  console.log(err);
+                  res.json(400);
+                } else {
+                  res.json(ref, 200);
                 }
-              );
-            }
+              }
+            );
           });
         } else if (req.params.type === "giveaway") {
           Giveaway.findOne({url: req.params.url, user: user.id}, function (err, ref) {

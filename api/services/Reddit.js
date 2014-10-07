@@ -19,7 +19,6 @@ exports.refreshToken = function (refreshToken, callback) {
   var auth = "Basic "
     + new Buffer(exports.data.clientID + ":" + exports.data.clientIDSecret)
       .toString("base64");
-  console.log(data);
 
   request.post({
     url: 'https://ssl.reddit.com/api/v1/access_token',
@@ -32,7 +31,6 @@ exports.refreshToken = function (refreshToken, callback) {
       "Content-Length": data.length
     }
   }, function(err, response, body){
-    console.log(body);
     callback(body.access_token);
   });
 };
@@ -57,7 +55,6 @@ exports.getFlair = function (refreshToken, callback) {
         headers: { Authorization: "bearer " + token,
           "User-Agent": "fapp/1.0"}
       }, function(err, response, body2){
-        console.log(body2);
         callback(body1.current, body2.current);
       });
     });

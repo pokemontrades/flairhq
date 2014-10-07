@@ -209,7 +209,8 @@ fapp.controller("indexCtrl", function ($scope) {
     $scope.addRefError = "";
     var url = "/reference/add",
       user2 = $scope.user2,
-      regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange))\/comments\/([a-z\d]*)\/([^\/]*)\/([a-z\d]*)/;
+      regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/?/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";
@@ -230,10 +231,12 @@ fapp.controller("indexCtrl", function ($scope) {
       $scope.addRefError = "Make sure you enter all the information";
       return;
     }
-    if (!regexp.test($scope.refUrl)) {
+    if (($scope.type === "giveaway" && !regexpGive.test($scope.refUrl)) ||
+      ($scope.type !== "giveaway" && !regexp.test($scope.refUrl))) {
       $scope.addRefError = "Looks like you didn't input a proper permalink";
       return;
     }
+
     if (user2.indexOf("/u/") === -1) {
       user2 = "/u/" + user2;
     }

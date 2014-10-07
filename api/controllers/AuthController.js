@@ -29,6 +29,7 @@ module.exports = {
     function (err, user) {
       req.logIn(user, function(err) {
         if (err) {
+          console.log("Failed login: " + err);
           res.view(403, {error: err});
           return;
         }

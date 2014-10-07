@@ -35,7 +35,7 @@ module.exports = {
             if (game.id && (game.tsv || game.ign)) {
               promises.push(Game.update(
                 {id: game.id},
-                {tsv: game.tsv, ign: game.ign})
+                {tsv: parseInt(game.tsv), ign: game.ign})
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);
@@ -48,7 +48,7 @@ module.exports = {
             } else if (!game.id && (game.tsv || game.ign)) {
               console.log(game);
               promises.push(Game.create(
-                {user: user.id, tsv: game.tsv, ign: game.ign})
+                {user: user.id, tsv: parseInt(game.tsv), ign: game.ign})
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);

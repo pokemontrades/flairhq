@@ -86,71 +86,71 @@ module.exports = {
   },
 
   get: function (req, res) {
-    var user = req.user;
+    User.findOne({name: req.params.name}, function (err, user) {
+      Game.find()
+        .where({user: user.id})
+        .exec(function (err, games) {
 
-    Game.find()
-      .where({user: user.id})
-      .exec(function (err, games) {
+          Reference.find()
+            .where({user: user.id})
+            .where({type: ["event", "redemption"]})
+            .sort("type")
+            .exec(function (err, events) {
 
-        Reference.find()
-          .where({user: user.id})
-          .where({type: ["event", "redemption"]})
-          .sort("type")
-          .exec(function (err, events) {
+              Reference.find()
+                .where({user: user.id})
+                .where({type: "shiny"})
+                .exec(function (err, shinies) {
 
-            Reference.find()
-              .where({user: user.id})
-              .where({type: "shiny"})
-              .exec(function (err, shinies) {
+                  Reference.find()
+                    .where({user: user.id})
+                    .where({type: "casual"})
+                    .exec(function (err, casuals) {
 
-                Reference.find()
-                  .where({user: user.id})
-                  .where({type: "casual"})
-                  .exec(function (err, casuals) {
+                      Reference.find()
+                        .where({user: user.id})
+                        .where({type: "bank"})
+                        .exec(function (err, banks) {
 
-                    Reference.find()
-                      .where({user: user.id})
-                      .where({type: "bank"})
-                      .exec(function (err, banks) {
+                          Egg.find()
+                            .where({user: user.id})
+                            .exec(function (err, eggs) {
 
-                        Egg.find()
-                          .where({user: user.id})
-                          .exec(function (err, eggs) {
+                              Giveaway.find()
+                                .where({user: user.id})
+                                .exec(function (err, giveaways) {
 
-                            Giveaway.find()
-                              .where({user: user.id})
-                              .exec(function (err, giveaways) {
+                                  Comment.find()
+                                    .where({user: user.id})
+                                    .exec(function (err, comments) {
 
-                                Comment.find()
-                                  .where({user: user.id})
-                                  .exec(function (err, comments) {
+                                      ModNote.find()
+                                        .where({refUser: user.id})
+                                        .exec(function (err, notes) {
 
-                                    ModNote.find()
-                                      .where({refUser: user.id})
-                                      .exec(function (err, notes) {
-
-                                        user.references = {
-                                          events: events,
-                                          shinies: shinies,
-                                          casuals: casuals,
-                                          banks: banks,
-                                          eggs: eggs,
-                                          giveaways: giveaways
-                                        }
-                                        user.modNotes = notes;
-                                        user.games = games;
-                                        user.comments = comments;
-                                        user.redToken = undefined;
-                                        res.json(user, 200);
-                                      });
-                                  });
-                              });
-                          });
-                      });
-                  });
-              });
-          });
-      });
+                                          user.references = {
+                                            events: events,
+                                            shinies: shinies,
+                                            casuals: casuals,
+                                            banks: banks,
+                                            eggs: eggs,
+                                            giveaways: giveaways
+                                          }
+                                          user.modNotes = notes;
+                                          user.games = games;
+                                          user.comments = comments;
+                                          user.redToken = undefined;
+                                          res.json(user, 200);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
   },
 
   addNote: function (req, res) {

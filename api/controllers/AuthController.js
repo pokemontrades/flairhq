@@ -29,7 +29,7 @@ module.exports = {
     function (err, user) {
       req.logIn(user, function(err) {
         if (err) {
-          res.view(403, {error: "You are banned from FAPP"});
+          res.view(403, {error: err});
           return;
         }
         res.redirect('/');

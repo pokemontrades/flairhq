@@ -15,16 +15,16 @@
             <div class="list-group col-md-6">
               <a ng-repeat="flair in flairs | filter:inPokemonTradesCasual track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
-                 (selectedTradeFlair === flair.id) ? 'active' : '']"
-                 href="#" ng-click="setSelectedTradeFlair(flair.id, canUserApply(flair))">
+                 (selectedTradeFlair === flair.name) ? 'active' : '']"
+                 href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
                 <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
               </a>
             </div>
             <div class="list-group col-md-6">
               <a ng-repeat="flair in flairs | filter:inPokemonTradesCollector track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
-                 (selectedTradeFlair === flair.id) ? 'active' : '']"
-                 href="#" ng-click="setSelectedTradeFlair(flair.id, canUserApply(flair))">
+                 (selectedTradeFlair === flair.name) ? 'active' : '']"
+                 href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
                 <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
               </a>
             </div>
@@ -34,8 +34,8 @@
             <div class="list-group">
               <a ng-repeat="flair in flairs | filter:inSVExchange track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
-                 (selectedExchFlair === flair.id) ? 'active' : '']"
-                 href="#" ng-click="setSelectedExchFlair(flair.id, canUserApply(flair))">
+                 (selectedExchFlair === flair.name) ? 'active' : '']"
+                 href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
                 <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
               </a>
             </div>

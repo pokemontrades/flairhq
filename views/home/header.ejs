@@ -1,6 +1,7 @@
 <%- partial('editProfile.ejs') %>
 <%- partial('flairMod.ejs') %>
 <%- partial('flairApply.ejs') %>
+<%- partial('applist.ejs') %>
 
 <link type="text/css" href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
 
@@ -14,7 +15,7 @@
         <span class="icon-bar"></span>
       </button>
       <a href="/" class="navbar-brand">
-        <img src="/images/fapp-100.png" class="img-responsive brand-img"/>
+        <img src="/images/fapp-100.png" class="img-respo$nsive brand-img"/>
       </a>
     </div>
 
@@ -26,7 +27,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Moderation<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-inverse" role="menu">
             <li><a href="/mod/banlist">Ban List</a></li>
-            <li><a href="/mod/applist">Flair Application List</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#flairAppList">Flair App List</a></li>
             <li><a href="#" data-toggle="modal" data-target="#flairMod">Edit Flairs</a></li>
           </ul>
         </li>
@@ -38,7 +39,7 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu dropdown-inverse" role="menu">
-            <li><a href="#" data-toggle="modal" data-target="#flairApplication">Apply for flair</a></li>
+            <!--<li><a href="#" data-toggle="modal" data-target="#flairApplication">Apply for flair</a></li>-->
             <li class="divider"></li>
             <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
             <li><a ng-href="/u/{{user.name}}" data-toggle="modal">Public profile</a></li>

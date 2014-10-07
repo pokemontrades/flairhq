@@ -62,7 +62,7 @@ module.exports.connections = {
     port: 27017,
     user: '',
     password: '',
-    database: 'sails-social-auth'
+    database: 'fapp'
   },
 
   /***************************************************************************

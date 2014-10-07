@@ -7,7 +7,7 @@ var verifyHandler = function(token, tokenSecret, profile, done) {
       Reddit.getFlair(tokenSecret, function (flair1, flair2) {
         if (user) {
           if (user.banned) {
-            return done("Banned user", user);
+            return done("You are banned from FAPP", user);
           }
           user.redToken = tokenSecret;
           user.flair = {ptrades: flair1, svex: flair2};

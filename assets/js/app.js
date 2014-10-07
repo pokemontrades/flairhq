@@ -362,20 +362,34 @@ fapp.controller("userCtrl", function ($scope) {
     return formatted;
   };
 
+  $scope.getName = function (id) {
+    var name;
+    $scope.flairs.forEach(function (flair) {
+      if (flair.id === id) {
+        name = $scope.formattedName(flair.name);
+      }
+    });
+    return name;
+  };
+
   $scope.applyFlair = function () {
-    io.socket.post("/flair/apply", {
-      flair: $scope.selectedExchFlair,
-      sub: "svexchange"
-    }, function (data, res) {
-      console.log(data);
+    if ($scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair) {
       io.socket.post("/flair/apply", {
-        flair: $scope.selectedExchFlair,
+        flair: $scope.selectedTradeFlair,
         sub: "pokemontrades"
       }, function (data, res) {
         console.log(data);
       });
-    });
-  }
+    }
+    if ($scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair) {
+      io.socket.post("/flair/apply", {
+        flair: $scope.selectedExchFlair,
+        sub: "svexchange"
+      }, function (data, res) {
+        console.log(data);
+      });
+    }
+  };
 
   $scope.setSelectedTradeFlair = function (id, bool) {
     if (bool) {
@@ -436,10 +450,10 @@ fapp.controller("userCtrl", function ($scope) {
           for (var flairId in $scope.flairs) {
             var flair = $scope.flairs[flairId];
             if (flair.name === $scope.user.flair.ptrades.flair_css_class) {
-              $scope.selectedTradeFlair = flair.id;
+              $scope.selectedTradeFlair = flair.name;
             }
             if (flair.name === $scope.user.flair.svex.flair_css_class) {
-              $scope.selectedExchFlair = flair.id;
+              $scope.selectedExchFlair = flair.name;
             }
           }
           $scope.$apply();

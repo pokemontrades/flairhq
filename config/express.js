@@ -47,11 +47,11 @@ var verifyHandler = function(token, tokenSecret, profile, done) {
 };
 
 passport.serializeUser(function(user, done) {
-  done(null, user.uid);
+  done(null, user.id);
 });
 
-passport.deserializeUser(function(uid, done) {
-  User.findOne({uid: uid}, function(err, user) {
+passport.deserializeUser(function(id, done) {
+  User.findOne({id: id}, function(err, user) {
     done(err, user);
   });
 });
@@ -70,7 +70,7 @@ module.exports.http = {
       clientID: Reddit.data.clientID,
       clientSecret: Reddit.data.clientIDSecret,
       callbackURL: Reddit.data.redirectURL,
-      scope: "flair"
+      scope: "flair,modflair"
     }, verifyHandler));
 
     app.use(passport.initialize());

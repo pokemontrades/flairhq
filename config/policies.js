@@ -31,7 +31,7 @@ module.exports.policies = {
   },
 
   UserController: {
-    get: ['isMod', 'sessionAuth'],
+    get: ['sessionAuth', 'isMod'],
     mine: ['isMod', true]
   }
 

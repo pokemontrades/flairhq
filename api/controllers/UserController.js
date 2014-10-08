@@ -128,6 +128,10 @@ module.exports = {
                                         .where({refUser: user.id})
                                         .exec(function (err, notes) {
 
+                                          if (user.name === req.user.name) {
+                                            user.isMod = req.user.isMod;
+                                          }
+
                                           user.references = {
                                             events: events,
                                             shinies: shinies,

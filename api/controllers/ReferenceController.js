@@ -111,32 +111,50 @@ module.exports = {
     var id = req.allParams().refId,
       type = req.allParams().type;
     if (type === "giveaways") {
-      Giveaway.destroy({id: id, user: req.user.id})
-        .exec(function (err, refs) {
-          if (err) {
-            res.json(err, 400);
-          } else {
-            res.json(200);
-          }
-        });
+      Giveaway.findOne(id).exec(function (err, giveaway) {
+        if (giveaway.user === req.user.id || req.user.isMod) {
+          Giveaway.destroy({id: id})
+            .exec(function (err, refs) {
+              if (err) {
+                res.json(err, 400);
+              } else {
+                res.json(200);
+              }
+            });
+        } else {
+          res.json("unauthorised", 403);
+        }
+      });
     } else if (type === "eggs") {
-      Egg.destroy({id: id, user: req.user.id})
-        .exec(function (err, refs) {
-          if (err) {
-            res.json(err, 400);
-          } else {
-            res.json(200);
-          }
-        });
+      Egg.findOne(id).exec(function (err, egg) {
+        if (egg.user === req.user.id || req.user.isMod) {
+          Egg.destroy({id: id})
+            .exec(function (err, refs) {
+              if (err) {
+                res.json(err, 400);
+              } else {
+                res.json(200);
+              }
+            });
+        } else {
+          res.json("unauthorised", 403);
+        }
+      });
     } else {
-      Reference.destroy({id: id, user: req.user.id})
-        .exec(function (err, refs) {
-          if (err) {
-            res.json(err, 400);
-          } else {
-            res.json(200);
-          }
-        });
+      Reference.findOne(id).exec(function (err, ref) {
+        if (ref.user === req.user.id || req.user.isMod) {
+          Reference.destroy({id: id})
+            .exec(function (err, refs) {
+              if (err) {
+                res.json(err, 400);
+              } else {
+                res.json(200);
+              }
+            });
+        } else {
+          res.json("unauthorised", 403);
+        }
+      });
     }
   },
 

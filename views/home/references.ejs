@@ -11,7 +11,7 @@
       <td colspan="5">Events ({{<%= theUser %>.references.events.length}})</td>
     </tr>
     <tbody id="collapseevents" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.events">
+    <tr ng-repeat="reference in <%= theUser %>.references.events | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
@@ -38,7 +38,7 @@
       <td colspan="5">Shinies ({{<%= theUser %>.references.shinies.length}})</td>
     </tr>
     <tbody id="collapseshinies" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.shinies">
+    <tr ng-repeat="reference in <%= theUser %>.references.shinies | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
@@ -65,7 +65,7 @@
       <td colspan="5">Casual ({{<%= theUser %>.references.casuals.length}})</td>
     </tr>
     <tbody id="collapsecasuals" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.casuals">
+    <tr ng-repeat="reference in <%= theUser %>.references.casuals | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
@@ -92,7 +92,7 @@
       <td colspan="5"><h2>Bank trades ({{<%= theUser %>.references.banks.length}})</h2></td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.banks">
+    <tr ng-repeat="reference in <%= theUser %>.references.banks | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td colspan="2">
@@ -113,7 +113,7 @@
       <td colspan="5"><h2>Egg hatches ({{<%= theUser %>.references.eggs.length}})</h2></td>
     </tr>
     <tbody id="collapseeggs" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.eggs">
+    <tr ng-repeat="reference in <%= theUser %>.references.eggs | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>
@@ -140,7 +140,7 @@
       <td colspan="5"><h2>Giveaways ({{<%= theUser %>.references.giveaways.length}})</h2></td>
     </tr>
     <tbody id="collapsegiveaways" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.giveaways">
+    <tr ng-repeat="reference in <%= theUser %>.references.giveaways | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>

@@ -622,8 +622,10 @@ fapp.controller("adminCtrl", function ($scope) {
     io.socket.post(url, {id: id}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.flairApps.splice($index, 1);
+        $scope.$apply();
       } else {
         $scope.flairAppError = "Couldn't deny, for some reason.";
+        $scope.$apply();
         console.log(data);
       }
     });
@@ -636,8 +638,10 @@ fapp.controller("adminCtrl", function ($scope) {
     io.socket.post(url, {id: id}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.flairApps.splice($index, 1);
+        $scope.$apply();
       } else {
         $scope.flairAppError = "Couldn't approve, for some reason.";
+        $scope.$apply();
         console.log(data);
       }
     });

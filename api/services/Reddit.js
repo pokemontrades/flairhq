@@ -31,7 +31,6 @@ exports.refreshToken = function (refreshToken, callback) {
       "Content-Length": data.length
     }
   }, function(err, response, body){
-    console.log(body);
     callback(body.access_token);
   });
 };
@@ -79,12 +78,12 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
-      body = JSON.parse(body);
-      if (body.json.errors.length === 0) {
+      var bodyJson = JSON.parse(body);
+      if (bodyJson.json.errors.length === 0) {
         callback(undefined, data.css_class);
 
       } else {
-        callback(body.json.errors);
+        callback(bodyJson.json.errors);
       }
     });
   });

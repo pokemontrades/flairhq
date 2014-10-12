@@ -45,3 +45,18 @@ input[type="checkbox"] {
   width: 20px;
   height: 20px;
 }
+
+table.table{
+  table-layout: fixed;
+  tbody > tr > td:first-child {
+    width:120px;
+  }
+  tbody > tr > td:last-child {
+    width:50px;
+    text-align: center;
+  }
+  tbody > tr > td:nth-last-child(2) {
+    width:100px;
+    text-align: center;
+  }
+}

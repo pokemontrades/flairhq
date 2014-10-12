@@ -412,8 +412,8 @@ fapp.controller("userCtrl", function ($scope) {
 
   $scope.inPokemonTradesCasual = function (flair) {
     return flair.sub === "pokemontrades"
-      && flair.events === 0
-      && flair.shinyevents === 0;
+      && !flair.events
+      && !flair.shinyevents;
   };
 
   $scope.inPokemonTradesCollector = function (flair) {

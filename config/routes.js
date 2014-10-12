@@ -121,6 +121,16 @@ module.exports.routes = {
     action     : 'getApps'
   },
 
+  '/flair/app/approve' :{
+    controller : 'flair',
+    action     : 'approveApp'
+  },
+
+  '/flair/app/deny' :{
+    controller : 'flair',
+    action     : 'denyApp'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'

@@ -84,7 +84,7 @@ module.exports.session = {
 
   // username: '',
   // password: '',
-  // auto_reconnect: false,
+  auto_reconnect: true,
   // ssl: false,
   // stringify: true
 

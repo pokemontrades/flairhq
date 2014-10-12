@@ -31,6 +31,7 @@ exports.refreshToken = function (refreshToken, callback) {
       "Content-Length": data.length
     }
   }, function(err, response, body){
+    console.log(body);
     callback(body.access_token);
   });
 };
@@ -57,6 +58,34 @@ exports.getFlair = function (refreshToken, callback) {
       }, function(err, response, body2){
         callback(body1.current, body2.current);
       });
+    });
+  });
+};
+
+exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    var data = {
+      api_type: 'json',
+      css_class: cssClass,
+      text: text,
+      name: name
+    };
+
+    request.post({
+      url: 'https://oauth.reddit.com/r/pokemontrades/api/flair',
+      formData: data,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+      body = JSON.parse(body);
+      if (body.json.errors.length === 0) {
+        callback(undefined, data.css_class);
+
+      } else {
+        callback(body.json.errors);
+      }
     });
   });
 };

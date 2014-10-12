@@ -18,12 +18,13 @@
                 <span class="pull-right">
                   {{formattedName(app.flair)}}
                   <small>({{app.sub}})</small>
-                  <button class="btn btn-default">Approve</button>
-                  <button class="btn btn-danger">Deny</button>
+                  <button class="btn btn-default" ng-click="approveApp(app.id, $index)">Approve</button>
+                  <button class="btn btn-danger" ng-click="denyApp(app.id, $index)">Deny</button>
                 </span>
               </h4>
             </li>
           </ul>
+          <div class="alert alert-danger" ng-show="flairAppError">{{flairAppError}}</div>
 
         </div>
       </div>

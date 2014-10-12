@@ -347,6 +347,10 @@ fapp.controller("userCtrl", function ($scope) {
     {name: "svexchange", view: "SV Exchange"}
   ];
 
+  $scope.isApproved = function (el) {
+    return el.approved;
+  }
+
   $scope.formattedName = function (name) {
     var formatted = "";
     if (name.indexOf("ball") > -1) {
@@ -504,6 +508,13 @@ fapp.controller("userCtrl", function ($scope) {
       games = $scope.user.games,
       url = "/user/edit";
 
+    var len = fcs.length
+    while (len--) {
+      if (fcs[len] === "") {
+        fcs.splice(len, 1);
+      }
+    }
+
     var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
     for (fc in fcs) {
       if (!patt.test(fcs[fc])) {
@@ -571,6 +582,7 @@ fapp.controller("userCtrl", function ($scope) {
 fapp.controller("adminCtrl", function ($scope) {
   $scope.users = [];
   $scope.flairApps = [];
+  $scope.flairAppError = "";
 
   $scope.getFlairApps = function () {
     io.socket.get("/flair/apps/all", function (data, res) {
@@ -599,6 +611,34 @@ fapp.controller("adminCtrl", function ($scope) {
         $scope.$apply();
       } else {
         console.log("Error");
+      }
+    });
+  };
+
+  $scope.denyApp = function (id, $index) {
+    var url = "/flair/app/deny";
+    $scope.flairAppError = "";
+
+    io.socket.post(url, {id: id}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.flairApps.splice($index, 1);
+      } else {
+        $scope.flairAppError = "Couldn't deny, for some reason.";
+        console.log(data);
+      }
+    });
+  };
+
+  $scope.approveApp = function (id, $index) {
+    var url = "/flair/app/approve";
+    $scope.flairAppError = "";
+
+    io.socket.post(url, {id: id}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.flairApps.splice($index, 1);
+      } else {
+        $scope.flairAppError = "Couldn't approve, for some reason.";
+        console.log(data);
       }
     });
   };

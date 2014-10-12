@@ -383,7 +383,8 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
   };
 
   $scope.applyFlair = function () {
-    if ($scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair) {
+    if ($scope.selectedTradeFlair &&
+      $scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair) {
       io.socket.post("/flair/apply", {
         flair: $scope.selectedTradeFlair,
         sub: "pokemontrades"
@@ -391,7 +392,8 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
         console.log(data);
       });
     }
-    if ($scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair) {
+    if ($scope.selectedExchFlair &&
+      $scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair) {
       io.socket.post("/flair/apply", {
         flair: $scope.selectedExchFlair,
         sub: "svexchange"

@@ -2,9 +2,9 @@
 var request = require("request");
 
 exports.data = {
-  clientID: "PrSdhM2opUJwPg",
-  clientIDSecret: "grk5K2CzrWsmr433gXgC_fx7AdQ",
-  redirectURL: "http://localhost:1337/auth/reddit/callback"
+  clientID: sails.config.reddit.clientID,
+  clientIDSecret: sails.config.reddit.clientIDSecret,
+  redirectURL: sails.config.reddit.redirectURL
 };
 
 exports.refreshToken = function (refreshToken, callback) {

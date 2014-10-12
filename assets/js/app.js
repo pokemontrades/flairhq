@@ -187,7 +187,7 @@ fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope
 
 }]);
 
-fapp.controller("indexCtrl", function ($scope) {
+fapp.controller("indexCtrl", ['$scope', function ($scope) {
   $scope.refUrl = "";
   $scope.user2 = "";
   $scope.gave = "";
@@ -315,9 +315,9 @@ fapp.controller("indexCtrl", function ($scope) {
     });
   };
 
-});
+}]);
 
-fapp.controller("userCtrl", function ($scope) {
+fapp.controller("userCtrl", ['$scope', function ($scope) {
   $scope.scope = $scope;
   $scope.user = undefined;
   $scope.flairs = {};
@@ -577,9 +577,9 @@ fapp.controller("userCtrl", function ($scope) {
   };
 
   $scope.getFlairs();
-});
+}]);
 
-fapp.controller("adminCtrl", function ($scope) {
+fapp.controller("adminCtrl", ['$scope', function ($scope) {
   $scope.users = [];
   $scope.flairApps = [];
   $scope.flairAppError = "";
@@ -649,4 +649,4 @@ fapp.controller("adminCtrl", function ($scope) {
 
   $scope.getBannedUsers();
   $scope.getFlairApps();
-});
+}]);

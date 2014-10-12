@@ -33,7 +33,7 @@
           </div>
           <div class="col-md-4">
             <h3>/r/svexchange</h3>
-            <div class="list-group">
+            <div class="list-group col-md-12">
               <h4>Hatcher</h4>
               <a ng-repeat="flair in flairs | filter:inSVExchange | orderBy: 'eggs' track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',

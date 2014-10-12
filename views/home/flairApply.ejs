@@ -13,6 +13,7 @@
           <div class="col-md-8">
             <h3>/r/pokemontrades</h3>
             <div class="list-group col-md-6">
+              <h4>Breeder</h4>
               <a ng-repeat="flair in flairs | filter:inPokemonTradesCasual | orderBy: 'trades' track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
@@ -21,6 +22,7 @@
               </a>
             </div>
             <div class="list-group col-md-6">
+              <h4>Collector</h4>
               <a ng-repeat="flair in flairs | filter:inPokemonTradesCollector | orderBy: 'trades' track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
@@ -31,6 +33,7 @@
           </div>
           <div class="col-md-4">
             <h3>/r/svexchange</h3>
+            <h4>Hatcher</h4>
             <div class="list-group">
               <a ng-repeat="flair in flairs | filter:inSVExchange | orderBy: 'eggs' track by flair.id"
                  class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',

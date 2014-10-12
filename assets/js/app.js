@@ -352,6 +352,9 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
   }
 
   $scope.formattedName = function (name) {
+    if (!name) {
+      return "";
+    }
     var formatted = "";
     if (name.indexOf("ball") > -1) {
       formatted += name.charAt(0).toUpperCase();

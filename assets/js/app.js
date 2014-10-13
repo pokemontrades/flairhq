@@ -82,6 +82,14 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
       }
     }
 
+    for (game in games) {
+      if (isNaN(games[game].tsv)) {
+        $scope.spin.modSaveProfile = false;
+        $scope.modSaveError = "One of the tsvs is not a number.";
+        return;
+      }
+    }
+
     io.socket.post(url, {
       "userid": $scope.refUser.id,
       "intro": intro,
@@ -583,6 +591,14 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
       if (!patt.test(fcs[fc])) {
         $scope.userspin.saveProfile = false;
         $("#saveError").html("One of your friend codes wasn't in the correct format.").show();
+        return;
+      }
+    }
+
+    for (game in games) {
+      if (isNaN(games[game].tsv)) {
+        $scope.userspin.saveProfile = false;
+        $("#saveError").html("One of the tsvs is not a number.").show();
         return;
       }
     }

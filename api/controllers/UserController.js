@@ -87,6 +87,9 @@ module.exports = {
 
   get: function (req, res) {
     User.findOne({name: req.params.name}, function (err, user) {
+      if (!user) {
+        return res.json(404);
+      }
       Game.find()
         .where({user: user.id})
         .exec(function (err, games) {

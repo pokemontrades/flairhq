@@ -1,10 +1,11 @@
 var fapp = angular.module("fapp", ['angularSpinner']);
 
-fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope, spinners) {
+fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   $scope.newComment = "";
   $scope.modSaveError = "";
   $scope.newStuff = {};
   $scope.ok = {};
+  $scope.spin = {};
   $scope.saving = {};
   $scope.refUser = {
     name: window.location.pathname.substring(3)
@@ -63,7 +64,7 @@ fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope
 
   $scope.modSaveProfile = function () {
     $scope.ok.modSaveProfile = false;
-    spinners.spin("modSaveProfile");
+    $scope.spin.modSaveProfile = true;
     if (!$scope.user.isMod) {
       return;
     }
@@ -75,6 +76,7 @@ fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope
     var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
     for (fc in fcs) {
       if (!patt.test(fcs[fc])) {
+        $scope.spin.modSaveProfile = false;
         $scope.modSaveError = "One of the friend codes wasn't in the correct format.";
         return;
       }
@@ -86,7 +88,7 @@ fapp.controller("referenceCtrl", ['$scope', 'usSpinnerService', function ($scope
       "fcs": fcs,
       "games": games
     }, function (data, res) {
-      spinners.stop("modSaveProfile");
+      $scope.spin.modSaveProfile = false;
       if (res.statusCode === 200) {
         $scope.ok.modSaveProfile = true;
         setTimeout(function () {
@@ -323,6 +325,8 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
   $scope.flairs = {};
   $scope.selectedTradeFlair = undefined;
   $scope.selectedExchFlair = undefined;
+  $scope.userok = {};
+  $scope.userspin = {};
   $scope.flairNames = [
     {name: "pokeball"},
     {name: "greatball"},
@@ -383,14 +387,29 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
   };
 
   $scope.applyFlair = function () {
+    var done = 0;
+    $scope.userok.applyFlair = false;
+    $scope.userspin.applyFlair = true;
     if ($scope.selectedTradeFlair &&
       $scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair) {
       io.socket.post("/flair/apply", {
         flair: $scope.selectedTradeFlair,
         sub: "pokemontrades"
       }, function (data, res) {
-        console.log(data);
+        if (res.statusCode === 200) {
+          if (done) {
+            $scope.userok.applyFlair = true;
+            $scope.userspin.applyFlair = false;
+            $scope.$apply();
+          } else {
+            done++;
+          }
+        } else {
+          console.log(data);
+        }
       });
+    } else {
+      done++;
     }
     if ($scope.selectedExchFlair &&
       $scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair) {
@@ -398,8 +417,24 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
         flair: $scope.selectedExchFlair,
         sub: "svexchange"
       }, function (data, res) {
-        console.log(data);
+        if (res.statusCode === 200) {
+          if (done) {
+            $scope.userok.applyFlair = true;
+            $scope.userspin.applyFlair = false;
+            $scope.$apply();
+          } else {
+            done++;
+          }
+        } else {
+          console.log(data);
+        }
       });
+    } else {
+      done++;
+    }
+
+    if (done === 2) {
+      $scope.userspin.applyFlair = false;
     }
   };
 
@@ -484,14 +519,15 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
     }
     var user = $scope.user,
         refs = $scope.user.references,
-        trades = flair.trades,
-        shinyevents = flair.shinyevents,
-        events = flair.events,
-        eggs = flair.eggs,
+        trades = flair.trades || 0,
+        shinyevents = flair.shinyevents || 0,
+        events = flair.events || 0,
+        eggs = flair.eggs || 0,
         userTrades = refs.events.length +
           refs.shinies.length +
           refs.casuals.length,
-        usershinyevents = refs.events.length + refs.shinies.length;
+        usershinyevents = refs.events.length +
+          refs.shinies.length;
 
     return (userTrades >= trades &&
       usershinyevents >= shinyevents &&

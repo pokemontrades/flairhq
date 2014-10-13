@@ -19,11 +19,16 @@
             </div>
             <div class="form-group">
               <label for="friendcode1" class="col-sm-3 control-label">Friend Code:</label>
-
               <div class="col-md-8">
-                <input type="text" class="form-control"
-                       ng-repeat="fc in user.friendCodes track by $index"
-                       ng-model="user.friendCodes[$index]"></input>
+                <div class="input-group" ng-repeat="fc in user.friendCodes track by $index">
+                  <input type="text" class="form-control"
+                         ng-model="user.friendCodes[$index]"></input>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="delFc($index)">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -40,10 +45,17 @@
               <div class="col-md-3">
                 <input type="text" class="form-control" ng-model="game.ign"></input>
               </div>
-              <label class="col-sm-2 control-label">TSV:</label>
+              <label class="col-sm-1 control-label">TSV:</label>
 
-              <div class="col-md-3">
-                <input type="text" class="form-control" ng-model="game.tsv"></input>
+              <div class="col-md-4">
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="game.tsv"></input>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="delGame($index)">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -65,7 +77,12 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" ng-click="saveProfile()">Save changes</button>
+        <button type="button" class="btn btn-primary has-spinner" ng-click="saveProfile()"
+                ng-class="[userok.saveProfile ? 'glyphicon glyphicon-ok' : '',
+                userspin.saveProfile ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{userok.saveProfile ? "" : "Save changes"}}
+        </button>
       </div>
     </div>
   </div>

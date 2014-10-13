@@ -505,6 +505,12 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
               }
             }
           }
+          if (!$scope.user.friendCodes.length) {
+            $scope.user.friendCodes = [""];
+          }
+          if (!$scope.user.games.length) {
+            $scope.user.games = [{tsv: "", ign: ""}];
+          }
           $scope.$apply();
         }
       })
@@ -539,16 +545,25 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
     $scope.user.friendCodes.push("");
   };
 
+  $scope.delFc = function (index) {
+    $scope.user.friendCodes.splice(index, 1);
+  };
+
   $scope.addGame = function () {
     $scope.user.games.push({tsv: "", ign: ""});
   };
 
+  $scope.delGame = function (index) {
+    $scope.user.games.splice(index, 1);
+  };
+
   $scope.saveProfile = function () {
+    $scope.userok.saveProfile = false;
+    $scope.userspin.saveProfile = true;
     var intro = $scope.user.intro,
       fcs = $scope.user.friendCodes,
       games = $scope.user.games,
       url = "/user/edit";
-
     var len = fcs.length
     while (len--) {
       if (fcs[len] === "") {
@@ -559,6 +574,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
     var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
     for (fc in fcs) {
       if (!patt.test(fcs[fc])) {
+        $scope.userspin.saveProfile = false;
         $("#saveError").html("One of your friend codes wasn't in the correct format.").show();
         return;
       }
@@ -570,14 +586,15 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
       "fcs": fcs,
       "games": games
     }, function (data, res) {
-      console.log(res);
       if (res.statusCode === 200) {
-        $("#profileModal").modal("toggle");
+        $scope.userok.saveProfile = true;
       } else if (res.statusCode === 400) {
         $("#saveError").html("Your friend code was not correct.").show();
       } else if (res.statusCode === 500) {
         $("#saveError").html("There was some issue saving.").show();
       }
+      $scope.userspin.saveProfile = false;
+      $scope.$apply();
     });
 
   };

@@ -13,7 +13,10 @@ module.exports = {
     req.params = req.allParams();
     User.findOne({id: req.params.userid}, function (err, user) {
       if (!user) {
-        res.json({error: "Can't find user"}, 404);
+        return res.json({error: "Can't find usere"}, 404);
+      } else if (user.name !== req.user.name && !user.isMod) {
+        return res.json("You can't edit another user's information. " +
+        "Unless you are a mod.", 403);
       } else {
         var updatedUser = {};
         if (req.params.intro) {

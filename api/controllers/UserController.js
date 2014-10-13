@@ -34,6 +34,23 @@ module.exports = {
           var promises = [],
             games = [];
 
+          Game.find()
+            .where({user: user.id}).exec(function (err, games) {
+            games.forEach(function (game) {
+              var deleteGame = true;
+              req.params.games.forEach(function (game2) {
+                if (game.id === game2.id) {
+                  deleteGame = false;
+                }
+              });
+              if (deleteGame) {
+                promises.push(
+                  Game.destroy(game.id).exec(function () {})
+                );
+              }
+            });
+          });
+
           req.params.games.forEach(function (game) {
             if (game.id && (game.tsv || game.ign)) {
               promises.push(Game.update(

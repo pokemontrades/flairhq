@@ -69,7 +69,7 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
       return;
     }
     var intro = $scope.refUser.intro,
-      fcs = $scope.refUser.friendCodes,
+      fcs = $scope.refUser.friendCodes.slice(0),
       games = $scope.refUser.games,
       url = "/user/edit";
 
@@ -386,6 +386,13 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
     return name;
   };
 
+  $scope.canApplyForAFlair = function () {
+    return (($scope.selectedTradeFlair &&
+      $scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair)
+    || ($scope.selectedExchFlair &&
+      $scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair));
+  };
+
   $scope.applyFlair = function () {
     var done = 0;
     $scope.userok.applyFlair = false;
@@ -561,7 +568,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
     $scope.userok.saveProfile = false;
     $scope.userspin.saveProfile = true;
     var intro = $scope.user.intro,
-      fcs = $scope.user.friendCodes,
+      fcs = $scope.user.friendCodes.slice(0),
       games = $scope.user.games,
       url = "/user/edit";
     var len = fcs.length

@@ -520,10 +520,10 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
               }
             }
           }
-          if (!$scope.user.friendCodes.length) {
+          if (!$scope.user.friendCodes || !$scope.user.friendCodes.length) {
             $scope.user.friendCodes = [""];
           }
-          if (!$scope.user.games.length) {
+          if (!$scope.user.games || !$scope.user.games.length) {
             $scope.user.games = [{tsv: "", ign: ""}];
           }
           $scope.$apply();

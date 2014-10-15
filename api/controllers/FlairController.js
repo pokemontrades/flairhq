@@ -49,13 +49,23 @@ module.exports = {
         if (err) {
           return res.json(err, 500);
         }
-        var flair;
-        if (true) {
+        var flair,
+            css_class;
+        if (app.sub === "pokemontrades") {
           flair = user.flair.ptrades.flair_text;
-        } else {
-          flair = user.flair.ptrades.flair_text;
+          css_class = user.flair.ptrades.flair_css_class;
+        } else if (app.sub === "svexchange") {
+          flair = user.flair.svex.flair_text;
+          css_class = user.flair.svex.flair_css_class;
         }
-        Reddit.setFlair(req.user.redToken, user.name, app.flair, flair, app.sub, function (err, css_class) {
+        css_class = css_class.substr(css_class.indexOf(' ') + 1);
+
+        Reddit.setFlair(
+          req.user.redToken,
+          user.name,
+          app.flair + " " + css_class,
+          flair,
+          app.sub, function (err, css_class) {
           if (err) {
             return res.json(err, 500);
           }

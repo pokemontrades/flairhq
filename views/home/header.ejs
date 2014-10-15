@@ -21,7 +21,7 @@
 
 
     <div class="collapse navbar-collapse pull-right" id="main-navbar">
-      <ul class="nav navbar-nav" ng-show="user">
+      <ul class="nav navbar-nav hidden" ng-show="user" ng-class="loaded ? '' : 'hidden'">
         <li><a href="/info">Information</a></li>
         <li class="dropdown" ng-if="user.isMod">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Moderation<span class="caret"></span></a>
@@ -49,7 +49,7 @@
         </li>
       </ul>
 
-      <ul class="nav navbar-nav" ng-hide="user">
+      <ul class="nav navbar-nav hidden" ng-hide="user" ng-class="loaded ? '' : 'hidden'">
         <li><a href="/info">Information</a></li>
         <li><a href="/auth/reddit/">Login/Register</a></li>
       </ul>

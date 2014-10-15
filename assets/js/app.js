@@ -333,6 +333,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
   $scope.flairs = {};
   $scope.selectedTradeFlair = undefined;
   $scope.selectedExchFlair = undefined;
+  $scope.loaded = false;
   $scope.userok = {};
   $scope.userspin = {};
   $scope.flairNames = [
@@ -501,6 +502,9 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
 
       $scope.getReferences();
       $scope.$apply();
+    } else {
+      $scope.loaded = true;
+      $scope.$apply();
     }
   });
 
@@ -526,8 +530,9 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
           if (!$scope.user.games || !$scope.user.games.length) {
             $scope.user.games = [{tsv: "", ign: ""}];
           }
-          $scope.$apply();
         }
+        $scope.loaded = true;
+        $scope.$apply();
       })
     } else {
       window.setTimeout($scope.getReferences, 1000);

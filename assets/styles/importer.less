@@ -31,8 +31,9 @@ a:visited {
   color: #eb0032;
 }
 
-@import 'bootstrap';
+@import 'bootstrap/bootstrap';
 @import 'flairs';
+@import 'spinners';
 
 .brand-img{
   margin-top:-20px;
@@ -65,22 +66,6 @@ table.table{
   }
 }
 
-.spinner {
-  display: inline-block;
-  opacity: 0;
-  max-width: 0;
-
-  -webkit-transition: opacity 0.25s, max-width 0.45s;
-  -moz-transition: opacity 0.25s, max-width 0.45s;
-  -o-transition: opacity 0.25s, max-width 0.45s;
-  transition: opacity 0.25s, max-width 0.45s;
-}
-
-.has-spinner.active {
-  cursor:progress;
-}
-
-.has-spinner.active .spinner {
-  opacity: 1;
-  max-width: 50px;
+.hidden{
+  display: none;
 }

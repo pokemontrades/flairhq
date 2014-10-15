@@ -414,6 +414,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
       }, function (data, res) {
         if (res.statusCode === 200) {
           if (done) {
+            $scope.selectedTradeFlair = undefined;
             $scope.userok.applyFlair = true;
             $scope.userspin.applyFlair = false;
             $scope.$apply();
@@ -437,6 +438,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
           if (done) {
             $scope.userok.applyFlair = true;
             $scope.userspin.applyFlair = false;
+            $scope.selectedExchFlair = undefined;
             $scope.$apply();
           } else {
             done++;

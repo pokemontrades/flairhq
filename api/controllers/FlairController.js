@@ -59,13 +59,15 @@ module.exports = {
           css_class = user.flair.svex.flair_css_class;
         }
         if (css_class.indexOf(' ') > -1) {
-          css_class = css_class.substr(css_class.indexOf(' ') + 1);
+          css_class = app.flair + " " + css_class.substr(css_class.indexOf(' ') + 1);
+        } else {
+          css_class = app.flair;
         }
 
         Reddit.setFlair(
           req.user.redToken,
           user.name,
-          app.flair + " " + css_class,
+          css_class,
           flair,
           app.sub, function (err, css_class) {
           if (err) {

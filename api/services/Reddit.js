@@ -71,7 +71,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
     };
 
     request.post({
-      url: 'https://oauth.reddit.com/r/pokemontrades/api/flair',
+      url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
       formData: data,
       headers: {
         Authorization: "bearer " + token,

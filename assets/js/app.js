@@ -1,4 +1,4 @@
-var fapp = angular.module("fapp", ['angularSpinner']);
+var fapp = angular.module("fapp", ['angularSpinner', 'ngReallyClickModule']);
 
 fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   $scope.newComment = "";
@@ -671,6 +671,12 @@ fapp.controller("adminCtrl", ['$scope', function ($scope) {
   $scope.users = [];
   $scope.flairApps = [];
   $scope.flairAppError = "";
+  $scope.adminok = {
+    appFlair: {}
+  };
+  $scope.adminspin = {
+    appFlair: {}
+  }
 
   $scope.getFlairApps = function () {
     io.socket.get("/flair/apps/all", function (data, res) {
@@ -720,21 +726,74 @@ fapp.controller("adminCtrl", ['$scope', function ($scope) {
   };
 
   $scope.approveApp = function (id, $index) {
-    var url = "/flair/app/approve";
+    $scope.adminok.appFlair[$index] = false;
+    $scope.adminspin.appFlair[$index] = true;
     $scope.flairAppError = "";
+    var url = "/flair/app/approve";
 
     io.socket.post(url, {id: id}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.flairApps.splice($index, 1);
-        $scope.$apply();
+        $scope.adminok.appFlair[$index] = true;
       } else {
         $scope.flairAppError = "Couldn't approve, for some reason.";
-        $scope.$apply();
         console.log(data);
       }
+      $scope.adminspin.appFlair[$index] = false;
+      $scope.$apply();
     });
   };
 
   $scope.getBannedUsers();
   $scope.getFlairApps();
 }]);
+
+angular.module('ngReallyClickModule', ['ui.bootstrap'])
+  .directive('ngReallyClick', ['$modal',
+    function($modal) {
+
+      var ModalInstanceCtrl = function($scope, $modalInstance) {
+        $scope.ok = function() {
+          $modalInstance.close();
+        };
+
+        $scope.cancel = function() {
+          $modalInstance.dismiss('cancel');
+        };
+      };
+
+      return {
+        restrict: 'A',
+        scope: {
+          ngReallyClick:"&"
+        },
+        link: function(scope, element, attrs) {
+          element.bind('click', function() {
+            var user = attrs.ngReallyUser;
+            var flair = attrs.ngReallyFlair;
+
+            var modalHtml = '<div class="modal-body">Are you sure you want ' +
+              'to give <strong>' + user +
+              '</strong> the <strong>' + flair + '</strong> flair?</div>';
+            modalHtml += '<div class="modal-footer">' +
+            '<button class="btn btn-primary" ng-click="ok()">Yes</button>' +
+            '<button class="btn btn-warning" ng-click="cancel()">No</button>' +
+            '</div>';
+
+            var modalInstance = $modal.open({
+              template: modalHtml,
+              controller: ModalInstanceCtrl
+            });
+
+            modalInstance.result.then(function() {
+              scope.ngReallyClick();
+            }, function() {
+              //Modal dismissed
+            });
+
+          });
+
+        }
+      }
+    }
+  ]);

@@ -79,9 +79,10 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
       }
     }, function(err, response, body){
       var bodyJson = JSON.parse(body);
-      if (bodyJson.json.errors.length === 0) {
+      if (bodyJson.error) {
+        callback(bodyJson.error);
+      } else if (bodyJson.json.errors.length === 0) {
         callback(undefined, data.css_class);
-
       } else {
         callback(bodyJson.json.errors);
       }

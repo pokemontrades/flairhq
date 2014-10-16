@@ -11,21 +11,31 @@
       <div class="modal-body">
         <div class="row">
 
-          <ul class="list-group col-md-7 col-md-offset-3">
+          <ul class="list-group col-md-7 col-md-offset-3 scrollable">
             <li ng-repeat="app in flairApps" class="list-group-item row">
               <h4>
                 <a href="/u/{{app.user}}">{{app.user}}</a>
                 <span class="pull-right">
                   {{formattedName(app.flair)}}
                   <small>({{app.sub}})</small>
-                  <button class="btn btn-default" ng-click="approveApp(app.id, $index)">Approve</button>
+                  <button class="btn btn-default has-spinner" ng-really-user="{{app.user}}"
+                          ng-really-flair="{{formattedName(app.flair)}}"
+                          ng-really-click="approveApp(app.id, $index)"
+                          ng-class="[adminok.appFlair[{{$index}}] ? 'glyphicon glyphicon-ok' : '',
+                            adminspin.appFlair[{{$index}}] ? 'active' : '']">
+                    <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+                    {{adminok.appFlair[$index] ? "" : "Approve"}}
+                  </button>
                   <button class="btn btn-danger" ng-click="denyApp(app.id, $index)">Deny</button>
                 </span>
               </h4>
             </li>
           </ul>
-          <div class="alert alert-danger" ng-show="flairAppError">{{flairAppError}}</div>
-
+        </div>
+        <div class="row">
+          <div class="col-md-10 col-md-offset-1">
+            <div class="alert alert-danger" ng-show="flairAppError">{{flairAppError}}</div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">

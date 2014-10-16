@@ -777,7 +777,7 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
               '</strong> the <strong>' + flair + '</strong> flair?</div>';
             modalHtml += '<div class="modal-footer">' +
             '<button class="btn btn-primary" ng-click="ok()">Yes</button>' +
-            '<button class="btn btn-warning" ng-click="cancel()">No</button>' +
+            '<button class="btn btn-default" ng-click="cancel()">No</button>' +
             '</div>';
 
             var modalInstance = $modal.open({

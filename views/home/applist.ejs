@@ -18,7 +18,7 @@
                 <span class="pull-right">
                   {{formattedName(app.flair)}}
                   <small>({{app.sub}})</small>
-                  <button class="btn btn-default has-spinner" ng-really-user="{{app.user}}"
+                  <button class="btn btn-primary has-spinner" ng-really-user="{{app.user}}"
                           ng-really-flair="{{formattedName(app.flair)}}"
                           ng-really-click="approveApp(app.id, $index)"
                           ng-class="[adminok.appFlair[{{$index}}] ? 'glyphicon glyphicon-ok' : '',
@@ -29,6 +29,9 @@
                   <button class="btn btn-danger" ng-click="denyApp(app.id, $index)">Deny</button>
                 </span>
               </h4>
+            </li>
+            <li class="list-group-item" ng-show="flairApps.length === 0">
+              There are no flair apps. Sad face.
             </li>
           </ul>
         </div>

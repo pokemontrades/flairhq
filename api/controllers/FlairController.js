@@ -8,17 +8,27 @@ module.exports = {
       return res.json("Not logged in", 403);
     }
 
-    Application.create({
+    var appData = {
       user: req.user.name,
       flair: req.allParams().flair,
       sub: req.allParams().sub
-    }).exec(function (err, apps) {
+    };
+
+    Application.find(appData).exec(function (err, app) {
       if (err) {
-        return res.json("Error: " + err, 500);
+        return res.json({error: err}, 500)
       }
-      if (apps) {
-        return res.json(apps, 200);
+      if (app.length > 0) {
+        return res.json({error: "Application already exists"}, 400)
       }
+      Application.create(appData).exec(function (err, apps) {
+        if (err) {
+          return res.json({error: err}, 500);
+        }
+        if (apps) {
+          return res.json(apps, 200);
+        }
+      });
     });
   },
 

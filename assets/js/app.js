@@ -335,6 +335,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
   $scope.selectedExchFlair = undefined;
   $scope.loaded = false;
   $scope.userok = {};
+  $scope.errors = {};
   $scope.userspin = {};
   $scope.flairNames = [
     {name: "pokeball"},
@@ -404,6 +405,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
 
   $scope.applyFlair = function () {
     var done = 0;
+    $scope.errors.flairApp = "";
     $scope.userok.applyFlair = false;
     $scope.userspin.applyFlair = true;
     if ($scope.selectedTradeFlair &&
@@ -421,7 +423,14 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
           } else {
             done++;
           }
+        } else if (res.statusCode === 400) {
+          $scope.errors.flairApp = "You have already applied for that flair.";
+          $scope.userspin.applyFlair = false;
+          $scope.$apply();
         } else {
+          $scope.errors.flairApp = "Something unexpected happened.";
+          $scope.userspin.applyFlair = false;
+          $scope.$apply();
           console.log(data);
         }
       });
@@ -533,6 +542,7 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
             $scope.user.games = [{tsv: "", ign: ""}];
           }
         }
+        $scope.$apply();
         $scope.loaded = true;
         $scope.$apply();
       })

@@ -9,7 +9,15 @@
 
     <tr data-toggle="collapse" href="#collapseevents">
       <td>Events ({{<%= theUser %>.references.events.length}})</td>
-      <td colspan="2"></td>
+      <td colspan="2">
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('events')"
+                ng-class="[ok.approveAll.events ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.events ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.events ? "" : "Approve all"}}
+        </button>
       <td>
         <span>{{<%= theUser %>.references.events.filter(isApproved).length}}</span>
       </td>
@@ -41,7 +49,16 @@
 
     <tr data-toggle="collapse" href="#collapseshinies">
       <td>Shinies ({{<%= theUser %>.references.shinies.length}})</td>
-      <td colspan="2"></td>
+      <td colspan="2">
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('shinies')"
+                ng-class="[ok.approveAll.shinies ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.shinies ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.shinies ? "" : "Approve all"}}
+        </button>
+      </td>
       <td>
         <span>{{<%= theUser %>.references.shinies.filter(isApproved).length}}</span>
       </td>
@@ -73,7 +90,16 @@
 
     <tr data-toggle="collapse" href="#collapsecasuals">
       <td>Casual ({{<%= theUser %>.references.casuals.length}})</td>
-      <td colspan="2"></td>
+      <td colspan="2">
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('casuals')"
+                ng-class="[ok.approveAll.casuals ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.casuals ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.casuals ? "" : "Approve all"}}
+        </button>
+      </td>
       <td>
         <span>{{<%= theUser %>.references.casuals.filter(isApproved).length}}</span>
       </td>
@@ -128,7 +154,16 @@
 
     <tr data-toggle="collapse" href="#collapseeggs">
       <td colspan="2"><h3>Egg hatches ({{<%= theUser %>.references.eggs.length}})</h3></td>
-      <td></td>
+      <td>
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('eggs')"
+                ng-class="[ok.approveAll.eggs ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.eggs ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.eggs ? "" : "Approve all"}}
+        </button>
+      </td>
       <td>
         <span>{{<%= theUser %>.references.eggs.filter(isApproved).length}}</span>
       </td>
@@ -160,7 +195,16 @@
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
       <td colspan="2"><h3>Giveaways ({{<%= theUser %>.references.giveaways.length}})</h3></td>
-      <td></td>
+      <td>
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('giveaways')"
+                ng-class="[ok.approveAll.giveaways ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.giveaways ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.giveaways ? "" : "Approve all"}}
+        </button>
+      </td>
       <td>
         <span>{{<%= theUser %>.references.giveaways.filter(isApproved).length}}</span>
       </td>

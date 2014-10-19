@@ -194,18 +194,16 @@ module.exports = {
 
   approve: function (req, res) {
     if (!req.user.isMod) {
-      res.json("Not a mod", 403);
-      return;
+      return res.json("Not a mod", 403);
     }
 
-    var refUserId = req.allParams().userId,
+    var refUserId = req.allParams().userid,
       id = req.allParams().id,
       approve = req.allParams().approve;
 
-    User.findOne(refUserId, function (err, refUser) {
-      if (!user) {
-        res.json("User not found", 404);
-        return;
+    User.findOne({id: refUserId}, function (err, refUser) {
+      if (!refUser) {
+        return res.json("User not found", 404);
       }
       Reference.findOne(id, function (err, ref) {
         if (!ref) {
@@ -213,45 +211,112 @@ module.exports = {
             if (!egg) {
               Giveaway.findOne(id, function (err, give) {
                 if (!give) {
-                  res.json("Reference not found", 404);
-                  return;
+                  return res.json("Reference not found", 404);
                 } else {
                   give.approved = approve;
                   give.save(function (err) {
-                    if (!err) {
-                      res.json(give, 200);
-                      return;
-                    } else {
-                      res.json(err, 500);
+                    if (err) {
+                      return res.json(err, 500);
                     }
+                    return res.json(give, 200);
                   });
                 }
               });
             } else {
               egg.approved = approve;
               egg.save(function (err) {
-                if (!err) {
-                  res.json(egg, 200);
-                  return;
-                } else {
-                  res.json(err, 500);
+                if (err) {
+                  return res.json(err, 500);
                 }
+                return res.json(egg, 200);
               });
             }
           });
         } else {
           ref.approved = approve;
           ref.save(function (err) {
-            if (!err) {
-              res.json(ref, 200);
-              return;
-            } else {
-              res.json(err, 500);
+            if (err) {
+              return res.json(err, 500);
             }
+            return res.json(ref, 200);
           });
         }
       })
     });
+  },
+
+  approveAll: function (req, res) {
+    if (!req.user.isMod) {
+      return res.json("Not a mod", 403);
+    }
+
+    var refUserId = req.allParams().userid,
+      type = req.allParams().type;
+
+    User.findOne({id: refUserId}, function (err, refUser) {
+      if (!refUser) {
+        return res.json("User not found", 404);
+      }
+      if (type === "events"
+        || type === "shinies"
+        || type === "casuals") {
+        type = type.slice(0, -1);
+        if (type === "shinie") {
+          type = "shiny";
+        }
+        if (type === "event") {
+          Reference.update(
+            {user: refUser.id, type: "event"}, {approved: true}
+          ).exec(function (err, apps) {
+              Reference.update(
+                {user: refUser.id, type: "redemption"}, {approved: true}
+              ).exec(function (err, apps2) {
+                  if (!apps.length) {
+                    return res.json({error: "No apps of that type found."}, 404);
+                  }
+                  if (err) {
+                    return res.json({error: err}, 500);
+                  }
+                  return res.json(apps.concat(apps2), 200);
+                });
+            });
+        } else {
+          Reference.update(
+            {user: refUser.id, type: type}, {approved: true}
+          ).exec(function (err, apps) {
+              if (!apps.length) {
+                return res.json({error :"No apps of that type found."}, 404);
+              }
+              if (err) {
+                return res.json({error: err}, 500);
+              }
+              return res.json(apps, 200);
+            });
+        }
+
+      } else if (type === "eggs") {
+        Egg.update({user: refUser.id}, {approved: true}).exec(function (err, apps) {
+          if (!apps.length) {
+            return res.json({error :"No apps of that type found."}, 404);
+          }
+          if (err) {
+            return res.json({error: err}, 500);
+          }
+          return res.json(apps, 200);
+        });
+      } else if (type === "giveaways") {
+        Giveaway.update({user: refUser.id}, {approved: true}).exec(function (err, apps) {
+          if (!apps.length) {
+            return res.json({error :"No apps of that type found."}, 404);
+          }
+          if (err) {
+            return res.json({error: err}, 500);
+          }
+          return res.json(apps, 200);
+        });
+      }
+    });
+
   },
 
   saveFlairs: function (req, res) {

@@ -86,6 +86,11 @@ module.exports.routes = {
     action     : 'approve'
   },
 
+  '/reference/approve/all' : {
+    controller : 'reference',
+    action     : 'approveAll'
+  },
+
   '/reference/delete' : {
     controller : 'reference',
     action     : 'delete'

@@ -4,8 +4,12 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   $scope.newComment = "";
   $scope.modSaveError = "";
   $scope.newStuff = {};
-  $scope.ok = {};
-  $scope.spin = {};
+  $scope.ok = {
+    approveAll: {}
+  };
+  $scope.spin = {
+    approveAll: {}
+  };
   $scope.saving = {};
   $scope.refUser = {
     name: window.location.pathname.substring(3)
@@ -157,7 +161,7 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   };
 
   $scope.approve = function (id, approve) {
-    var url = "/reference/approve"
+    var url = "/reference/approve";
 
     io.socket.post(url, {
       userid: $scope.refUser.id,
@@ -167,6 +171,26 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
       if (res.statusCode !== 200) {
         console.log(res.statusCode + ": " + data);
       }
+    });
+  };
+
+  $scope.approveAll = function (type) {
+    var url = "/reference/approve/all";
+    $scope.ok.approveAll[type] = false;
+    $scope.spin.approveAll[type] = true;
+
+    io.socket.post(url, {
+      userid: $scope.refUser.id,
+      type: type
+    }, function (data, res) {
+      if (res.statusCode !== 200) {
+        console.log(res.statusCode + ": " + data);
+      } else {
+        $scope.ok.approveAll[type] = true;
+        $scope.refUser.references[type] = data;
+      }
+      $scope.spin.approveAll[type] = false;
+      $scope.$apply();
     });
   };
 

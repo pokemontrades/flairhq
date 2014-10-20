@@ -642,6 +642,9 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
         $("#saveError").html("One of the tsvs is not a number.").show();
         return;
       }
+      if (games[game].tsv === "") {
+        games[game].tsv = 0;
+      }
     }
 
     io.socket.post(url, {

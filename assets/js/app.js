@@ -77,7 +77,7 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
       games = $scope.refUser.games,
       url = "/user/edit";
 
-    var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+    var patt = /\d{4}(-?)\d{4}\1\d{4}/;
     for (fc in fcs) {
       if (!patt.test(fcs[fc])) {
         $scope.spin.modSaveProfile = false;

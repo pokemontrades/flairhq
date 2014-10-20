@@ -653,7 +653,8 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
       if (res.statusCode === 200) {
         $scope.userok.saveProfile = true;
       } else if (res.statusCode === 400) {
-        $("#saveError").html("Your friend code was not correct.").show();
+        $("#saveError").html("There was some issue.").show();
+        console.log(data);
       } else if (res.statusCode === 500) {
         $("#saveError").html("There was some issue saving.").show();
       }

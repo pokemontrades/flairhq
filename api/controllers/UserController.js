@@ -59,7 +59,7 @@ module.exports = {
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);
-                    res.json(400);
+                    res.json(err, 400);
                   } else {
                     games.push(game);
                   }
@@ -72,7 +72,7 @@ module.exports = {
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);
-                    res.json(400);
+                    res.json(err, 400);
                   } else {
                     games.push(game);
                   }

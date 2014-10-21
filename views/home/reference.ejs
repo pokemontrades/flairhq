@@ -37,7 +37,7 @@
               <div class="panel-heading">
                 <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
                 <a href="#" ng-click="deleteComment(comment.id, $index)" class="pull-right"
-                   ng-if="(comment.name === user.name) || user.isMod">
+                   ng-if="(comment.user2 === user.name) || user.isMod">
                   <span class="glyphicon glyphicon-trash"></span>
                 </a>
                 <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>

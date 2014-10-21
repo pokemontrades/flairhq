@@ -178,7 +178,7 @@ module.exports = {
 
     User.findOne({id: refUser}, function () {
       Comment.findOne({id: id}, function (err, comment) {
-        if ((user.name === comment.name) || user.isMod) {
+        if ((user.name === comment.user2) || user.isMod) {
           Comment.destroy({id: id}, function (err, com) {
             res.json(com, 200);
             return;

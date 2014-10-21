@@ -1,4 +1,8 @@
-var fapp = angular.module("fapp", ['angularSpinner', 'ngReallyClickModule']);
+var fapp = angular.module("fapp",
+  ['angularSpinner',
+    'ngReallyClickModule',
+    'numberPadding'
+  ]);
 
 fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   $scope.newComment = "";
@@ -835,3 +839,18 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
       }
     }
   ]);
+
+angular.module('numberPadding', []).filter('numberFixedLen', function () {
+  return function (n, len) {
+    var num = parseInt(n, 10);
+    len = parseInt(len, 10);
+    if (isNaN(num) || isNaN(len)) {
+      return n;
+    }
+    num = ''+num;
+    while (num.length < len) {
+      num = '0'+num;
+    }
+    return num;
+  };
+});

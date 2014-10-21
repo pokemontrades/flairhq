@@ -5,9 +5,10 @@ var fapp = angular.module("fapp",
   ]);
 
 fapp.controller("referenceCtrl", ['$scope', function ($scope) {
-  $scope.newComment = "";
+  $scope.newStuff = {
+    newComment: ""
+  }
   $scope.modSaveError = "";
-  $scope.newStuff = {};
   $scope.ok = {
     approveAll: {}
   };
@@ -40,7 +41,7 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   });
 
   $scope.addComment = function () {
-    var comment = $scope.newComment,
+    var comment = $scope.newStuff.newComment,
       url = "/reference/comment/add";
 
     io.socket.post(url, {

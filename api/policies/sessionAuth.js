@@ -12,6 +12,9 @@ module.exports = function(req, res, next) {
   // User is banned, log them out.
   if (req.user && req.user.banned) {
     req.logout();
+    if (req.isSocket) {
+      return res.json({status: 403, error: "You have been banned from FAPP"});
+    }
     return res.view(403, {error: "You have been banned from FAPP"});
   }
 
@@ -23,5 +26,8 @@ module.exports = function(req, res, next) {
 
   // User is not allowed
   // (default res.forbidden() behavior can be overridden in `config/403.js`)
+  if (req.isSocket) {
+    return res.json({status: 403, redirectTo: "/login"});
+  }
   return res.redirect('/login');
 };

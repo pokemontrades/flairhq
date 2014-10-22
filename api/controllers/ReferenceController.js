@@ -26,6 +26,29 @@ module.exports = {
     });
   },
 
+  all: function (req, res) {
+    Reference.find()
+      .where({
+        or: [{
+          type: "event"
+        }, {
+          type: "casual"
+        }, {
+          type: "shiny"
+        }, {
+          type: "redemption"
+        }]
+      })
+      .sort({createdAt: "asc"})
+      .exec(function (err, refs) {
+        if (err) {
+          return next(err);
+        }
+        return res.json(refs);
+      });
+
+  },
+
   add: function (req, res) {
     req.params = req.allParams();
     User.findOne({id: req.params.userid}, function (err, user) {

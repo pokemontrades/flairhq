@@ -54,11 +54,14 @@ module.exports = {
 
     User.findOne({id: req.params.userid}, function (err, refUser) {
       if (!refUser) {
-        res.json({error: "Can't find user"}, 404);
+        return res.json({error: "Can't find user"}, 404);
       } else {
         Reference.findOne({url: req.params.url, user: refUser.id}, function (err, ref) {
-          if (err || ref) {
-            res.json(400);
+          if (err) {
+            return res.json(err, 500);
+          }
+          if (ref) {
+            return res.json(400);
           } else {
             Reference.create(
               {
@@ -73,9 +76,9 @@ module.exports = {
               function (err, ref) {
                 if (err) {
                   console.log(err);
-                  res.json(400);
+                  return res.json(400);
                 } else {
-                  res.json(ref, 200);
+                  return res.json(ref, 200);
                 }
               }
             );
@@ -91,22 +94,24 @@ module.exports = {
 
     Reference.find({id: id}).exec(function (err, ref) {
       if (!ref) {
-        return res.notFound();
+        return res.json(404);
       }
       if (err) {
         return res.json(err, 500);
       }
+      console.log(ref);
+      console.log("ref.user :" + ref.user);
       if (ref.user === req.user.id || req.user.isMod) {
         Reference.destroy({id: id})
           .exec(function (err, refs) {
             if (err) {
-              res.json(err, 400);
+              return res.json(err, 400);
             } else {
-              res.json(200);
+              return res.json(200);
             }
           });
       } else {
-        res.json("unauthorised", 403);
+        return res.json("unauthorised", 403);
       }
     });
 

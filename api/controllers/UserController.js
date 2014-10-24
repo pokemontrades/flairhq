@@ -19,10 +19,10 @@ module.exports = {
         "Unless you are a mod.", 403);
       } else {
         var updatedUser = {};
-        if (req.params.intro) {
+        if (req.params.intro !== undefined) {
           updatedUser.intro = req.params.intro;
         }
-        if (req.params.fcs) {
+        if (req.params.fcs !== undefined) {
           updatedUser.friendCodes = req.params.fcs;
         }
 

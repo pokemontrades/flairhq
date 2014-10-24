@@ -89,7 +89,13 @@ module.exports = {
     var id = req.allParams().refId,
       type = req.allParams().type;
 
-    Reference.findOne(id).exec(function (err, ref) {
+    Reference.find({id: id}).exec(function (err, ref) {
+      if (!ref) {
+        res.notFound();
+      }
+      if (err) {
+        res.json(err, 500);
+      }
       if (ref.user === req.user.id || req.user.isMod) {
         Reference.destroy({id: id})
           .exec(function (err, refs) {

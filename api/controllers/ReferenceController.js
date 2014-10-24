@@ -91,10 +91,10 @@ module.exports = {
 
     Reference.find({id: id}).exec(function (err, ref) {
       if (!ref) {
-        res.notFound();
+        return res.notFound();
       }
       if (err) {
-        res.json(err, 500);
+        return res.json(err, 500);
       }
       if (ref.user === req.user.id || req.user.isMod) {
         Reference.destroy({id: id})

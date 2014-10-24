@@ -12,7 +12,7 @@
  *
  */
 module.exports = function(grunt) {
-	var version = "1.0.6";
+	var version = "1.0.7";
 
 	grunt.config.set('sails-linker', {
 		devJs: {

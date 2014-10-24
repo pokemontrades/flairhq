@@ -913,3 +913,5 @@ angular.module('numberPadding', []).filter('numberFixedLen', function () {
     return num;
   };
 });
+
+$(function() { $("[data-toggle='collapse']").click(function() {}); })

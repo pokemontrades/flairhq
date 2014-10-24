@@ -108,71 +108,38 @@ module.exports = {
   get: function (req, res) {
     User.findOne({name: req.params.name}, function (err, user) {
       if (!user) {
-        return res.json(404);
+        return res.notFound();
       }
       Game.find()
         .where({user: user.id})
+        .sort({createdAt: "desc"})
         .exec(function (err, games) {
 
           Reference.find()
             .where({user: user.id})
-            .where({type: ["event", "redemption"]})
-            .sort("type")
-            .exec(function (err, events) {
+            .sort({type: "asc", createdAt: "desc"})
+            .exec(function (err, references) {
 
-              Reference.find()
+              Comment.find()
                 .where({user: user.id})
-                .where({type: "shiny"})
-                .exec(function (err, shinies) {
+                .sort({createdAt: "desc"})
+                .exec(function (err, comments) {
 
-                  Reference.find()
-                    .where({user: user.id})
-                    .where({type: "casual"})
-                    .exec(function (err, casuals) {
+                  ModNote.find()
+                    .where({refUser: user.id})
+                    .sort({createdAt: "desc"})
+                    .exec(function (err, notes) {
 
-                      Reference.find()
-                        .where({user: user.id})
-                        .where({type: "bank"})
-                        .exec(function (err, banks) {
+                      if (req.user && user.name === req.user.name) {
+                        user.isMod = req.user.isMod;
+                      }
 
-                          Egg.find()
-                            .where({user: user.id})
-                            .exec(function (err, eggs) {
-
-                              Giveaway.find()
-                                .where({user: user.id})
-                                .exec(function (err, giveaways) {
-
-                                  Comment.find()
-                                    .where({user: user.id})
-                                    .exec(function (err, comments) {
-
-                                      ModNote.find()
-                                        .where({refUser: user.id})
-                                        .exec(function (err, notes) {
-
-                                          if (req.user && user.name === req.user.name) {
-                                            user.isMod = req.user.isMod;
-                                          }
-
-                                          user.references = {
-                                            events: events,
-                                            shinies: shinies,
-                                            casuals: casuals,
-                                            banks: banks,
-                                            eggs: eggs,
-                                            giveaways: giveaways
-                                          }
-                                          user.modNotes = notes;
-                                          user.games = games;
-                                          user.comments = comments;
-                                          user.redToken = undefined;
-                                          res.json(user, 200);
-                                        });
-                                    });
-                                });
-                            });
-                        });
+                      user.references = references;
+                      user.modNotes = notes;
+                      user.games = games;
+                      user.comments = comments;
+                      user.redToken = undefined;
+                      res.json(user, 200);
                     });
                 });
             });

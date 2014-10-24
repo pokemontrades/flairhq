@@ -4,7 +4,7 @@ var fapp = angular.module("fapp",
     'numberPadding'
   ]);
 
-fapp.controller("referenceCtrl", ['$scope', function ($scope) {
+fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter) {
   $scope.newStuff = {
     newComment: ""
   }
@@ -19,12 +19,28 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
   $scope.refUser = {
     name: window.location.pathname.substring(3)
   };
+
+  $scope.isEvent = function (el) {
+    return el.type === "event" || el.type === "redemption";
+  };
+
+  $scope.isShiny = function (el) {
+    return el.type === "shiny";
+  };
+
+  $scope.isCasual = function (el) {
+    return el.type === "casual";
+  };
+
   $scope.numberOfTrades = function () {
     if (!$scope.refUser.references) {
       return 0;
     }
     var refs = $scope.refUser.references;
-    return refs.events.length + refs.shinies.length + refs.casuals.length;
+    var event = $filter("filter")(refs, $scope.isEvent).length;
+    var shiny = $filter("filter")(refs, $scope.isShiny).length;
+    var casual = $filter("filter")(refs, $scope.isCasual).length;
+    return event + shiny + casual;
   };
 
   io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
@@ -192,7 +208,11 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
         console.log(res.statusCode + ": " + data);
       } else {
         $scope.ok.approveAll[type] = true;
-        $scope.refUser.references[type] = data;
+        if (type === "event") {
+          $scope.refUser.references = $filter("filter")($scope.refUser.references, {type: "!redemption"});
+        }
+        $scope.refUser.references = $filter("filter")($scope.refUser.references, {type: "!" + type});
+        $scope.refUser.references = $scope.refUser.references.concat(data);
       }
       $scope.spin.approveAll[type] = false;
       $scope.$apply();
@@ -216,7 +236,7 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
     var url = "/reference/delete";
     io.socket.post(url, {refId: id, type: type}, function (data, res) {
       if (res.statusCode === 200) {
-        $scope.refUser.references[type].splice(index, 1);
+        $scope.refUser.references = $filter("filter")($scope.refUser.references, {id: "!" + id});
         $scope.$apply();
       } else {
         console.log(res.statusCode + ": " + data);
@@ -226,7 +246,7 @@ fapp.controller("referenceCtrl", ['$scope', function ($scope) {
 
 }]);
 
-fapp.controller("indexCtrl", ['$scope', function ($scope) {
+fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
   $scope.refUrl = "";
   $scope.user2 = "";
   $scope.gave = "";
@@ -236,12 +256,27 @@ fapp.controller("indexCtrl", ['$scope', function ($scope) {
 
   $scope.addRefError = "";
 
+  $scope.isEvent = function (el) {
+    return el.type === "event" || el.type === "redemption";
+  };
+
+  $scope.isShiny = function (el) {
+    return el.type === "shiny";
+  };
+
+  $scope.isCasual = function (el) {
+    return el.type === "casual";
+  };
+
   $scope.numberOfTrades = function () {
     if (!$scope.user || !$scope.user.references) {
       return 0;
     }
     var refs = $scope.user.references;
-    return refs.events.length + refs.shinies.length + refs.casuals.length;
+    var event = $filter("filter")(refs, $scope.isEvent).length;
+    var shiny = $filter("filter")(refs, $scope.isShiny).length;
+    var casual = $filter("filter")(refs, $scope.isCasual).length;
+    return event + shiny + casual;
   };
 
   $scope.addReference = function () {
@@ -249,7 +284,7 @@ fapp.controller("indexCtrl", ['$scope', function ($scope) {
     var url = "/reference/add",
       user2 = $scope.user2,
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/;
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";
@@ -298,13 +333,13 @@ fapp.controller("indexCtrl", ['$scope', function ($scope) {
       console.log(res);
       if (res.statusCode === 200) {
         $scope.refUrl = "";
-        $scope.descrip = "";6
+        $scope.descrip = "";
         $scope.got = "";
         $scope.gave = "";
         $scope.user2 = "";
+        $scope.user.references.push(data);
 
         if (data.type === "redemption") {
-          $scope.user.references.events.push(data);
           $('#collapseevents').prev().children().animate({
             backgroundColor: "yellow"
           }, 200, function () {
@@ -314,7 +349,6 @@ fapp.controller("indexCtrl", ['$scope', function ($scope) {
           });
           $scope.$apply();
         } else if (data.type === "shiny") {
-          $scope.user.references.shinies.push(data);
           $('#collapseshinies').prev().children().animate({
             backgroundColor: "yellow"
           }, 200, function () {
@@ -324,7 +358,6 @@ fapp.controller("indexCtrl", ['$scope', function ($scope) {
           });
           $scope.$apply();
         } else {
-          $scope.user.references[$scope.type + "s"].push(data);
           $('#collapse' + $scope.type + "s").prev().children().animate({
             backgroundColor: "yellow"
           }, 200, function () {
@@ -356,7 +389,7 @@ fapp.controller("indexCtrl", ['$scope', function ($scope) {
 
 }]);
 
-fapp.controller("userCtrl", ['$scope', function ($scope) {
+fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
   $scope.scope = $scope;
   $scope.user = undefined;
   $scope.flairs = {};
@@ -392,7 +425,31 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
 
   $scope.isApproved = function (el) {
     return el.approved;
-  }
+  };
+
+  $scope.isEvent = function (el) {
+    return el.type === "event" || el.type === "redemption";
+  };
+
+  $scope.isShiny = function (el) {
+    return el.type === "shiny";
+  };
+
+  $scope.isCasual = function (el) {
+    return el.type === "casual";
+  };
+
+  $scope.isEgg = function (el) {
+    return el.type === "egg";
+  };
+
+  $scope.isBank = function (el) {
+    return el.type === "bank";
+  };
+
+  $scope.isGiveaway = function (el) {
+    return el.type === "giveaway";
+  };
 
   $scope.formattedName = function (name) {
     if (!name) {
@@ -590,16 +647,17 @@ fapp.controller("userCtrl", ['$scope', function ($scope) {
         shinyevents = flair.shinyevents || 0,
         events = flair.events || 0,
         eggs = flair.eggs || 0,
-        userTrades = refs.events.length +
-          refs.shinies.length +
-          refs.casuals.length,
-        usershinyevents = refs.events.length +
-          refs.shinies.length;
+        userevent = $filter("filter")(refs, $scope.isEvent).length;
+        usershiny = $filter("filter")(refs, $scope.isShiny).length;
+        usercasual = $filter("filter")(refs, $scope.isCasual).length;
+        userEgg = $filter("filter")(refs, $scope.isEgg).length,
+        usershinyevents = userevent + usershiny,
+        userTrades = usershinyevents + usercasual;
 
     return (userTrades >= trades &&
       usershinyevents >= shinyevents &&
-      refs.events.length >= events &&
-      refs.eggs.length >= eggs);
+      userevent >= events &&
+      userEgg >= eggs);
   };
 
   $scope.addFc = function () {

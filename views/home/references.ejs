@@ -8,23 +8,23 @@
     </tr>
 
     <tr data-toggle="collapse" href="#collapseevents">
-      <td>Events ({{<%= theUser %>.references.events.length}})</td>
+      <td>Events ({{<%= theUser %>.references.filter(isEvent).length}})</td>
       <td colspan="2">
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
-                ng-click="approveAll('events')"
-                ng-class="[ok.approveAll.events ? 'glyphicon glyphicon-ok' : '',
-                  spin.approveAll.events ? 'active' : '']">
+                ng-click="approveAll('event')"
+                ng-class="[ok.approveAll.event ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.event ? 'active' : '']">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-          {{ok.approveAll.events ? "" : "Approve all"}}
+          {{ok.approveAll.event ? "" : "Approve all"}}
         </button>
       <td>
-        <span>{{<%= theUser %>.references.events.filter(isApproved).length}}</span>
+        <span>{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
       </td>
       <td></td>
     </tr>
     <tbody id="collapseevents" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.events | orderBy: 'createdAt'">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isEvent | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
@@ -48,24 +48,24 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseshinies">
-      <td>Shinies ({{<%= theUser %>.references.shinies.length}})</td>
+      <td>Shinies ({{<%= theUser %>.references.filter(isShiny).length}})</td>
       <td colspan="2">
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
-                ng-click="approveAll('shinies')"
-                ng-class="[ok.approveAll.shinies ? 'glyphicon glyphicon-ok' : '',
-                  spin.approveAll.shinies ? 'active' : '']">
+                ng-click="approveAll('shiny')"
+                ng-class="[ok.approveAll.shiny ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.shiny ? 'active' : '']">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-          {{ok.approveAll.shinies ? "" : "Approve all"}}
+          {{ok.approveAll.shiny ? "" : "Approve all"}}
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.shinies.filter(isApproved).length}}</span>
+        <span>{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
       </td>
       <td></td>
     </tr>
     <tbody id="collapseshinies" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.shinies | orderBy: 'createdAt'">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isShiny | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
@@ -89,24 +89,24 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsecasuals">
-      <td>Casual ({{<%= theUser %>.references.casuals.length}})</td>
+      <td>Casual ({{<%= theUser %>.references.filter(isCasual).length}})</td>
       <td colspan="2">
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
-                ng-click="approveAll('casuals')"
-                ng-class="[ok.approveAll.casuals ? 'glyphicon glyphicon-ok' : '',
-                  spin.approveAll.casuals ? 'active' : '']">
+                ng-click="approveAll('casual')"
+                ng-class="[ok.approveAll.casual ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.casual ? 'active' : '']">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-          {{ok.approveAll.casuals ? "" : "Approve all"}}
+          {{ok.approveAll.casual ? "" : "Approve all"}}
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.casuals.filter(isApproved).length}}</span>
+        <span>{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
       </td>
       <td></td>
     </tr>
     <tbody id="collapsecasuals" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.casuals | orderBy: 'createdAt'">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isCasual | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
@@ -130,12 +130,12 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsebanks">
-      <td colspan="2"><h3>Bank trades ({{<%= theUser %>.references.banks.length}})</h3></td>
+      <td colspan="2"><h3>Bank trades ({{<%= theUser %>.references.filter(isBank).length}})</h3></td>
       <td></td>
       <td colspan="2"></td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.banks | orderBy: 'createdAt'">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isBank | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td colspan="2">
@@ -153,24 +153,24 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseeggs">
-      <td colspan="2"><h3>Egg Hatches ({{<%= theUser %>.references.eggs.length}})</h3></td>
+      <td colspan="2"><h3>Egg Hatches ({{<%= theUser %>.references.filter(isEgg).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
-                ng-click="approveAll('eggs')"
-                ng-class="[ok.approveAll.eggs ? 'glyphicon glyphicon-ok' : '',
-                  spin.approveAll.eggs ? 'active' : '']">
+                ng-click="approveAll('egg')"
+                ng-class="[ok.approveAll.egg ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.egg ? 'active' : '']">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-          {{ok.approveAll.eggs ? "" : "Approve all"}}
+          {{ok.approveAll.egg ? "" : "Approve all"}}
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.eggs.filter(isApproved).length}}</span>
+        <span>{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
       </td>
       <td></td>
     </tr>
     <tbody id="collapseeggs" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.eggs | orderBy: 'createdAt'">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isEgg | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>
@@ -194,24 +194,24 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
-      <td colspan="2"><h3>Giveaways ({{<%= theUser %>.references.giveaways.length}})</h3></td>
+      <td colspan="2"><h3>Giveaways ({{<%= theUser %>.references.filter(isGiveaway).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
-                ng-click="approveAll('giveaways')"
-                ng-class="[ok.approveAll.giveaways ? 'glyphicon glyphicon-ok' : '',
-                  spin.approveAll.giveaways ? 'active' : '']">
+                ng-click="approveAll('giveaway')"
+                ng-class="[ok.approveAll.giveaway ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.giveaway ? 'active' : '']">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-          {{ok.approveAll.giveaways ? "" : "Approve all"}}
+          {{ok.approveAll.giveaway ? "" : "Approve all"}}
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.giveaways.filter(isApproved).length}}</span>
+        <span>{{<%= theUser %>.references.filter(isGiveaway).filter(isApproved).length}}</span>
       </td>
       <td></td>
     </tr>
     <tbody id="collapsegiveaways" class="collapse">
-    <tr ng-repeat="reference in <%= theUser %>.references.giveaways | orderBy: 'createdAt'">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>

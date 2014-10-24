@@ -92,7 +92,7 @@ module.exports = {
     var id = req.allParams().refId,
       type = req.allParams().type;
 
-    Reference.find({id: id}).exec(function (err, ref) {
+    Reference.findOne({id: id}).exec(function (err, ref) {
       if (!ref) {
         return res.json(404);
       }

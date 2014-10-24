@@ -99,8 +99,6 @@ module.exports = {
       if (err) {
         return res.json(err, 500);
       }
-      console.log(ref);
-      console.log("ref.user :" + ref.user);
       if (ref.user === req.user.id || req.user.isMod) {
         Reference.destroy({id: id})
           .exec(function (err, refs) {

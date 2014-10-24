@@ -375,11 +375,12 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
 
   };
 
-  $scope.deleteRef = function (id, index, type) {
+  $scope.deleteRef = function (id, ref, type) {
     var url = "/reference/delete";
     io.socket.post(url, {refId: id, type: type}, function (data, res) {
       if (res.statusCode === 200) {
-        $scope.user.references[type].splice(index, 1);
+        var index = $scope.user.references.indexOf(ref);
+        $scope.user.references.splice(index, 1);
         $scope.$apply();
       } else {
         console.log(res.statusCode + ": " + data);

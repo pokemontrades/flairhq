@@ -51,26 +51,25 @@ module.exports = {
 
   add: function (req, res) {
     req.params = req.allParams();
-    var refData = {
-      url: req.params.url,
-      user: user.id,
-      user2: req.params.user2,
-      description: req.params.descrip,
-      type: req.params.type,
-      gave: req.params.gave,
-      got: req.params.got
-    }
 
-    User.findOne({id: req.params.userid}, function (err, user) {
-      if (!user) {
+    User.findOne({id: req.params.userid}, function (err, refUser) {
+      if (!refUser) {
         res.json({error: "Can't find user"}, 404);
       } else {
-        Reference.findOne({url: req.params.url, user: user.id}, function (err, ref) {
+        Reference.findOne({url: req.params.url, user: refUser.id}, function (err, ref) {
           if (err || ref) {
             res.json(400);
           } else {
             Reference.create(
-              refData,
+              {
+                url: req.params.url,
+                user: refUser.id,
+                user2: req.params.user2,
+                description: req.params.descrip,
+                type: req.params.type,
+                gave: req.params.gave,
+                got: req.params.got
+              },
               function (err, ref) {
                 if (err) {
                   console.log(err);

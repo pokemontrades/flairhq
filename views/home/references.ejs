@@ -39,7 +39,8 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
-        <a href="#" ng-click="deleteRef(reference.id, reference, 'events')"
+        <a href="#" ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'events')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
@@ -80,7 +81,8 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
-        <a href="#" ng-click="deleteRef(reference.id, reference, 'shinies')"
+        <a href="#"  ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'shinies')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
@@ -121,7 +123,8 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
-        <a href="#" ng-click="deleteRef(reference.id, reference, 'casuals')"
+        <a href="#"  ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'casuals')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
@@ -144,7 +147,8 @@
         </a>
       </td>
       <td>
-        <a href="#" ng-click="deleteRef(reference.id, reference, 'banks')"
+        <a href="#"  ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'banks')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
@@ -185,7 +189,8 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
-        <a href="#" ng-click="deleteRef(reference.id, reference, 'eggs')"
+        <a href="#"  ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'eggs')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
@@ -206,7 +211,7 @@
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.filter(isGiveaway).filter(isApproved).length}}</span>
+
       </td>
       <td></td>
     </tr>
@@ -214,14 +219,10 @@
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
       <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td>      </td>
       <td>
-        <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-               ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
-      </td>
-      <td>
-        <a href="#" ng-click="deleteRef(reference.id, reference, 'giveaways')"
+        <a href="#"  ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'giveaways')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>

@@ -640,8 +640,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     if (!$scope.user || !$scope.user.references) {
       return false;
     }
-    var user = $scope.user,
-        refs = $scope.user.references,
+    var refs = $scope.user.references,
         trades = flair.trades || 0,
         shinyevents = flair.shinyevents || 0,
         events = flair.events || 0,
@@ -871,10 +870,24 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
           element.bind('click', function() {
             var user = attrs.ngReallyUser;
             var flair = attrs.ngReallyFlair;
+            var switchInfo = attrs.ngReallySwitch;
+            var modalHtml = "";
+            var deleteHtml = '<div class="modal-body">' +
+              'Are you sure you wish to delete this reference?' +
+              '</div>';
+            var defaultHtml ='<div class="modal-body">Are you sure you want ' +
+              'to give <strong>' + user + '</strong> the <strong>' +
+              flair + '</strong> flair?</div>';
 
-            var modalHtml = '<div class="modal-body">Are you sure you want ' +
-              'to give <strong>' + user +
-              '</strong> the <strong>' + flair + '</strong> flair?</div>';
+            switch (switchInfo) {
+              case "deleteRef":
+                modalHtml = deleteHtml;
+                break;
+              default:
+                modalHtml = defaultHtml;
+                break;
+            }
+
             modalHtml += '<div class="modal-footer">' +
             '<button class="btn btn-primary" ng-click="ok()">Yes</button>' +
             '<button class="btn btn-default" ng-click="cancel()">No</button>' +
@@ -894,7 +907,7 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
           });
 
         }
-      }
+      };
     }
   ]);
 

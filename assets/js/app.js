@@ -1,3 +1,5 @@
+/* global io, angular */
+
 var fapp = angular.module("fapp",
   ['angularSpinner',
     'ngReallyClickModule',
@@ -7,7 +9,7 @@ var fapp = angular.module("fapp",
 fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter) {
   $scope.newStuff = {
     newComment: ""
-  }
+  };
   $scope.modSaveError = "";
   $scope.ok = {
     approveAll: {}
@@ -99,7 +101,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       url = "/user/edit";
 
     var patt = /\d{4}(-?)\d{4}\1\d{4}/;
-    for (fc in fcs) {
+    for (var fc in fcs) {
       if (!patt.test(fcs[fc])) {
         $scope.spin.modSaveProfile = false;
         $scope.modSaveError = "One of the friend codes wasn't in the correct format.";
@@ -107,7 +109,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       }
     }
 
-    for (game in games) {
+    for (var game in games) {
       if (isNaN(games[game].tsv)) {
         $scope.spin.modSaveProfile = false;
         $scope.modSaveError = "One of the tsvs is not a number.";
@@ -485,9 +487,9 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
 
   $scope.canApplyForAFlair = function () {
     return (($scope.selectedTradeFlair &&
-      $scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair)
-    || ($scope.selectedExchFlair &&
-      $scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair));
+        $scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair) ||
+    ($scope.selectedExchFlair &&
+        $scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair));
   };
 
   $scope.applyFlair = function () {
@@ -565,15 +567,11 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
   };
 
   $scope.inPokemonTradesCasual = function (flair) {
-    return flair.sub === "pokemontrades"
-      && !flair.events
-      && !flair.shinyevents;
+    return flair.sub === "pokemontrades" && !flair.events && !flair.shinyevents;
   };
 
   $scope.inPokemonTradesCollector = function (flair) {
-    return flair.sub === "pokemontrades"
-      && (flair.events > 0
-      || flair.shinyevents > 0);
+    return flair.sub === "pokemontrades" && (flair.events > 0 || flair.shinyevents > 0);
   };
 
   $scope.inSVExchange = function (flair) {
@@ -632,7 +630,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         $scope.$apply();
         $scope.loaded = true;
         $scope.$apply();
-      })
+      });
     } else {
       window.setTimeout($scope.getReferences, 1000);
     }
@@ -648,9 +646,9 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         shinyevents = flair.shinyevents || 0,
         events = flair.events || 0,
         eggs = flair.eggs || 0,
-        userevent = $filter("filter")(refs, $scope.isEvent).length;
-        usershiny = $filter("filter")(refs, $scope.isShiny).length;
-        usercasual = $filter("filter")(refs, $scope.isCasual).length;
+        userevent = $filter("filter")(refs, $scope.isEvent).length,
+        usershiny = $filter("filter")(refs, $scope.isShiny).length,
+        usercasual = $filter("filter")(refs, $scope.isCasual).length,
         userEgg = $filter("filter")(refs, $scope.isEgg).length,
         usershinyevents = userevent + usershiny,
         userTrades = usershinyevents + usercasual;
@@ -684,7 +682,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
       fcs = $scope.user.friendCodes.slice(0),
       games = $scope.user.games,
       url = "/user/edit";
-    var len = fcs.length
+    var len = fcs.length;
     while (len--) {
       if (fcs[len] === "") {
         fcs.splice(len, 1);
@@ -692,7 +690,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     }
 
     var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
-    for (fc in fcs) {
+    for (var fc in fcs) {
       if (!patt.test(fcs[fc])) {
         $scope.userspin.saveProfile = false;
         $("#saveError").html("One of your friend codes wasn't in the correct format.").show();
@@ -700,7 +698,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
       }
     }
 
-    for (game in games) {
+    for (var game in games) {
       if (isNaN(games[game].tsv)) {
         $scope.userspin.saveProfile = false;
         $("#saveError").html("One of the tsvs is not a number.").show();
@@ -778,7 +776,7 @@ fapp.controller("adminCtrl", ['$scope', function ($scope) {
   };
   $scope.adminspin = {
     appFlair: {}
-  }
+  };
 
   $scope.getFlairApps = function () {
     io.socket.get("/flair/apps/all", function (data, res) {
@@ -915,4 +913,4 @@ angular.module('numberPadding', []).filter('numberFixedLen', function () {
   };
 });
 
-$(function() { $("[data-toggle='collapse']").click(function() {}); })
+$(function() { $("[data-toggle='collapse']").click(function() {}); });

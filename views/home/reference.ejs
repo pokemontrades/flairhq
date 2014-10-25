@@ -4,12 +4,22 @@
     <div class="content">
       <div class="row">
         <div class="col-md-12">
-          <h2>
-            {{refUser.name}}'s Reference
-            <small ng-if="refUser.banned" class="alert alert-danger pull-right">
-              <strong>WARNING:</strong> This user is banned.
-            </small>
-          </h2>
+          <h1 class="usernameHeader">
+            {{refUser.name}}
+          </h1>
+          <div class="flairs">
+            <h5 class="flairTop">
+              <span ng-class="'flair-' + user.flair.ptrades.flair_css_class"></span>
+              {{refUser.flair.ptrades.flair_text}}
+            </h5>
+            <h5 class="flairBottom">
+              <span ng-class="'flair-' + user.flair.svex.flair_css_class"></span>
+              {{refUser.flair.svex.flair_text}}
+            </h5>
+          </div>
+          <h4 ng-if="refUser.banned" class="alert alert-danger pull-right">
+            <strong>WARNING:</strong> This user is banned.
+          </h4>
         </div>
       </div>
 

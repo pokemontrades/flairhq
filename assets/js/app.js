@@ -670,7 +670,8 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     $scope.user.games.push({tsv: "", ign: ""});
   };
 
-  $scope.delGame = function (index) {
+  $scope.delGame = function (game) {
+    var index = $scope.user.games.indexOf(game);
     $scope.user.games.splice(index, 1);
   };
 

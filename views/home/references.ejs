@@ -40,12 +40,12 @@
       </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#" ng-really-switch="deleteRef" class="icon"
            ng-really-click="deleteRef(reference.id, reference, 'events')"
-           ng-if="(!refUser || (user.id === refUser.id))">
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -86,7 +86,7 @@
       </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
@@ -132,7 +132,7 @@
       </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
@@ -160,7 +160,7 @@
       </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
@@ -206,7 +206,7 @@
       </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
@@ -242,7 +242,7 @@
       <td>      </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
@@ -278,7 +278,7 @@
       <td>      </td>
       <td>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)" class="icon">
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"

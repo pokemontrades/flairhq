@@ -88,6 +88,37 @@ module.exports = {
     });
   },
 
+  edit: function (req, res) {
+    req.params = req.allParams();
+
+    User.findOne({id: req.user.id}, function (err, refUser) {
+      if (!refUser) {
+        return res.json({error: "Can't find user"}, 404);
+      }
+
+      Reference.update({id: req.params.id, user: refUser.id},
+        {
+          url: req.params.url,
+          user: refUser.id,
+          user2: req.params.user2,
+          description: req.params.description,
+          type: req.params.type,
+          gave: req.params.gave,
+          got: req.params.got,
+          approved: false
+        })
+        .exec(function (err, ref) {
+          if (err) {
+            return res.json(err, 500);
+          }
+          if (!ref) {
+            return res.json(404);
+          }
+          return res.json(ref, 200);
+        });
+    });
+  },
+
   delete: function (req, res) {
     var id = req.allParams().refId,
       type = req.allParams().type;

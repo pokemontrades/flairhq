@@ -81,6 +81,11 @@ module.exports.routes = {
     action     : 'add'
   },
 
+  '/reference/edit' : {
+    controller : 'reference',
+    action     : 'edit'
+  },
+
   '/reference/approve' : {
     controller : 'reference',
     action     : 'approve'

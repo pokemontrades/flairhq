@@ -255,8 +255,78 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
   $scope.got = "";
   $scope.type = "";
   $scope.descrip = "";
+  $scope.selectedRef = {};
+  $scope.referenceToRevert = {};
 
   $scope.addRefError = "";
+  $scope.editRefError = "";
+  $scope.indexOk = {};
+  $scope.indexSpin = {};
+
+  $scope.editReference = function (ref) {
+    $scope.selectedRef = ref;
+    $scope.referenceToRevert = $.extend(true, {}, ref);
+  };
+
+  $scope.revertRef = function () {
+    var index = $scope.user.references.indexOf($scope.selectedRef);
+    $scope.user.references[index] = $.extend(true, {}, $scope.referenceToRevert);
+  };
+
+  $scope.editRef = function () {
+    $scope.editRefError = "";
+    $scope.indexOk.editRef = false;
+    var ref = $scope.selectedRef,
+      url = "/reference/edit",
+      regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
+
+    if (!ref.type) {
+      $scope.editRefError = "Please choose a type.";
+      return;
+    }
+    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc") {
+      if (!ref.description) {
+        $scope.editRefError = "Make sure you enter all the information";
+        return;
+      }
+    } else {
+      if (!ref.got || !ref.gave) {
+        $scope.editRefError = "Make sure you enter all the information";
+        return;
+      }
+    }
+    if (!ref.url ||
+      ((ref.type !== "giveaway" && ref.type !== "misc") && !ref.user2)) {
+      $scope.editRefError = "Make sure you enter all the information";
+      return;
+    }
+    if ((ref.type === "giveaway" && !regexpGive.test(ref.url)) ||
+      (ref.type !== "giveaway" && ref.type !== "misc" &&
+        !regexp.test(ref.url)) ||
+      (ref.type === "misc" && !regexpMisc.test(ref.url))) {
+      $scope.editRefError = "Looks like you didn't input a proper permalink";
+      return;
+    }
+
+    if (ref.user2.indexOf("/u/") === -1) {
+      ref.user2 = "/u/" + ref.user2;
+    }
+
+    $scope.indexSpin.editRef = true;
+    io.socket.post(url, ref, function (data, res) {
+      $scope.indexSpin.editRef = false;
+      if (res.statusCode !== 200) {
+        $scope.editRefError = "There was an issue.";
+        console.log(res);
+      } else {
+        $scope.indexOk.editRef = true;
+      }
+      $scope.$apply();
+    });
+
+  };
 
   $scope.isEvent = function (el) {
     return el.type === "event" || el.type === "redemption";

@@ -286,13 +286,14 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
     var url = "/reference/add",
       user2 = $scope.user2,
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/;
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";
       return;
     }
-    if ($scope.type === "egg" || $scope.type === "giveaway") {
+    if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {
       if (!$scope.descrip) {
         $scope.addRefError = "Make sure you enter all the information";
         return;
@@ -303,12 +304,15 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
         return;
       }
     }
-    if (!$scope.refUrl || (($scope.type !== "giveaway") && !$scope.user2)) {
+    if (!$scope.refUrl ||
+      (($scope.type !== "giveaway" && $scope.type !== "misc") && !$scope.user2)) {
       $scope.addRefError = "Make sure you enter all the information";
       return;
     }
     if (($scope.type === "giveaway" && !regexpGive.test($scope.refUrl)) ||
-      ($scope.type !== "giveaway" && !regexp.test($scope.refUrl))) {
+      ($scope.type !== "giveaway" && $scope.type !== "misc" &&
+        !regexp.test($scope.refUrl)) ||
+      ($scope.type === "misc" && !regexpMisc.test($scope.refUrl))) {
       $scope.addRefError = "Looks like you didn't input a proper permalink";
       return;
     }
@@ -324,7 +328,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       "type": $scope.type
     };
 
-    if ($scope.type === "egg" || $scope.type === "giveaway") {
+    if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {
       post.descrip = $scope.descrip;
     } else {
       post.got = $scope.got;
@@ -452,6 +456,10 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
 
   $scope.isGiveaway = function (el) {
     return el.type === "giveaway";
+  };
+
+  $scope.isMisc = function (el) {
+    return el.type === "misc";
   };
 
   $scope.formattedName = function (name) {

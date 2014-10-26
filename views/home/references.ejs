@@ -1,15 +1,15 @@
 <div class="row">
   <table class="table" id="referencesTable">
     <tr>
-      <td><h3>Trades ({{numberOfTrades()}})</h3></td>
-      <td colspan="2"><h3><small>Information</small></h3></td>
+      <td class="firstHeading" colspan="2"><h3>Trades ({{numberOfTrades()}})</h3></td>
+      <td><h3 class="text-center"><small></small></h3></td>
       <td><h3><small>Approved</small></h3></td>
       <td></td>
     </tr>
 
     <tr data-toggle="collapse" href="#collapseevents">
-      <td>Events ({{<%= theUser %>.references.filter(isEvent).length}})</td>
-      <td colspan="2">
+      <td colspan="2">Events ({{<%= theUser %>.references.filter(isEvent).length}})</td>
+      <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
                 ng-click="approveAll('event')"
@@ -49,8 +49,8 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseshinies">
-      <td>Shinies ({{<%= theUser %>.references.filter(isShiny).length}})</td>
-      <td colspan="2">
+      <td colspan="2">Shinies ({{<%= theUser %>.references.filter(isShiny).length}})</td>
+      <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
                 ng-click="approveAll('shiny')"
@@ -91,8 +91,8 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsecasuals">
-      <td>Casual ({{<%= theUser %>.references.filter(isCasual).length}})</td>
-      <td colspan="2">
+      <td colspan="2">Competitive / Casual ({{<%= theUser %>.references.filter(isCasual).length}})</td>
+      <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
                 ng-click="approveAll('casual')"
@@ -223,6 +223,38 @@
       <td>
         <a href="#"  ng-really-switch="deleteRef"
            ng-really-click="deleteRef(reference.id, reference, 'giveaways')"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+
+    <tr data-toggle="collapse" href="#collapseMisc">
+      <td colspan="2"><h3>Misc ({{<%= theUser %>.references.filter(isMisc).length}})</h3></td>
+      <td>
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('misc')"
+                ng-class="[ok.approveAll.misc ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.misc ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.misc ? "" : "Approve all"}}
+        </button>
+      </td>
+      <td>
+
+      </td>
+      <td></td>
+    </tr>
+    <tbody id="collapseMisc" class="collapse">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isMisc | orderBy: 'createdAt'">
+      <td><strong>{{$index + 1}}.</strong></td>
+      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td>      </td>
+      <td>
+        <a href="#"  ng-really-switch="deleteRef"
+           ng-really-click="deleteRef(reference.id, reference, 'misc')"
            ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>

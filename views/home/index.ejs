@@ -30,15 +30,17 @@
                 <option value="event">Event</option>
                 <option value="redemption">Redemption</option>
                 <option value="shiny">Shiny</option>
-                <option value="casual">Casual</option>
+                <option value="casual">Competitive/Casual</option>
                 <option value="bank">Bank</option>
                 <option value="egg">Egg Hatch</option>
                 <option value="giveaway">Giveaway</option>
+                <option value="misc">Miscellaneous</option>
               </select>
             </div>
           </div>
 
-          <div class="form-group" ng-show="type === 'egg' || type === 'giveaway'">
+          <div class="form-group"
+               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc'">
             <label for="descrip" class="col-sm-4 control-label">Description</label>
 
             <div class="col-md-8">
@@ -46,7 +48,8 @@
             </div>
           </div>
 
-          <div class="form-group" ng-hide="type === 'egg' || type === 'giveaway'">
+          <div class="form-group"
+               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc'">
             <label for="gave" class="col-sm-4 control-label">Gave:</label>
 
             <div class="col-md-3">

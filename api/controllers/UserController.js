@@ -91,17 +91,15 @@ module.exports = {
   },
 
   mine: function (req, res) {
-    user = req.user;
-
-    if(!user) {
-      return res.json(404);
+    if(!req.user) {
+      return res.json(403);
     }
 
     Game.find()
-      .where({user: user.id})
+      .where({user: req.user.id})
       .exec(function (err, games) {
-        user.games = games;
-        res.json(user, 200);
+        req.user.games = games;
+        res.json(req.user, 200);
       });
   },
 

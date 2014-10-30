@@ -27,18 +27,18 @@ module.exports = {
   },
 
   all: function (req, res) {
-    Reference.find()
-      .where({
-        or: [{
-          type: "event"
-        }, {
-          type: "casual"
-        }, {
-          type: "shiny"
-        }, {
-          type: "redemption"
-        }]
-      })
+    var dateQuery, query;
+    dateQuery = {};
+    if (req.query.before !== undefined)
+      dateQuery["<"] = new Date(req.query.before);
+    if (req.query.after !== undefined)
+      dateQuery[">"] = new Date(req.query.after);
+    query = {
+      type: ["event", "casual", "shiny", "redemption"]
+    };
+    if (dateQuery !== {})
+      query["createdAt"] = dateQuery;
+    Reference.find(query)
       .sort({createdAt: "asc"})
       .exec(function (err, refs) {
         if (err) {

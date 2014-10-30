@@ -7,8 +7,6 @@
 
 module.exports = {
 
-  adapter: 'mongo',
-
   types: {
     friendCodeFormat: function (codes) {
       for (code in codes) {
@@ -33,6 +31,9 @@ module.exports = {
       type: "array",
       friendCodeFormat: true
     },
-    isMod: "boolean"
+    isMod: "boolean",
+    banned: "boolean",
+    redToken: "string",
+    flair: "json"
   }
 };

@@ -3,8 +3,23 @@
 
     <div class="content">
       <div class="row">
-        <div class="col-md-6">
-          <h2>{{refUser.name}}'s Reference</h2>
+        <div class="col-md-12">
+          <h1 class="usernameHeader">
+            {{refUser.name}}
+          </h1>
+          <div class="flairs">
+            <h5 class="flairTop">
+              <span ng-class="'flair-' + refUser.flair.ptrades.flair_css_class"></span>
+              {{refUser.flair.ptrades.flair_text}}
+            </h5>
+            <h5 class="flairBottom">
+              <span ng-class="'flair-' + refUser.flair.svex.flair_css_class"></span>
+              {{refUser.flair.svex.flair_text}}
+            </h5>
+          </div>
+          <h4 ng-if="refUser.banned" class="alert alert-danger pull-right">
+            <strong>WARNING:</strong> This user is banned.
+          </h4>
         </div>
       </div>
 
@@ -31,18 +46,22 @@
             <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
               <div class="panel-heading">
                 <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
+                <a href="#" ng-click="deleteComment(comment.id, $index)" class="pull-right"
+                   ng-if="(comment.user2 === user.name) || user.isMod">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </a>
                 <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
               </div>
               <div class="panel-body">{{comment.message}}</div>
             </div>
           </div>
 
-          <div class="row">
+          <div class="row" ng-if="user">
             <form class="form-horizontal col-md-6" role="form" ng-submit="addComment()">
               <h2>Leave a comment on this user's reference</h2>
 
               <div class="form-group col-md-10">
-                <textarea class="form-control" id="newComment" ng-model="newComment"></textarea>
+                <textarea class="form-control" id="newComment" ng-model="newStuff.newComment"></textarea>
               </div>
               <div class="col-md-offset-1 col-md-1">
                 <button type="submit" class="btn btn-primary">Comment</button>

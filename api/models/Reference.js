@@ -15,9 +15,10 @@ module.exports = {
     user2: "string",
     gave: "string",
     got: "string",
+    description: "string",
     type: {
       type: "string",
-      enum: ["event", "redemption", "shiny", "casual", "bank", "egg"]
+      enum: ["event", "redemption", "shiny", "casual", "bank", "egg", "giveaway", "misc"]
     },
     // This defines whether the other user has added the same url
     verified: "boolean",

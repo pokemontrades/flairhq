@@ -16,9 +16,10 @@
   <div class="col-md-6">
     <h4>Games:</h4>
     <ul>
-      <li ng-repeat="game in refUser.games">
-        IGN: {{game.ign}}
-        TSV: {{game.tsv}}
+      <li ng-repeat="game in refUser.games | orderBy:'createdAt'"
+          ng-show="game.ign || game.tsv">
+        <span ng-if="game.ign">IGN: {{game.ign}}</span>
+        <span ng-if="game.tsv > 0">TSV: {{game.tsv | numberFixedLen:4}}</span>
       </li>
     </ul>
   </div>

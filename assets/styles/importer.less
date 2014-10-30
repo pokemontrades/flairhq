@@ -27,9 +27,87 @@
 //
 // etc.
 
-@import 'bootstrap.less';
+a:visited:not(.icon) {
+  color: #eb0032;
+}
+
+.navbar a, .navbar a:visited {
+  color: #777777;
+}
+
+table h1, table h2, table h3 {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+@import 'bootstrap/bootstrap';
+@import 'flairs';
+@import 'spinners';
 
 .brand-img{
   margin-top:-20px;
   max-width:100px;
+}
+
+.input-group-addon {
+  padding: 0px 12px !important;
+}
+
+input[type="checkbox"] {
+  -moz-appearance: none;
+  margin: 0px;
+  width: 20px;
+  height: 20px;
+}
+
+table.table{
+  table-layout: fixed;
+  tbody > tr > td:last-child {
+    width:100px;
+    text-align: center;
+  }
+  tbody > tr > td:nth-last-child(2) {
+    width:100px;
+    text-align: center;
+  }
+}
+
+.hidden{
+  display: none;
+}
+
+.scrollable{
+  height: 50vh;
+  overflow-y: auto;
+}
+
+.scrollable .list-group-item {
+  margin-left: 1px;
+  margin-left: 1px;
+}
+
+.small-image{
+  width:10vw;
+}
+
+tr[data-toggle='collapse']{
+  cursor:pointer;
+}
+
+.usernameHeader{
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.flairTop{
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.flairBottom{
+  margin-top:2px;
+}
+
+.flairs{
+  display: inline-block;
 }

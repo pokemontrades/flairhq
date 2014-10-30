@@ -1,0 +1,92 @@
+<div class="modal fade" id="editReferenceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+            class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Edit Reference</h4>
+      </div>
+
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div id="editReference">
+            <div class="form-group">
+              <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
+
+              <div class="col-md-8">
+                <input type="url" class="form-control" ng-model="selectedRef.url"></input>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
+
+              <div class="col-md-8">
+                <select id="type" class="form-control" ng-model="selectedRef.type">
+                  <option value="event">Event</option>
+                  <option value="redemption">Redemption</option>
+                  <option value="shiny">Shiny</option>
+                  <option value="casual">Competitive/Casual</option>
+                  <option value="bank">Bank</option>
+                  <option value="egg">Egg Hatch</option>
+                  <option value="giveaway">Giveaway</option>
+                  <option value="misc">Miscellaneous</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group"
+                 ng-show="selectedRef.type === 'egg' || selectedRef.type === 'giveaway' ||
+                 selectedRef.type === 'misc'">
+              <label for="descrip" class="col-sm-4 control-label">Description</label>
+
+              <div class="col-md-8">
+                <input type="text" class="form-control" ng-model="selectedRef.description"></input>
+              </div>
+            </div>
+
+            <div class="form-group"
+                 ng-hide="selectedRef.type === 'egg' ||
+                  selectedRef.type === 'giveaway' ||
+                  selectedRef.type === 'misc'">
+              <label for="gave" class="col-sm-4 control-label">Gave:</label>
+
+              <div class="col-md-3">
+                <input type="text" class="form-control" ng-model="selectedRef.gave"></input>
+              </div>
+              <label class="col-sm-2 control-label">Got:</label>
+
+              <div class="col-md-3">
+                <input type="text" class="form-control" ng-model="selectedRef.got"></input>
+              </div>
+            </div>
+
+            <div class="form-group" ng-hide="selectedRef.type === 'giveaway'">
+              <label for="referenceUrl" class="col-sm-4 control-label">User</label>
+
+              <div class="col-md-8">
+                <input type="text" class="form-control" ng-model="selectedRef.user2"></input>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-sm-10 col-sm-offset-1">
+                <div class="alert alert-danger" role="alert" ng-hide="!editRefError">{{editRefError}}</div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"
+                ng-click="revertRef()">Cancel</button>
+        <button type="button" class="btn btn-primary has-spinner" ng-click="editRef()"
+                ng-class="[indexOk.editRef ? 'glyphicon glyphicon-ok' : '',
+                indexSpin.editRef ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{indexOk.editRef ? "" : "Save changes"}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

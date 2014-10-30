@@ -31,7 +31,8 @@
     "crypto": "^0.0.3",
     "sails-mongo": "^0.10.0",
     "connect-mongo": "^0.4.1",
-    "redwrap": "0.0.4"
+    "redwrap": "0.0.4",
+    "request": "~2.45.0"
   },
   "scripts": {
     "start": "node ./node_modules/sails/bin/sails.js lift"

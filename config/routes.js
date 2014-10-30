@@ -81,9 +81,19 @@ module.exports.routes = {
     action     : 'add'
   },
 
+  '/reference/edit' : {
+    controller : 'reference',
+    action     : 'edit'
+  },
+
   '/reference/approve' : {
     controller : 'reference',
     action     : 'approve'
+  },
+
+  '/reference/approve/all' : {
+    controller : 'reference',
+    action     : 'approveAll'
   },
 
   '/reference/delete' : {
@@ -96,9 +106,69 @@ module.exports.routes = {
     action     : 'comment'
   },
 
+  '/reference/comment/del' : {
+    controller : 'reference',
+    action     : 'delComment'
+  },
+
+  '/flair/all' : {
+    controller : 'reference',
+    action     : 'getFlairs'
+  },
+
+  '/flair/save' : {
+    controller : 'reference',
+    action     : 'saveFlairs'
+  },
+
+  '/flair/apply' : {
+    controller : 'flair',
+    action     : 'apply'
+  },
+
+  '/flair/apps/all' : {
+    controller : 'flair',
+    action     : 'getApps'
+  },
+
+  '/flair/app/approve' :{
+    controller : 'flair',
+    action     : 'approveApp'
+  },
+
+  '/flair/app/deny' :{
+    controller : 'flair',
+    action     : 'denyApp'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'
+  },
+
+  '/user/ban' : {
+    controller : 'user',
+    action     : 'ban'
+  },
+
+  '/user/banned' : {
+    controller : 'user',
+    action     : 'bannedUsers'
+  },
+
+  '/mod/applist' : {
+    controller : 'home',
+    action     : 'applist'
+  },
+
+  '/mod/banlist' : {
+    controller : 'home',
+    action     : 'banlist'
+  },
+
+  '/info' : {
+    controller : 'home',
+    action     : 'info'
   }
 
 };

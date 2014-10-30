@@ -1,5 +1,5 @@
 /**
-* Reference.js
+* Flair.js
 *
 * @description :: TODO: You might write a short summary of how this model works and what it represents here.
 * @docs        :: http://sailsjs.org/#!documentation/models
@@ -8,14 +8,12 @@
 module.exports = {
 
   attributes: {
-    user: "string",
-    ign: "string",
-    tsv: {
-      type: "int",
-      max: 4095,
-      min: 0,
-      numeric: true
-    }
+    name: "string",
+    trades: "integer",
+    shinyevents: "integer",
+    events: "integer",
+    eggs: "integer",
+    sub: "string"
   }
 };
 

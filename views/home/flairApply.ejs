@@ -1,0 +1,67 @@
+<div class="modal fade" id="flairApplication" tabindex="-1" role="dialog"
+     aria-labelledby="flairApplication" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title">Apply for Flair</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-8">
+            <h3>/r/pokemontrades</h3>
+            <div class="list-group col-md-6">
+              <h4>Breeder</h4>
+              <a ng-repeat="flair in flairs | filter:inPokemonTradesCasual | orderBy: 'trades' track by flair.id"
+                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedTradeFlair === flair.name) ? 'active' : '']"
+                 href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
+                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+              </a>
+            </div>
+            <div class="list-group col-md-6">
+              <h4>Collector</h4>
+              <a ng-repeat="flair in flairs | filter:inPokemonTradesCollector | orderBy: 'trades' track by flair.id"
+                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedTradeFlair === flair.name) ? 'active' : '']"
+                 href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
+                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h3>/r/svexchange</h3>
+            <div class="list-group col-md-12">
+              <h4>Hatcher</h4>
+              <a ng-repeat="flair in flairs | filter:inSVExchange | orderBy: 'eggs' track by flair.id"
+                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedExchFlair === flair.name) ? 'active' : '']"
+                 href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
+                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+              <div class="alert alert-danger" ng-show="errors.flairApp">{{errors.flairApp}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary has-spinner" ng-click="applyFlair()"
+                ng-class="[userok.applyFlair ? 'glyphicon glyphicon-ok' : '',
+                userspin.applyFlair ? 'active' : '',
+                canApplyForAFlair() ? '' : 'disabled']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{userok.applyFlair ? "" : "Apply"}}
+        </button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div><!-- /.modal -->

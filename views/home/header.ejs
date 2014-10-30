@@ -1,4 +1,7 @@
 <%- partial('editProfile.ejs') %>
+<%- partial('flairMod.ejs') %>
+<%- partial('flairApply.ejs') %>
+<%- partial('applist.ejs') %>
 
 <link type="text/css" href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
 
@@ -12,34 +15,42 @@
         <span class="icon-bar"></span>
       </button>
       <a href="/" class="navbar-brand">
-        <img src="/images/fapp-100.png" class="img-responsive brand-img"/>
+        <img src="/images/fapp-100.png" class="img-respo$nsive brand-img"/>
       </a>
     </div>
 
 
     <div class="collapse navbar-collapse pull-right" id="main-navbar">
-      <ul class="nav navbar-nav" ng-show="user">
-        <li><a href="http://www.reddit.com/r/pokemontrades">/r/pokemontrades</a></li>
-        <li><a href="https://github.com/YaManicKill/reddit-flair-apps/issues/">File a bug</a></li>
+      <ul class="nav navbar-nav hidden" ng-show="user" ng-class="loaded ? '' : 'hidden'">
+        <li><a href="/info">Information</a></li>
         <li class="dropdown" ng-if="user.isMod">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Moderation<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-inverse" role="menu">
-            <li><a href="#" data-toggle="modal">Empty jsut now</a></li>
+            <li><a href="/mod/banlist">Ban List</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#flairAppList">Flair App List</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#flairMod">Edit Flairs</a></li>
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.name}}<span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <span ng-class="'flair-' + user.flair.ptrades.flair_css_class"></span>
+            <span ng-class="'flair-' + user.flair.svex.flair_css_class"></span>
+            {{user.name}}
+            <span class="caret"></span>
+          </a>
           <ul class="dropdown-menu dropdown-inverse" role="menu">
+            <li><a href="#" data-toggle="modal" data-target="#flairApplication">Apply for flair</a></li>
+            <li class="divider"></li>
             <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
             <li><a ng-href="/u/{{user.name}}" data-toggle="modal">Public profile</a></li>
+            <li class="divider"></li>
             <li><a href="/logout">Logout</a></li>
           </ul>
         </li>
       </ul>
 
-      <ul class="nav navbar-nav" ng-hide="user">
-        <li><a href="http://www.reddit.com/r/pokemontrades">/r/pokemontrades</a></li>
-        <li><a href="https://github.com/YaManicKill/reddit-flair-apps/issues/">File a bug</a></li>
+      <ul class="nav navbar-nav hidden" ng-hide="user" ng-class="loaded ? '' : 'hidden'">
+        <li><a href="/info">Information</a></li>
         <li><a href="/auth/reddit/">Login/Register</a></li>
       </ul>
     </div>

@@ -1,3 +1,4 @@
+/* global User, Reddit */
 /**
  * HomeController.js
  *
@@ -8,111 +9,39 @@
 module.exports = {
 
   index: function(req, res) {
-    var user = req.user;
-    if(!user) {
-      req.json(400);
-    } else {
-      Reference.find()
-       .where({user: user.id})
-       .where({type: ["event", "redemption"]})
-       .sort("type")
-       .exec(function (err, events) {
-
-      Reference.find()
-       .where({user: user.id})
-       .where({type: "shiny"})
-       .exec(function (err, shinies) {
-
-      Reference.find()
-       .where({user: user.id})
-       .where({type: "casual"})
-       .exec(function (err, casuals) {
-
-      Reference.find()
-       .where({user: user.id})
-       .where({type: "bank"})
-       .exec(function (err, banks) {
-
-      Game.find()
-       .where({user: user.id})
-       .exec(function (err, games) {
-
-        res.view({
-          user: user,
-          references: {
-            events: events,
-            shinies: shinies,
-            casuals: casuals,
-            banks: banks
-          },
-          games: games
+    User.findOne({id: req.user.id}, function(err, user) {
+      if (user) {
+        res.view();
+        Reddit.getFlair(user.redToken, function (flair1, flair2) {
+          user.flair = {ptrades: flair1, svex: flair2};
+          user.save(function (err) {});
         });
-      });
-      });
-      });
-      });
-      });
-    }
+      } else {
+        res.json(400);
+      }
+    });
   },
-
-
 
   reference: function(req, res) {
     console.log(req.user);
     User.findOne({name: req.params.user}).exec(function (err, user){
-    
-    if (!user) {
-      res.json(404);
-    } else {
-      Reference.find()
-       .where({user: user.id})
-       .where({type: ["event", "redemption"]})
-       .sort("type")
-       .exec(function (err, events) {
-
-      Reference.find()
-       .where({user: user.id})
-       .where({type: "shiny"})
-       .exec(function (err, shinies) {
-
-      Reference.find()
-       .where({user: user.id})
-       .where({type: "casual"})
-       .exec(function (err, casuals) {
-
-      Reference.find()
-       .where({user: user.id})
-       .where({type: "bank"})
-       .exec(function (err, banks) {
-
-      Game.find()
-       .where({user: user.id})
-       .exec(function (err, games) {
-
-      Comment.find()
-       .where({user: user.id})
-       .exec(function (err, comments) {
-
-        res.view({
-          user: req.user,
-          refUser: user,
-          references: {
-            events: events,
-            shinies: shinies,
-            casuals: casuals,
-            banks: banks
-          },
-          games: games,
-          comments: comments
-        });
-
-      });
-      });
-      });
-      });
-      });
-      });
-    }
+      if (!user) {
+        res.json(404);
+      } else {
+        res.view();
+      }
     });
+  },
+
+  banlist: function (req, res) {
+    res.view();
+  },
+
+  applist: function (req, res) {
+    res.view();
+  },
+
+  info: function (req, res) {
+    res.view();
   }
 };

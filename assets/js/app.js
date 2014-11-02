@@ -62,6 +62,10 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
     var comment = $scope.newStuff.newComment,
       url = "/reference/comment/add";
 
+    if (!comment || comment === "") {
+      return;
+    }
+
     io.socket.post(url, {
       "refUser": $scope.refUser.id,
       "comment": comment

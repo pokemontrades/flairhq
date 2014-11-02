@@ -72,7 +72,7 @@ module.exports = {
           if (err) {
             return res.json(err, 500);
           }
-          if (ref) {
+          if (ref && (ref.type !== "egg" || req.params.type !== "egg")) {
             return res.json(400);
           } else {
             Reference.create(

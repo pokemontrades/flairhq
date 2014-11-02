@@ -66,7 +66,6 @@ module.exports = {
                 }
               ));
             } else if (!game.id && (game.tsv || game.ign)) {
-              console.log(game);
               promises.push(Game.create(
                 {user: user.id, tsv: parseInt(game.tsv), ign: game.ign})
                 .exec(function (err, game) {

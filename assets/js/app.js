@@ -3,7 +3,8 @@
 var fapp = angular.module("fapp",
   ['angularSpinner',
     'ngReallyClickModule',
-    'numberPadding'
+    'numberPadding',
+    'yaru22.md'
   ]);
 
 fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter) {

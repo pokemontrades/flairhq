@@ -73,6 +73,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
     }, function (data, res) {
       if (res.statusCode === 200) {
         $scope.refUser.comments.push(data);
+        $scope.newStuff.newComment = "";
         $scope.$apply();
       }
       else {

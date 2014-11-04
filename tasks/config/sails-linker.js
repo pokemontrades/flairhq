@@ -12,14 +12,13 @@
  *
  */
 module.exports = function(grunt) {
-	var version = "1.0.24";
 
 	grunt.config.set('sails-linker', {
 		devJs: {
 			options: {
 				startTag: '<!--SCRIPTS-->',
 				endTag: '<!--SCRIPTS END-->',
-				fileTmpl: '<script src="%s?v=' + version + '"></script>',
+				fileTmpl: '<script src="%s"></script>',
 				appRoot: '.tmp/public'
 			},
 			files: {
@@ -33,7 +32,7 @@ module.exports = function(grunt) {
 			options: {
 				startTag: '<!--SCRIPTS-->',
 				endTag: '<!--SCRIPTS END-->',
-				fileTmpl: '<script src="%s?v=' + version + '"></script>',
+				fileTmpl: '<script src="%s"></script>',
 				appRoot: '.tmp/public',
 				relative: true
 			},
@@ -48,7 +47,7 @@ module.exports = function(grunt) {
 			options: {
 				startTag: '<!--SCRIPTS-->',
 				endTag: '<!--SCRIPTS END-->',
-				fileTmpl: '<script src="%s?v=' + version + '"></script>',
+				fileTmpl: '<script src="%s"></script>',
 				appRoot: '.tmp/public'
 			},
 			files: {
@@ -62,7 +61,7 @@ module.exports = function(grunt) {
 			options: {
 				startTag: '<!--SCRIPTS-->',
 				endTag: '<!--SCRIPTS END-->',
-				fileTmpl: '<script src="%s?v=' + version + '"></script>',
+				fileTmpl: '<script src="%s"></script>',
 				appRoot: '.tmp/public',
 				relative: true
 			},

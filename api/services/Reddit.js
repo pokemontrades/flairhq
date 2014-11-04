@@ -55,7 +55,13 @@ exports.getFlair = function (refreshToken, callback) {
         headers: { Authorization: "bearer " + token,
           "User-Agent": "fapp/1.0"}
       }, function(err, response, body2){
-        callback(body1.current, body2.current);
+        if (body1 && body2) {
+          callback(body1.current, body2.current);
+        } else if (body1 && !body2) {
+          callback(body1.current);
+        } else if (!body1 && body2) {
+          callback(undefined, body2.current);
+        }
       });
     });
   });

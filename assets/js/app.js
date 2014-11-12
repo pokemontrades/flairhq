@@ -269,6 +269,15 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
   $scope.indexOk = {};
   $scope.indexSpin = {};
 
+  $scope.focus = {
+    gavegot: false
+  };
+
+  $scope.isFocused = function () {
+    return $scope.focus.gavegot || $scope.got || $scope.gave;
+  };
+
+
   $scope.editReference = function (ref) {
     $scope.selectedRef = ref;
     $scope.referenceToRevert = $.extend(true, {}, ref);

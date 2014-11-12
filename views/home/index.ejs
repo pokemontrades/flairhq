@@ -53,15 +53,18 @@
                ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc'">
             <label for="gave" class="col-sm-4 control-label">Gave:</label>
 
-            <div class="col-md-3">
+            <div ng-class="{'col-sm-8': isFocused(), 'col-sm-3': !isFocused()}">
               <input type="text" class="form-control" ng-model="gave"
-                      placeholder="6IV pikachu"></input>
+                     ng-focus="focus.gavegot=true" ng-blur="focus.gavegot=false"
+                     placeholder="6IV pikachu"></input>
             </div>
-            <label class="col-sm-2 control-label">Got:</label>
+            <label class="col-sm-2 control-label"
+                   ng-class="{'col-sm-offset-2': isFocused()}">Got:</label>
 
-            <div class="col-md-3">
+            <div ng-class="{'col-sm-8': isFocused(), 'col-sm-3': !isFocused()}">
               <input type="text" class="form-control" ng-model="got"
-                      placeholder="Mew"></input>
+                     ng-focus="focus.gavegot=true" ng-blur="focus.gavegot=false"
+                     placeholder="Mew"></input>
             </div>
           </div>
 

@@ -966,9 +966,12 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
             var flair = attrs.ngReallyFlair;
             var switchInfo = attrs.ngReallySwitch;
             var modalHtml = "";
+            var denyHtml = '<div class="modal-body">' +
+                'Are you sure you wish to delete this reference?' +
+                '</div>';
             var deleteHtml = '<div class="modal-body">' +
-              'Are you sure you wish to delete this reference?' +
-              '</div>';
+                'Are you sure you wish to deny this application?' +
+                '</div>';
             var defaultHtml ='<div class="modal-body">Are you sure you want ' +
               'to give <strong>' + user + '</strong> the <strong>' +
               flair + '</strong> flair?</div>';
@@ -976,6 +979,9 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
             switch (switchInfo) {
               case "deleteRef":
                 modalHtml = deleteHtml;
+                break;
+              case "denyApp":
+                modalHtml = denyHtml;
                 break;
               default:
                 modalHtml = defaultHtml;

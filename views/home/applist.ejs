@@ -26,7 +26,8 @@
                     <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
                     {{adminok.appFlair[$index] ? "" : "Approve"}}
                   </button>
-                  <button class="btn btn-danger" ng-click="denyApp(app.id, $index)">Deny</button>
+                  <button class="btn btn-danger" ng-really-switch="denyApp"
+                          ng-really-click="denyApp(app.id, $index)">Deny</button>
                 </span>
               </h4>
             </li>

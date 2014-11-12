@@ -764,6 +764,13 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     } else {
       $scope.loaded = true;
       $scope.$apply();
+      if (window.location.hash === "#/comments") {
+        $('#tabList li:eq(1) a').tab('show');
+      } else if (window.location.hash === "#/info") {
+        $('#tabList li:eq(2) a').tab('show');
+      } else if (window.location.hash === "#/modEdit") {
+        $('#tabList li:eq(3) a').tab('show');
+      }
     }
   });
 
@@ -793,6 +800,13 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         $scope.$apply();
         $scope.loaded = true;
         $scope.$apply();
+        if (window.location.hash === "#/comments") {
+          $('#tabList li:eq(1) a').tab('show');
+        } else if (window.location.hash === "#/info") {
+          $('#tabList li:eq(2) a').tab('show');
+        } else if (window.location.hash === "#/modEdit") {
+          $('#tabList li:eq(3) a').tab('show');
+        }
       });
     } else {
       window.setTimeout($scope.getReferences, 1000);

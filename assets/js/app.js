@@ -125,6 +125,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       if($scope.refUser.games.length === 0) {
         $scope.refUser.games = [{tsv: "", ign: ""}];
       }
+      window.document.title = data.name + "'s reference";
       $scope.$apply();
     }
   });

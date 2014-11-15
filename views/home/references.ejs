@@ -21,7 +21,7 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapseevents" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEvent | orderBy: 'createdAt'">
@@ -67,7 +67,7 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapseshinies" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isShiny | orderBy: 'createdAt'">
@@ -113,7 +113,7 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapsecasuals" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isCasual | orderBy: 'createdAt'">
@@ -146,8 +146,8 @@
 
     <tr data-toggle="collapse" href="#collapsebanks">
       <td colspan="2"><h3>Bank trades ({{<%= theUser %>.references.filter(isBank).length}})</h3></td>
-      <td></td>
       <td colspan="2"></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isBank | orderBy: 'createdAt'">
@@ -187,7 +187,7 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEgg | orderBy: 'createdAt'">
@@ -233,7 +233,7 @@
       <td>
 
       </td>
-      <td></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
@@ -269,7 +269,7 @@
       <td>
 
       </td>
-      <td></td>
+      <td>[+]</td>
     </tr>
     <tbody id="collapseMisc" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isMisc | orderBy: 'createdAt'">

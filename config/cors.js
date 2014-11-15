@@ -47,7 +47,7 @@ module.exports.cors = {
   *                                                                          *
   ***************************************************************************/
 
-  origin: 'http://fapp.yamanickill.com,http://fapp.yamanickill.com:8080',
+  origin: 'http://hq.porygon.co,http://hq.porygon.co:8080,http://fapp.yamanickill.com,http://fapp.yamanickill.com:8080',
 
   /***************************************************************************
   *                                                                          *

@@ -481,7 +481,8 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       "userid": $scope.user.id,
       "url": $scope.refUrl,
       "user2": user2,
-      "type": $scope.type
+      "type": $scope.type,
+      "notes": $scope.notes
     };
 
     if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {

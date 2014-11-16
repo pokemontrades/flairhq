@@ -15,7 +15,7 @@
       <form class="form-horizontal col-md-5" role="form">
         <div id="addNewReference">
           <div class="form-group">
-            <label for="referenceUrl" class="col-sm-4 control-label">Permalink</label>
+            <label for="referenceUrl" class="col-md-4 control-label">Permalink</label>
 
             <div class="col-md-8">
               <input type="url" class="form-control" ng-model="refUrl"></input>
@@ -23,7 +23,7 @@
           </div>
 
           <div class="form-group">
-            <label for="referenceUrl" class="col-sm-4 control-label">Type</label>
+            <label for="referenceUrl" class="col-md-4 control-label">Type</label>
 
             <div class="col-md-8">
               <select id="type" class="form-control" ng-model="type">
@@ -41,7 +41,7 @@
 
           <div class="form-group"
                ng-show="type === 'egg' || type === 'giveaway' || type === 'misc'">
-            <label for="descrip" class="col-sm-4 control-label">Description</label>
+            <label for="descrip" class="col-md-4 control-label">Description</label>
 
             <div class="col-md-8">
               <input type="text" class="form-control" ng-model="descrip"></input>
@@ -50,23 +50,23 @@
 
           <div class="form-group"
                ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc'">
-            <label for="gave" class="col-sm-4 control-label">Gave:</label>
+            <label for="gave" class="col-md-4 control-label">Gave:</label>
 
-            <div ng-class="{'col-sm-8': isFocused(), 'col-sm-3': !isFocused()}">
+            <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">
               <input type="text" class="form-control" ng-model="gave"
                      ng-focus="focus.gavegot=true" ng-blur="focus.gavegot=false"></input>
             </div>
-            <label class="col-sm-2 control-label"
-                   ng-class="{'col-sm-offset-2': isFocused()}">Got:</label>
+            <label class="col-md-2 control-label"
+                   ng-class="{'col-md-offset-2': isFocused()}">Got:</label>
 
-            <div ng-class="{'col-sm-8': isFocused(), 'col-sm-3': !isFocused()}">
+            <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">
               <input type="text" class="form-control" ng-model="got"
                      ng-focus="focus.gavegot=true" ng-blur="focus.gavegot=false"></input>
             </div>
           </div>
 
           <div class="form-group" ng-hide="type === 'giveaway'">
-            <label for="referenceUrl" class="col-sm-4 control-label">User</label>
+            <label for="referenceUrl" class="col-md-4 control-label">User</label>
 
             <div class="col-md-8">
               <input type="text" class="form-control" ng-model="user2"></input>
@@ -74,11 +74,19 @@
           </div>
 
           <div class="form-group">
-            <div class="col-sm-offset-4 col-sm-2">
+            <label for="referenceUrl" class="col-md-4 control-label">Notes</label>
+
+            <div class="col-md-8">
+              <textarea class="form-control" ng-model="notes"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-offset-4 col-md-2">
               <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add"
                      ng-click="addReference()"></input>
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-6">
               <div class="alert alert-danger" role="alert" ng-hide="!addRefError">{{addRefError}}</div>
             </div>
           </div>

@@ -3,7 +3,8 @@
 var fapp = angular.module("fapp",
   ['angularSpinner',
     'ngReallyClickModule',
-    'numberPadding'
+    'numberPadding',
+    'yaru22.md'
   ]);
 
 fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter) {
@@ -20,6 +21,76 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
   $scope.saving = {};
   $scope.refUser = {
     name: window.location.pathname.substring(3)
+  };
+  $scope.selectedRef = {};
+  $scope.referenceToRevert = {};
+  $scope.indexOk = {};
+  $scope.indexSpin = {};
+
+
+  $scope.editReference = function (ref) {
+    $scope.selectedRef = ref;
+    $scope.referenceToRevert = $.extend(true, {}, ref);
+  };
+
+  $scope.revertRef = function () {
+    var index = $scope.user.references.indexOf($scope.selectedRef);
+    $scope.user.references[index] = $.extend(true, {}, $scope.referenceToRevert);
+  };
+
+  $scope.editRef = function () {
+    $scope.editRefError = "";
+    $scope.indexOk.editRef = false;
+    var ref = $scope.selectedRef,
+        url = "/reference/edit",
+        regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
+
+    if (!ref.type) {
+      $scope.editRefError = "Please choose a type.";
+      return;
+    }
+    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc") {
+      if (!ref.description) {
+        $scope.editRefError = "Make sure you enter all the information";
+        return;
+      }
+    } else {
+      if (!ref.got || !ref.gave) {
+        $scope.editRefError = "Make sure you enter all the information";
+        return;
+      }
+    }
+    if (!ref.url ||
+        ((ref.type !== "giveaway" && ref.type !== "misc") && !ref.user2)) {
+      $scope.editRefError = "Make sure you enter all the information";
+      return;
+    }
+    if ((ref.type === "giveaway" && !regexpGive.test(ref.url)) ||
+        (ref.type !== "giveaway" && ref.type !== "misc" &&
+        !regexp.test(ref.url)) ||
+        (ref.type === "misc" && !regexpMisc.test(ref.url))) {
+      $scope.editRefError = "Looks like you didn't input a proper permalink";
+      return;
+    }
+
+    if (ref.user2.indexOf("/u/") === -1) {
+      ref.user2 = "/u/" + ref.user2;
+    }
+
+    $scope.indexSpin.editRef = true;
+    io.socket.post(url, ref, function (data, res) {
+      $scope.indexSpin.editRef = false;
+      if (res.statusCode !== 200) {
+        $scope.editRefError = "There was an issue.";
+        console.log(res);
+      } else {
+        $scope.indexOk.editRef = true;
+      }
+      $scope.$apply();
+    });
+
   };
 
   $scope.isEvent = function (el) {
@@ -54,6 +125,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       if($scope.refUser.games.length === 0) {
         $scope.refUser.games = [{tsv: "", ign: ""}];
       }
+      window.document.title = data.name + "'s reference";
       $scope.$apply();
     }
   });
@@ -62,12 +134,17 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
     var comment = $scope.newStuff.newComment,
       url = "/reference/comment/add";
 
+    if (!comment || comment === "") {
+      return;
+    }
+
     io.socket.post(url, {
       "refUser": $scope.refUser.id,
       "comment": comment
     }, function (data, res) {
       if (res.statusCode === 200) {
         $scope.refUser.comments.push(data);
+        $scope.newStuff.newComment = "";
         $scope.$apply();
       }
       else {
@@ -263,6 +340,15 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
   $scope.indexOk = {};
   $scope.indexSpin = {};
 
+  $scope.focus = {
+    gavegot: false
+  };
+
+  $scope.isFocused = function () {
+    return $scope.focus.gavegot || $scope.got || $scope.gave;
+  };
+
+
   $scope.editReference = function (ref) {
     $scope.selectedRef = ref;
     $scope.referenceToRevert = $.extend(true, {}, ref);
@@ -279,7 +365,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
     var ref = $scope.selectedRef,
       url = "/reference/edit",
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
       regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
 
     if (!ref.type) {
@@ -356,7 +442,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
     var url = "/reference/add",
       user2 = $scope.user2,
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
       regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
 
     if (!$scope.type) {
@@ -395,7 +481,8 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       "userid": $scope.user.id,
       "url": $scope.refUrl,
       "user2": user2,
-      "type": $scope.type
+      "type": $scope.type,
+      "notes": $scope.notes
     };
 
     if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {
@@ -679,6 +766,13 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     } else {
       $scope.loaded = true;
       $scope.$apply();
+      if (window.location.hash === "#/comments") {
+        $('#tabList li:eq(1) a').tab('show');
+      } else if (window.location.hash === "#/info") {
+        $('#tabList li:eq(2) a').tab('show');
+      } else if (window.location.hash === "#/modEdit") {
+        $('#tabList li:eq(3) a').tab('show');
+      }
     }
   });
 
@@ -708,6 +802,13 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         $scope.$apply();
         $scope.loaded = true;
         $scope.$apply();
+        if (window.location.hash === "#/comments") {
+          $('#tabList li:eq(1) a').tab('show');
+        } else if (window.location.hash === "#/info") {
+          $('#tabList li:eq(2) a').tab('show');
+        } else if (window.location.hash === "#/modEdit") {
+          $('#tabList li:eq(3) a').tab('show');
+        }
       });
     } else {
       window.setTimeout($scope.getReferences, 1000);
@@ -952,8 +1053,11 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
             var switchInfo = attrs.ngReallySwitch;
             var modalHtml = "";
             var deleteHtml = '<div class="modal-body">' +
-              'Are you sure you wish to delete this reference?' +
-              '</div>';
+                'Are you sure you wish to delete this reference?' +
+                '</div>';
+            var denyHtml = '<div class="modal-body">' +
+                'Are you sure you wish to deny this application?' +
+                '</div>';
             var defaultHtml ='<div class="modal-body">Are you sure you want ' +
               'to give <strong>' + user + '</strong> the <strong>' +
               flair + '</strong> flair?</div>';
@@ -961,6 +1065,9 @@ angular.module('ngReallyClickModule', ['ui.bootstrap'])
             switch (switchInfo) {
               case "deleteRef":
                 modalHtml = deleteHtml;
+                break;
+              case "denyApp":
+                modalHtml = denyHtml;
                 break;
               default:
                 modalHtml = defaultHtml;

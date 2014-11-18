@@ -4,11 +4,11 @@
       <td class="firstHeading" colspan="2"><h3>Trades ({{numberOfTrades()}})</h3></td>
       <td><h3 class="text-center"><small></small></h3></td>
       <td><h3><small>Approved</small></h3></td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
 
     <tr data-toggle="collapse" href="#collapseevents">
-      <td colspan="2">Events ({{<%= theUser %>.references.filter(isEvent).length}})</td>
+      <td colspan="2">[+] Events ({{<%= theUser %>.references.filter(isEvent).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -21,14 +21,14 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseevents" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEvent | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
-        <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+        <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
@@ -39,6 +39,9 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -53,7 +56,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseshinies">
-      <td colspan="2">Shinies ({{<%= theUser %>.references.filter(isShiny).length}})</td>
+      <td colspan="2">[+] Shinies ({{<%= theUser %>.references.filter(isShiny).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -67,14 +70,14 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseshinies" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isShiny | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
-        <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+        <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
@@ -85,6 +88,9 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -99,7 +105,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsecasuals">
-      <td colspan="2">Competitive / Casual ({{<%= theUser %>.references.filter(isCasual).length}})</td>
+      <td colspan="2">[+] Competitive / Casual ({{<%= theUser %>.references.filter(isCasual).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -113,14 +119,14 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapsecasuals" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isCasual | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td>
-        <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+        <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
@@ -131,6 +137,9 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -145,20 +154,23 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsebanks">
-      <td colspan="2"><h3>Bank trades ({{<%= theUser %>.references.filter(isBank).length}})</h3></td>
-      <td></td>
+      <td colspan="2">[+] <h3>Bank trades ({{<%= theUser %>.references.filter(isBank).length}})</h3></td>
       <td colspan="2"></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isBank | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
       <td colspan="2">
-        <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+        <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -173,7 +185,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseeggs">
-      <td colspan="2"><h3>Egg Hatches ({{<%= theUser %>.references.filter(isEgg).length}})</h3></td>
+      <td colspan="2">[+] <h3>Egg Hatches ({{<%= theUser %>.references.filter(isEgg).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -187,14 +199,14 @@
       <td>
         <span>{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
       </td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEgg | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
       <td>
-        <a ng-href="http://www.reddit.com{{getRedditUser(reference.user2)}}">
+        <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
@@ -205,6 +217,9 @@
               class="glyphicon glyphicon-ok"></span>
       </td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -219,7 +234,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
-      <td colspan="2"><h3>Giveaways ({{<%= theUser %>.references.filter(isGiveaway).length}})</h3></td>
+      <td colspan="2">[+] <h3>Giveaways ({{<%= theUser %>.references.filter(isGiveaway).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -233,14 +248,18 @@
       <td>
 
       </td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td>      </td>
+      <td colspan="2"
+          class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td></td><td class="visble-xs-block visible-sm-block"></td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -255,7 +274,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseMisc">
-      <td colspan="2"><h3>Misc ({{<%= theUser %>.references.filter(isMisc).length}})</h3></td>
+      <td colspan="2">[+] <h3>Misc ({{<%= theUser %>.references.filter(isMisc).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -269,14 +288,18 @@
       <td>
 
       </td>
-      <td></td>
+      <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseMisc" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isMisc | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td>      </td>
+      <td colspan="2"
+          class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td></td><td class="visible-xs-block visible-sm-block"></td>
       <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
            ng-if="(!refUser || (user.id === refUser.id))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
@@ -291,4 +314,7 @@
     </tbody>
 
   </table>
+
+  <%- partial('editreference.ejs') %>
+  <%- partial('viewreference.ejs') %>
 </div>

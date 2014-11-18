@@ -23,7 +23,8 @@ module.exports = {
     // This defines whether the other user has added the same url
     verified: "boolean",
     // This defines if the mods have approved it as a trade that can count
-    approved: "boolean"
+    approved: "boolean",
+    notes: "string"
   }
 };
 

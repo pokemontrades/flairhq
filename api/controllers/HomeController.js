@@ -23,7 +23,6 @@ module.exports = {
   },
 
   reference: function(req, res) {
-    console.log(req.user);
     User.findOne({name: req.params.user}).exec(function (err, user){
       if (!user) {
         res.json(404);

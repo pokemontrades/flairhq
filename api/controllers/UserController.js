@@ -13,8 +13,8 @@ module.exports = {
     req.params = req.allParams();
     User.findOne({id: req.params.userid}, function (err, user) {
       if (!user) {
-        return res.json({error: "Can't find usere"}, 404);
-      } else if (user.name !== req.user.name && !user.isMod) {
+        return res.json({error: "Can't find user"}, 404);
+      } else if (user.name !== req.user.name && !req.user.isMod) {
         return res.json("You can't edit another user's information. " +
         "Unless you are a mod.", 403);
       } else {
@@ -66,7 +66,6 @@ module.exports = {
                 }
               ));
             } else if (!game.id && (game.tsv || game.ign)) {
-              console.log(game);
               promises.push(Game.create(
                 {user: user.id, tsv: parseInt(game.tsv), ign: game.ign})
                 .exec(function (err, game) {

@@ -61,10 +61,10 @@ module.exports = {
         }
         var flair,
             css_class;
-        if (app.sub === "pokemontrades") {
+        if (app.sub === "pokemontrades" && user.flair.ptrades) {
           flair = user.flair.ptrades.flair_text;
           css_class = user.flair.ptrades.flair_css_class;
-        } else if (app.sub === "svexchange") {
+        } else if (app.sub === "svexchange" && user.flair.svex) {
           flair = user.flair.svex.flair_text;
           css_class = user.flair.svex.flair_css_class;
         }

@@ -24,7 +24,7 @@
       </div>
 
       <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist">
+      <ul class="nav nav-tabs" role="tablist" id="tabList">
         <li class="active"><a href="#references" role="tab" data-toggle="tab">References</a></li>
         <li><a href="#comments" role="tab" data-toggle="tab">Comments</a></li>
         <li><a href="#info" role="tab" data-toggle="tab">Information</a></li>
@@ -52,19 +52,36 @@
                 </a>
                 <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
               </div>
-              <div class="panel-body">{{comment.message}}</div>
+              <div class="panel-body"><md ng-model="comment.message"></md></div>
             </div>
           </div>
 
           <div class="row" ng-if="user">
-            <form class="form-horizontal col-md-6" role="form" ng-submit="addComment()">
-              <h2>Leave a comment on this user's reference</h2>
-
-              <div class="form-group col-md-10">
-                <textarea class="form-control" id="newComment" ng-model="newStuff.newComment"></textarea>
+            <form role="form" ng-submit="addComment()">
+              <div class="row">
+                <div class="col-md-12">
+                  <h2>Leave a comment on this user's reference</h2>
+                </div>
               </div>
-              <div class="col-md-offset-1 col-md-1">
-                <button type="submit" class="btn btn-primary">Comment</button>
+              <div class="row">
+                <p></p>
+                <div class="col-md-5">
+                  <p>Sometimes you might want to leave a comment for a user.</p>
+                  <p>If you traded with them, let the world know how good they
+                  were at that. Maybe they hatched your egg for you and you want
+                  to tell the world how nice they are. Whatever you want.</p>
+                </div>
+                <div class="form-group col-md-5 col-md-offset-1">
+                  <textarea class="form-control" id="newComment"
+                            placeholder="Type comment here in markdown."
+                            ng-model="newStuff.newComment"></textarea>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">Preview</div>
+                    <div class="panel-body" ><md ng-model="newStuff.newComment"></md></div>
+                  </div>
+                  <button type="submit" ng-disabled="!newStuff.newComment"
+                          class="btn btn-primary">Comment</button>
+                </div>
               </div>
             </form>
           </div>

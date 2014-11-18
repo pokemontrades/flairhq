@@ -6,7 +6,8 @@
  */
 
 var reddit = require('redwrap'),
-  Q = require('q');
+  Q = require('q'),
+  async = require('async');
 
 module.exports = {
 
@@ -29,22 +30,33 @@ module.exports = {
   all: function (req, res) {
     var dateQuery, query;
     dateQuery = {};
-    if (req.query.before !== undefined)
+    if (req.query.before !== undefined) {
       dateQuery["<"] = new Date(req.query.before);
-    if (req.query.after !== undefined)
+    }
+    if (req.query.after !== undefined) {
       dateQuery[">"] = new Date(req.query.after);
+    }
     query = {
       type: ["event", "casual", "shiny", "redemption"]
     };
-    if (dateQuery !== {})
+    if (Object.keys(dateQuery).length > 0) {
       query["createdAt"] = dateQuery;
+    }
+
     Reference.find(query)
       .sort({createdAt: "asc"})
       .exec(function (err, refs) {
         if (err) {
-          return next(err);
+          return res.serverError(err);
         }
-        return res.json(refs);
+        async.map(refs, function (ref, callback) {
+          User.findOne({id: ref.user}).exec(function (err, refUser) {
+            ref.user = refUser;
+            callback(null, ref);
+          });
+        }, function (err, results) {
+          return res.json(results);
+        });
       });
 
   },
@@ -60,7 +72,7 @@ module.exports = {
           if (err) {
             return res.json(err, 500);
           }
-          if (ref) {
+          if (ref && (ref.type !== "egg" || req.params.type !== "egg")) {
             return res.json(400);
           } else {
             Reference.create(
@@ -71,7 +83,8 @@ module.exports = {
                 description: req.params.descrip,
                 type: req.params.type,
                 gave: req.params.gave,
-                got: req.params.got
+                got: req.params.got,
+                notes: req.params.notes
               },
               function (err, ref) {
                 if (err) {
@@ -105,6 +118,7 @@ module.exports = {
           type: req.params.type,
           gave: req.params.gave,
           got: req.params.got,
+          notes: req.params.notes,
           approved: false
         })
         .exec(function (err, ref) {

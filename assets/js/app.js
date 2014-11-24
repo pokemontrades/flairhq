@@ -45,7 +45,8 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
         url = "/reference/edit",
         regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
         regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
+        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
+        regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 
     if (!ref.type) {
       $scope.editRefError = "Please choose a type.";
@@ -77,6 +78,16 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
 
     if (ref.user2.indexOf("/u/") === -1) {
       ref.user2 = "/u/" + ref.user2;
+    }
+
+    if (user2 === ("/u/" + $scope.user.name)) {
+      $scope.addRefError = "Don't put your own username there.";
+      return;
+    }
+
+    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
+      $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
+      return;
     }
 
     $scope.indexSpin.editRef = true;
@@ -366,7 +377,8 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       url = "/reference/edit",
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
       regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
+      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
+      regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 
     if (!ref.type) {
       $scope.editRefError = "Please choose a type.";
@@ -398,6 +410,16 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
 
     if (ref.user2.indexOf("/u/") === -1) {
       ref.user2 = "/u/" + ref.user2;
+    }
+
+    if (user2 === ("/u/" + $scope.user.name)) {
+      $scope.addRefError = "Don't put your own username there.";
+      return;
+    }
+
+    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
+      $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
+      return;
     }
 
     $scope.indexSpin.editRef = true;
@@ -443,7 +465,8 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       user2 = $scope.user2,
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
       regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/;
+      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
+      regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 
     if (!$scope.type) {
       $scope.addRefError = "Please choose a type.";
@@ -475,6 +498,16 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
 
     if (user2.indexOf("/u/") === -1) {
       user2 = "/u/" + user2;
+    }
+
+    if (user2 === ("/u/" + $scope.user.name)) {
+      $scope.addRefError = "Don't put your own username there.";
+      return;
+    }
+
+    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
+      $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
+      return;
     }
 
     var post = {

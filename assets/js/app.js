@@ -500,6 +500,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
         $scope.got = "";
         $scope.gave = "";
         $scope.user2 = "";
+        $scope.notes = "";
         $scope.user.references.push(data);
 
         if (data.type === "redemption") {

@@ -26,8 +26,8 @@
     <tbody id="collapseevents" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEvent | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td>
+      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs">
         <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
@@ -75,8 +75,8 @@
     <tbody id="collapseshinies" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isShiny | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td>
+      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs">
         <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
@@ -124,8 +124,8 @@
     <tbody id="collapsecasuals" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isCasual | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td>
+      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs">
         <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
@@ -155,18 +155,19 @@
 
     <tr data-toggle="collapse" href="#collapsebanks">
       <td colspan="2">[+] <h3>Bank trades ({{<%= theUser %>.references.filter(isBank).length}})</h3></td>
-      <td colspan="2"></td>
-      <td class="hidden-sm hidden-xs"></td>
+      <td colspan="2" class="hidden-sm hidden-xs"></td>
+      <td></td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isBank | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td colspan="2">
+      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
+      <td class="hidden-sm hidden-xs">
         <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
+      <td></td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -204,8 +205,8 @@
     <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEgg | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td>
+      <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td class="hidden-sm hidden-xs">
         <a ng-href="{{getRedditUser(reference.user2)}}">
           {{getRedditUser(reference.user2)}}
         </a>
@@ -253,9 +254,8 @@
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"
-          class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td></td><td class="visble-xs-block visible-sm-block"></td>
+      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td class="hidden-sm hidden-xs"></td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -293,9 +293,8 @@
     <tbody id="collapseMisc" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isMisc | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"
-          class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td></td><td class="visible-xs-block visible-sm-block"></td>
+      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td class="hidden-sm hidden-xs"></td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>

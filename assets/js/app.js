@@ -863,7 +863,28 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         usercasual = $filter("filter")(refs, $scope.isCasual).length,
         userEgg = $filter("filter")(refs, $scope.isEgg).length,
         usershinyevents = userevent + usershiny,
-        userTrades = usershinyevents + usercasual;
+        userTrades = usershinyevents + usercasual,
+        userFlair = {};
+
+    for(var i = 0; i < $scope.flairs.length; i++) {
+      if ($scope.flairs[i].name === $scope.user.flair.ptrades.flair_css_class) {
+        userFlair = $scope.flairs[i];
+      }
+    }
+
+    if (flair === userFlair) {
+      return false;
+    }
+
+    if ($scope.inPokemonTradesCasual(flair) && $scope.inPokemonTradesCollector(userFlair)) {
+      return false;
+    }
+
+    if (userFlair.trades > trades &&
+        userFlair.shinyevents > shinyevents &&
+        userFlair.events > events) {
+      return false;
+    }
 
     return (userTrades >= trades &&
       usershinyevents >= shinyevents &&

@@ -85,7 +85,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       return;
     }
 
-    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
+    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
       $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
       return;
     }

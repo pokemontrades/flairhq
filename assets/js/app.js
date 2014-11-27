@@ -80,7 +80,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       ref.user2 = "/u/" + ref.user2;
     }
 
-    if (user2 === ("/u/" + $scope.user.name)) {
+    if (ref.user2 === ("/u/" + $scope.user.name)) {
       $scope.addRefError = "Don't put your own username there.";
       return;
     }

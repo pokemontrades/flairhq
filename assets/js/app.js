@@ -412,12 +412,12 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       ref.user2 = "/u/" + ref.user2;
     }
 
-    if (user2 === ("/u/" + $scope.user.name)) {
+    if (ref.user2 === ("/u/" + $scope.user.name)) {
       $scope.addRefError = "Don't put your own username there.";
       return;
     }
 
-    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
+    if(($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
       $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
       return;
     }

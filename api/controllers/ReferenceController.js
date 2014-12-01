@@ -37,7 +37,7 @@ module.exports = {
       dateQuery[">"] = new Date(req.query.after);
     }
     query = {
-      type: ["event", "casual", "shiny", "redemption"]
+      type: ["event", "casual", "shiny", "redemption", "bank"]
     };
     if (Object.keys(dateQuery).length > 0) {
       query["createdAt"] = dateQuery;

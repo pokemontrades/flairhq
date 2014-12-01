@@ -14,17 +14,22 @@
               <strong>Trade Info</strong>
             </div>
             <div class="panel-body">
-              <h4>Traded with: <small class="pull-right">{{selectedRef.user2}}</small></h4>
-              <p ng-hide="selectedRef.type === 'egg' ||
+              <h4 ng-hide="selectedRef.user2 === '/u/'">
+                Traded with: <small class="pull-right">{{selectedRef.user2}}</small>
+              </h4>
+              <div ng-hide="selectedRef.type === 'egg' ||
                     selectedRef.type === 'giveaway' ||
                     selectedRef.type === 'misc'">
                 <h4>Gave: <small class="pull-right">{{selectedRef.gave}}</small></h4>
                 <h4>Got: <small class="pull-right">{{selectedRef.got}}</small></h4>
-              </p>
+              </div>
               <h4 ng-show="selectedRef.type === 'egg' ||
                     selectedRef.type === 'giveaway' ||
                     selectedRef.type === 'misc'">
                 Description: <small class="pull-right">{{selectedRef.description}}</small>
+              </h4>
+              <h4 ng-show="selectedRef.type === 'giveaway">
+                Number given: <small class="pull-right">{{selectedRef.number || 0}}</small>
               </h4>
 
               <a ng-href="{{selectedRef.url}}">Link to trade</a>

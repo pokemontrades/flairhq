@@ -341,6 +341,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
   $scope.user2 = "";
   $scope.gave = "";
   $scope.got = "";
+  $scope.number = "";
   $scope.type = "";
   $scope.descrip = "";
   $scope.selectedRef = {};
@@ -515,7 +516,8 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       "url": $scope.refUrl,
       "user2": user2,
       "type": $scope.type,
-      "notes": $scope.notes
+      "notes": $scope.notes,
+      "number": $scope.number
     };
 
     if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {
@@ -534,6 +536,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
         $scope.gave = "";
         $scope.user2 = "";
         $scope.notes = "";
+        $scope.number = "";
         $scope.user.references.push(data);
 
         if (data.type === "redemption") {

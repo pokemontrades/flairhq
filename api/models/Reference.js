@@ -16,6 +16,10 @@ module.exports = {
     gave: "string",
     got: "string",
     description: "string",
+    number: {
+      type: "integer",
+      required: false
+    },
     type: {
       type: "string",
       enum: ["event", "redemption", "shiny", "casual", "bank", "egg", "giveaway", "misc"]

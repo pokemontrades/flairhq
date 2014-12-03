@@ -781,8 +781,12 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     return flair.sub === "pokemontrades" && (flair.events > 0 || flair.shinyevents > 0);
   };
 
-  $scope.inSVExchange = function (flair) {
-    return flair.sub === "svexchange";
+  $scope.inSVExchangeHatcher = function (flair) {
+    return flair.sub === "svexchange" && flair.eggs > 0;
+  };
+
+  $scope.inSVExchangeGiver = function (flair) {
+    return flair.sub === "svexchange" && flair.giveaways > 0
   };
 
   $scope.getRedditUser = function (username) {
@@ -875,10 +879,15 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         userFlair = {};
 
     for(var i = 0; i < $scope.flairs.length; i++) {
-      if ($scope.flairs[i].name === $scope.user.flair.ptrades.flair_css_class) {
+      if (($scope.flairs[i].name === $scope.user.flair.ptrades.flair_css_class &&
+          $scope.flairs[i].sub === "pokemontrades") ||
+          ($scope.flairs[i].name === $scope.user.flair.svex.flair_css_class  &&
+          $scope.flairs[i].sub === "svexchange")) {
         userFlair = $scope.flairs[i];
+        break;
       }
     }
+
 
     if (flair === userFlair) {
       return false;
@@ -888,9 +897,15 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
       return false;
     }
 
-    if (userFlair.trades > trades &&
+    if (flair.sub === "pokemontrades" &&
+        userFlair.trades > trades &&
         userFlair.shinyevents > shinyevents &&
         userFlair.events > events) {
+      return false;
+    }
+
+    if (flair.sub === "svexchange" &&
+        userFlair.eggs > eggs) {
       return false;
     }
 

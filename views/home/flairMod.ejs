@@ -10,10 +10,10 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-md-2">
+          <div class="col-md-1">
             Ball
           </div>
-          <div class="col-md-2">
+          <div class="col-md-1">
             Sub
           </div>
           <div class="col-md-2">
@@ -28,36 +28,43 @@
           <div class="col-md-2">
             Hatches
           </div>
+          <div class="col-md-2">
+            Checks + Given
+          </div>
         </div>
         <ul class="list-unstyled" ng-show="user">
           <li ng-repeat="flair in flairs track by $index">
               <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-1">
                   <div class="input-group">
-                    <span ng-class="'flair-' + flair.name" class="input-group-addon"></span>
+                    <span ng-class="['flair-' + flair.name, 'flair-input-group']" class="input-group-addon"></span>
                     <select ng-model="flair.name" class="form-control"
                             ng-options="image.name as image.name for image in flairNames"></select>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                   <select ng-model="flair.sub" class="form-control"
                           ng-options="sub.name as sub.view for sub in subNames"></select>
                 </div>
                 <div class="col-md-2">
                   <input type="number" class="form-control"
-                         ng-model="flair.trades" />
+                         ng-model="flair.trades" ng-disabled="flair.sub === 'svexchange'"/>
                 </div>
                 <div class="col-md-2">
                   <input type="number" class="form-control"
-                         ng-model="flair.events" />
+                         ng-model="flair.events" ng-disabled="flair.sub === 'svexchange'" />
                 </div>
                 <div class="col-md-2">
                   <input type="number" class="form-control"
-                         ng-model="flair.shinyevents" />
+                         ng-model="flair.shinyevents" ng-disabled="flair.sub === 'svexchange'" />
                 </div>
                 <div class="col-md-2">
                   <input type="number" class="form-control"
-                         ng-model="flair.eggs" />
+                         ng-model="flair.eggs" ng-disabled="flair.sub === 'pokemontrades'" />
+                </div>
+                <div class="col-md-2">
+                  <input type="number" class="form-control"
+                         ng-model="flair.giveaways" ng-disabled="flair.sub === 'pokemontrades'" />
                 </div>
               </div>
           </li>
@@ -68,7 +75,12 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" ng-click="saveFlairs()">Save changes</button>
+        <button type="button" class="btn btn-primary has-spinner" ng-click="saveFlairs()"
+          ng-class="[userok.saveFlairs ? 'glyphicon glyphicon-ok' : '',
+          userspin.saveFlairs ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{userok.saveFlairs ? "" : "Save Changes"}}
+        </button>
       </div>
     </div>
     <!-- /.modal-content -->

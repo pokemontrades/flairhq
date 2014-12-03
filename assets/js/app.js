@@ -996,13 +996,18 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
 
   $scope.saveFlairs = function () {
     var url = "/flair/save";
+    $scope.userok.saveFlairs = false;
+    $scope.userspin.saveFlairs = true;
 
     io.socket.post(url, {flairs: $scope.flairs}, function (data, res) {
       if (res.statusCode === 200) {
+        $scope.userok.saveFlairs = true;
         console.log(data);
       } else {
         console.log(res);
       }
+      $scope.userspin.saveFlairs = false;
+      $scope.$apply();
     });
   };
 

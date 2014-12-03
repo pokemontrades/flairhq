@@ -9,11 +9,28 @@ module.exports = {
 
   attributes: {
     name: "string",
-    trades: "integer",
-    shinyevents: "integer",
-    events: "integer",
-    eggs: "integer",
-    sub: "string"
+    sub: "string",
+
+    trades: {
+      type: "integer",
+      defaultsTo: 0
+    },
+    shinyevents: {
+      type: "integer",
+      defaultsTo: 0
+    },
+    events: {
+      type: "integer",
+      defaultsTo: 0
+    },
+    eggs: {
+      type: "integer",
+      defaultsTo: 0
+    },
+    giveaways: {
+      type: "integer",
+      defaultsTo: 0
+    }
   }
 };
 

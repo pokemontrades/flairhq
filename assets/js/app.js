@@ -618,6 +618,11 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     {name: "eevee"},
     {name: "togepi"},
     {name: "manaphy"},
+    {name: "ribbon1"},
+    {name: "ribbon2"},
+    {name: "ribbon3"},
+    {name: "ribbon4"},
+    {name: "ribbon5"},
   ];
   $scope.subNames = [
     {name: "pokemontrades", view: "Pokemon Trades"},

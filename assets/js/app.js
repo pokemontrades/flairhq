@@ -52,7 +52,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       $scope.editRefError = "Please choose a type.";
       return;
     }
-    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc") {
+    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck") {
       if (!ref.description) {
         $scope.editRefError = "Make sure you enter all the information";
         return;
@@ -64,12 +64,12 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
       }
     }
     if (!ref.url ||
-        ((ref.type !== "giveaway" && ref.type !== "misc") && !ref.user2)) {
+        ((ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck") && !ref.user2)) {
       $scope.editRefError = "Make sure you enter all the information";
       return;
     }
-    if ((ref.type === "giveaway" && !regexpGive.test(ref.url)) ||
-        (ref.type !== "giveaway" && ref.type !== "misc" &&
+    if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(ref.url)) ||
+        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" &&
         !regexp.test(ref.url)) ||
         (ref.type === "misc" && !regexpMisc.test(ref.url))) {
       $scope.editRefError = "Looks like you didn't input a proper permalink";
@@ -114,6 +114,10 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
 
   $scope.isCasual = function (el) {
     return el.type === "casual";
+  };
+
+  $scope.isEggCheck = function (el) {
+    return el.type === "eggcheck";
   };
 
   $scope.numberOfTrades = function () {
@@ -385,7 +389,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       $scope.editRefError = "Please choose a type.";
       return;
     }
-    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc") {
+    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck") {
       if (!ref.description) {
         $scope.editRefError = "Make sure you enter all the information";
         return;
@@ -397,12 +401,13 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       }
     }
     if (!ref.url ||
-      ((ref.type !== "giveaway" && ref.type !== "misc") && !ref.user2)) {
+      ((ref.type !== "giveaway" && ref.type !== "misc" || ref.type !== "eggcheck") &&
+        !ref.user2)) {
       $scope.editRefError = "Make sure you enter all the information";
       return;
     }
-    if ((ref.type === "giveaway" && !regexpGive.test(ref.url)) ||
-      (ref.type !== "giveaway" && ref.type !== "misc" &&
+    if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(ref.url)) ||
+      (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" &&
         !regexp.test(ref.url)) ||
       (ref.type === "misc" && !regexpMisc.test(ref.url))) {
       $scope.editRefError = "Looks like you didn't input a proper permalink";
@@ -449,6 +454,10 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
     return el.type === "casual";
   };
 
+  $scope.isEggCheck = function (el) {
+    return el.type === "eggcheck";
+  };
+
   $scope.numberOfTrades = function () {
     if (!$scope.user || !$scope.user.references) {
       return 0;
@@ -473,7 +482,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       $scope.addRefError = "Please choose a type.";
       return;
     }
-    if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {
+    if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck") {
       if (!$scope.descrip) {
         $scope.addRefError = "Make sure you enter all the information";
         return;
@@ -485,12 +494,12 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       }
     }
     if (!$scope.refUrl ||
-      (($scope.type !== "giveaway" && $scope.type !== "misc") && !$scope.user2)) {
+      (($scope.type !== "giveaway" && $scope.type !== "misc" && $scope.type !== "eggcheck") && !$scope.user2)) {
       $scope.addRefError = "Make sure you enter all the information";
       return;
     }
-    if (($scope.type === "giveaway" && !regexpGive.test($scope.refUrl)) ||
-      ($scope.type !== "giveaway" && $scope.type !== "misc" &&
+    if ((($scope.type === "giveaway" || $scope.type === "eggcheck") && !regexpGive.test($scope.refUrl)) ||
+      ($scope.type !== "giveaway" && $scope.type !== "misc" && $scope.type !== "eggcheck" &&
         !regexp.test($scope.refUrl)) ||
       ($scope.type === "misc" && !regexpMisc.test($scope.refUrl))) {
       $scope.addRefError = "Looks like you didn't input a proper permalink";
@@ -520,7 +529,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
       "number": $scope.number
     };
 
-    if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc") {
+    if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck") {
       post.descrip = $scope.descrip;
     } else {
       post.got = $scope.got;
@@ -655,6 +664,10 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
 
   $scope.isGiveaway = function (el) {
     return el.type === "giveaway";
+  };
+
+  $scope.isEggCheck = function (el) {
+    return el.type === "eggcheck";
   };
 
   $scope.isMisc = function (el) {

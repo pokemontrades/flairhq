@@ -19,16 +19,19 @@
               </h4>
               <div ng-hide="selectedRef.type === 'egg' ||
                     selectedRef.type === 'giveaway' ||
+                    selectedRef.type === 'eggcheck' ||
                     selectedRef.type === 'misc'">
                 <h4>Gave: <small class="pull-right">{{selectedRef.gave}}</small></h4>
                 <h4>Got: <small class="pull-right">{{selectedRef.got}}</small></h4>
               </div>
               <h4 ng-show="selectedRef.type === 'egg' ||
                     selectedRef.type === 'giveaway' ||
+                    selectedRef.type === 'eggcheck' ||
                     selectedRef.type === 'misc'">
                 Description: <small class="pull-right">{{selectedRef.description}}</small>
               </h4>
-              <h4 ng-show="selectedRef.type === 'giveaway'">
+              <h4 ng-show="selectedRef.type === 'giveaway'
+                    selectedRef.type === 'eggcheck' ||">
                 Number given: <small class="pull-right">{{selectedRef.number || 0}}</small>
               </h4>
 

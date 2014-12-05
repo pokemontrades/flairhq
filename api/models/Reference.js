@@ -22,7 +22,17 @@ module.exports = {
     },
     type: {
       type: "string",
-      enum: ["event", "redemption", "shiny", "casual", "bank", "egg", "giveaway", "misc"]
+      enum: [
+        "event",
+        "redemption",
+        "shiny",
+        "casual",
+        "bank",
+        "egg",
+        "giveaway",
+        "eggcheck",
+        "misc"
+      ]
     },
     // This defines whether the other user has added the same url
     verified: "boolean",

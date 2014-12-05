@@ -273,6 +273,45 @@
     </tr>
     </tbody>
 
+    <tr data-toggle="collapse" href="#collapseeggchecks">
+      <td colspan="2">[+] <h3>Egg Checks ({{<%= theUser %>.references.filter(isEggCheck).length}})</h3></td>
+      <td>
+        <button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && refUser"
+                ng-click="approveAll('eggcheck')"
+                ng-class="[ok.approveAll.eggcheck ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.eggcheck ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.eggcheck ? "" : "Approve all"}}
+        </button>
+      </td>
+      <td>
+
+      </td>
+      <td class="hidden-sm hidden-xs"></td>
+    </tr>
+    <tbody id="collapseeggchecks" class="collapse">
+    <tr ng-repeat="reference in <%= theUser %>.references | filter: isEggCheck | orderBy: 'createdAt'">
+      <td><strong>{{$index + 1}}.</strong></td>
+      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+      <td class="hidden-sm hidden-xs"></td>
+      <td>
+        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
+          <span class="glyphicon glyphicon-info-sign"></span>
+        </a>
+        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
+           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+          <span class="glyphicon glyphicon-edit"></span>
+        </a>
+        <a href="#"  ng-really-switch="deleteRef" class="icon"
+           ng-really-click="deleteRef(reference.id, reference, 'eggchecks')"
+           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+
     <tr data-toggle="collapse" href="#collapseMisc">
       <td colspan="2">[+] <h3>Misc ({{<%= theUser %>.references.filter(isMisc).length}})</h3></td>
       <td>

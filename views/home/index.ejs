@@ -34,13 +34,14 @@
                 <option value="bank">Bank</option>
                 <option value="egg">Egg Hatch</option>
                 <option value="giveaway">Giveaway</option>
+                <option value="eggcheck">Egg Check</option>
                 <option value="misc">Miscellaneous</option>
               </select>
             </div>
           </div>
 
           <div class="form-group"
-               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc'">
+               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck'">
             <label for="descrip" class="col-md-4 control-label">Description</label>
 
             <div class="col-md-8">
@@ -48,7 +49,7 @@
             </div>
           </div>
 
-          <div class="form-group" ng-show="type === 'giveaway'">
+          <div class="form-group" ng-show="type === 'giveaway' || type === 'eggcheck'">
             <label for="number" class="col-md-4 control-label">Number given:</label>
 
             <div class="col-md-8">
@@ -57,7 +58,7 @@
           </div>
 
           <div class="form-group"
-               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc'">
+               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck'">
             <label for="gave" class="col-md-4 control-label">Gave:</label>
 
             <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">
@@ -73,7 +74,7 @@
             </div>
           </div>
 
-          <div class="form-group" ng-hide="type === 'giveaway'">
+          <div class="form-group" ng-hide="type === 'giveaway' || type === 'eggcheck'">
             <label for="referenceUrl" class="col-md-4 control-label">User</label>
 
             <div class="col-md-8">

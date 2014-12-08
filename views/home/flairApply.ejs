@@ -10,39 +10,48 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-md-8">
-            <h3>/r/pokemontrades</h3>
-            <div class="list-group col-md-6">
-              <h4>Breeder</h4>
-              <a ng-repeat="flair in flairs | filter:inPokemonTradesCasual | orderBy: 'trades' track by flair.id"
-                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+            <div class="col-md-6">
+                <h3>/r/pokemontrades</h3>
+                <div class="list-group col-md-6">
+                    <h4>Breeder</h4>
+                    <a ng-repeat="flair in flairs | filter:inPokemonTradesCasual | orderBy: 'trades' track by flair.id"
+                       class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
-                 href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
-                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
-              </a>
-            </div>
-            <div class="list-group col-md-6">
-              <h4>Collector</h4>
-              <a ng-repeat="flair in flairs | filter:inPokemonTradesCollector | orderBy: 'trades' track by flair.id"
-                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                       href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
+                        <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+                    </a>
+                </div>
+                <div class="list-group col-md-6">
+                    <h4>Collector</h4>
+                    <a ng-repeat="flair in flairs | filter:inPokemonTradesCollector | orderBy: 'trades' track by flair.id"
+                       class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
-                 href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
-                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
-              </a>
+                       href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
+                        <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+                    </a>
+                </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <h3>/r/svexchange</h3>
-            <div class="list-group col-md-12">
-              <h4>Hatcher</h4>
-              <a ng-repeat="flair in flairs | filter:inSVExchangeHatcher | orderBy: 'eggs' track by flair.id"
-                 class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+            <div class="col-md-6">
+                <h3>/r/svexchange</h3>
+                <div class="list-group col-md-6">
+                    <h4>Hatcher</h4>
+                    <a ng-repeat="flair in flairs | filter:inSVExchangeHatcher | orderBy: 'eggs' track by flair.id"
+                       class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedExchFlair === flair.name) ? 'active' : '']"
-                 href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
-                <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
-              </a>
+                       href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
+                        <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span>
+                    </a>
+                </div>
+                <div class="list-group col-md-6">
+                    <h4>Giveaway-er</h4>
+                    <a ng-repeat="flair in flairs | filter:inSVExchangeGiver | orderBy: 'eggs' track by flair.id"
+                       class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
+                 (selectedExchFlair === flair.name) ? 'active' : '']"
+                       href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
+                        <span ng-class="'flair2-' + flair.name">{{formattedName(flair.name)}}</span>
+                    </a>
+                </div>
             </div>
-          </div>
           <div class="row">
             <div class="col-md-10 col-md-offset-1">
               <div class="alert alert-danger" ng-show="errors.flairApp">{{errors.flairApp}}</div>

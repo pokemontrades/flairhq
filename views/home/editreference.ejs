@@ -30,6 +30,7 @@
                   <option value="bank">Bank</option>
                   <option value="egg">Egg Hatch</option>
                   <option value="giveaway">Giveaway</option>
+                  <option value="eggcheck">Egg Check</option>
                   <option value="misc">Miscellaneous</option>
                 </select>
               </div>
@@ -37,7 +38,7 @@
 
             <div class="form-group"
                  ng-show="selectedRef.type === 'egg' || selectedRef.type === 'giveaway' ||
-                 selectedRef.type === 'misc'">
+                 selectedRef.type === 'misc' || selectedRef.type === 'eggcheck'">
               <label for="descrip" class="col-sm-4 control-label">Description</label>
 
               <div class="col-md-8">
@@ -45,7 +46,7 @@
               </div>
             </div>
 
-            <div class="form-group" ng-show="selectedRef.type === 'giveaway'">
+            <div class="form-group" ng-show="selectedRef.type === 'giveaway' || selectedRef.type === 'eggcheck'">
               <label for="number" class="col-md-4 control-label">Number given:</label>
 
               <div class="col-md-8">
@@ -58,7 +59,8 @@
             <div class="form-group"
                  ng-hide="selectedRef.type === 'egg' ||
                   selectedRef.type === 'giveaway' ||
-                  selectedRef.type === 'misc'">
+                  selectedRef.type === 'misc' ||
+                  selectedRef.type === 'eggcheck'">
               <label for="gave" class="col-sm-4 control-label">Gave:</label>
 
               <div class="col-md-3">
@@ -71,7 +73,7 @@
               </div>
             </div>
 
-            <div class="form-group" ng-hide="selectedRef.type === 'giveaway'">
+            <div class="form-group" ng-hide="selectedRef.type === 'giveaway' || selectedRef.type === 'eggcheck'">
               <label for="referenceUrl" class="col-sm-4 control-label">User</label>
 
               <div class="col-md-8">

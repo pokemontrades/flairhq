@@ -627,11 +627,11 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     {name: "eevee"},
     {name: "togepi"},
     {name: "manaphy"},
-    {name: "ribbon1"},
-    {name: "ribbon2"},
-    {name: "ribbon3"},
-    {name: "ribbon4"},
-    {name: "ribbon5"},
+    {name: "cuteribbon"},
+    {name: "coolribbon"},
+    {name: "beautyribbon"},
+    {name: "smartribbon"},
+    {name: "toughribbon"},
   ];
   $scope.subNames = [
     {name: "pokemontrades", view: "Pokemon Trades"},
@@ -687,10 +687,17 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
       formatted += name.charAt(0).toUpperCase();
       formatted += name.slice(1, -5);
       formatted += " Charm";
-    } else {
+    } else if (name.indexOf("ribbon") > -1) {
+      formatted += name.charAt(0).toUpperCase();
+      formatted += name.slice(1, -6);
+      formatted += " Ribbon";
+    }  else if (name !== "egg") {
       formatted += name.charAt(0).toUpperCase();
       formatted += name.slice(1);
       formatted += " Egg";
+    } else {
+      formatted += name.charAt(0).toUpperCase();
+      formatted += name.slice(1);
     }
     return formatted;
   };
@@ -883,13 +890,27 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         shinyevents = flair.shinyevents || 0,
         events = flair.events || 0,
         eggs = flair.eggs || 0,
+        giveaways = flair.giveaways || 0,
         userevent = $filter("filter")(refs, $scope.isEvent).length,
         usershiny = $filter("filter")(refs, $scope.isShiny).length,
         usercasual = $filter("filter")(refs, $scope.isCasual).length,
         userEgg = $filter("filter")(refs, $scope.isEgg).length,
         usershinyevents = userevent + usershiny,
         userTrades = usershinyevents + usercasual,
-        userFlair = {};
+        userFlair = {},
+        userGiveaway = 0;
+
+    $filter("filter")(refs,
+      function (item) {
+        return $scope.isGiveaway(item) || $scope.isEggCheck(item);
+      }
+    ).forEach(
+      function (ref) {
+        if (ref.url.indexOf("SVExchange") > -1) {
+          userGiveaway += ref.number;
+        }
+      }
+    );
 
     for(var i = 0; i < $scope.flairs.length; i++) {
       if (($scope.flairs[i].name === $scope.user.flair.ptrades.flair_css_class &&
@@ -918,14 +939,16 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     }
 
     if (flair.sub === "svexchange" &&
-        userFlair.eggs > eggs) {
+        userFlair.eggs > eggs &&
+        userFlair.giveaways > giveaways) {
       return false;
     }
 
     return (userTrades >= trades &&
       usershinyevents >= shinyevents &&
       userevent >= events &&
-      userEgg >= eggs);
+      userEgg >= eggs &&
+      userGiveaway >= giveaways);
   };
 
   $scope.addFc = function () {

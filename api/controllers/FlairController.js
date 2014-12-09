@@ -72,7 +72,11 @@ module.exports = {
           app.flair += "2";
         }
         if (css_class && css_class.indexOf(' ') > -1) {
-          css_class = app.flair + " " + css_class.substr(css_class.indexOf(' ') + 1);
+          if (app.flair.indexOf('ribbon')) {
+            css_class = css_class.substr(0, css_class.indexOf(' ')) + " " + app.flair;
+          } else {
+            css_class = app.flair + " " + css_class.substr(css_class.indexOf(' ') + 1);
+          }
         } else {
           css_class = app.flair;
         }

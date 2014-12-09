@@ -169,53 +169,36 @@ a[href="/shinycharm"] {
   margin-top: -4px;
 }
 
+
+.flair-lucky:before,
 .flair-egg:before,
-a[href="/egg"] {
-  content: "";
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-  background: url(/images/egg.png) -0px -0px;
-  vertical-align: middle;
-  margin-left: 0px;
-  margin-top: -4px;
-}
-
 .flair-eevee:before,
-a[href="/eevee"] {
-  content: "";
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-  background: url(/images/eevee.png) -0px -0px;
-  vertical-align: middle;
-  margin-left: 0px;
-  margin-top: -4px;
-}
-
 .flair-togepi:before,
-a[href="/togepi"] {
+.flair-manaphy:before,
+.flair-ditto:before,
+.flair-eggcup:before,
+a[href="/egg"],
+a[href="/lucky"],
+a[href="/eevee"],
+a[href="/togepi"],
+a[href="/manaphy"],
+a[href="/ditto"],
+a[href="/eggcup"] {
   content: "";
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-  background: url(/images/togepi.png) -0px -0px;
+  display:inline-block;
+  height:22px;
+  width:22px;
+  background:url(/images/eggflairs.png) no-repeat 0 0;
+  margin: 0px 1px -6px 1px;
   vertical-align: middle;
-  margin-left: 0px;
-  margin-top: -4px;
 }
 
-.flair-manaphy:before,
-a[href="/manaphy"] {
-  content: "";
-  width: 24px;
-  height: 24px;
-  display: inline-block;
-  background: url(/images/manaphy.png) -0px -0px;
-  vertical-align: middle;
-  margin-left: 0px;
-  margin-top: -4px;
-}
+.flair-egg:before, a[href="/egg"] {background:url(/images/eggflairs.png) no-repeat -22px 0; }
+.flair-eevee:before, a[href="/eevee"] {background:url(/images/eggflairs.png) no-repeat -44px 0;}
+.flair-togepi:before, a[href="/togepi"] {background:url(/images/eggflairs.png) no-repeat -66px 0;}
+.flair-manaphy:before, a[href="/manaphy"] {background:url(/images/eggflairs.png) no-repeat -88px 0;}
+.flair-ditto:before, a[href="/ditto"] {background:url(/images/eggflairs.png) no-repeat -110px 0;}
+.flair-eggcup:before, a[href="/eggcup"] {background:url(/images/eggflairs.png) no-repeat -132px 0;}
 
 
 .flair-cuteribbon:after,

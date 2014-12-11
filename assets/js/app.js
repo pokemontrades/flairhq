@@ -927,19 +927,31 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
 
 
     if (flair === userFlair) {
-      console.log(flair.name + " is the same flair as user has.");
       return false;
     }
 
     if ($scope.inPokemonTradesCasual(flair) && $scope.inPokemonTradesCollector(userFlair)) {
-      console.log("User can't apply for " + flair.name + " as it is casual, user is collector.");
       return false;
     }
 
-    console.log("userFlair: " + userFlair);
-    console.log("applying for: " + flair);
-    console.log("flair stuff: " + {trades: trades, events: events, shinyevents: shinyevents, eggs: eggs, giveaways: giveaways});
-    console.log("flair stuff: " + {trades: userTrades, events: userevent, shinyevents: usershinyevents, eggs: userEgg, giveaways: userGiveaway});
+    if (flair.name === "ultraball") {
+      console.table(userFlair);
+      console.table(flair);
+      console.table({
+        trades: trades,
+        events: events,
+        shinyevents: shinyevents,
+        eggs: eggs,
+        giveaways: giveaways
+      });
+      console.table({
+        trades: userTrades,
+        events: userevent,
+        shinyevents: usershinyevents,
+        eggs: userEgg,
+        giveaways: userGiveaway
+      });
+    }
 
     if (flair.sub === "pokemontrades" &&
         userFlair &&

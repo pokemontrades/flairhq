@@ -935,6 +935,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     }
 
     if (flair.sub === "pokemontrades" &&
+        userFlair &&
         userFlair.trades > trades &&
         userFlair.shinyevents > shinyevents &&
         userFlair.events > events) {
@@ -942,6 +943,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     }
 
     if (flair.sub === "svexchange" &&
+        userFlair &&
         userFlair.eggs > eggs &&
         userFlair.giveaways > giveaways) {
       return false;

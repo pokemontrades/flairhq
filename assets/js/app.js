@@ -910,7 +910,7 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
     ).forEach(
       function (ref) {
         if (ref.url.indexOf("SVExchange") > -1) {
-          userGiveaway += ref.number;
+          userGiveaway += (ref.number || 0);
         }
       }
     );
@@ -958,7 +958,6 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         userFlair.trades > trades &&
         userFlair.shinyevents > shinyevents &&
         userFlair.events > events) {
-      console.log(flair.name + " is lower on the ladder.");
       return false;
     }
 
@@ -966,7 +965,6 @@ fapp.controller("userCtrl", ['$scope', "$filter", function ($scope, $filter) {
         userFlair &&
         userFlair.eggs > eggs &&
         userFlair.giveaways > giveaways) {
-      console.log(flair.name + " is lower on the ladder.");
       return false;
     }
 

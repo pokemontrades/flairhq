@@ -85,6 +85,7 @@ module.exports = {
                 gave: req.params.gave,
                 got: req.params.got,
                 notes: req.params.notes,
+                edited: false,
                 number: req.params.number
               },
               function (err, ref) {
@@ -128,6 +129,7 @@ module.exports = {
               got: req.params.got,
               notes: req.params.notes,
               approved: approved,
+              edited: true,
               number: req.params.number
             })
             .exec(function (err, ref) {

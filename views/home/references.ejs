@@ -35,6 +35,9 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+        <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        <span ng-if="!(user.isMod && refUser && reference.edited)"
+                class="invisible">*</span>
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
@@ -84,6 +87,9 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+        <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        <span ng-if="!(user.isMod && refUser && reference.edited)"
+              class="invisible">*</span>
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
@@ -133,6 +139,9 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+        <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        <span ng-if="!(user.isMod && refUser && reference.edited)"
+              class="invisible">*</span>
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>
@@ -214,6 +223,9 @@
       <td>
         <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+        <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        <span ng-if="!(user.isMod && refUser && reference.edited)"
+              class="invisible">*</span>
         <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
               class="glyphicon glyphicon-ok"></span>
       </td>

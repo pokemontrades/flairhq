@@ -109,29 +109,37 @@ module.exports = {
       if (!refUser) {
         return res.json({error: "Can't find user"}, 404);
       }
-
-      Reference.update({id: req.params.id, user: refUser.id},
-        {
-          url: req.params.url,
-          user: refUser.id,
-          user2: req.params.user2,
-          description: req.params.description,
-          type: req.params.type,
-          gave: req.params.gave,
-          got: req.params.got,
-          notes: req.params.notes,
-          approved: false,
-          number: req.params.number
-        })
-        .exec(function (err, ref) {
-          if (err) {
-            return res.json(err, 500);
-          }
-          if (!ref) {
-            return res.json(404);
-          }
-          return res.json(ref, 200);
-        });
+      Reference.findOne({id: req.params.id, user: refUser.id}).exec(function (err, ref) {
+        if (err || !ref) {
+          return res.notFound();
+        }
+        var approved = ref.approved;
+        if (ref.url !== req.params.url || ref.type !== req.params.type) {
+          approved = false;
+        }
+        Reference.update({id: req.params.id, user: refUser.id},
+            {
+              url: req.params.url,
+              user: refUser.id,
+              user2: req.params.user2,
+              description: req.params.description,
+              type: req.params.type,
+              gave: req.params.gave,
+              got: req.params.got,
+              notes: req.params.notes,
+              approved: approved,
+              number: req.params.number
+            })
+            .exec(function (err, ref) {
+              if (err) {
+                return res.json(err, 500);
+              }
+              if (!ref) {
+                return res.json(404);
+              }
+              return res.json(ref, 200);
+            });
+      });
     });
   },
 

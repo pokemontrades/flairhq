@@ -44,7 +44,7 @@ fapp.controller("referenceCtrl", ['$scope', '$filter', function ($scope, $filter
     var ref = $scope.selectedRef,
         url = "/reference/edit",
         regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
         regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
         regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 
@@ -381,7 +381,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
     var ref = $scope.selectedRef,
       url = "/reference/edit",
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
       regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
       regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 
@@ -474,7 +474,7 @@ fapp.controller("indexCtrl", ["$scope", "$filter", function ($scope, $filter) {
     var url = "/reference/add",
       user2 = $scope.user2,
       regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
       regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
       regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 

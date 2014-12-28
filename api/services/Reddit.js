@@ -7,7 +7,7 @@ exports.data = {
   redirectURL: sails.config.reddit.redirectURL
 };
 
-exports.refreshToken = function (refreshToken, callback) {
+exports.refreshToken = function (refreshToken, callback, error) {
   var data = "client_secret=" + exports.data.clientIDSecret
     + "&client_id=" + exports.data.clientID
     + "&duration=permanent"
@@ -31,7 +31,11 @@ exports.refreshToken = function (refreshToken, callback) {
       "Content-Length": data.length
     }
   }, function(err, response, body){
-    callback(body.access_token);
+    if (body && body.access_token) {
+      callback(body.access_token);
+    } else {
+      error();
+    }
   });
 };
 
@@ -64,6 +68,8 @@ exports.getFlair = function (refreshToken, callback) {
         }
       });
     });
+  }, function () {
+    console.log("Error retrieving token.");
   });
 };
 
@@ -93,5 +99,8 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
         callback(bodyJson.json.errors);
       }
     });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
   });
 };

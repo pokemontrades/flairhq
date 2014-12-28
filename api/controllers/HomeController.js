@@ -13,8 +13,12 @@ module.exports = {
       if (user) {
         res.view();
         Reddit.getFlair(user.redToken, function (flair1, flair2) {
-          user.flair = {ptrades: flair1, svex: flair2};
-          user.save(function (err) {});
+          if (flair1 || flair2) {
+            user.flair = {ptrades: flair1, svex: flair2};
+            user.save(function (err) {
+              console.log(err);
+            });
+          }
         });
       } else {
         res.json(400);

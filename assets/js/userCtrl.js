@@ -323,7 +323,7 @@ define([
                     }
                 }
             );
-            return givenAway
+            return givenAway;
         };
 
         $scope.canUserApply = function (applicationFlair) {
@@ -349,8 +349,8 @@ define([
                 return false;
             }
 
-            if ($scope.inPokemonTradesCasual(applicationFlair)
-                && $scope.inPokemonTradesCollector(currentFlair)) {
+            if ($scope.inPokemonTradesCasual(applicationFlair) &&
+                $scope.inPokemonTradesCollector(currentFlair)) {
                 return false;
             }
 

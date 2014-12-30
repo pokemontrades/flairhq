@@ -85,32 +85,35 @@ define([
             if (!name) {
                 return "";
             }
-            var formatted = "";
+            var formatted = "",
+                numberToSliceTill,
+                suffix;
+
             if (name.indexOf("ball") > -1) {
-                formatted += name.charAt(0).toUpperCase();
-                formatted += name.slice(1, -4);
-                formatted += " Ball";
+                suffix = "Ball";
+                numberToSliceTill = -4;
             } else if (name.indexOf("charm") > -1) {
-                formatted += name.charAt(0).toUpperCase();
-                formatted += name.slice(1, -5);
-                formatted += " Charm";
+                suffix = "Charm";
+                numberToSliceTill = -5;
             } else if (name.indexOf("ribbon") > -1) {
-                formatted += name.charAt(0).toUpperCase();
-                formatted += name.slice(1, -6);
-                formatted += " Ribbon";
+                suffix = "Ribbon";
+                numberToSliceTill = -6;
             } else if (name !== "egg") {
-                formatted += name.charAt(0).toUpperCase();
-                formatted += name.slice(1);
-                formatted += " Egg";
-            } else {
-                formatted += name.charAt(0).toUpperCase();
-                formatted += name.slice(1);
+                suffix = "Egg";
             }
+
+            formatted += name.charAt(0).toUpperCase();
+            formatted += name.slice(1, numberToSliceTill);
+            if (suffix) {
+                suffix = " " + suffix;
+                formatted += suffix;
+            }
+
             return formatted;
         };
 
         $scope.getName = function (id) {
-            var name;
+            var name = "";
             $scope.flairs.forEach(function (flair) {
                 if (flair.id === id) {
                     name = $scope.formattedName(flair.name);
@@ -119,7 +122,7 @@ define([
             return name;
         };
 
-        $scope.canApplyForAFlair = function () {
+        $scope.canApplyForAnyFlair = function () {
             return (($scope.selectedTradeFlair &&
             $scope.user.flair.ptrades.flair_css_class !== $scope.selectedTradeFlair) ||
             ($scope.selectedExchFlair &&
@@ -201,19 +204,27 @@ define([
         };
 
         $scope.inPokemonTradesCasual = function (flair) {
-            return flair.sub === "pokemontrades" && !flair.events && !flair.shinyevents;
+            if (flair) {
+                return flair.sub === "pokemontrades" && !flair.events && !flair.shinyevents;
+            }
         };
 
         $scope.inPokemonTradesCollector = function (flair) {
-            return flair.sub === "pokemontrades" && (flair.events > 0 || flair.shinyevents > 0);
+            if (flair) {
+                return flair.sub === "pokemontrades" && (flair.events > 0 || flair.shinyevents > 0);
+            }
         };
 
         $scope.inSVExchangeHatcher = function (flair) {
-            return flair.sub === "svexchange" && flair.eggs > 0;
+            if (flair) {
+                return flair.sub === "svexchange" && flair.eggs > 0;
+            }
         };
 
         $scope.inSVExchangeGiver = function (flair) {
-            return flair.sub === "svexchange" && flair.giveaways > 0;
+            if (flair) {
+                return flair.sub === "svexchange" && flair.giveaways > 0;
+            }
         };
 
         $scope.getRedditUser = function (username) {
@@ -288,87 +299,73 @@ define([
             }
         };
 
-        $scope.canUserApply = function (flair) {
-            if (!$scope.user || !$scope.user.references) {
-                return false;
+        $scope.getUserFlair = function () {
+            for (var i = 0; i < $scope.flairs.length; i++) {
+                if (($scope.flairs[i].name === $scope.user.flair.ptrades.flair_css_class &&
+                    $scope.flairs[i].sub === "pokemontrades") ||
+                    ($scope.flairs[i].name === $scope.user.flair.svex.flair_css_class &&
+                    $scope.flairs[i].sub === "svexchange")) {
+                    return $scope.flairs[i];
+                }
             }
-            var refs = $scope.user.references,
-                trades = flair.trades || 0,
-                shinyevents = flair.shinyevents || 0,
-                events = flair.events || 0,
-                eggs = flair.eggs || 0,
-                giveaways = flair.giveaways || 0,
-                userevent = $filter("filter")(refs, $scope.isEvent).length,
-                usershiny = $filter("filter")(refs, $scope.isShiny).length,
-                usercasual = $filter("filter")(refs, $scope.isCasual).length,
-                userEgg = $filter("filter")(refs, $scope.isEgg).length,
-                usershinyevents = userevent + usershiny,
-                userTrades = usershinyevents + usercasual,
-                userFlair = {},
-                userGiveaway = 0;
+        };
 
-            $filter("filter")(refs,
+        $scope.numberOfGivenAway = function () {
+            var givenAway = 0;
+            $filter("filter")($scope.user.references,
                 function (item) {
                     return $scope.isGiveaway(item) || $scope.isEggCheck(item);
                 }
             ).forEach(
                 function (ref) {
                     if (ref.url.indexOf("SVExchange") > -1) {
-                        userGiveaway += (ref.number || 0);
+                        givenAway += (ref.number || 0);
                     }
                 }
             );
+            return givenAway
+        };
 
-            for (var i = 0; i < $scope.flairs.length; i++) {
-                if (($scope.flairs[i].name === $scope.user.flair.ptrades.flair_css_class &&
-                    $scope.flairs[i].sub === "pokemontrades") ||
-                    ($scope.flairs[i].name === $scope.user.flair.svex.flair_css_class &&
-                    $scope.flairs[i].sub === "svexchange")) {
-                    userFlair = $scope.flairs[i];
-                    break;
-                }
+        $scope.canUserApply = function (applicationFlair) {
+            if (!$scope.user || !$scope.user.references) {
+                return false;
             }
+            var refs = $scope.user.references,
+                trades = applicationFlair.trades || 0,
+                shinyevents = applicationFlair.shinyevents || 0,
+                events = applicationFlair.events || 0,
+                eggs = applicationFlair.eggs || 0,
+                giveaways = applicationFlair.giveaways || 0,
+                userevent = $filter("filter")(refs, $scope.isEvent).length,
+                usershiny = $filter("filter")(refs, $scope.isShiny).length,
+                usercasual = $filter("filter")(refs, $scope.isCasual).length,
+                userEgg = $filter("filter")(refs, $scope.isEgg).length,
+                usershinyevents = userevent + usershiny,
+                userTrades = usershinyevents + usercasual,
+                userGiveaway = $scope.numberOfGivenAway(),
+                currentFlair = $scope.getUserFlair();
 
-
-            if (flair === userFlair) {
+            if (applicationFlair === currentFlair) {
                 return false;
             }
 
-            if ($scope.inPokemonTradesCasual(flair) && $scope.inPokemonTradesCollector(userFlair)) {
+            if ($scope.inPokemonTradesCasual(applicationFlair)
+                && $scope.inPokemonTradesCollector(currentFlair)) {
                 return false;
             }
 
-            if (flair.name === "ultraball") {
-                console.table(userFlair);
-                console.table(flair);
-                console.table({
-                    trades: trades,
-                    events: events,
-                    shinyevents: shinyevents,
-                    eggs: eggs,
-                    giveaways: giveaways
-                });
-                console.table({
-                    trades: userTrades,
-                    events: userevent,
-                    shinyevents: usershinyevents,
-                    eggs: userEgg,
-                    giveaways: userGiveaway
-                });
-            }
-
-            if (flair.sub === "pokemontrades" &&
-                userFlair &&
-                userFlair.trades > trades &&
-                userFlair.shinyevents > shinyevents &&
-                userFlair.events > events) {
+            if (applicationFlair.sub === "pokemontrades" &&
+                currentFlair &&
+                currentFlair.trades > trades &&
+                currentFlair.shinyevents > shinyevents &&
+                currentFlair.events > events) {
                 return false;
             }
 
-            if (flair.sub === "svexchange" &&
-                userFlair &&
-                userFlair.eggs > eggs &&
-                userFlair.giveaways > giveaways) {
+            if (applicationFlair.sub === "svexchange" &&
+                currentFlair &&
+                currentFlair.eggs > eggs &&
+                currentFlair.giveaways > giveaways) {
                 return false;
             }
 

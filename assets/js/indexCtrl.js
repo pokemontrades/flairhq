@@ -1,4 +1,4 @@
-/* global io, angular */
+/* global io, define */
 define([
 
 ], function () {

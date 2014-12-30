@@ -19,7 +19,7 @@
       <li ng-repeat="game in refUser.games | orderBy:'createdAt'"
           ng-show="game.ign || game.tsv">
         <span ng-if="game.ign">IGN: {{game.ign}}</span>
-        <span ng-if="game.tsv > 0">TSV: {{game.tsv | numberFixedLen:4}}</span>
+        <span ng-if="game.tsv > 0">TSV: {{game.tsv | numberPadding:4}}</span>
       </li>
     </ul>
   </div>

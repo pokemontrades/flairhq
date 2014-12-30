@@ -1,4 +1,4 @@
-/* global io */
+/* global io, define */
 define([
 
 ], function () {

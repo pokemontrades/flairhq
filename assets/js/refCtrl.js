@@ -1,4 +1,4 @@
-/* global io, angular */
+/* global io, define */
 define([
 
 ], function () {
@@ -188,16 +188,16 @@ define([
                 url = "/user/edit";
 
             var patt = /\d{4}(-?)\d{4}\1\d{4}/;
-            for (var fc in fcs) {
-                if (!patt.test(fcs[fc])) {
+            for (var fcID = 0; fcID < fcs.length; fcID++) {
+                if (!patt.test(fcs[fcID])) {
                     $scope.spin.modSaveProfile = false;
                     $scope.modSaveError = "One of the friend codes wasn't in the correct format.";
                     return;
                 }
             }
 
-            for (var game in games) {
-                if (isNaN(games[game].tsv)) {
+            for (var gameID = 0; gameID < games.length; gameID++) {
+                if (isNaN(games[gameID].tsv)) {
                     $scope.spin.modSaveProfile = false;
                     $scope.modSaveError = "One of the tsvs is not a number.";
                     return;

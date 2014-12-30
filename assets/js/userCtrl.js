@@ -1,4 +1,4 @@
-/* global io */
+/* global io, define */
 define([
 
 ], function () {
@@ -213,7 +213,7 @@ define([
         };
 
         $scope.inSVExchangeGiver = function (flair) {
-            return flair.sub === "svexchange" && flair.giveaways > 0
+            return flair.sub === "svexchange" && flair.giveaways > 0;
         };
 
         $scope.getRedditUser = function (username) {
@@ -255,8 +255,8 @@ define([
                     if (res.statusCode === 200) {
                         $scope.user = data;
                         if ($scope.user.flair && $scope.user.flair.ptrades) {
-                            for (var flairId in $scope.flairs) {
-                                var flair = $scope.flairs[flairId];
+                            for (var i = 0; i < $scope.flairs.length; i++) {
+                                var flair = $scope.flairs[i];
                                 if (flair.name === $scope.user.flair.ptrades.flair_css_class) {
                                     $scope.selectedTradeFlair = flair.name;
                                 }
@@ -411,22 +411,22 @@ define([
             }
 
             var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
-            for (var fc in fcs) {
-                if (!patt.test(fcs[fc])) {
+            for (var i = 0; i < fcs.length; i++) {
+                if (!patt.test(fcs[i])) {
                     $scope.userspin.saveProfile = false;
                     $("#saveError").html("One of your friend codes wasn't in the correct format.").show();
                     return;
                 }
             }
 
-            for (var game in games) {
-                if (isNaN(games[game].tsv)) {
+            for (var gameID = 0; gameID < games.length; gameID++) {
+                if (isNaN(games[gameID].tsv)) {
                     $scope.userspin.saveProfile = false;
                     $("#saveError").html("One of the tsvs is not a number.").show();
                     return;
                 }
-                if (games[game].tsv === "") {
-                    games[game].tsv = 0;
+                if (games[gameID].tsv === "") {
+                    games[gameID].tsv = 0;
                 }
             }
 

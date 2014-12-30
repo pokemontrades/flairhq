@@ -1,3 +1,4 @@
+/* global define */
 define([
     'angular'
 ], function (ng) {

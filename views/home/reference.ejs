@@ -37,7 +37,7 @@
         </div>
         <div class="tab-pane" id="comments">
 
-          <div class="col-md-6 pull-right" ng-if="user">
+          <div class="col-md-4 pull-right" ng-if="user">
             <form role="form" ng-submit="addComment()">
               <h2>Leave a comment</h2>
               <p>Sometimes you might want to leave a comment for a user.</p>
@@ -55,7 +55,7 @@
                       class="btn btn-primary">Comment</button>
             </form>
           </div>
-          <div class="col-md-6" id="comments">
+          <div class="col-md-8" id="comments">
             <h2>Comments</h2>
             <div class="comment panel panel-default" ng-repeat="comment in refUser.comments">
               <div class="panel-heading">

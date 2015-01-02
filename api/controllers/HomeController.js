@@ -16,7 +16,9 @@ module.exports = {
           if (flair1 || flair2) {
             user.flair = {ptrades: flair1, svex: flair2};
             user.save(function (err) {
-              console.log(err);
+              if (err) {
+                console.log(err);
+              }
             });
           }
         });

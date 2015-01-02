@@ -2,20 +2,20 @@ require.config({
 
     // alias libraries paths
     paths: {
-        'angular': '/js/dependencies/angular.min',
-        'angular-md': '/js/dependencies/angular-md.min',
-        'angular-spinner': '/js/dependencies/angular-spinner.min',
-        'angular-ui-router': '/js/dependencies/angular-ui-router',
-        'jquery': '/js/dependencies/jquery.min',
-        "angular-bootstrap": '/js/dependencies/ui-bootstrap-tpls-0.10.0',
-        "sails": "/js/dependencies/sails.io",
-        "collapse": "/js/dependencies/collapse",
-        "dropdown": "/js/dependencies/dropdown",
-        "lodash": "/js/dependencies/lodash.min",
-        "marked": "/js/dependencies/marked",
-        "modal": "/js/dependencies/modal",
-        "spin": "/js/dependencies/spin",
-        "tab": "/js/dependencies/tab"
+        'angular': 'dependencies/angular.min',
+        'angular-md': 'dependencies/angular-md.min',
+        'angular-spinner': 'dependencies/angular-spinner.min',
+        'angular-ui-router': 'dependencies/angular-ui-router',
+        'jquery': 'dependencies/jquery.min',
+        "angular-bootstrap": 'dependencies/ui-bootstrap-tpls-0.10.0',
+        "sails": "dependencies/sails.io",
+        "collapse": "dependencies/collapse",
+        "dropdown": "dependencies/dropdown",
+        "lodash": "dependencies/lodash.min",
+        "marked": "dependencies/marked",
+        "modal": "dependencies/modal",
+        "spin": "dependencies/spin",
+        "tab": "dependencies/tab"
     },
 
     // angular does not support AMD out of the box, put it in a shim

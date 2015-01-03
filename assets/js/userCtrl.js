@@ -423,7 +423,7 @@ define([
                     return;
                 }
                 if (games[gameID].tsv === "") {
-                    games[gameID].tsv = 0;
+                    games[gameID].tsv = -1;
                 }
             }
 

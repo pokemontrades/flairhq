@@ -13,7 +13,7 @@ module.exports = {
     tsv: {
       type: "int",
       max: 4095,
-      min: 0,
+      min: -1,
       numeric: true
     }
   }

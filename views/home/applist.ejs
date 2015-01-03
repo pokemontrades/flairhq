@@ -21,10 +21,10 @@
                   <button class="btn btn-primary has-spinner" ng-really-user="{{app.user}}"
                           ng-really-flair="{{formattedName(app.flair)}}"
                           ng-really-click="approveApp(app.id, $index)"
-                          ng-class="[adminok.appFlair[{{$index}}] ? 'glyphicon glyphicon-ok' : '',
-                            adminspin.appFlair[{{$index}}] ? 'active' : '']">
+                          ng-class="[adminok.appFlair[app.id] ? 'glyphicon glyphicon-ok' : '',
+                            adminspin.appFlair[app.id] ? 'active' : '']">
                     <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-                    {{adminok.appFlair[$index] ? "" : "Approve"}}
+                    {{adminok.appFlair[app.id] ? "" : "Approve"}}
                   </button>
                   <button class="btn btn-danger" ng-really-switch="denyApp"
                           ng-really-click="denyApp(app.id, $index)">Deny</button>

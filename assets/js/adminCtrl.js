@@ -62,20 +62,20 @@ define([
         };
 
         $scope.approveApp = function (id, $index) {
-            $scope.adminok.appFlair[$index] = false;
-            $scope.adminspin.appFlair[$index] = true;
+            $scope.adminok.appFlair[id] = false;
+            $scope.adminspin.appFlair[id] = true;
             $scope.flairAppError = "";
             var url = "/flair/app/approve";
 
             io.socket.post(url, {id: id}, function (data, res) {
                 if (res.statusCode === 200) {
+                    $scope.adminok.appFlair[id] = true;
                     $scope.flairApps.splice($index, 1);
-                    $scope.adminok.appFlair[$index] = true;
                 } else {
                     $scope.flairAppError = "Couldn't approve, for some reason.";
                     console.log(data);
                 }
-                $scope.adminspin.appFlair[$index] = false;
+                $scope.adminspin.appFlair[id] = false;
                 $scope.$apply();
             });
         };

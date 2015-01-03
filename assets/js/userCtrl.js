@@ -256,6 +256,8 @@ define([
                     $('#tabList li:eq(2) a').tab('show');
                 } else if (window.location.hash === "#/modEdit") {
                     $('#tabList li:eq(3) a').tab('show');
+                } else if (window.location.hash === "#/privacypolicy") {
+                    $('#privacypolicy').modal('show');
                 }
             }
         });
@@ -292,6 +294,8 @@ define([
                         $('#tabList li:eq(2) a').tab('show');
                     } else if (window.location.hash === "#/modEdit") {
                         $('#tabList li:eq(3) a').tab('show');
+                    } else if (window.location.hash === "#/privacypolicy") {
+                        $('#privacypolicy').modal('show');
                     }
                 });
             } else {

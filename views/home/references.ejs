@@ -266,7 +266,10 @@
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}} {{reference.number ? "(" + reference.number + " given)" : ""}}</a></td>
+      <td colspan="2"><a ng-href="{{reference.url}}">
+          {{reference.description || reference.descrip}}
+          (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
+        </a></td>
       <td class="hidden-sm hidden-xs"></td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">

@@ -1,8 +1,8 @@
+/* global module, User, Game, Reference, ModNote */
 /**
- * ReferenceController
+ * UserController
  *
- * @description :: Server-side logic for managing References
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * @description :: Server-side logic for managing Users
  */
 
 var Q = require('q');
@@ -81,8 +81,8 @@ module.exports = {
           });
 
           Q.all(promises).then(function () {
-            user.games = games;
-            res.json(user, 200);
+            up.games = games;
+            res.json(up, 200);
           });
         });
       }
@@ -205,12 +205,14 @@ module.exports = {
 
     User.findOne(req.allParams().userId).exec(function (err, user) {
       if (!user) {
-        res.json("Can't find user", 404);
-        return;
+        return res.json("Can't find user", 404);
       }
 
       user.banned = req.allParams().ban;
       user.save(function (err) {
+        if (err) {
+          return res.json(err, 500);
+        }
         res.json(user, 200);
       });
     });

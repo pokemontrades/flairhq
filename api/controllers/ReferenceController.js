@@ -1,3 +1,4 @@
+/* global module, User, Reference, Flair */
 /**
  * ReferenceController
  *
@@ -5,8 +6,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-var reddit = require('redwrap'),
-  Q = require('q'),
+var Q = require('q'),
   async = require('async');
 
 module.exports = {
@@ -145,9 +145,8 @@ module.exports = {
     });
   },
 
-  delete: function (req, res) {
-    var id = req.allParams().refId,
-      type = req.allParams().type;
+  deleteRef: function (req, res) {
+    var id = req.allParams().refId;
 
     Reference.findOne({id: id}).exec(function (err, ref) {
       if (!ref) {
@@ -162,7 +161,7 @@ module.exports = {
             if (err) {
               return res.json(err, 400);
             } else {
-              return res.json(200);
+              return res.json(refs, 200);
             }
           });
       } else {
@@ -194,12 +193,10 @@ module.exports = {
       Comment.findOne({id: id}, function (err, comment) {
         if ((user.name === comment.user2) || user.isMod) {
           Comment.destroy({id: id}, function (err, com) {
-            res.json(com, 200);
-            return;
+            return res.json(com, 200);
           });
         } else {
-          res.json(403);
-          return;
+          return res.json(403);
         }
       });
     });
@@ -287,7 +284,10 @@ module.exports = {
       return;
     }
 
-    Flair.destroy({}, function (err, removed) {
+    Flair.destroy({}, function (err) {
+      if (err) {
+        return res.json(err, 500);
+      }
       var promises = [],
         added = [];
       flairs.forEach(function (flair) {

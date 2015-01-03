@@ -1,3 +1,4 @@
+/* global module */
 var reddit = require('redwrap');
 
 

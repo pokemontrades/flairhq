@@ -1,3 +1,4 @@
+/* global module, Application, User, Reddit */
 var reddit = require('redwrap');
 
 
@@ -89,13 +90,15 @@ module.exports = {
           app.sub, function (err, css_class) {
           if (err) {
             return res.json(err, 500);
+          } else {
+            console.log("Changed " + user.name + "'s flair to " + css_class);
+            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+              if (err) {
+                return res.json(err, 500);
+              }
+              return res.json(app, 200);
+            });
           }
-          Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-            if (err) {
-              return res.json(err, 500);
-            }
-            return res.json(app, 200);
-          });
         });
       });
     });

@@ -103,7 +103,7 @@ module.exports.routes = {
 
   '/reference/delete' : {
     controller : 'reference',
-    action     : 'delete'
+    action     : 'deleteRef'
   },
 
   '/reference/comment/add' : {

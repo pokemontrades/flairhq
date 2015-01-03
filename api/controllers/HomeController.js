@@ -1,4 +1,4 @@
-/* global User, Reddit */
+/* global module, User, Reddit */
 /**
  * HomeController.js
  *

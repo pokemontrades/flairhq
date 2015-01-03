@@ -6,7 +6,6 @@ define([
   'userCtrl',
   'adminCtrl',
   'angular-spinner',
-  'angular-bootstrap',
   'angular-md'
 ], function (
     ng,

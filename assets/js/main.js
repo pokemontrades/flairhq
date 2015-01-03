@@ -4,7 +4,7 @@ require.config({
     paths: {
         'angular': 'dependencies/angular.min',
         'angular-md': 'dependencies/angular-md.min',
-        'angular-spinner': 'dependencies/angular-spinner.min',
+        'angular-spinner': 'dependencies/angular-spinner',
         'angular-ui-router': 'dependencies/angular-ui-router',
         'jquery': 'dependencies/jquery.min',
         "angular-bootstrap": 'dependencies/ui-bootstrap-tpls-0.10.0',
@@ -51,6 +51,7 @@ require([
     'angular',
     'app',
     'marked',
+    'angular-bootstrap',
     'ngReallyClick',
     'numberPadding',
     'collapse',

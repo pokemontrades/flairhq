@@ -10,7 +10,10 @@ module.exports = function(grunt) {
                 useStrict: true,
                 mainConfigFile: "assets/js/main.js",
                 out: ".tmp/public/min/production.min.js",
-                include: ['dependencies/require.js']
+                include: ['dependencies/require.js'],
+                generateSourceMaps: true,
+                preserveLicenseComments: false,
+                useSourceUrl: true
             }
         }
     });

@@ -24,9 +24,10 @@
   </head>
 
   <body ng-controller="userCtrl">
-    <%- partial ('home/header.ejs') %>
-    <div id="splash" ng-hide="loaded">
-      <div class="container">
+    <div id="wrapper">
+      <%- partial ('home/header.ejs') %>
+      <div id="splash" ng-hide="loaded">
+        <div class="container">
         <div class="main container clearfix">
           <div class="content">
             <div class="row">
@@ -43,10 +44,17 @@
             </div>
           </div>
         </div>
+        </div>
+      </div>
+      <div class="hidden" ng-class="loaded ? '' : 'hidden'">
+        <%- body %>
       </div>
     </div>
-    <div class="hidden" ng-class="loaded ? '' : 'hidden'">
-      <%- body %>
+
+    <div id="footer">
+      <div class="container">
+        <a href="#privacypolicy" data-toggle="modal">Privacy Policy</a>
+      </div>
     </div>
 
     <!--SCRIPTS-->

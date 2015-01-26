@@ -80,9 +80,9 @@ module.exports = {
           }
         } else {
           if (app.flair.indexOf('ribbon') > -1 && css_class && css_class.indexOf('ribbon') === -1) {
-            css_class = css_class + app.flair;
+            css_class = css_class + " " + app.flair;
           } else if (app.flair.indexOf('ribbon') === -1 && css_class && css_class.indexOf('ribbon') > -1) {
-            css_class = app.flair + css_class;
+            css_class = app.flair + " " + css_class;
           } else {
             css_class = app.flair;
           }

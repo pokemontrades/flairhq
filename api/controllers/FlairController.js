@@ -79,7 +79,13 @@ module.exports = {
             css_class = app.flair + " " + css_class.substr(css_class.indexOf(' ') + 1);
           }
         } else {
-          css_class = app.flair;
+          if (app.flair.indexOf('ribbon') > -1 && css_class && css_class.indexOf('ribbon') === -1) {
+            css_class = css_class + app.flair;
+          } else if (app.flair.indexOf('ribbon') === -1 && css_class && css_class.indexOf('ribbon') > -1) {
+            css_class = app.flair + css_class;
+          } else {
+            css_class = app.flair;
+          }
         }
 
         Reddit.setFlair(

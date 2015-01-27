@@ -115,7 +115,7 @@ module.exports = {
           return res.notFound();
         }
         var approved = ref.approved;
-        if (ref.url !== req.params.url || ref.type !== req.params.type) {
+        if (ref.url !== req.params.url || ref.type !== req.params.type || ref.number !== req.params.number) {
           approved = false;
         }
         Reference.update({id: req.params.id, user: refUser.id},

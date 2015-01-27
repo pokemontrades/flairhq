@@ -321,9 +321,26 @@
     <tbody id="collapseeggchecks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEggCheck | orderBy: 'createdAt'">
       <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}
-          {{reference.number ? "(" + reference.number + " checked)" : ""}}</a></td>
-      <td class="hidden-sm hidden-xs"></td>
+      <td colspan="2" class="hidden-sm hidden-xs">
+          <a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}
+          {{reference.number ? "(" + reference.number + " checked)" : ""}}
+          </a>
+      </td>
+        <td class="hidden-md hidden-lg">
+            <a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}
+                {{reference.number ? "(" + reference.number + " checked)" : ""}}</a>
+        </td>
+        <td>
+            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                   ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+            <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        <span ng-if="!(user.isMod && refUser && reference.edited)"
+              class="invisible">*</span>
+        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
+              class="glyphicon glyphicon-ok"></span>
+        </td>
+
+
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>

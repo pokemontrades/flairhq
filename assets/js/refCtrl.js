@@ -126,6 +126,22 @@ define([
             return event + shiny + casual;
         };
 
+        $scope.numberOfGivenAway = function () {
+            var givenAway = 0;
+            $filter("filter")($scope.refUser.references,
+                function (item) {
+                    return $scope.isGiveaway(item) || $scope.isEggCheck(item);
+                }
+            ).forEach(
+                function (ref) {
+                    if (ref.url.indexOf("SVExchange") > -1) {
+                        givenAway += (ref.number || 0);
+                    }
+                }
+            );
+            return givenAway;
+        };
+
         io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
             if (res.statusCode === 200) {
                 $scope.refUser = data;

@@ -329,10 +329,10 @@ define([
             );
             return givenAway;
         };
-        
+
         $scope.numberOfEggsGivenAway = function () {
             var givenAway = 0;
-            $filter("filter")($scope.refUser.references,
+            $filter("filter")($scope.user.references,
                 function (item) {
                     return $scope.isGiveaway(item);
                 }
@@ -348,7 +348,7 @@ define([
 
         $scope.numberOfEggChecks = function () {
             var givenAway = 0;
-            $filter("filter")($scope.refUser.references,
+            $filter("filter")($scope.user.references,
                 function (item) {
                     return $scope.isEggCheck(item);
                 }

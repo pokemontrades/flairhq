@@ -247,7 +247,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
-      <td colspan="2">[+] <h3>Giveaways ({{<%= theUser %>.references.filter(isGiveaway).length}})</h3></td>
+      <td colspan="2">[+] <h3>Giveaways ({{<%= theUser %>.references.filter(isGiveaway).length}} threads, {{numberOfEggsGivenAway(<%= theUser %>)}} given)</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -259,7 +259,6 @@
         </button>
       </td>
         <td>
-            <span>{{numberOfGivenAway(<%= theUser %>)}}</span>
         </td>
         <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -302,7 +301,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseeggchecks">
-      <td colspan="2">[+] <h3>Egg/TSV Checks ({{<%= theUser %>.references.filter(isEggCheck).length}})</h3></td>
+      <td colspan="2">[+] <h3>Egg/TSV Checks ({{<%= theUser %>.references.filter(isEggCheck).length}} threads, {{numberOfEggChecks(<%= theUser %>)}} given)</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"
@@ -314,7 +313,6 @@
         </button>
       </td>
         <td>
-            <span>{{numberOfGivenAway(<%= theUser %>)}}</span>
         </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>

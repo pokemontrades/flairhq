@@ -142,6 +142,38 @@ define([
             return givenAway;
         };
 
+        $scope.numberOfEggsGivenAway = function () {
+            var givenAway = 0;
+            $filter("filter")($scope.refUser.references,
+                function (item) {
+                    return $scope.isGiveaway(item);
+                }
+            ).forEach(
+                function (ref) {
+                    if (ref.url.indexOf("SVExchange") > -1) {
+                        givenAway += (ref.number || 0);
+                    }
+                }
+            );
+            return givenAway;
+        };
+
+        $scope.numberOfEggChecks = function () {
+            var givenAway = 0;
+            $filter("filter")($scope.refUser.references,
+                function (item) {
+                    return $scope.isEggCheck(item);
+                }
+            ).forEach(
+                function (ref) {
+                    if (ref.url.indexOf("SVExchange") > -1) {
+                        givenAway += (ref.number || 0);
+                    }
+                }
+            );
+            return givenAway;
+        };
+
         io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
             if (res.statusCode === 200) {
                 $scope.refUser = data;

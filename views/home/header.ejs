@@ -32,6 +32,7 @@
                 <div class="scrolling-search-results">
                     <a ng-href="/u/{{result.user}}"
                        ng-repeat="result in searchResults"
+                       ng-if="result !== null"
                        class="list-group-item">
                         <h4 class="list-group-item-heading">
                             {{result.user}}

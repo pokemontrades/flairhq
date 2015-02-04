@@ -76,6 +76,16 @@ module.exports.routes = {
     action     : 'get'
   },
 
+  '/search/all/:searchterm' : {
+    controller : 'search',
+    action     : 'all'
+  },
+
+  '/search/quick/:searchterm' : {
+    controller : 'search',
+    action     : 'quick'
+  },
+
   '/reference/add' : {
     controller : 'reference',
     action     : 'add'

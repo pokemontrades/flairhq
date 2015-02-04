@@ -18,7 +18,7 @@ module.exports = {
         {gave: {'contains': searchTerm}},
         {got: {'contains': searchTerm}}
       ],
-      limit: 10
+      limit: 25
     };
 
     Reference.find(appData).exec(function (err, apps) {
@@ -27,6 +27,8 @@ module.exports = {
           if (refUser) {
             ref.user = refUser.name;
             callback(null, ref);
+          } else {
+            callback();
           }
         });
       }, function (err, results) {

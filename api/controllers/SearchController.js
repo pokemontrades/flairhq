@@ -24,13 +24,14 @@ module.exports = {
     Reference.find(appData).exec(function (err, apps) {
       async.map(apps, function (ref, callback) {
         User.findOne({id: ref.user}).exec(function (err, refUser) {
-          ref.user = refUser.name;
+          if (refUser) {
+            ref.user = refUser.name;
+          }
           callback(null, ref);
         });
       }, function (err, results) {
         return res.json(results);
       });
-      return res.json(apps, 200);
     });
   },
 

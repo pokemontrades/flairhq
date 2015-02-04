@@ -26,8 +26,8 @@ module.exports = {
         User.findOne({id: ref.user}).exec(function (err, refUser) {
           if (refUser) {
             ref.user = refUser.name;
+            callback(null, ref);
           }
-          callback(null, ref);
         });
       }, function (err, results) {
         return res.json(results);

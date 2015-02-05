@@ -38,6 +38,14 @@ module.exports = {
     });
   },
 
+  search: function(req, res) {
+    if (!req.user) {
+      return res.json("Not logged in", 403);
+    }
+
+    return res.view({searchTerm: req.params.searchterm});
+  },
+
   banlist: function (req, res) {
     res.view();
   },

@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="main container clearfix">
+
+    <div class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Advanced Search</h2>
+            </div>
+
+        </div>
+        <div class="row">
+            <form>
+                <div class="form-group col-md-3">
+                    <label>Search keyword</label>
+                    <input type="text" class="form-control" placeholder="Search"
+                           ng-model="searchInfo.keyword" ng-init="searchInfo.keyword='<%- searchTerm %>'"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <div class="col-md-12">
+                        <label>Category</label>
+                    </div>
+                    <div class="form-group col-md-12">
+                    <label ng-repeat="type in types" class="checkbox-inline col-md-4">
+                        <input type="checkbox" value="{{type.name}}"
+                               ng-checked="searchInfo.category.indexOf(type.display) > -1"
+                               ng-click="toggleCategory(type.name)"
+                               class="search-check">
+                        {{type.display}}
+                    </label>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+      <div class="row">
+        <div class="col-md-12">
+            <ul class="list-group search-results-adv">
+              <li class="list-group-item" ng-if="searching">Searching...</li>
+                <a ng-href="/u/{{result.user}}"
+                   ng-repeat="result in searchResults track by $index"
+                   ng-if="result !== null"
+                   class="list-group-item">
+                    <h4 class="list-group-item-heading">
+                        /u/{{result.user}} and {{result.user2}}
+                    </h4>
+                    <p class="list-group-iitem-text">
+                        {{result.description || result.gave + " for " + result.got}}
+                    </p>
+                </a>
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

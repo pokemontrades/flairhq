@@ -67,7 +67,7 @@ table h1, table h2, table h3 {
   padding: 0px 12px !important;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"]:not(.search-check) {
   -moz-appearance: none;
   margin: 0px;
   width: 20px;
@@ -150,4 +150,8 @@ td h3 {
 .search-results{
   width: 700px;
   max-width: 50vw;
+}
+
+.checkbox-inline{
+  margin-left: 0 !important;
 }

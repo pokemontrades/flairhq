@@ -76,12 +76,17 @@ module.exports.routes = {
     action     : 'get'
   },
 
-  '/search/all/:searchterm' : {
+  '/search/all/:searchterm/:categories' : {
     controller : 'search',
     action     : 'all'
   },
 
   '/search/quick/:searchterm' : {
+    controller : 'search',
+    action     : 'quick'
+  },
+
+  '/search/quick/:searchterm/:categories' : {
     controller : 'search',
     action     : 'quick'
   },
@@ -184,6 +189,11 @@ module.exports.routes = {
   '/info' : {
     controller : 'home',
     action     : 'info'
+  },
+
+  '/search/s/:searchterm' : {
+    controller : 'home',
+    action     : 'search'
   }
 
 };

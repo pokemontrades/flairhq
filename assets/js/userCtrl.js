@@ -1,7 +1,7 @@
 /* global io, define */
 define([], function () {
 
-  var userCtrl = function ($scope, $filter) {
+  var userCtrl = function ($scope, $filter, $location) {
     $scope.scope = $scope;
     $scope.user = undefined;
     $scope.flairs = {};
@@ -42,6 +42,19 @@ define([], function () {
       {name: "pokemontrades", view: "Pokemon Trades"},
       {name: "svexchange", view: "SV Exchange"}
     ];
+    $scope.types = [
+      {name: "event", display: "Event"},
+      {name: "redemption", display: "Redemption"},
+      {name: "shiny", display: "Shiny"},
+      {name: "casual", display: "Competitive/Casual"},
+      {name: "bank", display: "Bank"},
+      {name: "egg", display: "Egg Hatch"},
+      {name: "giveaway", display: "Giveaway"},
+      {name: "eggcheck", display: "Egg/TSV Check"},
+      {name: "misc", display: "Miscellaneous"}
+    ];
+    $scope.onSearchPage = $location.absUrl().indexOf('search') === -1;
+    console.log($scope.onSearchPage);
 
     $scope.isApproved = function (el) {
       return el.approved;
@@ -530,13 +543,33 @@ define([], function () {
       });
     };
 
-    $scope.searchTerm = "";
+    $scope.searchInfo = {
+      keyword: "",
+      category: []
+    };
     $scope.searching = false;
     $scope.searchResults = [];
 
-    $scope.$watch("searchTerm", function () {
+    $scope.toggleCategory = function (name) {
+      var index = $scope.searchInfo.category.indexOf(name);
+
+      if(index > -1) {
+        $scope.searchInfo.category.splice(index, 1);
+      } else {
+        $scope.searchInfo.category.push(name);
+      }
+
+      if ($scope.searchInfo.keyword) {
+        $scope.search();
+      }
+    };
+
+    $scope.search = function () {
       $scope.searching = true;
-      var url = "/search/quick/" + $scope.searchTerm;
+      var url = "/search/quick/" + $scope.searchInfo.keyword + "/";
+      if ($scope.searchInfo.category) {
+        url += $scope.searchInfo.category;
+      }
       io.socket.get(url, function (data, res) {
         if (res.statusCode === 200) {
           $scope.searchResults = data;
@@ -553,6 +586,10 @@ define([], function () {
         $scope.searching = false;
         $scope.$apply();
       });
+    };
+
+    $scope.$watch("searchInfo.keyword", function () {
+      $scope.search();
     });
 
     $scope.getFlairs();

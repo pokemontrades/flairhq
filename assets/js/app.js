@@ -26,7 +26,7 @@ define([
   // Define controllers, and their angular dependencies
   fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
   fapp.controller("indexCtrl", ['$scope', '$filter', indexCtrl]);
-  fapp.controller("userCtrl", ['$scope', '$filter', userCtrl]);
+  fapp.controller("userCtrl", ['$scope', '$filter', '$location', userCtrl]);
   fapp.controller("adminCtrl", ['$scope', adminCtrl]);
 
   // Bug fix for iOS safari

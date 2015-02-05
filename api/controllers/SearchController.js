@@ -1,4 +1,4 @@
-/* global module, Application, User, Reddit */
+/* global module, Reference, Search, User */
 var reddit = require('redwrap');
 
 
@@ -9,31 +9,17 @@ module.exports = {
       return res.json("Not logged in", 403);
     }
 
-    var searchTerm = req.params.searchterm;
-
-    var appData = {
-      or: [
-        {user2: {'contains': searchTerm}},
-        {description: {'contains': searchTerm}},
-        {gave: {'contains': searchTerm}},
-        {got: {'contains': searchTerm}}
-      ],
-      limit: 25
+    var searchData = {
+      description: req.params.searchterm,
+      user: req.params.searchterm
     };
 
-    Reference.find(appData).exec(function (err, apps) {
-      async.map(apps, function (ref, callback) {
-        User.findOne({id: ref.user}).exec(function (err, refUser) {
-          if (refUser) {
-            ref.user = refUser.name;
-            callback(null, ref);
-          } else {
-            callback();
-          }
-        });
-      }, function (err, results) {
-        return res.json(results);
-      });
+    if (req.params.categories) {
+      searchData.categories = req.params.categories.split(",");
+    }
+
+    Search.quick(searchData, function (results) {
+      return res.json(results);
     });
   },
 

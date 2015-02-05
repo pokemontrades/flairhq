@@ -1,7 +1,9 @@
 /* global Reference, User */
 
 exports.quick = function (searchData, cb) {
-  var appData = {};
+  var appData = {
+    limit: 20
+  };
   var orData = [];
 
   if (searchData.description) {

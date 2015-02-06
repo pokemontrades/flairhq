@@ -17,7 +17,6 @@ exports.quick = function (searchData, cb) {
   }
 
   if (searchData.categories) {
-    console.log(searchData.categories);
     appData.type = searchData.categories;
   }
 

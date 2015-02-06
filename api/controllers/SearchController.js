@@ -23,6 +23,25 @@ module.exports = {
     });
   },
 
+  normal: function (req, res) {
+    if (!req.user) {
+      return res.json("Not logged in", 403);
+    }
+
+    var searchData = {
+      description: req.params.searchterm,
+      user: req.params.userterm
+    };
+
+    if (req.params.categories) {
+      searchData.categories = req.params.categories.split(",");
+    }
+
+    Search.quick(searchData, function (results) {
+      return res.json(results);
+    });
+  },
+
   all: function (req, res) {
     if (!req.user) {
       return res.json("Not logged in", 403);

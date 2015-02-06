@@ -86,6 +86,11 @@ module.exports.routes = {
     action     : 'quick'
   },
 
+  '/search/normal/:searchterm' : {
+    controller : 'search',
+    action     : 'normal'
+  },
+
   '/search/quick/:searchterm/:categories' : {
     controller : 'search',
     action     : 'quick'

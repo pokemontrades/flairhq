@@ -54,7 +54,6 @@ define([], function () {
       {name: "misc", display: "Miscellaneous"}
     ];
     $scope.onSearchPage = $location.absUrl().indexOf('search') === -1;
-    console.log($scope.onSearchPage);
 
     $scope.isApproved = function (el) {
       return el.approved;
@@ -545,10 +544,13 @@ define([], function () {
 
     $scope.searchInfo = {
       keyword: "",
-      category: []
+      category: [],
+      user: "",
+      quick: true
     };
     $scope.searching = false;
     $scope.searchResults = [];
+    $scope.searchedFor = "";
 
     $scope.toggleCategory = function (name) {
       var index = $scope.searchInfo.category.indexOf(name);
@@ -566,12 +568,30 @@ define([], function () {
 
     $scope.search = function () {
       $scope.searching = true;
-      var url = "/search/quick/" + $scope.searchInfo.keyword + "/";
-      if ($scope.searchInfo.category) {
-        url += $scope.searchInfo.category;
+      if (!$scope.searchInfo.keyword) {
+        $scope.searching = false;
+        $scope.searchResults = [];
+        $('.search-results').hide();
+        return;
       }
+
+      var url = "/search";
+      if ($scope.searchInfo.quick) {
+        url += "/quick";
+      } else {
+        url += "/normal";
+      }
+      url += "/" + $scope.searchInfo.keyword;
+      if ($scope.searchInfo.category) {
+        url += "/" + $scope.searchInfo.category;
+      }
+      if ($scope.searchInfo.user) {
+        url += "/" + $scope.searchInfo.user
+      }
+      console.log(url);
+      $scope.searchedFor = url;
       io.socket.get(url, function (data, res) {
-        if (res.statusCode === 200) {
+        if (res.statusCode === 200 && $scope.searchedFor === url) {
           $scope.searchResults = data;
           if (data.length > 0) {
             $('.search-results').show();
@@ -579,12 +599,12 @@ define([], function () {
             $('.search-results').hide();
           }
           console.log($scope.searchResults);
-        } else {
+          $scope.searching = false;
+          $scope.$apply();
+        } else if (res.statusCode !== 200) {
           // Some error
-          console.log("error");
+          console.log(res);
         }
-        $scope.searching = false;
-        $scope.$apply();
       });
     };
 

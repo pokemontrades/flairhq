@@ -2,7 +2,8 @@
 
 exports.quick = function (searchData, cb) {
   var appData = {
-    limit: 20
+    limit: 20,
+    sort: "createdAt DESC"
   };
   var orData = [];
 

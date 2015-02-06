@@ -13,8 +13,10 @@ exports.quick = function (searchData, cb) {
     orData.push({got: {'contains': searchData.description}});
   }
 
-  if (searchData.user) {
+  if (searchData.user && searchData.user === searchData.description) {
     orData.push({user2: {'contains': searchData.user}});
+  } else if (searchData.user) {
+    appData.user2 = {'contains': searchData.user};
   }
 
   if (searchData.categories) {
@@ -25,6 +27,7 @@ exports.quick = function (searchData, cb) {
     appData.or = orData;
   }
 
+  console.log(appData);
   Reference.find(appData).exec(function (err, apps) {
     async.map(apps, function (ref, callback) {
       User.findOne({id: ref.user}).exec(function (err, refUser) {

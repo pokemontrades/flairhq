@@ -581,12 +581,14 @@ define([], function () {
       } else {
         url += "/normal";
       }
-      url += "/" + $scope.searchInfo.keyword;
-      if ($scope.searchInfo.category) {
-        url += "/" + $scope.searchInfo.category;
+      url += "?keyword=" + $scope.searchInfo.keyword;
+      if ($scope.searchInfo.category.length > 0) {
+        console.log(url);
+        url += "&categories=" + $scope.searchInfo.category;
       }
       if ($scope.searchInfo.user) {
-        url += "/" + $scope.searchInfo.user
+        console.log(url);
+        url += "&user=" + $scope.searchInfo.user
       }
       console.log(url);
       $scope.searchedFor = url;
@@ -608,8 +610,16 @@ define([], function () {
       });
     };
 
-    $scope.$watch("searchInfo.keyword", function () {
-      $scope.search();
+    $scope.$watch("searchInfo.keyword", function (value) {
+      if (value) {
+        $scope.search();
+      }
+    });
+
+    $scope.$watch("searchInfo.user", function (value) {
+      if ($scope.searchInfo.keyword) {
+        $scope.search();
+      }
     });
 
     $scope.getFlairs();

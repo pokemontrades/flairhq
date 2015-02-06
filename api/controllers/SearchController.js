@@ -5,17 +5,18 @@ var reddit = require('redwrap');
 module.exports = {
 
   quick: function (req, res) {
+    var params = req.allParams();
     if (!req.user) {
       return res.json("Not logged in", 403);
     }
 
     var searchData = {
-      description: req.params.searchterm,
-      user: req.params.searchterm
+      description: params.keyword,
+      user: params.keyword
     };
 
-    if (req.params.categories) {
-      searchData.categories = req.params.categories.split(",");
+    if (params.categories) {
+      searchData.categories = params.categories.split(",");
     }
 
     Search.quick(searchData, function (results) {
@@ -24,17 +25,18 @@ module.exports = {
   },
 
   normal: function (req, res) {
+    var params = req.allParams();
     if (!req.user) {
       return res.json("Not logged in", 403);
     }
 
     var searchData = {
-      description: req.params.searchterm,
-      user: req.params.userterm
+      description: params.keyword,
+      user: params.user
     };
 
-    if (req.params.categories) {
-      searchData.categories = req.params.categories.split(",");
+    if (params.categories) {
+      searchData.categories = params.categories.split(",");
     }
 
     Search.quick(searchData, function (results) {

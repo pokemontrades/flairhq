@@ -583,13 +583,12 @@ define([], function () {
       }
       url += "?keyword=" + $scope.searchInfo.keyword;
       if ($scope.searchInfo.category.length > 0) {
-        console.log(url);
         url += "&categories=" + $scope.searchInfo.category;
       }
       if ($scope.searchInfo.user) {
-        console.log(url);
         url += "&user=" + $scope.searchInfo.user
       }
+
       console.log(url);
       $scope.searchedFor = url;
       io.socket.get(url, function (data, res) {

@@ -42,6 +42,8 @@ module.exports = {
       searchData.categories = params.categories.split(",");
     }
 
+    searchData.skip = params.skip || 0;
+
     Search.quick(searchData, function (results) {
       return res.json(results);
     });

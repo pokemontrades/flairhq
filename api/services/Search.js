@@ -4,8 +4,9 @@ var _ = require('lodash');
 
 exports.quick = function (searchData, cb) {
   var appData = {
-    limit: 20,
-    sort: "createdAt DESC"
+      limit: 20,
+      sort: "createdAt DESC",
+      skip: searchData.skip || 0
     },
     orData = [],
     tempOrData = [],
@@ -17,10 +18,9 @@ exports.quick = function (searchData, cb) {
     appData.type = types;
   }
 
-
-  tempOrData.push({description: {'contains': searchData.description}});
-  tempOrData.push({gave: {'contains': searchData.description}});
-  tempOrData.push({got: {'contains': searchData.description}});
+  tempOrData.push({description: {'contains': keyword}});
+  tempOrData.push({gave: {'contains': keyword}});
+  tempOrData.push({got: {'contains': keyword}});
 
   User.find({name: {contains: userName}}).exec(function (err, users) {
     if (!userName) {
@@ -33,9 +33,7 @@ exports.quick = function (searchData, cb) {
       var userIds = [];
       users.forEach(function (user) {
         userIds.push(user.id);
-        console.log(user);
       });
-      console.log(userIds);
       tempOrData.forEach(function (elUser1) {
         var elUser2 = _.cloneDeep(elUser1);
         elUser1.user = userIds;
@@ -47,7 +45,6 @@ exports.quick = function (searchData, cb) {
 
     appData.or = orData;
 
-    console.log(appData);
     Reference.find(appData).exec(function (err, apps) {
       async.map(apps, function (ref, callback) {
         User.findOne({id: ref.user}).exec(function (err, refUser) {

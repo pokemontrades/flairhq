@@ -1,45 +1,66 @@
 /* global Reference, User */
 
+var _ = require('lodash');
+
 exports.quick = function (searchData, cb) {
   var appData = {
     limit: 20,
     sort: "createdAt DESC"
-  };
-  var orData = [];
+    },
+    orData = [],
+    tempOrData = [],
+    keyword = searchData.description,
+    userName = searchData.user,
+    types = searchData.categories;
 
-  if (searchData.description) {
-    orData.push({description: {'contains': searchData.description}});
-    orData.push({gave: {'contains': searchData.description}});
-    orData.push({got: {'contains': searchData.description}});
+  if (types) {
+    appData.type = types;
   }
 
-  if (searchData.user && searchData.user === searchData.description) {
-    orData.push({user2: {'contains': searchData.user}});
-  } else if (searchData.user) {
-    appData.user2 = {'contains': searchData.user};
-  }
 
-  if (searchData.categories) {
-    appData.type = searchData.categories;
-  }
+  tempOrData.push({description: {'contains': searchData.description}});
+  tempOrData.push({gave: {'contains': searchData.description}});
+  tempOrData.push({got: {'contains': searchData.description}});
 
-  if (orData) {
-    appData.or = orData;
-  }
-
-  console.log(appData);
-  Reference.find(appData).exec(function (err, apps) {
-    async.map(apps, function (ref, callback) {
-      User.findOne({id: ref.user}).exec(function (err, refUser) {
-        if (refUser) {
-          ref.user = refUser.name;
-          callback(null, ref);
-        } else {
-          callback();
-        }
+  User.find({name: {contains: userName}}).exec(function (err, users) {
+    if (!userName) {
+      orData = tempOrData;
+      orData.push({user2: {'contains': searchData.user}});
+    } else if (!users || users.length === 0) {
+      orData = tempOrData;
+      appData.user2 = {'contains': searchData.user};
+    } else {
+      var userIds = [];
+      users.forEach(function (user) {
+        userIds.push(user.id);
+        console.log(user);
       });
-    }, function (err, results) {
-      cb(results);
+      console.log(userIds);
+      tempOrData.forEach(function (elUser1) {
+        var elUser2 = _.cloneDeep(elUser1);
+        elUser1.user = userIds;
+        orData.push(elUser1);
+        elUser2.user2 = {'contains': userName};
+        orData.push(elUser2);
+      });
+    }
+
+    appData.or = orData;
+
+    console.log(appData);
+    Reference.find(appData).exec(function (err, apps) {
+      async.map(apps, function (ref, callback) {
+        User.findOne({id: ref.user}).exec(function (err, refUser) {
+          if (refUser) {
+            ref.user = refUser.name;
+            callback(null, ref);
+          } else {
+            callback();
+          }
+        });
+      }, function (err, results) {
+        cb(results);
+      });
     });
   });
 };

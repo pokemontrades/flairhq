@@ -31,9 +31,12 @@ module.exports = {
     }
 
     var searchData = {
-      description: params.keyword,
-      user: params.user
+      description: params.keyword
     };
+
+    if (params.user) {
+      searchData.user = params.user;
+    }
 
     if (params.categories) {
       searchData.categories = params.categories.split(",");
@@ -41,27 +44,6 @@ module.exports = {
 
     Search.quick(searchData, function (results) {
       return res.json(results);
-    });
-  },
-
-  all: function (req, res) {
-    if (!req.user) {
-      return res.json("Not logged in", 403);
-    }
-
-    var searchTerm = req.params.searchterm;
-
-    var appData = {
-      or: [
-        {user2: {'contains': searchTerm}},
-        {description: {'contains': searchTerm}},
-        {gave: {'contains': searchTerm}},
-        {got: {'contains': searchTerm}}
-      ]
-    };
-
-    Reference.find(appData).exec(function (err, apps) {
-      return res.json(apps, 200);
     });
   }
 };

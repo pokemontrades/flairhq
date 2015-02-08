@@ -13,10 +13,11 @@
                 <div class="form-group col-md-3">
                     <label>Search keyword</label>
                     <input type="text" class="form-control" placeholder="Search"
-                           ng-model="searchInfo.keyword" ng-init="searchInfo.keyword='<%- searchTerm %>'"/>
+                           ng-change="searchMaybe()" ng-model="searchInfo.keyword"
+                           ng-init="searchInfo.keyword='<%- searchTerm %>'"/>
                     <label>User</label>
                     <input type="text" class="form-control" placeholder="User"
-                           ng-model="searchInfo.user" />
+                           ng-change="searchMaybe()" ng-model="searchInfo.user" />
                 </div>
                 <div class="form-group col-md-6">
                     <div class="col-md-12">

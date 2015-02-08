@@ -22,7 +22,8 @@
       <form class="navbar-form navbar-left dropdown hidden" role="search" ng-class="loaded ? '' : 'hidden'">
         <div class="form-group" ng-if="onSearchPage && user">
           <div class="form-group has-feedback">
-              <input type="text" class="form-control" placeholder="Search" ng-model="searchInfo.keyword" />
+              <input type="text" class="form-control" ng-change="searchMaybe()"
+                     placeholder="Search" ng-model="searchInfo.keyword" />
               <i class="glyphicon glyphicon-search form-control-feedback"></i>
           </div>
             <ul class="dropdown-menu list-group search-results" role="menu">

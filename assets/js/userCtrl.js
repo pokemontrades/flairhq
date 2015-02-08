@@ -1,7 +1,7 @@
 /* global io, define */
-define([], function () {
+define(['lodash'], function (_) {
 
-  var userCtrl = function ($scope, $filter, $location) {
+  var userCtrl = function ($scope, $filter, $location, $timeout) {
     $scope.scope = $scope;
     $scope.user = undefined;
     $scope.flairs = {};
@@ -551,6 +551,7 @@ define([], function () {
     $scope.searching = false;
     $scope.searchResults = [];
     $scope.searchedFor = "";
+    $scope.lastSearch = "";
 
     $scope.toggleCategory = function (name) {
       var index = $scope.searchInfo.category.indexOf(name);
@@ -609,18 +610,26 @@ define([], function () {
       });
     };
 
-    $scope.$watch("searchInfo.keyword", function (value) {
-      if (value) {
-        $scope.search();
+    var searchTimeout;
+    $scope.searchMaybe = function () {
+      if (searchTimeout) {
+        $timeout.cancel(searchTimeout);
       }
-    });
 
-    $scope.$watch("searchInfo.user", function (value) {
+      searchTimeout = $timeout(function () {
+        if (!_.isEqual($scope.lastSearch, $scope.searchInfo)) {
+          $scope.lastSearch = _.cloneDeep($scope.searchInfo);
+          $scope.search();
+          console.log("searching " + $scope.searchInfo);
+        }
+      }, 500);
+    };
+
+    $timeout(function () {
       if ($scope.searchInfo.keyword) {
         $scope.search();
       }
-    });
-
+    }, 300);
     $scope.getFlairs();
   };
 

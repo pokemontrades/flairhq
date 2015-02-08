@@ -11,8 +11,7 @@ module.exports = {
     }
 
     var searchData = {
-      description: params.keyword,
-      user: params.keyword
+      description: params.keyword
     };
 
     if (params.categories) {

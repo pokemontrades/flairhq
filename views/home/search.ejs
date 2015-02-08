@@ -51,6 +51,10 @@
                         {{result.description || result.gave + " for " + result.got}}
                     </p>
                 </a>
+                <a class="list-group-item" ng-if="!searching"
+                        ng-click="getMore()">
+                    More results
+                </a>
             </ul>
         </div>
       </div>

@@ -552,6 +552,7 @@ define(['lodash'], function (_) {
     $scope.searchResults = [];
     $scope.searchedFor = "";
     $scope.lastSearch = "";
+    $scope.numberSearched = 0;
 
     $scope.toggleCategory = function (name) {
       var index = $scope.searchInfo.category.indexOf(name);
@@ -567,13 +568,27 @@ define(['lodash'], function (_) {
       }
     };
 
-    $scope.search = function () {
+    $scope.getMore = function () {
+      if ($scope.searching) {
+        return;
+      }
+      $scope.numberSearched += 20;
+      $scope.search($scope.numberSearched);
+    };
+
+    $scope.search = function (skip) {
       $('.search-results').show();
       $scope.searching = true;
       if (!$scope.searchInfo.keyword) {
         $scope.searching = false;
         $scope.searchResults = [];
+        $scope.numberSearched = 0;
         return;
+      }
+
+      if (!skip) {
+        $scope.numberSearched = 0;
+        skip = 0;
       }
 
       var url = "/search";
@@ -589,13 +604,18 @@ define(['lodash'], function (_) {
       if ($scope.searchInfo.user) {
         url += "&user=" + $scope.searchInfo.user
       }
+      url += "&skip=" + skip;
 
       console.log(url);
       $scope.searchedFor = url;
       io.socket.get(url, function (data, res) {
         if (res.statusCode === 200 && $scope.searchedFor === url) {
-          $scope.searchResults = data;
           console.log($scope.searchResults);
+          if (skip) {
+            $scope.searchResults.concat(data);
+          } else {
+            $scope.searchResults = data;
+          }
           $scope.searching = false;
           $scope.$apply();
         } else if (res.statusCode !== 200) {

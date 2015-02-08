@@ -568,11 +568,11 @@ define(['lodash'], function (_) {
     };
 
     $scope.search = function () {
+      $('.search-results').show();
       $scope.searching = true;
       if (!$scope.searchInfo.keyword) {
         $scope.searching = false;
         $scope.searchResults = [];
-        $('.search-results').hide();
         return;
       }
 
@@ -595,11 +595,6 @@ define(['lodash'], function (_) {
       io.socket.get(url, function (data, res) {
         if (res.statusCode === 200 && $scope.searchedFor === url) {
           $scope.searchResults = data;
-          if (data.length > 0) {
-            $('.search-results').show();
-          } else {
-            $('.search-results').hide();
-          }
           console.log($scope.searchResults);
           $scope.searching = false;
           $scope.$apply();

@@ -26,7 +26,8 @@
                      placeholder="Search" ng-model="searchInfo.keyword" />
               <i class="glyphicon glyphicon-search form-control-feedback"></i>
           </div>
-            <ul class="dropdown-menu list-group search-results" role="menu">
+            <ul class="dropdown-menu list-group search-results" role="menu"
+                    ng-show="searching || searchResults.length > 0">
                 <li class="list-group-item" ng-if="searching">Searching...</li>
                 <div class="scrolling-search-results">
                     <a ng-href="/u/{{result.user}}"

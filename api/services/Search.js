@@ -25,10 +25,10 @@ exports.quick = function (searchData, cb) {
   User.find({name: {contains: userName}}).exec(function (err, users) {
     if (!userName) {
       orData = tempOrData;
-      orData.push({user2: {'contains': searchData.user}});
+      orData.push({user2: {'contains': keyword}});
     } else if (!users || users.length === 0) {
       orData = tempOrData;
-      appData.user2 = {'contains': searchData.user};
+      appData.user2 = {'contains': userName};
     } else {
       var userIds = [];
       users.forEach(function (user) {

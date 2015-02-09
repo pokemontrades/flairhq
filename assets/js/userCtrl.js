@@ -612,7 +612,7 @@ define(['lodash'], function (_) {
         if (res.statusCode === 200 && $scope.searchedFor === url) {
           console.log($scope.searchResults);
           if (skip) {
-            $scope.searchResults.concat(data);
+            $scope.searchResults = $scope.searchResults.concat(data);
           } else {
             $scope.searchResults = data;
           }

@@ -18,8 +18,36 @@
       </a>
     </div>
 
-
     <div class="collapse navbar-collapse pull-right" id="main-navbar">
+      <form class="navbar-form navbar-left dropdown hidden" role="search" ng-class="loaded ? '' : 'hidden'">
+        <div class="form-group" ng-if="onSearchPage && user">
+          <div class="form-group has-feedback">
+              <input type="text" class="form-control" ng-change="searchMaybe()"
+                     placeholder="Search" ng-model="searchInfo.keyword" />
+              <i class="glyphicon glyphicon-search form-control-feedback"></i>
+          </div>
+            <ul class="dropdown-menu list-group search-results" role="menu"
+                    ng-show="searching || searchResults.length > 0">
+                <li class="list-group-item" ng-if="searching">Searching...</li>
+                <div class="scrolling-search-results">
+                    <a ng-href="/u/{{result.user}}"
+                       ng-repeat="result in searchResults track by $index"
+                       ng-if="result !== null"
+                       class="list-group-item">
+                        <h4 class="list-group-item-heading">
+                            /u/{{result.user}} and {{result.user2}}
+                        </h4>
+                        <p class="list-group-iitem-text">
+                            {{result.description || result.gave + " for " + result.got}}
+                        </p>
+                    </a>
+                </div>
+                <a ng-href="/search/s/{{searchInfo.keyword}}" class="list-group-item list-group-item-info">
+                    More results and advanced
+                </a>
+            </ul>
+        </div>
+      </form>
       <ul class="nav navbar-nav hidden" ng-show="user" ng-class="loaded ? '' : 'hidden'">
         <li><a href="/info">Information</a></li>
         <li class="dropdown" ng-if="user.isMod">

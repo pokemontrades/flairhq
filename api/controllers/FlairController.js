@@ -69,8 +69,14 @@ module.exports = {
           flair = user.flair.svex.flair_text;
           css_class = user.flair.svex.flair_css_class;
         }
+        if (app.flair === "involvement") {
+          app.flair = user.flair.ptrades.flair_css_class + "1";
+        }
         if (css_class && css_class.slice(-1) === "2") {
           app.flair += "2";
+        }
+        if (css_class && css_class.slice(-1) === "1") {
+          app.flair += "1";
         }
         if (css_class && css_class.indexOf(' ') > -1) {
           if (app.flair.indexOf('ribbon') > -1) {

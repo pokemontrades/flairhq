@@ -15,11 +15,7 @@ module.exports = {
       type: "integer",
       defaultsTo: 0
     },
-    shinyevents: {
-      type: "integer",
-      defaultsTo: 0
-    },
-    events: {
+    involvement: {
       type: "integer",
       defaultsTo: 0
     },

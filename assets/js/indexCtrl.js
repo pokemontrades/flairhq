@@ -143,7 +143,7 @@ define([
                 $scope.addRefError = "Please choose a type.";
                 return;
             }
-            if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck") {
+            if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck" || $scope.type === "involvement") {
                 if (!$scope.descrip) {
                     $scope.addRefError = "Make sure you enter all the information";
                     return;
@@ -189,7 +189,7 @@ define([
                 "number": $scope.number
             };
 
-            if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck") {
+            if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck" || $scope.type === "involvement") {
                 post.descrip = $scope.descrip;
             } else {
                 post.got = $scope.got;

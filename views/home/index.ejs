@@ -30,20 +30,21 @@
             <div class="col-md-8">
               <select id="type" class="form-control" ng-model="type">
                 <option value="event">Event</option>
-                <option value="redemption">Redemption</option>
                 <option value="shiny">Shiny</option>
                 <option value="casual">Competitive/Casual</option>
                 <option value="bank">Bank</option>
                 <option value="egg">Egg Hatch</option>
                 <option value="giveaway">Giveaway</option>
                 <option value="eggcheck">Egg/TSV Check</option>
+                <option value="tradeback">Tradeback</option>
+                <option value="freeredemption">Free redemption</option>
                 <option value="misc">Miscellaneous</option>
               </select>
             </div>
           </div>
 
           <div class="form-group"
-               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck'">
+               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'tradeback' || type === 'freeredemption'">
             <label for="descrip" class="col-md-4 control-label">Description</label>
 
             <div class="col-md-8">
@@ -51,7 +52,7 @@
             </div>
           </div>
 
-          <div class="form-group" ng-show="type === 'giveaway' || type === 'eggcheck'">
+          <div class="form-group" ng-show="type === 'giveaway' || type === 'eggcheck' || type === 'tradeback'">
             <label for="number" class="col-md-4 control-label">Number given:</label>
 
             <div class="col-md-8">
@@ -60,7 +61,7 @@
           </div>
 
           <div class="form-group"
-               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck'">
+               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'tradeback' || type === 'freeredemption'">
             <label for="gave" class="col-md-4 control-label">Gave:</label>
 
             <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">

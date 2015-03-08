@@ -24,12 +24,12 @@ module.exports = {
       type: "string",
       enum: [
         "event",
-        "redemption",
         "shiny",
         "casual",
         "bank",
         "egg",
         "giveaway",
+        "involvement",
         "eggcheck",
         "misc"
       ]

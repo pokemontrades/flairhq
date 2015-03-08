@@ -25,6 +25,7 @@ define(['lodash'], function (_) {
       {name: "dreamball"},
       {name: "ovalcharm"},
       {name: "shinycharm"},
+      {name: "involvement"},
       {name: "lucky"},
       {name: "egg"},
       {name: "eevee"},
@@ -57,6 +58,14 @@ define(['lodash'], function (_) {
 
     $scope.isApproved = function (el) {
       return el.approved;
+    };
+
+    $scope.isTrade = function (el) {
+      return el.type === "event" || el.type === "shiny" || el.type === "casual";
+    };
+
+    $scope.isInvolvement = function (el) {
+      return el.type === "involvement";
     };
 
     $scope.isEvent = function (el) {
@@ -213,15 +222,15 @@ define(['lodash'], function (_) {
       }
     };
 
-    $scope.inPokemonTradesCasual = function (flair) {
+    $scope.inPokemonTradesTrader = function (flair) {
       if (flair) {
-        return flair.sub === "pokemontrades" && !flair.events && !flair.shinyevents;
+        return flair.sub === "pokemontrades" && !flair.involvement && !flair.giveaways;
       }
     };
 
-    $scope.inPokemonTradesCollector = function (flair) {
+    $scope.inPokemonTradesHelper = function (flair) {
       if (flair) {
-        return flair.sub === "pokemontrades" && (flair.events > 0 || flair.shinyevents > 0);
+        return flair.sub === "pokemontrades" && (flair.involvement > 0 || flair.giveaways > 0);
       }
     };
 
@@ -387,16 +396,12 @@ define(['lodash'], function (_) {
       }
       var refs = $scope.user.references,
         trades = applicationFlair.trades || 0,
-        shinyevents = applicationFlair.shinyevents || 0,
-        events = applicationFlair.events || 0,
+        involvement = applicationFlair.involvement || 0,
         eggs = applicationFlair.eggs || 0,
         giveaways = applicationFlair.giveaways || 0,
-        userevent = $filter("filter")(refs, $scope.isEvent).length,
-        usershiny = $filter("filter")(refs, $scope.isShiny).length,
-        usercasual = $filter("filter")(refs, $scope.isCasual).length,
+        userTrades = $filter("filter")(refs, $scope.isTrade).length,
+        userInvolvement = $filter("filter")(refs, $scope.isInvolvement).length,
         userEgg = $filter("filter")(refs, $scope.isEgg).length,
-        usershinyevents = userevent + usershiny,
-        userTrades = usershinyevents + usercasual,
         userGiveaway = $scope.numberOfGivenAway(),
         currentFlair = $scope.getUserFlair();
 
@@ -404,16 +409,22 @@ define(['lodash'], function (_) {
         return false;
       }
 
-      if ($scope.inPokemonTradesCasual(applicationFlair) &&
-        $scope.inPokemonTradesCollector(currentFlair)) {
+      if ($scope.inPokemonTradesTrader(applicationFlair) &&
+        $scope.inPokemonTradesHelper(currentFlair)) {
         return false;
+      }
+
+      if (applicationFlair.sub === "pokemontrades") {
+        userGiveaway = $filter("filter")(refs, function (e) {
+          return $scope.isGiveaway(e) && e.url.indexOf("pokemontrades") > -1;
+        }).length;
       }
 
       if (applicationFlair.sub === "pokemontrades" &&
         currentFlair &&
         currentFlair.trades > trades &&
-        currentFlair.shinyevents > shinyevents &&
-        currentFlair.events > events) {
+        currentFlair.involvement > involvement &&
+        currentFlair.giveaways > giveaways) {
         return false;
       }
 
@@ -425,8 +436,7 @@ define(['lodash'], function (_) {
       }
 
       return (userTrades >= trades &&
-      usershinyevents >= shinyevents &&
-      userevent >= events &&
+      userInvolvement >= involvement &&
       userEgg >= eggs &&
       userGiveaway >= giveaways);
     };

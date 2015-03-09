@@ -405,7 +405,7 @@ define(['lodash'], function (_) {
         userGiveaway = $scope.numberOfGivenAway(),
         currentFlair = $scope.getUserFlair();
 
-      if (applicationFlair === currentFlair) {
+      if (applicationFlair === currentFlair || (currentFlair && currentFlair.name === "default" && applicationFlair.name === "involvement")) {
         return false;
       }
 

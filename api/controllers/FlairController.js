@@ -71,6 +71,8 @@ module.exports = {
         }
         if (app.flair === "involvement" && css_class && css_class.indexOf("1") === -1) {
           app.flair = user.flair.ptrades.flair_css_class + "1";
+        } else if (app.flair === "involvement") {
+          app.flair = user.flair.ptrades.flair_css_class;
         } else if (css_class && css_class.indexOf("1") > -1) {
           app.flair += "1";
         }

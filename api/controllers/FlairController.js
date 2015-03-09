@@ -75,7 +75,7 @@ module.exports = {
         if (css_class && css_class.slice(-1) === "2") {
           app.flair += "2";
         }
-        if (css_class && css_class.slice(-1) === "1") {
+        if (css_class && css_class.indexOf("1") > -1) {
           app.flair += "1";
         }
         if (css_class && css_class.indexOf(' ') > -1) {

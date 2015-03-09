@@ -36,15 +36,14 @@
                 <option value="egg">Egg Hatch</option>
                 <option value="giveaway">Giveaway</option>
                 <option value="eggcheck">Egg/TSV Check</option>
-                <option value="tradeback">Tradeback</option>
-                <option value="freeredemption">Free redemption</option>
+                <option value="involvement">Involvement</option>
                 <option value="misc">Miscellaneous</option>
               </select>
             </div>
           </div>
 
           <div class="form-group"
-               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'tradeback' || type === 'freeredemption'">
+               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement'">
             <label for="descrip" class="col-md-4 control-label">Description</label>
 
             <div class="col-md-8">
@@ -52,7 +51,7 @@
             </div>
           </div>
 
-          <div class="form-group" ng-show="type === 'giveaway' || type === 'eggcheck' || type === 'tradeback'">
+          <div class="form-group" ng-show="type === 'giveaway' || type === 'eggcheck'">
             <label for="number" class="col-md-4 control-label">Number given:</label>
 
             <div class="col-md-8">
@@ -61,7 +60,7 @@
           </div>
 
           <div class="form-group"
-               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'tradeback' || type === 'freeredemption'">
+               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement'">
             <label for="gave" class="col-md-4 control-label">Gave:</label>
 
             <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">

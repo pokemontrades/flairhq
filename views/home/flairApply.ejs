@@ -23,7 +23,7 @@
                 </div>
                 <div class="list-group col-md-6">
                     <h4>Helper</h4>
-                    <a ng-repeat="flair in flairs | filter:inPokemonTradesHelper | orderBy: 'trades' track by flair.id"
+                    <a ng-repeat="flair in flairs | filter:inPokemonTradesHelper | orderBy: 'involvement' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
                        href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
@@ -44,7 +44,7 @@
                 </div>
                 <div class="list-group col-md-6">
                     <h4>Giveaway-er</h4>
-                    <a ng-repeat="flair in flairs | filter:inSVExchangeGiver | orderBy: 'eggs' track by flair.id"
+                    <a ng-repeat="flair in flairs | filter:inSVExchangeGiver | orderBy: 'giveaways' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedExchFlair === flair.name) ? 'active' : '']"
                        href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">

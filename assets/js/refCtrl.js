@@ -144,6 +144,9 @@ define([
 
         $scope.numberOfEggsGivenAway = function () {
             var givenAway = 0;
+            if (!$scope.user || !$scope.user.references) {
+              return;
+            }
             $filter("filter")($scope.refUser.references,
                 function (item) {
                     return $scope.isGiveaway(item);
@@ -159,6 +162,9 @@ define([
         };
 
         $scope.numberOfEggChecks = function () {
+            if (!$scope.user || !$scope.user.references) {
+              return;
+            }
             var givenAway = 0;
             $filter("filter")($scope.refUser.references,
                 function (item) {

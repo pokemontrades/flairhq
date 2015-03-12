@@ -23,13 +23,10 @@
             Tradeback
           </div>
           <div class="col-md-2">
-            Giveaways + Contests
+            Giveaways / Contests / Checks
           </div>
           <div class="col-md-2">
             Hatches
-          </div>
-          <div class="col-md-2">
-            Checks + Given
           </div>
         </div>
         <ul class="list-unstyled" ng-show="user">
@@ -56,15 +53,14 @@
                 </div>
                 <div class="col-md-2">
                   <input type="number" class="form-control"
-                         ng-model="flair.giveaways" ng-disabled="flair.sub === 'svexchange'" />
+                         ng-model="flair.giveaways" />
                 </div>
                 <div class="col-md-2">
                   <input type="number" class="form-control"
                          ng-model="flair.eggs" ng-disabled="flair.sub === 'pokemontrades'" />
                 </div>
                 <div class="col-md-2">
-                  <input type="number" class="form-control"
-                         ng-model="flair.giveaways" ng-disabled="flair.sub === 'pokemontrades'" />
+                    <button class="btn btn-default" ng-click="deleteFlair($index)">Delete</button>
                 </div>
               </div>
           </li>

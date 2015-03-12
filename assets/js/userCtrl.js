@@ -552,6 +552,10 @@ define(['lodash'], function (_) {
       });
     };
 
+    $scope.deleteFlair = function (index) {
+      $scope.flairs.splice(index, 1);
+    };
+
     $scope.searchInfo = {
       keyword: "",
       category: [],

@@ -9,12 +9,14 @@
           </h1>
           <div class="flairs">
             <h5 class="flairTop">
-              <span ng-class="'flair-' + refUser.flair.ptrades.flair_css_class"></span>
-              {{refUser.flair.ptrades.flair_text}}
+              <span ng-class="'flair-' + refUser.flair.ptrades.flair_css_class">
+                {{refUser.flair.ptrades.flair_text}}
+              </span>
             </h5>
             <h5 class="flairBottom">
-              <span ng-class="'flair-' + refUser.flair.svex.flair_css_class"></span>
-              {{refUser.flair.svex.flair_text}}
+              <span ng-class="getFlairTextForSVEx()">
+                {{refUser.flair.svex.flair_text}}
+              </span>
             </h5>
           </div>
           <h4 ng-if="refUser.banned" class="alert alert-danger pull-right">

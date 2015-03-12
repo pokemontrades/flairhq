@@ -161,6 +161,15 @@ define([
             return givenAway;
         };
 
+      $scope.getFlairTextForSVEx = function () {
+        var flairs = $scope.refUser.flair.svex.flair_css_class.split(' '),
+          flairText = "";
+        for(var i = 0; i < flairs.length; i++) {
+          flairText += "flair-" + flairs[i]
+        }
+        return flairText;
+      };
+
         $scope.numberOfEggChecks = function () {
             if (!$scope.user || !$scope.user.references) {
               return;

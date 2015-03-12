@@ -144,7 +144,7 @@ define([
 
         $scope.numberOfEggsGivenAway = function () {
             var givenAway = 0;
-            if (!$scope.user || !$scope.user.references) {
+            if (!$scope.refUser || !$scope.refUser.references) {
               return;
             }
             $filter("filter")($scope.refUser.references,
@@ -168,13 +168,13 @@ define([
         var flairs = $scope.refUser.flair.svex.flair_css_class.split(' '),
           flairText = "";
         for(var i = 0; i < flairs.length; i++) {
-          flairText += "flair-" + flairs[i]
+          flairText += "flair-" + flairs[i] + " ";
         }
         return flairText;
       };
 
         $scope.numberOfEggChecks = function () {
-            if (!$scope.user || !$scope.user.references) {
+            if (!$scope.refUser || !$scope.refUser.references) {
               return;
             }
             var givenAway = 0;

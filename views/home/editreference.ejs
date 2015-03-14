@@ -23,15 +23,22 @@
 
               <div class="col-md-8">
                 <select id="type" class="form-control" ng-model="selectedRef.type">
-                  <option value="event">Event</option>
-                  <option value="redemption">Redemption</option>
-                  <option value="shiny">Shiny</option>
-                  <option value="casual">Competitive/Casual</option>
-                  <option value="bank">Bank</option>
-                  <option value="egg">Egg Hatch</option>
-                  <option value="giveaway">Giveaway</option>
-                  <option value="eggcheck">Egg Check</option>
-                  <option value="misc">Miscellaneous</option>
+                    <optgroup label="/r/pokemontrades">
+                        <option value="event">Event</option>
+                        <option value="shiny">Shiny</option>
+                        <option value="casual">Competitive/Casual</option>
+                        <option value="bank">Bank</option>
+                        <option value="giveaway">Giveaway/Contest</option>
+                        <option value="involvement">Free Tradeback/Free Redemption</option>
+                    </optgroup>
+                    <optgroup label="/r/SVExchange">
+                        <option value="egg">Egg Hatch</option>
+                        <option value="eggcheck">Egg/TSV Check</option>
+                        <option value="giveaway">Giveaway</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                        <option value="misc">Miscellaneous</option>
+                    </optgroup>
                 </select>
               </div>
             </div>

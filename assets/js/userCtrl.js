@@ -390,6 +390,18 @@ define(['lodash'], function (_) {
       return givenAway;
     };
 
+    $scope.getFlairTextForUserForSVEx = function () {
+      if (!$scope.user || !$scope.user.flair) {
+        return;
+      }
+      var flairs = $scope.user.flair.svex.flair_css_class.split(' '),
+        flairText = "";
+      for(var i = 0; i < flairs.length; i++) {
+        flairText += "flair-" + flairs[i] + " ";
+      }
+      return flairText;
+    };
+
     $scope.canUserApply = function (applicationFlair) {
       if (!$scope.user || !$scope.user.references) {
         return false;

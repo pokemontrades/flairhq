@@ -61,7 +61,7 @@ define(['lodash'], function (_) {
     };
 
     $scope.isTrade = function (el) {
-      return el.type === "event" || el.type === "shiny" || el.type === "casual";
+      return el.type === "event" || el.type === "shiny" || el.type === "casual" || el.type === "redemption";
     };
 
     $scope.isInvolvement = function (el) {

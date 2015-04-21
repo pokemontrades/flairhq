@@ -117,7 +117,7 @@ define(['lodash'], function (_) {
       } else if (name.indexOf("ribbon") > -1) {
         suffix = "Ribbon";
         numberToSliceTill = -6;
-      } else if (name !== "egg") {
+      } else if (name !== "egg" && name !== "involvement") {
         suffix = "Egg";
       }
 

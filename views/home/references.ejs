@@ -3,7 +3,7 @@
     <tr>
       <td class="firstHeading" colspan="2"><h3>Trades ({{numberOfTrades()}})</h3></td>
       <td><h3 class="text-center"><small></small></h3></td>
-      <td><h3><small>Approved</small></h3></td>
+      <td><h3 ng-if="user.isMod"><small>Approved</small></h3></td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
 
@@ -19,7 +19,7 @@
           {{ok.approveAll.event ? "" : "Approve all"}}
         </button>
       <td>
-        <span>{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -32,15 +32,11 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
-      <td>
-        <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-               ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-                class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
-      </td>
+        <td>
+            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                   ng-model="reference.approved" ng-if="user.isMod"/>
+            <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -71,7 +67,7 @@
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -84,15 +80,11 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
-      <td>
-        <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-               ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-              class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
-      </td>
+        <td>
+            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                   ng-model="reference.approved" ng-if="user.isMod"/>
+            <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -123,7 +115,7 @@
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -136,15 +128,11 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
-      <td>
-        <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-               ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-              class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
-      </td>
+        <td>
+            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                   ng-model="reference.approved" ng-if="user.isMod"/>
+            <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -207,7 +195,7 @@
         </button>
       </td>
       <td>
-        <span>{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -220,15 +208,11 @@
           {{getRedditUser(reference.user2)}}
         </a>
       </td>
-      <td>
-        <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-               ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
-        <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-              class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
-      </td>
+        <td>
+            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
+                   ng-model="reference.approved" ng-if="user.isMod"/>
+            <span ng-if="user.isMod && refUser && reference.edited">*</span>
+        </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
@@ -276,12 +260,8 @@
           </a></td>
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+                   ng-model="reference.approved" ng-if="user.isMod"/>
             <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-              class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
@@ -330,12 +310,8 @@
           </td>
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                     ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+                     ng-model="reference.approved" ng-if="user.isMod"/>
               <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-              class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
           </td>
 
 
@@ -386,12 +362,8 @@
           </td>
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                     ng-model="reference.approved"  ng-if="user.isMod && refUser"/>
+                     ng-model="reference.approved" ng-if="user.isMod"/>
               <span ng-if="user.isMod && refUser && reference.edited">*</span>
-        <span ng-if="!(user.isMod && refUser && reference.edited)"
-              class="invisible">*</span>
-        <span ng-if="(!user.isMod || (user.isMod && !refUser)) && reference.approved"
-              class="glyphicon glyphicon-ok"></span>
           </td>
 
 

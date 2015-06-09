@@ -44,8 +44,11 @@
             </div>
 
             <div class="form-group"
-                 ng-show="selectedRef.type === 'egg' || selectedRef.type === 'giveaway' ||
-                 selectedRef.type === 'misc' || selectedRef.type === 'eggcheck'">
+                 ng-show="selectedRef.type === 'egg' ||
+                 selectedRef.type === 'giveaway' ||
+                 selectedRef.type === 'misc' ||
+                 selectedRef.type === 'eggcheck' ||
+                  selectedRef.type === 'involvement'">
               <label for="descrip" class="col-sm-4 control-label">Description</label>
 
               <div class="col-md-8">
@@ -67,7 +70,8 @@
                  ng-hide="selectedRef.type === 'egg' ||
                   selectedRef.type === 'giveaway' ||
                   selectedRef.type === 'misc' ||
-                  selectedRef.type === 'eggcheck'">
+                  selectedRef.type === 'eggcheck' ||
+                  selectedRef.type === 'involvement'">
               <label for="gave" class="col-sm-4 control-label">Gave:</label>
 
               <div class="col-md-3">

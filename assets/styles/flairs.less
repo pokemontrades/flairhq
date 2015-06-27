@@ -35,35 +35,25 @@
 .flair-shinycharm1:before {background-position: -672px -24px;}
 
 
-.flair-lucky:before,
-.flair-egg:before,
-.flair-eevee:before,
-.flair-togepi:before,
-.flair-manaphy:before,
-.flair-ditto:before,
-.flair-eggcup:before,
-a[href="/egg"],
-a[href="/lucky"],
-a[href="/eevee"],
-a[href="/togepi"],
-a[href="/manaphy"],
-a[href="/ditto"],
-a[href="/eggcup"] {
+.flair-lucky:before, .flair-egg:before, .flair-eevee:before, .flair-togepi:before, .flair-torchic:before, .flair-pichu:before, .flair-manaphy:before, .flair-eggcup:before,
+a[href="/lucky"], a[href="/egg"], a[href="/eevee"], a[href="/togepi"], a[href="/torchic"], a[href="/pichu"], a[href="/manaphy"], a[href="/eggcup"] {
   content: "";
   display:inline-block;
   height:22px;
   width:22px;
-  background:url(/images/eggflairs.png) no-repeat 0 0;
-  margin: 0px 1px 0px 1px;
+  background:url(%%eggflair%%) no-repeat 0 0;
   vertical-align: middle;
+  pointer-events: none;
 }
 
-.flair-egg:before, a[href="/egg"] {background:url(/images/eggflairs.png) no-repeat -22px 0; }
-.flair-eevee:before, a[href="/eevee"] {background:url(/images/eggflairs.png) no-repeat -44px 0;}
-.flair-togepi:before, a[href="/togepi"] {background:url(/images/eggflairs.png) no-repeat -66px 0;}
-.flair-manaphy:before, a[href="/manaphy"] {background:url(/images/eggflairs.png) no-repeat -88px 0;}
-.flair-ditto:before, a[href="/ditto"] {background:url(/images/eggflairs.png) no-repeat -110px 0;}
-.flair-eggcup:before, a[href="/eggcup"] {background:url(/images/eggflairs.png) no-repeat -132px 0;}
+.flair-egg:before, a[href="/egg"] {background-position: -22px 0}
+.flair-eevee:before, a[href="/eevee"] {background-position: -44px 0}
+.flair-togepi:before, a[href="/togepi"] {background-position: -66px 0}
+.flair-torchic:before, a[href="/torchic"] {background-position: -88px 0}
+.flair-pichu:before, a[href="/pichu"] {background-position: -110px 0}
+.flair-manaphy:before, a[href="/manaphy"] {background-position: -132px 0}
+.flair-eggcup:before, a[href="/eggcup"] {background-position: -154px 0}
+.flair-eggcup:before{margin-right:3px}
 
 
 .flair-cuteribbon:after,

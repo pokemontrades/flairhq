@@ -27,3 +27,5 @@ node_modules
 .tmp/
 
 .idea/
+
+config/local.js

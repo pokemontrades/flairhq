@@ -117,6 +117,25 @@ module.exports = {
     });
   },
 
+  setText: function (req, res) {
+    if (!req.user) {
+      return res.json("Not logged in", 403);
+    }
+
+    Reddit.setFlair(
+      Reddit.data.adminRefreshToken,
+      req.user.name,
+      req.user.flair.ptrades.flair_css_class,
+      req.allParams().text,
+      "PokemonTrades", function (err, css_class) {
+        if (err) {
+          return res.json(err, 500);
+        } else {
+          return res.json(req.user, 200);
+        }
+      });
+  },
+
   getApps: function (req, res) {
     if (!req.user || !req.user.isMod) {
       return res.json("Not a mod", 403);

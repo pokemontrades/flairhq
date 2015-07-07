@@ -4,7 +4,8 @@ var request = require("request");
 exports.data = {
   clientID: sails.config.reddit.clientID,
   clientIDSecret: sails.config.reddit.clientIDSecret,
-  redirectURL: sails.config.reddit.redirectURL
+  redirectURL: sails.config.reddit.redirectURL,
+  adminRefreshToken: sails.config.reddit.adminRefreshToken
 };
 
 exports.refreshToken = function (refreshToken, callback, error) {

@@ -540,6 +540,37 @@ define(['lodash'], function (_) {
 
     };
 
+    $scope.setFlairText = function () {
+      $scope.setFlairText.saveProfile = false;
+      $scope.setFlairText.saveProfile = true;
+      var fcs = $scope.user.friendCodes.slice(0),
+        games = $scope.user.games,
+        text = "Please don't send me your flair apps.",
+        url = "/flair/setText";
+      var len = fcs.length;
+      while (len--) {
+        if (fcs[len] === "") {
+          fcs.splice(len, 1);
+        }
+      }
+
+      io.socket.post(url, {
+        "text": text
+      }, function (data, res) {
+        if (res.statusCode === 200) {
+          $scope.userok.saveProfile = true;
+        } else if (res.statusCode === 400) {
+          $("#saveError").html("There was some issue.").show();
+          console.log(data);
+        } else if (res.statusCode === 500) {
+          $("#saveError").html("There was some issue setting.").show();
+        }
+        $scope.userspin.saveProfile = false;
+        $scope.$apply();
+      });
+
+    };
+
     $scope.getFlairs = function () {
       var url = "/flair/all";
 

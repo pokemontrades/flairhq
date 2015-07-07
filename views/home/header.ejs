@@ -2,6 +2,7 @@
 <%- partial('../privacyPolicy.ejs') %>
 <%- partial('flairMod.ejs') %>
 <%- partial('flairApply.ejs') %>
+<%- partial('flairText.ejs') %>
 <%- partial('applist.ejs') %>
 
 <nav class="navbar navbar-inverse">
@@ -69,6 +70,7 @@
           <ul class="dropdown-menu dropdown-inverse" role="menu">
             <li><a href="/">Add References</a></li>
             <li><a href="#flairApplication" data-toggle="modal">Apply for flair</a></li>
+            <li><a href="#flairText" data-toggle="modal">Set Flair Text</a></li>
             <li class="divider"></li>
             <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
             <li><a ng-href="/u/{{user.name}}">Public Profile</a></li>

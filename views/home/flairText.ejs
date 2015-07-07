@@ -1,0 +1,86 @@
+<div class="modal fade" id="flairText" tabindex="-1" role="dialog"
+     aria-labelledby="flairText" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title">Set Flair Text</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form>
+            <div class="form-group">
+              <label for="friendcode1" class="col-sm-3 control-label">Friend Code:</label>
+
+              <div class="col-md-8">
+                <div class="input-group" ng-repeat="fc in user.friendCodes track by $index">
+                  <input type="text" class="form-control"
+                         ng-model="user.friendCodes[$index]"></input>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="delFc($index)">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-8 col-md-offset-3">
+                <button class="btn btn-default btn-xs" ng-click="addFc()">
+                  <span class="glyphicon glyphicon-plus-sign"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" ng-repeat="game in user.games | orderBy:'createdAt'">
+              <label class="col-sm-3 control-label">IGN:</label>
+
+              <div class="col-md-3">
+                <input type="text" class="form-control" ng-model="game.ign"></input>
+              </div>
+              <label class="col-sm-1 control-label">TSV:</label>
+
+              <div class="col-md-4">
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="game.tsv"></input>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="delGame(game)">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-md-8 col-md-offset-3">
+                <button class="btn btn-default btn-xs" ng-click="addGame()">
+                  <span class="glyphicon glyphicon-plus-sign"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div id="saveError" class="alert alert-danger" role="alert" hidden></div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary has-spinner" ng-click="setFlairText()"
+                ng-class="[userok.setFlairText ? 'glyphicon glyphicon-ok' : '',
+                userspin.setFlairText ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{userok.setFlairText ? "" : "Set flair"}}
+        </button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div><!-- /.modal -->

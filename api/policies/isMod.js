@@ -7,10 +7,14 @@ module.exports = function(req, res, next){
   http.get("http://www.reddit.com/r/pokemontrades/about/moderators.json?user=" + req.user.name, function (res) {
     res.setEncoding("utf8");
     res.on("data", function (body) {
-      if (JSON.parse(body).data.children.length === 1) {
-        req.user.isMod = true;
+      try {
+        if (JSON.parse(body).data.children.length === 1) {
+          req.user.isMod = true;
+        }
+        return next();
+      } catch(err) {
+        throw new Error("Error with getting if " + req.user.name + " is a moderator. \nBody:\n " + "\nError:\n " + err);
       }
-      return next();
     });
   });
 };

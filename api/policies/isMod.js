@@ -11,11 +11,11 @@ module.exports = function(req, res, next){
         if (JSON.parse(body).data.children.length === 1) {
           req.user.isMod = true;
         }
-        return next();
       } catch(err) {
         console.log("Error getting if " + req.user.name + " is a moderator.");
         console.log("response: " + body);
       }
+      return next();
     });
   });
 };

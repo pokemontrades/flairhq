@@ -17,7 +17,10 @@ require.config({
         "modal": "dependencies/modal",
         "spin": "dependencies/spin",
         "tab": "dependencies/tab",
-        "tooltipModule": "../common/tooltipModule"
+        "ngMask": "dependencies/mask.min",
+        "tooltipModule": "../common/tooltipModule",
+        "genericTooltipModule": "../common/genericTooltipModule",
+        "regex": "../common/regexCommon"
     },
 
     // angular does not support AMD out of the box, put it in a shim
@@ -40,6 +43,7 @@ require.config({
         'angular-md': ['angular', 'marked'],
         'angular-spinner': ['angular', 'spin'],
         'angular-ui-router': ['angular'],
+        'ngMask': ['angular'],
         'angular-bootstrap': ['angular'],
         'app': ['sails'],
         'modal': ['jquery'],
@@ -57,6 +61,8 @@ require([
     'angular-bootstrap',
     'ngReallyClick',
     'tooltipModule',
+    'genericTooltipModule',
+    'ngMask',
     'numberPadding',
     'collapse',
     'modal',

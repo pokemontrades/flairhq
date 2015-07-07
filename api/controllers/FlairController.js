@@ -104,6 +104,13 @@ module.exports = {
           if (err) {
             return res.json(err, 500);
           } else {
+            Event.create({
+              type: "flairTextChange",
+              user: req.user.id,
+              content: "Changed " + user.name + "'s flair to " + css_class
+            }).exec(function () {
+
+            });
             console.log("Changed " + user.name + "'s flair to " + css_class);
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
@@ -115,6 +122,55 @@ module.exports = {
         });
       });
     });
+  },
+
+  setText: function (req, res) {
+    if (!req.user) {
+      return res.json("Not logged in", 403);
+    }
+
+    var ptrades = /(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \|\| ([^ ,|(]*( \((X|Y|ΩR|αS)\))?)(, ([^ ,|(]* \((X|Y|ΩR|αS)\)))*/g;
+    var svex = /(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \|\| ([^ ,|(]*( \((X|Y|ΩR|αS)\))?)(, ([^ ,|(]* \((X|Y|ΩR|αS)\)))* \|\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*/g;
+
+    if (!req.allParams().ptrades.match(ptrades) || !req.allParams().svex.match(svex)) {
+      return res.json("Changed string", 400);
+    }
+
+    Reddit.setFlair(
+      Reddit.data.adminRefreshToken,
+      req.user.name,
+      req.user.flair.ptrades.flair_css_class,
+      req.allParams().ptrades,
+      "PokemonTrades", function (err, css_class) {
+        if (err) {
+          return res.json(err, 500);
+        } else {
+          Reddit.setFlair(
+            Reddit.data.adminRefreshToken,
+            req.user.name,
+            req.user.flair.svex.flair_css_class,
+            req.allParams().svex,
+            "SVExchange", function (err, css_class) {
+              if (err) {
+                return res.json(err, 500);
+              } else {
+                var ipAddress = req.headers['x-forwarded-for'] || req.ip;
+                Event.create([{
+                  type: "flairTextChange",
+                  user: req.user.id,
+                  content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
+                }, {
+                  type: "flairTextChange",
+                  user: req.user.id,
+                  content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
+                }]).exec(function () {
+
+                });
+                return res.json(req.user, 200);
+              }
+            });
+        }
+      });
   },
 
   getApps: function (req, res) {

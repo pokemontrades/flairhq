@@ -4,7 +4,8 @@ var request = require("request");
 exports.data = {
   clientID: sails.config.reddit.clientID,
   clientIDSecret: sails.config.reddit.clientIDSecret,
-  redirectURL: sails.config.reddit.redirectURL
+  redirectURL: sails.config.reddit.redirectURL,
+  adminRefreshToken: sails.config.reddit.adminRefreshToken
 };
 
 exports.refreshToken = function (refreshToken, callback, error) {
@@ -74,7 +75,7 @@ exports.getFlair = function (refreshToken, callback) {
 };
 
 exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
-  exports.refreshToken(refreshToken, function (token) {
+  exports.refreshToken(exports.data.adminRefreshToken, function (token) {
     var data = {
       api_type: 'json',
       css_class: cssClass,

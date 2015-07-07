@@ -22,20 +22,27 @@ module.exports = {
 
   reddit: function(req, res) {
     req.session.state = crypto.randomBytes(32).toString('hex');
+    if (req.query.url) {
+      req.session.redirectUrl = req.query.url;
+    }
     passport.authenticate('reddit', {
       state: req.session.state,
       duration: 'permanent',
       failureRedirect: '/login'
     },
     function (err, user) {
+      var url = req.session.redirectUrl;
+      req.session.redirectUrl = "";
       req.logIn(user, function(err) {
         if (err) {
           console.log("Failed login: " + err);
           res.view(403, {error: err});
           return;
         }
-        res.redirect('/');
-        return;
+        if (url) {
+          return res.redirect(url);
+        }
+        return res.redirect('/');
       });
     })(req, res);
 

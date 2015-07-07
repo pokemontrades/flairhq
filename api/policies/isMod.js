@@ -13,7 +13,8 @@ module.exports = function(req, res, next){
         }
         return next();
       } catch(err) {
-        throw new Error("Error with getting if " + req.user.name + " is a moderator. \nBody:\n " + "\nError:\n " + err);
+        console.log("Error getting if " + req.user.name + " is a moderator.");
+        console.log("response: " + body);
       }
     });
   });

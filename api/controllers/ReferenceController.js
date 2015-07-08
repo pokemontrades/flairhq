@@ -86,7 +86,7 @@ module.exports = {
                 got: req.params.got,
                 notes: req.params.notes,
                 edited: false,
-                number: req.params.number
+                number: req.params.number || 0
               },
               function (err, ref) {
                 if (err) {

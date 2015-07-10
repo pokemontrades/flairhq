@@ -28,6 +28,9 @@ module.exports = {
   },
 
   all: function (req, res) {
+    if (!req.user || !req.user.isMod) {
+      return res.json("Not a mod", 403);
+    }
     var dateQuery, query;
     dateQuery = {};
     if (req.query.before !== undefined) {

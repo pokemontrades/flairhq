@@ -103,8 +103,13 @@
 
           <div class="form-group">
             <div class="col-md-offset-4 col-md-2">
-              <input type="submit" id="addReferenceButton" class="btn btn-default" value="Add"
-                     ng-click="addReference()"></input>
+              <button type="button" class="btn btn-default has-spinner" ng-click="addReference()"
+                      ng-class="[indexOk.addRef ? 'glyphicon glyphicon-ok' : '',
+                        indexSpin.addRef ? 'active' : '']"
+                      ng-disabled="indexSpin.addRef">
+                <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+                {{indexOk.addRef ? "" : "Add"}}
+              </button>
             </div>
             <div class="col-md-6">
               <div class="alert alert-danger" role="alert" ng-hide="!addRefError">{{addRefError}}</div>

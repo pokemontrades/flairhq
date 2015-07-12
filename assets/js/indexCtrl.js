@@ -132,6 +132,8 @@ define([
 
         $scope.addReference = function () {
             $scope.addRefError = "";
+            $scope.indexOk.addRef = false;
+            $scope.indexSpin.addRef = true;
             var url = "/reference/add",
                 user2 = $scope.user2,
                 regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
@@ -141,29 +143,29 @@ define([
 
             if (!$scope.type) {
                 $scope.addRefError = "Please choose a type.";
-                return;
+                return $scope.indexSpin.addRef = false;
             }
             if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck" || $scope.type === "involvement") {
                 if (!$scope.descrip) {
                     $scope.addRefError = "Make sure you enter all the information";
-                    return;
+                    return $scope.indexSpin.addRef = false;
                 }
             } else {
                 if (!$scope.got || !$scope.gave) {
                     $scope.addRefError = "Make sure you enter all the information";
-                    return;
+                    return $scope.indexSpin.addRef = false;
                 }
             }
             if (!$scope.refUrl ||
                 (($scope.type !== "giveaway" && $scope.type !== "misc" && $scope.type !== "eggcheck") && !$scope.user2)) {
                 $scope.addRefError = "Make sure you enter all the information";
-                return;
+                return $scope.indexSpin.addRef = false;
             }
             if ((($scope.type === "giveaway" || $scope.type === "eggcheck") && !regexpGive.test($scope.refUrl)) ||
                 ($scope.type !== "giveaway" && $scope.type !== "misc" && $scope.type !== "eggcheck" && !regexp.test($scope.refUrl)) ||
                 ($scope.type === "misc" && !regexpMisc.test($scope.refUrl))) {
                 $scope.addRefError = "Looks like you didn't input a proper permalink";
-                return;
+                return $scope.indexSpin.addRef = false;
             }
 
             if (user2.indexOf("/u/") === -1) {
@@ -172,12 +174,12 @@ define([
 
             if (user2 === ("/u/" + $scope.user.name)) {
                 $scope.addRefError = "Don't put your own username there.";
-                return;
+                return $scope.indexSpin.addRef = false;
             }
 
             if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
                 $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
-                return;
+                return $scope.indexSpin.addRef = false;
             }
 
             var post = {
@@ -197,7 +199,7 @@ define([
             }
 
             io.socket.post(url, post, function (data, res) {
-                console.log(res);
+                $scope.indexSpin.addRef = false;
                 if (res.statusCode === 200) {
                     $scope.refUrl = "";
                     $scope.descrip = "";
@@ -216,7 +218,6 @@ define([
                                 backgroundColor: "white"
                             }, 200);
                         });
-                        $scope.$apply();
                     } else if (data.type === "shiny") {
                         $('#collapseshinies').prev().children().animate({
                             backgroundColor: "yellow"
@@ -225,7 +226,6 @@ define([
                                 backgroundColor: "white"
                             }, 200);
                         });
-                        $scope.$apply();
                     } else {
                         $('#collapse' + $scope.type + "s").prev().children().animate({
                             backgroundColor: "yellow"
@@ -234,9 +234,15 @@ define([
                                 backgroundColor: "white"
                             }, 200);
                         });
-                        $scope.$apply();
                     }
+                    $scope.indexOk.addRef = true;
+                    window.setTimeout(function () {
+                      $scope.indexOk.addRef = false;
+                      $scope.$apply();
+                    }, 1500);
+                    $scope.$apply();
                 } else {
+                    $scope.indexOk.addRef = false;
                     $scope.addRefError = "Already added that URL.";
                     $scope.$apply();
                 }

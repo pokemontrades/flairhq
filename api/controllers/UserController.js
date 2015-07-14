@@ -1,4 +1,4 @@
-/* global module, User, Game, Reference, ModNote */
+/* global module, User, Game, Reference, ModNote, Application */
 /**
  * UserController
  *
@@ -98,7 +98,18 @@ module.exports = {
       .where({user: req.user.id})
       .exec(function (err, games) {
         req.user.games = games;
-        res.json(req.user, 200);
+
+        var appData = {
+          user: req.user.name
+        };
+
+        Application.find(appData).exec(function (err, app) {
+          if (err) {
+            return res.json({error: err}, 500)
+          }
+          req.user.apps = app;
+          res.json(req.user, 200);
+        });
       });
   },
 

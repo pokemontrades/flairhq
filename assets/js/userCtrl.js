@@ -149,6 +149,19 @@ define(['lodash'], function (_) {
       $scope.user.flair.svex.flair_css_class !== $scope.selectedExchFlair));
     };
 
+    $scope.applied = function (flair) {
+      if (!$scope.user || !$scope.user.apps) {
+        return false;
+      }
+      var flairs = $scope.user.apps;
+      for (var i = 0; i < flairs.length; i++) {
+        if (flairs[i].flair === flair.name && flairs[i].sub === flair.sub) {
+          return true;
+        }
+      }
+      return false;
+    };
+
     $scope.applyFlair = function () {
       var done = 0;
       $scope.errors.flairApp = "";
@@ -161,6 +174,7 @@ define(['lodash'], function (_) {
           sub: "pokemontrades"
         }, function (data, res) {
           if (res.statusCode === 200) {
+            $scope.user.apps.push(data);
             if (done) {
               $scope.selectedTradeFlair = undefined;
               $scope.userok.applyFlair = true;
@@ -190,6 +204,7 @@ define(['lodash'], function (_) {
           sub: "svexchange"
         }, function (data, res) {
           if (res.statusCode === 200) {
+            $scope.user.apps.push(data);
             if (done) {
               $scope.userok.applyFlair = true;
               $scope.userspin.applyFlair = false;
@@ -286,7 +301,7 @@ define(['lodash'], function (_) {
       if ($scope.user) {
         io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
           if (res.statusCode === 200) {
-            $scope.user = data;
+            _.merge($scope.user, data);
             if ($scope.user.flair && $scope.user.flair.ptrades) {
               for (var i = 0; i < $scope.flairs.length; i++) {
                 var flair = $scope.flairs[i];

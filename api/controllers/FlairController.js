@@ -27,7 +27,7 @@ module.exports = {
           return res.json({error: err}, 500);
         }
         if (apps) {
-          return res.json(apps, 200);
+          return res.json(appData, 200);
         }
       });
     });

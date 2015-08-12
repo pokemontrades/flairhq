@@ -11,11 +11,13 @@ require.config({
         "sails": "dependencies/sails.io",
         "collapse": "dependencies/collapse",
         "dropdown": "dependencies/dropdown",
+        "tooltip": "dependencies/tooltip",
         "lodash": "dependencies/lodash.min",
         "marked": "dependencies/marked",
         "modal": "dependencies/modal",
         "spin": "dependencies/spin",
-        "tab": "dependencies/tab"
+        "tab": "dependencies/tab",
+        "tooltipModule": "../common/tooltipModule"
     },
 
     // angular does not support AMD out of the box, put it in a shim
@@ -42,7 +44,8 @@ require.config({
         'app': ['sails'],
         'modal': ['jquery'],
         'tab': ['jquery'],
-        'collapse': ['jquery']
+        'collapse': ['jquery'],
+        'tooltip': ['jquery']
     }
 });
 
@@ -53,9 +56,11 @@ require([
     'marked',
     'angular-bootstrap',
     'ngReallyClick',
+    'tooltipModule',
     'numberPadding',
     'collapse',
     'modal',
+    'tooltip',
     'tab',
     'spin'
 ], function (angular, app, marked) {

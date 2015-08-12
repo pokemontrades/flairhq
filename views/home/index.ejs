@@ -18,88 +18,63 @@
 
       <form class="form-horizontal col-md-7" role="form">
         <div id="addNewReference">
-          <div class="form-group">
-            <label for="referenceUrl" class="col-md-4 control-label">Permalink</label>
+          <ng-tooltip data-label="Permalink"
+              title="The Permalink URL to the first comment that discusses it. Must be unique (except for egg hatches).">
+            <input type="url" class="form-control" ng-model="addInfo.refUrl" />
+            <span>{{thingamy.refUrl}}{{thingamy.type}}</span>
+          </ng-tooltip>
 
-            <div class="col-md-8">
-              <input type="url" class="form-control" ng-model="refUrl"></input>
-            </div>
-          </div>
+          <ng-tooltip data-label="Type"
+                      title="Type of trade, based on subreddit. More information <a href='reddit.com/r/pokemontrades/wiki/flairhq'>here</a>.">
+            <select id="type" class="form-control" ng-model="addInfo.type">
+              <optgroup label="/r/pokemontrades">
+                <option value="event">Event</option>
+                <option value="shiny">Shiny</option>
+                <option value="casual">Competitive/Casual</option>
+                <option value="bank">Bank</option>
+                <option value="giveaway">Giveaway/Contest</option>
+                <option value="involvement">Free Tradeback/Free Redemption</option>
+              </optgroup>
+              <optgroup label="/r/SVExchange">
+                <option value="egg">Egg Hatch</option>
+                <option value="eggcheck">Egg/TSV Check</option>
+                <option value="giveaway">Giveaway</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="misc">Miscellaneous</option>
+              </optgroup>
+            </select>
+          </ng-tooltip>
 
-          <div class="form-group">
-            <label for="referenceUrl" class="col-md-4 control-label">Type</label>
+          <ng-tooltip data-label="Description" ng-show="isNotNormalTrade(addInfo.type)"
+                      title="Short description about the trade.">
+            <input type="text" class="form-control" ng-model="addInfo.descrip">
+          </ng-tooltip>
 
-            <div class="col-md-8">
-              <select id="type" class="form-control" ng-model="type">
-                <optgroup label="/r/pokemontrades">
-                  <option value="event">Event</option>
-                  <option value="shiny">Shiny</option>
-                  <option value="casual">Competitive/Casual</option>
-                  <option value="bank">Bank</option>
-                  <option value="giveaway">Giveaway/Contest</option>
-                  <option value="involvement">Free Tradeback/Free Redemption</option>
-                </optgroup>
-                <optgroup label="/r/SVExchange">
-                  <option value="egg">Egg Hatch</option>
-                  <option value="eggcheck">Egg/TSV Check</option>
-                  <option value="giveaway">Giveaway</option>
-                </optgroup>
-                <optgroup label="Other">
-                  <option value="misc">Miscellaneous</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
+          <ng-tooltip data-label="Number given" ng-show="hasNumber(addInfo.type)"
+                      title="How many you gave away. This can be updated.">
+              <input type="text" class="form-control" ng-model="addInfo.number">
+          </ng-tooltip>
 
-          <div class="form-group"
-               ng-show="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement'">
-            <label for="descrip" class="col-md-4 control-label">Description</label>
+          <ng-tooltip data-label="Gave" ng-hide="isNotNormalTrade(addInfo.type)"
+                      title="What you gave to the other user.">
+            <input type="text" class="form-control" ng-model="addInfo.gave">
+          </ng-tooltip>
 
-            <div class="col-md-8">
-              <input type="text" class="form-control" ng-model="descrip"></input>
-            </div>
-          </div>
+          <ng-tooltip data-label="Got" ng-hide="isNotNormalTrade(addInfo.type)"
+                      title="What you recieved from the other user.">
+            <input type="text" class="form-control" ng-model="addInfo.got">
+          </ng-tooltip>
 
-          <div class="form-group" ng-show="type === 'giveaway' || type === 'eggcheck'">
-            <label for="number" class="col-md-4 control-label">Number given:</label>
+          <ng-tooltip data-label="User" ng-hide="hasNumber(addInfo.type)"
+                      title="The user that you traded with.">
+            <input type="text" class="form-control" ng-model="addInfo.user2">
+          </ng-tooltip>
 
-            <div class="col-md-8">
-              <input type="text" class="form-control" ng-model="number"></input>
-            </div>
-          </div>
-
-          <div class="form-group"
-               ng-hide="type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement'">
-            <label for="gave" class="col-md-4 control-label">Gave:</label>
-
-            <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">
-              <input type="text" class="form-control" ng-model="gave"
-                     ng-focus="focus.gavegot=true" ng-blur="focus.gavegot=false"></input>
-            </div>
-            <label class="col-md-2 control-label"
-                   ng-class="{'col-md-offset-2': isFocused()}">Got:</label>
-
-            <div ng-class="{'col-md-8': isFocused(), 'col-md-3': !isFocused()}">
-              <input type="text" class="form-control" ng-model="got"
-                     ng-focus="focus.gavegot=true" ng-blur="focus.gavegot=false"></input>
-            </div>
-          </div>
-
-          <div class="form-group" ng-hide="type === 'giveaway' || type === 'eggcheck'">
-            <label for="referenceUrl" class="col-md-4 control-label">User</label>
-
-            <div class="col-md-8">
-              <input type="text" class="form-control" ng-model="user2"></input>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="referenceUrl" class="col-md-4 control-label">Notes</label>
-
-            <div class="col-md-8">
-              <textarea class="form-control" ng-model="notes"></textarea>
-            </div>
-          </div>
+          <ng-tooltip data-label="Notes"
+                      title="Just an area for your own notes about the trade.">
+            <textarea class="form-control" ng-model="addInfo.notes"></textarea>
+          </ng-tooltip>
 
           <div class="form-group">
             <div class="col-md-offset-4 col-md-2">

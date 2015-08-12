@@ -4,13 +4,25 @@ define([
 ], function () {
 
     var indexCtrl = function ($scope, $filter) {
-        $scope.refUrl = "";
-        $scope.user2 = "";
-        $scope.gave = "";
-        $scope.got = "";
-        $scope.number = "";
-        $scope.type = "";
-        $scope.descrip = "";
+      $scope.addInfo = {
+        refUrl: "",
+        type: "",
+        user2: "",
+        gave: "",
+        got: "",
+        number: "",
+        descrip: "",
+        notes: ""
+      };
+
+      $scope.isNotNormalTrade = function (type) {
+        return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';
+      };
+
+      $scope.hasNumber = function (type) {
+        return type === 'giveaway' || type === 'eggcheck';
+      };
+
         $scope.selectedRef = {};
         $scope.referenceToRevert = {};
 
@@ -135,35 +147,35 @@ define([
             $scope.indexOk.addRef = false;
             $scope.indexSpin.addRef = true;
             var url = "/reference/add",
-                user2 = $scope.user2,
+                user2 = $scope.addInfo.user2,
                 regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
                 regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
                 regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
                 regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
 
-            if (!$scope.type) {
+            if (!$scope.addInfo.type) {
                 $scope.addRefError = "Please choose a type.";
                 return $scope.indexSpin.addRef = false;
             }
-            if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck" || $scope.type === "involvement") {
-                if (!$scope.descrip) {
+            if ($scope.isNotNormalTrade($scope.addInfo.type)) {
+                if (!$scope.addInfo.descrip) {
                     $scope.addRefError = "Make sure you enter all the information";
                     return $scope.indexSpin.addRef = false;
                 }
             } else {
-                if (!$scope.got || !$scope.gave) {
+                if (!$scope.addInfo.got || !$scope.addInfo.gave) {
                     $scope.addRefError = "Make sure you enter all the information";
                     return $scope.indexSpin.addRef = false;
                 }
             }
-            if (!$scope.refUrl ||
-                (($scope.type !== "giveaway" && $scope.type !== "misc" && $scope.type !== "eggcheck") && !$scope.user2)) {
+            if (!$scope.addInfo.refUrl ||
+                (($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc" && $scope.addInfo.type !== "eggcheck") && !$scope.addInfo.user2)) {
                 $scope.addRefError = "Make sure you enter all the information";
                 return $scope.indexSpin.addRef = false;
             }
-            if ((($scope.type === "giveaway" || $scope.type === "eggcheck") && !regexpGive.test($scope.refUrl)) ||
-                ($scope.type !== "giveaway" && $scope.type !== "misc" && $scope.type !== "eggcheck" && !regexp.test($scope.refUrl)) ||
-                ($scope.type === "misc" && !regexpMisc.test($scope.refUrl))) {
+            if ((($scope.addInfo.type === "giveaway" || $scope.addInfo.type === "eggcheck") && !regexpGive.test($scope.addInfo.refUrl)) ||
+                ($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc" && $scope.addInfo.type !== "eggcheck" && !regexp.test($scope.addInfo.refUrl)) ||
+                ($scope.addInfo.type === "misc" && !regexpMisc.test($scope.addInfo.refUrl))) {
                 $scope.addRefError = "Looks like you didn't input a proper permalink";
                 return $scope.indexSpin.addRef = false;
             }
@@ -177,37 +189,37 @@ define([
                 return $scope.indexSpin.addRef = false;
             }
 
-            if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(user2)) {
+            if (($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc") && !regexpUser.test(user2)) {
                 $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
                 return $scope.indexSpin.addRef = false;
             }
 
             var post = {
                 "userid": $scope.user.id,
-                "url": $scope.refUrl,
+                "url": $scope.addInfo.refUrl,
                 "user2": user2,
-                "type": $scope.type,
-                "notes": $scope.notes,
-                "number": $scope.number
+                "type": $scope.addInfo.type,
+                "notes": $scope.addInfo.notes,
+                "number": $scope.addInfo.number
             };
 
-            if ($scope.type === "egg" || $scope.type === "giveaway" || $scope.type === "misc" || $scope.type === "eggcheck" || $scope.type === "involvement") {
-                post.descrip = $scope.descrip;
+            if ($scope.isNotNormalTrade($scope.addInfo.type)) {
+                post.descrip = $scope.addInfo.descrip;
             } else {
-                post.got = $scope.got;
-                post.gave = $scope.gave;
+                post.got = $scope.addInfo.got;
+                post.gave = $scope.addInfo.gave;
             }
 
             io.socket.post(url, post, function (data, res) {
                 $scope.indexSpin.addRef = false;
                 if (res.statusCode === 200) {
-                    $scope.refUrl = "";
-                    $scope.descrip = "";
-                    $scope.got = "";
-                    $scope.gave = "";
-                    $scope.user2 = "";
-                    $scope.notes = "";
-                    $scope.number = "";
+                    $scope.addInfo.refUrl = "";
+                    $scope.addInfo.descrip = "";
+                    $scope.addInfo.got = "";
+                    $scope.addInfo.gave = "";
+                    $scope.addInfo.user2 = "";
+                    $scope.addInfo.notes = "";
+                    $scope.addInfo.number = "";
                     $scope.user.references.push(data);
 
                     if (data.type === "redemption") {
@@ -227,10 +239,10 @@ define([
                             }, 200);
                         });
                     } else {
-                        $('#collapse' + $scope.type + "s").prev().children().animate({
+                        $('#collapse' + $scope.addInfo.type + "s").prev().children().animate({
                             backgroundColor: "yellow"
                         }, 200, function () {
-                            $('#collapse' + $scope.type + "s").prev().children().animate({
+                            $('#collapse' + $scope.addInfo.type + "s").prev().children().animate({
                                 backgroundColor: "white"
                             }, 200);
                         });

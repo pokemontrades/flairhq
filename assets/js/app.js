@@ -20,7 +20,8 @@ define([
     'angularSpinner',
     'ngReallyClickModule',
     'numberPaddingModule',
-    'yaru22.md'
+    'yaru22.md',
+    'tooltipModule'
   ]);
 
   // Define controllers, and their angular dependencies

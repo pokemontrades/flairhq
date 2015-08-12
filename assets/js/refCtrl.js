@@ -219,7 +219,7 @@ define([
                 "comment": comment
             }, function (data, res) {
                 if (res.statusCode === 200) {
-                    $scope.refUser.comments.push(data);
+                    $scope.refUser.comments.unshift(data);
                     $scope.newStuff.newComment = "";
                     $scope.$apply();
                 }

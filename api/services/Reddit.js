@@ -90,13 +90,17 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
-      var bodyJson = JSON.parse(body);
-      if (bodyJson.error) {
-        callback(bodyJson.error);
-      } else if (bodyJson.json.errors.length === 0) {
-        callback(undefined, data.css_class);
-      } else {
-        callback(bodyJson.json.errors);
+      try {
+        var bodyJson = JSON.parse(body);
+        if (bodyJson.error) {
+          callback(bodyJson.error);
+        } else if (bodyJson.json.errors.length === 0) {
+          callback(undefined, data.css_class);
+        } else {
+          callback(bodyJson.json.errors);
+        }
+      } catch(err) {
+        console.log("Error with parsing: " + body);
       }
     });
   }, function () {

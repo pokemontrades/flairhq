@@ -16,8 +16,8 @@
 
               <div class="col-md-8">
                 <div class="input-group" ng-repeat="fc in user.friendCodes track by $index">
-                  <input type="text" class="form-control"
-                         ng-model="user.friendCodes[$index]"></input>
+                  <input type="text" class="form-control" mask="dddd-dddd-dddd" mask-restrict="reject"
+                         ng-model="user.friendCodes[$index]" placeholder="9999-9999-9999">
                   <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="delFc($index)">
                       <span class="glyphicon glyphicon-trash"></span>
@@ -64,6 +64,10 @@
 
             <div class="row">
               <div class="col-md-12">
+                <div class="alert">
+                  <strong>Preview: </strong>
+                  {{createdFlairText()}}
+                </div>
                 <div id="saveError" class="alert alert-danger" role="alert" hidden></div>
               </div>
             </div>

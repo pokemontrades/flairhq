@@ -540,32 +540,43 @@ define(['lodash'], function (_) {
 
     };
 
-    $scope.setFlairText = function () {
-      $scope.setFlairText.saveProfile = false;
-      $scope.setFlairText.saveProfile = true;
+    $scope.createdFlairText = function () {
+      if (!$scope.user) {
+        return "";
+      }
       var fcs = $scope.user.friendCodes.slice(0),
         games = $scope.user.games,
-        text = "Please don't send me your flair apps.",
-        url = "/flair/setText";
-      var len = fcs.length;
-      while (len--) {
-        if (fcs[len] === "") {
-          fcs.splice(len, 1);
-        }
+        text = "";
+
+      for (var i = 0; i < fcs.length; i++) {
+        text += fcs[i];
       }
+
+      for (var j = 0; i < games.length; j++) {
+        text += games[j].tsv;
+      }
+
+      return text;
+    };
+
+    $scope.setFlairText = function () {
+      $scope.userok.setFlairText = false;
+      $scope.userspin.setFlairText = true;
+      var text = $scope.createdFlairText(),
+        url = "/flair/setText";
 
       io.socket.post(url, {
         "text": text
       }, function (data, res) {
         if (res.statusCode === 200) {
-          $scope.userok.saveProfile = true;
+          $scope.userok.setFlairText = true;
         } else if (res.statusCode === 400) {
           $("#saveError").html("There was some issue.").show();
           console.log(data);
         } else if (res.statusCode === 500) {
           $("#saveError").html("There was some issue setting.").show();
         }
-        $scope.userspin.saveProfile = false;
+        $scope.userspin.setFlairText = false;
         $scope.$apply();
       });
 

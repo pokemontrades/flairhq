@@ -17,6 +17,7 @@ require.config({
         "modal": "dependencies/modal",
         "spin": "dependencies/spin",
         "tab": "dependencies/tab",
+        "ngMask": "dependencies/mask.min",
         "tooltipModule": "../common/tooltipModule"
     },
 
@@ -40,6 +41,7 @@ require.config({
         'angular-md': ['angular', 'marked'],
         'angular-spinner': ['angular', 'spin'],
         'angular-ui-router': ['angular'],
+        'ngMask': ['angular'],
         'angular-bootstrap': ['angular'],
         'app': ['sails'],
         'modal': ['jquery'],
@@ -57,6 +59,7 @@ require([
     'angular-bootstrap',
     'ngReallyClick',
     'tooltipModule',
+    'ngMask',
     'numberPadding',
     'collapse',
     'modal',

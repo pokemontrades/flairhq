@@ -591,7 +591,7 @@ define(['lodash'], function (_) {
       quick: true
     };
     $scope.searchInfo.uriKeyword = function () {
-      return encodeURIComponent($scope.searchInfo.keyword);
+      return encodeURIComponent($scope.searchInfo.keyword.replace(/\//g, "%2F"));
     };
     $scope.searching = false;
     $scope.searchResults = [];

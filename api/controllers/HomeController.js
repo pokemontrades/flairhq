@@ -43,7 +43,7 @@ module.exports = {
       return res.json("Not logged in", 403);
     }
 
-    return res.view({searchTerm: req.params.searchterm});
+    return res.view({searchTerm: decodeURIComponent(req.params.searchterm)});
   },
 
   banlist: function (req, res) {

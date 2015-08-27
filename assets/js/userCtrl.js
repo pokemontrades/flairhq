@@ -540,7 +540,7 @@ define(['lodash'], function (_) {
 
     };
 
-    $scope.createdFlairText = function () {
+    $scope.ptradesCreatedFlair = function () {
       if (!$scope.user) {
         return "";
       }
@@ -550,19 +550,58 @@ define(['lodash'], function (_) {
 
       for (var i = 0; i < fcs.length; i++) {
         text += fcs[i];
+        if (i+1 !== fcs.length) {
+          text += ", ";
+        }
       }
 
-      for (var j = 0; i < games.length; j++) {
-        text += games[j].tsv;
+      text += " || ";
+
+      for (var j = 0; j < games.length; j++) {
+        text += games[j] ? games[j].ign : "";
+        text += games[j] ? " (" + games[j].game + ")" : "";
       }
 
       return text;
     };
 
+    $scope.svexCreatedFlair = function () {
+      if (!$scope.user) {
+        return "";
+      }
+      var fcs = $scope.user.friendCodes.slice(0),
+        games = $scope.user.games,
+        text = "";
+
+      for (var i = 0; i < fcs.length; i++) {
+        text += fcs[i];
+        if (i+1 !== fcs.length) {
+          text += ", ";
+        }
+      }
+
+      text += " || ";
+
+      for (var j = 0; j < games.length; j++) {
+        text += games[j] ? games[j].ign : "";
+        text += games[j] ? " (" + games[j].game + ")" : "";
+      }
+
+      text += " || ";
+
+      for (var k = 0; k < games.length; k++) {
+        text += games[k] ? games[k].tsv : "";
+      }
+
+      return text;
+    };
+
+    $scope.possibleGames = ["X", "Y", "OR", "AS"];
+
     $scope.setFlairText = function () {
       $scope.userok.setFlairText = false;
       $scope.userspin.setFlairText = true;
-      var text = $scope.createdFlairText(),
+      var text = $scope.ptradesCreatedFlair(),
         url = "/flair/setText";
 
       io.socket.post(url, {

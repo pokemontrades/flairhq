@@ -37,14 +37,21 @@
             <div class="form-group" ng-repeat="game in user.games | orderBy:'createdAt'">
               <label class="col-sm-3 control-label">IGN:</label>
 
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <input type="text" class="form-control" ng-model="game.ign"></input>
               </div>
               <label class="col-sm-1 control-label">TSV:</label>
 
-              <div class="col-md-4">
+              <div class="col-md-2">
                 <div class="input-group">
                   <input type="text" class="form-control" ng-model="game.tsv"></input>
+                </div>
+              </div>
+              <label class="col-sm-1 control-label">Game:</label>
+
+              <div class="col-md-2">
+                <div class="input-group">
+                  <select class="form-control" ng-model="game.game" ng-options="game for game in possibleGames"></select>
                   <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="delGame(game)">
                       <span class="glyphicon glyphicon-trash"></span>
@@ -65,8 +72,12 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="alert">
-                  <strong>Preview: </strong>
-                  {{createdFlairText()}}
+                  <strong>/r/pokemontrades: </strong>
+                  {{ptradesCreatedFlair()}}
+                  <div class="pull-right">
+                    <strong>/r/SVExchange: </strong>
+                    {{svexCreatedFlair()}}
+                  </div>
                 </div>
                 <div id="saveError" class="alert alert-danger" role="alert" hidden></div>
               </div>

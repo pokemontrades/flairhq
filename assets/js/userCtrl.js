@@ -590,6 +590,9 @@ define(['lodash'], function (_) {
       user: "",
       quick: true
     };
+    $scope.searchInfo.uriKeyword = function () {
+      return encodeURIComponent($scope.searchInfo.keyword);
+    };
     $scope.searching = false;
     $scope.searchResults = [];
     $scope.searchedFor = "";

@@ -126,12 +126,23 @@ module.exports = {
       Reddit.data.adminRefreshToken,
       req.user.name,
       req.user.flair.ptrades.flair_css_class,
-      req.allParams().text,
+      req.allParams().ptrades,
       "PokemonTrades", function (err, css_class) {
         if (err) {
           return res.json(err, 500);
         } else {
-          return res.json(req.user, 200);
+          Reddit.setFlair(
+            Reddit.data.adminRefreshToken,
+            req.user.name,
+            req.user.flair.svex.flair_css_class,
+            req.allParams().svex,
+            "SVExchange", function (err, css_class) {
+              if (err) {
+                return res.json(err, 500);
+              } else {
+                return res.json(req.user, 200);
+              }
+            });
         }
       });
   },

@@ -601,11 +601,13 @@ define(['lodash'], function (_) {
     $scope.setFlairText = function () {
       $scope.userok.setFlairText = false;
       $scope.userspin.setFlairText = true;
-      var text = $scope.ptradesCreatedFlair(),
+      var ptrades = $scope.ptradesCreatedFlair(),
+        svex = $scope.svexCreatedFlair(),
         url = "/flair/setText";
 
       io.socket.post(url, {
-        "text": text
+        "ptrades": ptrades,
+        "svex": svex
       }, function (data, res) {
         if (res.statusCode === 200) {
           $scope.userok.setFlairText = true;

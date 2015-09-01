@@ -312,6 +312,33 @@ define(['lodash'], function (_) {
                   $scope.selectedExchFlair = flair.name;
                 }
               }
+              $scope.user.flairFriendCodes = [];
+              $scope.user.flairGames = [{tsv: "", ign: ""}];
+              var trades = $scope.user.flair.ptrades.flair_text;
+              var sv = $scope.user.flair.svex.flair_text;
+              var fxReg = /([0-9]{4}-){2}[0-9]{4}/g;
+              var gameReg = /\([X|Y|ΩR|αS]\)/g;
+              var ignReg = /\|\| .* \(/g;
+              var tsvReg = /\|\| [0-9]{4}/g;
+
+              var fcs = _.merge(trades.match(fxReg), sv.match(fxReg));
+              var games = _.merge(trades.match(gameReg), sv.match(gameReg));
+              var igns = _.merge(trades.match(ignReg), sv.match(ignReg));
+              var tsvs = sv.match(tsvReg);
+
+
+              for (var j = 0; j < fcs.length; j++) {
+                $scope.user.flairFriendCodes.push(fcs[j]);
+              }
+
+              $scope.user.flairGames = [];
+              for (var j = 0; j < games.length || j < igns.length || j < tsvs.length; j++) {
+                $scope.user.flairGames.push({
+                  game: j < games.length ? games[j].replace(/\(/g,"").replace(/\)/g,"") : "",
+                  ign: j < igns.length ? igns[j].replace(/\|\| /g, "").replace(/ \(/g, "") : "",
+                  tsv: j < tsvs.length ? tsvs[j].replace(/\|\| /g, "") : ""
+                });
+              }
             }
             if (!$scope.user.friendCodes || !$scope.user.friendCodes.length) {
               $scope.user.friendCodes = [""];
@@ -486,6 +513,23 @@ define(['lodash'], function (_) {
       $scope.user.games.splice(index, 1);
     };
 
+    $scope.addflairFc = function () {
+      $scope.user.flairFriendCodes.push("");
+    };
+
+    $scope.delflairFc = function (index) {
+      $scope.user.flairFriendCodes.splice(index, 1);
+    };
+
+    $scope.addflairGame = function () {
+      $scope.user.flairGames.push({tsv: "", ign: ""});
+    };
+
+    $scope.delflairGame = function (game) {
+      var index = $scope.user.games.indexOf(game);
+      $scope.user.flairGames.splice(index, 1);
+    };
+
     $scope.saveProfile = function () {
       $scope.userok.saveProfile = false;
       $scope.userspin.saveProfile = true;
@@ -541,11 +585,11 @@ define(['lodash'], function (_) {
     };
 
     $scope.ptradesCreatedFlair = function () {
-      if (!$scope.user) {
+      if (!$scope.user || !$scope.user.flairFriendCodes) {
         return "";
       }
-      var fcs = $scope.user.friendCodes.slice(0),
-        games = $scope.user.games,
+      var fcs = $scope.user.flairFriendCodes.slice(0),
+        games = $scope.user.flairGames,
         text = "";
 
       for (var i = 0; i < fcs.length; i++) {
@@ -559,18 +603,18 @@ define(['lodash'], function (_) {
 
       for (var j = 0; j < games.length; j++) {
         text += games[j] ? games[j].ign : "";
-        text += games[j] ? " (" + games[j].game + ")" : "";
+        text += games[j] && games[j].game ? " (" + games[j].game + ")" : "";
       }
 
       return text;
     };
 
     $scope.svexCreatedFlair = function () {
-      if (!$scope.user) {
+      if (!$scope.user || !$scope.user.flairFriendCodes) {
         return "";
       }
-      var fcs = $scope.user.friendCodes.slice(0),
-        games = $scope.user.games,
+      var fcs = $scope.user.flairFriendCodes.slice(0),
+        games = $scope.user.flairGames,
         text = "";
 
       for (var i = 0; i < fcs.length; i++) {
@@ -584,7 +628,7 @@ define(['lodash'], function (_) {
 
       for (var j = 0; j < games.length; j++) {
         text += games[j] ? games[j].ign : "";
-        text += games[j] ? " (" + games[j].game + ")" : "";
+        text += games[j] && games[j].game ? " (" + games[j].game + ")" : "";
       }
 
       text += " || ";
@@ -596,7 +640,7 @@ define(['lodash'], function (_) {
       return text;
     };
 
-    $scope.possibleGames = ["X", "Y", "OR", "AS"];
+    $scope.possibleGames = ["X", "Y", "ΩR", "αS"];
 
     $scope.setFlairText = function () {
       $scope.userok.setFlairText = false;

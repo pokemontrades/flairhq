@@ -16,7 +16,7 @@
 
               <div class="col-md-8">
                 <div class="input-group" ng-repeat="fc in user.flairFriendCodes track by $index">
-                  <input type="text" class="form-control" mask="dddd-dddd-dddd" mask-restrict="reject"
+                  <input type="text" class="form-control" mask="9999-9999-9999" mask-restrict="reject"
                          ng-model="user.flairFriendCodes[$index]" placeholder="9999-9999-9999">
                   <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="delflairFc($index)">

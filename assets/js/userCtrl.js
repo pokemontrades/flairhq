@@ -618,7 +618,7 @@ define(['lodash'], function (_) {
         text = "";
 
       for (var i = 0; i < fcs.length; i++) {
-        text += fcs[i];
+        text += fcs ? fcs[i] : "";
         if (i+1 !== fcs.length) {
           text += ", ";
         }
@@ -634,7 +634,7 @@ define(['lodash'], function (_) {
       text += " || ";
 
       for (var k = 0; k < games.length; k++) {
-        text += games[k] ? games[k].tsv : "";
+        text += games[k] ? games[k].tsv : "XXXX";
       }
 
       return text;
@@ -646,6 +646,20 @@ define(['lodash'], function (_) {
 
       if (svex.length > 64 || ptrades.length > 64) {
         return {correct: false, error: "Your flair is too long, maximum is 64 characters, please delete something."};
+      }
+
+      for (var i = 0; i < $scope.user.flairFriendCodes.length; i++) {
+        var fc = $scope.user.flairFriendCodes[i];
+        if (fc === "") {
+          return {correct: false, error: "Please fill in all empty information."};
+        }
+      }
+
+      for (var i = 0; i < $scope.user.flairGames.length; i++) {
+        var game = $scope.user.flairGames[i];
+        if (!game.tsv || !game.game || !game.ign) {
+          return {correct: false, error: "Please fill in all empty information."};
+        }
       }
 
       return {correct: true};

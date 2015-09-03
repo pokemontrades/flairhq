@@ -22,6 +22,7 @@ define([
     'numberPaddingModule',
     'yaru22.md',
     'tooltipModule',
+    'genericTooltipModule',
     'ngMask'
   ]);
 

@@ -640,6 +640,17 @@ define(['lodash'], function (_) {
       return text;
     };
 
+    $scope.isCorrectFlairText = function () {
+      var svex = $scope.svexCreatedFlair();
+      var ptrades = $scope.ptradesCreatedFlair();
+
+      if (svex.length > 64 || ptrades.length > 64) {
+        return {correct: false, error: "Your flair is too long, maximum is 64 characters, please delete something."};
+      }
+
+      return {correct: true};
+    };
+
     $scope.possibleGames = ["X", "Y", "ΩR", "αS"];
 
     $scope.setFlairText = function () {
@@ -655,11 +666,11 @@ define(['lodash'], function (_) {
       }, function (data, res) {
         if (res.statusCode === 200) {
           $scope.userok.setFlairText = true;
-        } else if (res.statusCode === 400) {
-          $("#saveError").html("There was some issue.").show();
+        } else if (res.statusCode === 400 && res.data === "Changed string") {
+          $("#setTextError").html("Don't modify the text.").show();
           console.log(data);
         } else if (res.statusCode === 500) {
-          $("#saveError").html("There was some issue setting.").show();
+          $("#setTextError").html("There was some issue setting flair.").show();
         }
         $scope.userspin.setFlairText = false;
         $scope.$apply();

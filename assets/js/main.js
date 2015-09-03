@@ -18,7 +18,8 @@ require.config({
         "spin": "dependencies/spin",
         "tab": "dependencies/tab",
         "ngMask": "dependencies/mask.min",
-        "tooltipModule": "../common/tooltipModule"
+        "tooltipModule": "../common/tooltipModule",
+        "genericTooltipModule": "../common/genericTooltipModule"
     },
 
     // angular does not support AMD out of the box, put it in a shim
@@ -59,6 +60,7 @@ require([
     'angular-bootstrap',
     'ngReallyClick',
     'tooltipModule',
+    'genericTooltipModule',
     'ngMask',
     'numberPadding',
     'collapse',

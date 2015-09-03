@@ -122,6 +122,13 @@ module.exports = {
       return res.json("Not logged in", 403);
     }
 
+    var ptrades = /(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \|\| (.* \([X|Y|ΩR|αS]\))(, (.* \([X|Y|ΩR|αS]\)))*/g;
+    var svex = /(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \|\| (.* \([X|Y|ΩR|αS]\))(, (.* \([X|Y|ΩR|αS]\)))* \|\| ([0-9]{4})(, ([0-9]{4}))*/g;
+
+    if (!req.allParams().ptrades.match(ptrades) || !req.allParams().svex.match(svex)) {
+      return res.json("Changed string", 400);
+    }
+
     Reddit.setFlair(
       Reddit.data.adminRefreshToken,
       req.user.name,

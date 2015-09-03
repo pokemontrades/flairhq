@@ -10,14 +10,14 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <form>
+          <form class="form-horizontal">
             <div class="form-group">
               <label for="friendcode1" class="col-sm-3 control-label">Friend Code:</label>
 
               <div class="col-md-8">
                 <div class="input-group" ng-repeat="fc in user.flairFriendCodes track by $index">
                   <input type="text" class="form-control" mask="dddd-dddd-dddd" mask-restrict="reject"
-                         ng-model="fc" placeholder="9999-9999-9999">
+                         ng-model="user.flairFriendCodes[$index]" placeholder="9999-9999-9999">
                   <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="delflairFc($index)">
                       <span class="glyphicon glyphicon-trash"></span>
@@ -40,14 +40,14 @@
               <div class="col-md-2">
                 <input type="text" class="form-control" ng-model="game.ign"></input>
               </div>
-              <label class="col-sm-1 control-label">TSV:</label>
-
-              <div class="col-md-2">
-                <div class="input-group">
-                  <input type="text" class="form-control" ng-model="game.tsv"></input>
-                </div>
-              </div>
               <label class="col-sm-1 control-label">Game:</label>
+
+              <div class="col-md-2 has-feedback">
+                <ng-generic-tooltip title="Only for SVExchange">
+                  <input type="text" class="form-control" ng-model="game.tsv">
+                </ng-generic-tooltip>
+              </div>
+              <label class="col-sm-1 control-label">TSV:</label>
 
               <div class="col-md-2">
                 <div class="input-group">
@@ -79,7 +79,10 @@
                     {{svexCreatedFlair()}}
                   </div>
                 </div>
-                <div id="saveError" class="alert alert-danger" role="alert" hidden></div>
+                <div id="setTextError" class="alert alert-danger" role="alert" hidden></div>
+                <div class="alert alert-danger col-md-10 col-md-offset-1" role="alert" ng-hide="isCorrectFlairText() ? isCorrectFlairText().correct : true">
+                  {{isCorrectFlairText() ? isCorrectFlairText().error : "This shouldn't be showing."}}
+                </div>
               </div>
             </div>
           </form>

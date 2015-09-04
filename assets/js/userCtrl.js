@@ -317,7 +317,7 @@ define(['lodash'], function (_) {
               var trades = $scope.user.flair.ptrades.flair_text || "";
               var sv = $scope.user.flair.svex.flair_text || "";
               var fxReg = /([0-9]{4}-){2}[0-9]{4}/g;
-              var gameReg = /\([X|Y|ΩR|αS]\)/g;
+              var gameReg = /\((X|Y|ΩR|αS)\)/g;
               var ignReg = /\|\| .* \(/g;
               var tsvReg = /\|\| [0-9]{4}/g;
 

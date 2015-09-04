@@ -75,7 +75,7 @@ exports.getFlair = function (refreshToken, callback) {
 };
 
 exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
-  exports.refreshToken(refreshToken, function (token) {
+  exports.refreshToken(exports.data.adminRefreshToken, function (token) {
     var data = {
       api_type: 'json',
       css_class: cssClass,

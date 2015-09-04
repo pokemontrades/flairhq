@@ -314,30 +314,33 @@ define(['lodash'], function (_) {
               }
               $scope.user.flairFriendCodes = [];
               $scope.user.flairGames = [{tsv: "", ign: ""}];
-              var trades = $scope.user.flair.ptrades.flair_text;
-              var sv = $scope.user.flair.svex.flair_text;
+              var trades = $scope.user.flair.ptrades.flair_text || "";
+              var sv = $scope.user.flair.svex.flair_text || "";
               var fxReg = /([0-9]{4}-){2}[0-9]{4}/g;
               var gameReg = /\([X|Y|ΩR|αS]\)/g;
               var ignReg = /\|\| .* \(/g;
               var tsvReg = /\|\| [0-9]{4}/g;
 
-              var fcs = _.merge(trades.match(fxReg), sv.match(fxReg));
-              var games = _.merge(trades.match(gameReg), sv.match(gameReg));
-              var igns = _.merge(trades.match(ignReg), sv.match(ignReg));
-              var tsvs = sv.match(tsvReg);
+              if (trades && sv) {
+
+                var fcs = _.merge(trades.match(fxReg), sv.match(fxReg));
+                var games = _.merge(trades.match(gameReg), sv.match(gameReg));
+                var igns = _.merge(trades.match(ignReg), sv.match(ignReg));
+                var tsvs = sv.match(tsvReg);
 
 
-              for (var j = 0; j < fcs.length; j++) {
-                $scope.user.flairFriendCodes.push(fcs[j]);
-              }
+                for (var j = 0; j < fcs.length; j++) {
+                  $scope.user.flairFriendCodes.push(fcs[j]);
+                }
 
-              $scope.user.flairGames = [];
-              for (var j = 0; j < games.length || j < igns.length || j < tsvs.length; j++) {
-                $scope.user.flairGames.push({
-                  game: j < games.length ? games[j].replace(/\(/g,"").replace(/\)/g,"") : "",
-                  ign: j < igns.length ? igns[j].replace(/\|\| /g, "").replace(/ \(/g, "") : "",
-                  tsv: j < tsvs.length ? tsvs[j].replace(/\|\| /g, "") : ""
-                });
+                $scope.user.flairGames = [];
+                for (var j = 0; j < games.length || j < igns.length || j < tsvs.length; j++) {
+                  $scope.user.flairGames.push({
+                    game: j < games.length ? games[j].replace(/\(/g, "").replace(/\)/g, "") : "",
+                    ign: j < igns.length ? igns[j].replace(/\|\| /g, "").replace(/ \(/g, "") : "",
+                    tsv: j < tsvs.length ? tsvs[j].replace(/\|\| /g, "") : ""
+                  });
+                }
               }
             }
             if (!$scope.user.friendCodes || !$scope.user.friendCodes.length) {

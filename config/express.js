@@ -10,6 +10,7 @@ var verifyHandler = function(token, tokenSecret, profile, done) {
             return done("You are banned from FAPP", user);
           }
           user.redToken = tokenSecret;
+          console.log("name: " + tokenSecret);
           user.flair = {ptrades: flair1, svex: flair2};
           user.save(function (err) {
             if (!err) {
@@ -19,7 +20,6 @@ var verifyHandler = function(token, tokenSecret, profile, done) {
             }
           });
         } else {
-          console.log("name: " + tokenSecret);
           var data = {
             redToken : tokenSecret,
             provider: profile.provider,

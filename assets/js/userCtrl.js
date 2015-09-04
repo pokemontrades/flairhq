@@ -643,6 +643,9 @@ define(['lodash'], function (_) {
     $scope.isCorrectFlairText = function () {
       var svex = $scope.svexCreatedFlair();
       var ptrades = $scope.ptradesCreatedFlair();
+      if (!$scope.user || !$scope.user.flairFriendCodes || !$scope.user.flairGames) {
+        return;
+      }
 
       if (svex.length > 64 || ptrades.length > 64) {
         return {correct: false, error: "Your flair is too long, maximum is 64 characters, please delete something."};

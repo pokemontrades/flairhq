@@ -19,6 +19,7 @@ var verifyHandler = function(token, tokenSecret, profile, done) {
             }
           });
         } else {
+          console.log("name: " + tokenSecret);
           var data = {
             redToken : tokenSecret,
             provider: profile.provider,

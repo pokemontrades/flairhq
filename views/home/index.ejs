@@ -76,6 +76,11 @@
             <textarea class="form-control" ng-model="addInfo.notes"></textarea>
           </ng-tooltip>
 
+          <ng-tooltip data-label="Private Notes"
+                      title="An area for private notes about the trade. Nobody else will be able to see these.">
+            <textarea class="form-control" ng-model="addInfo.privatenotes"></textarea>
+          </ng-tooltip>
+
           <div class="form-group">
             <div class="col-md-offset-4 col-md-2">
               <button type="button" class="btn btn-default has-spinner" ng-click="addReference()"

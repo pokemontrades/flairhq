@@ -12,7 +12,8 @@ define([
         got: "",
         number: "",
         descrip: "",
-        notes: ""
+        notes: "",
+        privatenotes: ""
       };
 
       $scope.isNotNormalTrade = function (type) {
@@ -200,6 +201,7 @@ define([
                 "user2": user2,
                 "type": $scope.addInfo.type,
                 "notes": $scope.addInfo.notes,
+                "privatenotes": $scope.addInfo.privatenotes,
                 "number": $scope.addInfo.number
             };
 
@@ -219,6 +221,7 @@ define([
                     $scope.addInfo.gave = "";
                     $scope.addInfo.user2 = "";
                     $scope.addInfo.notes = "";
+                    $scope.addInfo.privatenotes = "";
                     $scope.addInfo.number = "";
                     $scope.user.references.push(data);
 

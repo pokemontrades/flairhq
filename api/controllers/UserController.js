@@ -141,10 +141,10 @@ module.exports = {
                       if (req.user && user.name === req.user.name) {
                         user.isMod = req.user.isMod;
                       }
-                      var publicReferences=references;
+                      var publicReferences = references;
                       publicReferences.forEach(function(entry) {
                         //If the current user is not the user that submitted the trade, remove the private notes before sending the trade info.
-                        if (!req.user||req.user.id!==entry.user)
+                        if (!req.user || req.user.id !== entry.user)
                           entry.privatenotes=null;
                       });
                       user.references = publicReferences;

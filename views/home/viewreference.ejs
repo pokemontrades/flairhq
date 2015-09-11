@@ -42,14 +42,14 @@
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <strong>Notes</strong>
+              <strong>Public Notes</strong>
             </div>
             <div class="panel-body">
               <md ng-model="selectedRef.notes"></md>
             </div>
           </div>
         </div>
-        <div ng-hide="selectedRef.privatenotes===null" class="col-md-6">
+        <div ng-if="selectedRef.privatenotes !== null" class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
               <strong>Private Notes</strong>

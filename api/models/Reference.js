@@ -39,7 +39,8 @@ module.exports = {
     // This defines if the mods have approved it as a trade that can count
     approved: "boolean",
     edited: "boolean",
-    notes: "string"
+    notes: "string",
+    privatenotes: "string"
   }
 };
 

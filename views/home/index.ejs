@@ -71,9 +71,14 @@
             <input type="text" class="form-control" ng-model="addInfo.user2">
           </ng-tooltip>
 
-          <ng-tooltip data-label="Notes"
+          <ng-tooltip data-label="Public Notes"
                       title="Just an area for your own notes about the trade.">
             <textarea class="form-control" ng-model="addInfo.notes"></textarea>
+          </ng-tooltip>
+
+          <ng-tooltip data-label="Private Notes"
+                      title="An area for private notes about the trade. Nobody else will be able to see these.">
+            <textarea class="form-control" ng-model="addInfo.privatenotes"></textarea>
           </ng-tooltip>
 
           <div class="form-group">

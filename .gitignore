@@ -29,3 +29,5 @@ build/Release
 .idea/
 
 config/local.js
+
+.DS_Store

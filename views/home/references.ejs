@@ -231,7 +231,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
-      <td colspan="2">[+] <h3>Giveaways/Contests ({{<%= theUser %>.references.filter(isGiveaway).length}} threads, {{numberOfEggsGivenAway(<%= theUser %>)}} given)</h3></td>
+      <td colspan="2">[+] <h3>Giveaways/Contests ({{<%= theUser %>.references.filter(isGiveaway).length}} threads, {{numberOfGivenAway(<%= theUser %>)}} given)</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && refUser"

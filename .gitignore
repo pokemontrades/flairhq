@@ -31,3 +31,5 @@ build/Release
 config/local.js
 
 .DS_Store
+
+views/layout.ejs

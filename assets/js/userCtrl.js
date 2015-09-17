@@ -356,13 +356,11 @@ define(['lodash'], function (_) {
       }
       $filter("filter")($scope.user.references,
         function (item) {
-          return $scope.isGiveaway(item) || $scope.isEggCheck(item);
+          return $scope.isGiveaway(item);
         }
       ).forEach(
         function (ref) {
-          if (ref.url.indexOf("SVExchange") > -1) {
-            givenAway += (ref.number || 0);
-          }
+          givenAway += (ref.number || 0);
         }
       );
       return givenAway;

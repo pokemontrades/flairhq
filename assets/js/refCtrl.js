@@ -127,6 +127,9 @@ define([
         };
 
         $scope.numberOfGivenAway = function () {
+            if (!$scope.refUser || !$scope.refUser.references) {
+              return;
+            }
             var givenAway = 0;
             $filter("filter")($scope.refUser.references,
                 function (item) {

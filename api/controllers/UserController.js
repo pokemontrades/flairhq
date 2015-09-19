@@ -6,6 +6,7 @@
  */
 
 var Q = require('q');
+var Reddit = require('redwrap');
 
 module.exports = {
 
@@ -214,6 +215,7 @@ module.exports = {
   },
 
   ban: function (req, res) {
+    sails.log("ban() called (bad)");
     if (!req.user.isMod) {
       res.json("Not a mod", 403);
       return;
@@ -234,6 +236,97 @@ module.exports = {
     });
   },
 
+  permaBan: function (req, res) {
+    sails.log("permaBan() called (good)");
+    /*  Form parameters:
+          req.params.username: The user who is being banned
+          req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max)
+          req.params.banMessage: The note that gets sent with the "you are banned" PM
+        Permaban process:
+          1. Ban user from /r/pokemontrades
+          2. Ban user from /r/SVExchange
+          3. Add "BANNED USER" to user's flair on /r/pokemontrades
+          4. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
+          5. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
+          6. Remove all of the user's TSV threads on /r/SVExchange
+          7. Add user's info to banlist wiki on /r/pokemontrades
+    */
+    if (!req.user.isMod) {
+      res.json("Not a mod", 403);
+      return;
+    }
+    req.params = req.allParams();
+
+    //Ban user from the two subs
+    for (sub in ["pokemontrades","SVExchange"])
+    {
+      Reddit.banUser(
+      req.user.redToken,
+      req.params.username,
+      req.params.banMessage,
+      req.params.banNote,
+      sub,
+      function (err, css_class) {
+          if (err) {
+            sails.log(err);
+            return res.json(err, 500);
+          } else {
+            sails.log("Banned " + user.name + "from /r/" + sub);
+            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+              if (err) {
+                return res.json(err, 500);
+              }
+              return res.json(app, 200);
+            });
+          }
+      });
+    }
+    sails.log("should be banned by now");
+    //Give the "BANNED USER" flair on pokemontrades
+    var flair;
+    Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
+      if (flair1 || flair2) {
+        flair = {ptrades: flair1, svex: flair2};
+        user.save(function (err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+      } else {
+        flair = {ptrades: {flair_text: '', flair_css_class: ''}};
+      }
+    }, req.params.username);
+    var temp_css = flair.ptrades.flair_css_class;
+    if (!flair.ptrades.flair_css_class) {
+      flair.ptrades.flair_css_class = 'banned';
+    } else if (flair.ptrades.flair_css_class.indexOf(' ') === -1) {
+      flair.ptrades.flair_css_class += ' banned';
+    } else {
+      flair.ptrades.flair_css_class = flair.ptrades.flair_css_class.substring(0, flair.ptrades.flair_css_class.indexOf(' ')) + ' banned';
+    }
+    Reddit.setFlair(
+      req.user.redToken,
+      req.params.username,
+      flair.ptrades.flair_css_class,
+      flair.ptrades.flair_text,
+      'pokemontrades', function (err, css_class) {
+      if (err) {
+        return res.json(err, 500);
+      } else {
+          console.log("Changed " + user.name + "'s flair to " + css_class);
+          Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+          if (err) {
+            return res.json(err, 500);
+          }
+          return res.json(app, 200);
+        });
+      }
+    });
+
+    //
+  },
+  
+  
   bannedUsers: function (req, res) {
     if (!req.user.isMod) {
       res.json("Not a mod", 403);

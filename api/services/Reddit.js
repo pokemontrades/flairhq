@@ -41,10 +41,12 @@ exports.refreshToken = function (refreshToken, callback, error) {
   });
 };
 
-exports.getFlair = function (refreshToken, callback) {
+exports.getFlair = function (refreshToken, callback,user) {
   exports.refreshToken(refreshToken, function (token) {
+    user = user || '';
     var body = {
-      api_type: 'json'
+      api_type: 'json',
+      name: user
     };
 
     if (left < 100 && moment().before(resetTime)) {
@@ -89,11 +91,8 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
       text: text,
       name: name
     };
-
-    if (left < 10 && moment().before(resetTime)) {
-      return callback("Rate limited");
-    }
-
+    //DEBUG
+    sub = 'crownofnails';
     request.post({
       url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
       formData: data,
@@ -122,9 +121,108 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
   });
 };
 
-var updateRateLimits = function (res) {
-  if (res && res.headers && res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
-    left = res.headers['x-ratelimit-remaining'];
-    resetTime = moment().add(res.headers['x-ratelimit-reset'], "seconds");
-  }
+exports.banUser = function (refreshToken, username, ban_message, note, subreddit, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    var data = {
+      api_type: 'json',
+      ban_message: ban_message,
+      name: username,
+      note: note,
+      type: 'banned'
+    };
+    //DEBUG
+    subreddit = 'crownofnails';
+    request.post({
+      url: 'https://oauth.reddit.com/r/' + subreddit + '/api/friend',
+      formData: data,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+      try {
+        var bodyJson = JSON.parse(body);
+        if (bodyJson.error) {
+          callback(bodyJson.error);
+        } else if (bodyJson.json.errors.length === 0) {
+          callback(undefined, data.css_class);
+        } else {
+          callback(bodyJson.json.errors);
+        }
+      } catch(err) {
+        console.log("Error with parsing: " + body);
+      }
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
+};
+
+exports.editWikiPage = function (refreshToken, subreddit, page, content, reason, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    var data = {
+      content: content,
+      page: page,
+      reason: reason
+    };
+
+    request.post({
+      url: 'https://oauth.reddit.com/r/' + subreddit + '/api/wiki/edit',
+      formData: data,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+      try {
+        var bodyJson = JSON.parse(body);
+        if (bodyJson.error) {
+          callback(bodyJson.error);
+        } else if (bodyJson.json.errors.length === 0) {
+          callback(undefined, data.css_class);
+        } else {
+          callback(bodyJson.json.errors);
+        }
+      } catch(err) {
+        console.log("Error with parsing: " + body);
+      }
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
+};
+
+exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    var data = {
+      page: page
+    };
+
+    request.get({
+      url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/page',
+      formData: data,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+      try {
+        var bodyJson = JSON.parse(body);
+        if (bodyJson.error) {
+          callback(bodyJson.error);
+        } else if (bodyJson.json.errors.length === 0) {
+          callback(undefined, data.css_class);
+        } else {
+          callback(bodyJson.json.errors);
+        }
+      } catch(err) {
+        console.log("Error with parsing: " + body);
+      }
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
 };

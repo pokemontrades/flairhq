@@ -137,9 +137,7 @@ define([
                 }
             ).forEach(
                 function (ref) {
-                    if (ref.url.indexOf("SVExchange") > -1) {
-                        givenAway += (ref.number || 0);
-                    }
+                    givenAway += (ref.number || 0);
                 }
             );
             return givenAway;

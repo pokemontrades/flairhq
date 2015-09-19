@@ -45,6 +45,19 @@ define([
             });
         };
 
+        $scope.permaBanUser = function (user) {
+            var url = "/user/permaBan";
+            console.log("permaban test");
+            io.socket.post(url, {userId: user.id, username: "actually_an_aardvark", banNote: "banned alt account as test", banMessage: "you should be able to see this"}, function (data, res) {
+                if (res.statusCode === 200) {
+                    $scope.getBannedUsers();
+                    $scope.$apply();
+                } else {
+                    console.log("Error");
+                }
+            });
+        };
+
         $scope.denyApp = function (id, $index) {
             var url = "/flair/app/deny";
             $scope.flairAppError = "";

@@ -127,10 +127,13 @@ define([
         };
 
         $scope.numberOfGivenAway = function () {
+            if (!$scope.refUser || !$scope.refUser.references) {
+              return;
+            }
             var givenAway = 0;
             $filter("filter")($scope.refUser.references,
                 function (item) {
-                    return $scope.isGiveaway(item) || $scope.isEggCheck(item);
+                    return $scope.isGiveaway(item);
                 }
             ).forEach(
                 function (ref) {

@@ -41,21 +41,16 @@ exports.refreshToken = function (refreshToken, callback, error) {
   });
 };
 
-exports.getFlair = function (refreshToken, callback,user) {
+exports.getFlair = function (refreshToken, callback, user) {
   exports.refreshToken(refreshToken, function (token) {
     user = user || '';
     var body = {
       api_type: 'json',
       name: user
     };
-
-    if (left < 100 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-
     request.post({
       url: 'https://oauth.reddit.com/r/pokemontrades/api/flairselector',
-      body: body,
+      formData: body,
       json: true,
       headers: { Authorization: "bearer " + token,
         "User-Agent": "fapp/1.0"}
@@ -63,7 +58,7 @@ exports.getFlair = function (refreshToken, callback,user) {
       updateRateLimits(response);
       request.post({
         url: 'https://oauth.reddit.com/r/SVExchange/api/flairselector',
-        body: body,
+        formData: body,
         json: true,
         headers: { Authorization: "bearer " + token,
           "User-Agent": "fapp/1.0"}
@@ -126,7 +121,9 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
     var data = {
       api_type: 'json',
       ban_message: ban_message,
-      name: username,
+      //DEBUG
+      name: 'actually_an_aardvark',
+      //name: username,
       note: note,
       type: 'banned'
     };

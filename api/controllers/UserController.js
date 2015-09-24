@@ -6,7 +6,7 @@
  */
 
 var Q = require('q');
-var Reddit = require('redwrap');
+var reddit = require('redwrap');
 
 module.exports = {
 
@@ -215,7 +215,6 @@ module.exports = {
   },
 
   ban: function (req, res) {
-    sails.log("ban() called (bad)");
     if (!req.user.isMod) {
       res.json("Not a mod", 403);
       return;
@@ -237,7 +236,6 @@ module.exports = {
   },
 
   permaBan: function (req, res) {
-    sails.log("permaBan() called (good)");
     /*  Form parameters:
           req.params.username: The user who is being banned
           req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max)
@@ -256,22 +254,38 @@ module.exports = {
       return;
     }
     req.params = req.allParams();
+    //Add user to the local FlairHQ banlist
+    User.findOne(req.allParams().userId).exec(function (err, user) {
+      if (!user) {
+        return res.json("Can't find user", 404);
+      }
 
+      user.banned = req.allParams().ban;
+      user.save(function (err) {
+        if (err) {
+          return res.json(err, 500);
+        }
+        res.json(user, 200);
+      });
+    });
     //Ban user from the two subs
-    for (sub in ["pokemontrades","SVExchange"])
+    //var subs = ["pokemontrades", "SVExchange"];
+    //DEBUG
+    /*var subs=["crownofnails"];
+    for (var i = 0; i < subs.length; i++)
     {
       Reddit.banUser(
       req.user.redToken,
       req.params.username,
       req.params.banMessage,
       req.params.banNote,
-      sub,
+      subs[i],
       function (err, css_class) {
           if (err) {
             sails.log(err);
             return res.json(err, 500);
           } else {
-            sails.log("Banned " + user.name + "from /r/" + sub);
+            console.log("Banned " + user.name + "from /r/" + sub);
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
                 return res.json(err, 500);
@@ -280,50 +294,37 @@ module.exports = {
             });
           }
       });
-    }
-    sails.log("should be banned by now");
+    }*/
     //Give the "BANNED USER" flair on pokemontrades
-    var flair;
     Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
-      if (flair1 || flair2) {
-        flair = {ptrades: flair1, svex: flair2};
-        user.save(function (err) {
-          if (err) {
-            console.log(err);
-          }
-        });
+      if (flair1) {
+        if (flair1.flair_css_class.indexOf(' ') === -1) {
+          flair1.flair_css_class += ' banned';
+        } else {
+          flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
+        }
       } else {
-        flair = {ptrades: {flair_text: '', flair_css_class: ''}};
+        flair1 = {flair_css_class: 'banned'};
       }
+      Reddit.setFlair(
+        req.user.redToken,
+        req.params.username,
+        flair1.flair_css_class,
+        flair1.flair_text,
+        'pokemontrades', function (err, css_class) {
+        if (err) {
+          return res.json(err, 500);
+        } else {
+            console.log("Changed " + user.name + "'s flair to " + css_class);
+            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+              if (err) {
+                return res.json(err, 500);
+              }
+                return res.json(app, 200);
+            });
+        }
+      });
     }, req.params.username);
-    var temp_css = flair.ptrades.flair_css_class;
-    if (!flair.ptrades.flair_css_class) {
-      flair.ptrades.flair_css_class = 'banned';
-    } else if (flair.ptrades.flair_css_class.indexOf(' ') === -1) {
-      flair.ptrades.flair_css_class += ' banned';
-    } else {
-      flair.ptrades.flair_css_class = flair.ptrades.flair_css_class.substring(0, flair.ptrades.flair_css_class.indexOf(' ')) + ' banned';
-    }
-    Reddit.setFlair(
-      req.user.redToken,
-      req.params.username,
-      flair.ptrades.flair_css_class,
-      flair.ptrades.flair_text,
-      'pokemontrades', function (err, css_class) {
-      if (err) {
-        return res.json(err, 500);
-      } else {
-          console.log("Changed " + user.name + "'s flair to " + css_class);
-          Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-          if (err) {
-            return res.json(err, 500);
-          }
-          return res.json(app, 200);
-        });
-      }
-    });
-
-    //
   },
   
   

@@ -240,6 +240,7 @@ module.exports = {
           req.params.username: The user who is being banned
           req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max)
           req.params.banMessage: The note that gets sent with the "you are banned" PM
+          req.params.banlistEntry: The ban reason to appear on the public banlist
         Permaban process:
           1. Ban user from /r/pokemontrades
           2. Ban user from /r/SVExchange
@@ -260,7 +261,7 @@ module.exports = {
         return res.json("Can't find user", 404);
       }
 
-      user.banned = req.allParams().ban;
+      user.banned = true;
       user.save(function (err) {
         if (err) {
           return res.json(err, 500);
@@ -269,23 +270,21 @@ module.exports = {
       });
     });
     //Ban user from the two subs
-    //var subs = ["pokemontrades", "SVExchange"];
-    //DEBUG
-    /*var subs=["crownofnails"];
-    for (var i = 0; i < subs.length; i++)
-    {
+    var banFromSubs = function (username, banNote, banMessage) {
+      //var subs = ["pokemontrades", "SVExchange"];
+      var subs = ["pokemontrades"];
       Reddit.banUser(
       req.user.redToken,
-      req.params.username,
-      req.params.banMessage,
-      req.params.banNote,
-      subs[i],
-      function (err, css_class) {
+      username,
+      banMessage,
+      banNote,
+      'pokemontrades',
+      function (err) {
           if (err) {
-            sails.log(err);
+            console.log(err);
             return res.json(err, 500);
           } else {
-            console.log("Banned " + user.name + "from /r/" + sub);
+            console.log("Banned " + username + " from /r/pokemontrades");
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
                 return res.json(err, 500);
@@ -294,37 +293,141 @@ module.exports = {
             });
           }
       });
-    }*/
-    //Give the "BANNED USER" flair on pokemontrades
-    Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
-      if (flair1) {
-        if (flair1.flair_css_class.indexOf(' ') === -1) {
-          flair1.flair_css_class += ' banned';
-        } else {
-          flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
-        }
-      } else {
-        flair1 = {flair_css_class: 'banned'};
-      }
-      Reddit.setFlair(
-        req.user.redToken,
-        req.params.username,
-        flair1.flair_css_class,
-        flair1.flair_text,
-        'pokemontrades', function (err, css_class) {
-        if (err) {
-          return res.json(err, 500);
-        } else {
-            console.log("Changed " + user.name + "'s flair to " + css_class);
+      Reddit.banUser(
+      req.user.redToken,
+      username,
+      banMessage,
+      banNote,
+      'SVExchange',
+      function (err) {
+          if (err) {
+            console.log(err);
+            return res.json(err, 500);
+          } else {
+            console.log("Banned " + username + " from /r/SVExchange");
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
                 return res.json(err, 500);
               }
-                return res.json(app, 200);
+              return res.json(app, 200);
             });
-        }
+          }
       });
-    }, req.params.username);
+      giveBannedUserFlair();
+    }
+
+    //Give the "BANNED USER" flair on pokemontrades
+    var giveBannedUserFlair = function () {
+      Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
+        if (flair1) {
+          if (flair1.flair_css_class.indexOf(' ') === -1) {
+            flair1.flair_css_class += ' banned';
+          } else {
+            flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
+          }
+        } else {
+          flair1 = {flair_css_class: 'banned'};
+          flair1.flair_text = '';
+        }
+        if (!flair2) {
+          flair2 = {flair_text: ''};
+        }
+        Reddit.setFlair(
+          req.user.redToken,
+          req.params.username,
+          flair1.flair_css_class,
+          'pokemontrades',
+          function (err) {
+            if (err) {
+              console.log(err);
+              return res.json(err, 500);
+            } else {
+                console.log("Changed " + req.params.username + "'s flair to " + flair1.flair_css_class);
+                updateAutomod(flair1.flair_text,flair2.flair_text);
+                Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+                  if (err) {
+                    return res.json(err, 500);
+                  }
+                    return res.json(app, 200);
+                });
+            }
+          }
+        );
+      }, req.params.username);
+    }
+
+    //Update the AutoModerator config by adding the user's info
+    var updateAutomod = function (pokemontrades_flair_text, svexchange_flair_text) {
+      var ptrades_fcs = pokemontrades_flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
+      var svex_fcs = svexchange_flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
+      var combined = ptrades_fcs.concat(svex_fcs);
+      var unique_fcs = combined.filter(function(elem, pos) {
+        return combined.indexOf(elem) == pos;
+      });
+      var igns = pokemontrades_flair_text.substring(pokemontrades_flair_text.indexOf("||") + 3);
+      var subreddits = ["pokemontrades", "SVExchange"];
+      for (var sub = 0; sub < subreddits.length; sub++)
+      {
+        Reddit.getWikiPage(
+          req.user.redToken,
+          subreddits[sub],
+          'config/automoderator',
+          function (err, current_config, current_sub) {
+            if (err) {
+              console.log(err);
+              return res.json(err, 500);
+            }
+            else {
+              var lines = current_config.data.content_md.split("\r\n");
+              var fclist_indices = [lines.indexOf("#FCList1") + 1, lines.indexOf("#FCList2") + 1];
+              if (fclist_indices.indexOf(0) != -1) {
+                console.log("Error: Could not find #FCList tags in /r/" + current_sub + " AutoModerator config");
+                return;
+              }
+              try {
+                for (var listno = 0; listno < fclist_indices.length; listno++) {
+                  var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf("]"));
+                  for (var i = 0; i < unique_fcs.length; i++) {
+                    before_bracket += ", \"" + unique_fcs[i] + "\"";
+                  }
+                  lines[fclist_indices[listno]] = before_bracket + "]";
+                }
+              }
+              catch (err) {
+                console.log("Error parsing /r/" + current_sub + " AutoModerator config");
+                return;
+              }
+              var content = lines.join("\r\n");
+              content = _.unescape(content);
+              Reddit.editWikiPage(
+                req.user.redToken,
+                current_sub,
+                'config/automoderator',
+                content,
+                'FlairHQ: Updated banned friend codes',
+                function (err) {
+                  if (err) {
+                    console.log(err);
+                    return res.json(err, 500);
+                  } else {
+                      console.log("Added " + req.params.username + "'s friend codes to /r/" + current_sub + " AutoModerator blacklist");
+                      Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+                        if (err) {
+                          return res.json(err, 500);
+                        }
+                          return res.json(app, 200);
+                      });
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    };
+
+    //banFromSubs(req.params.username,req.params.banNote,req.params.banMessage, "pokemontrades");
+    updateAutomod("0000-0000-0000, 3540-1693-1135 || Teddy (ΩR, X)","3540-1693-1135, 1234-5432-1234 || Teddy (ΩR, X)");
   },
   
   

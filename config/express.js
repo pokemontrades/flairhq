@@ -70,7 +70,7 @@ module.exports.http = {
       clientID: Reddit.data.clientID,
       clientSecret: Reddit.data.clientIDSecret,
       callbackURL: Reddit.data.redirectURL,
-      scope: "flair,modflair,modcontributors"
+      scope: "flair,modflair,modcontributors,wikiread,wikiedit"
     }, verifyHandler));
 
     app.use(passport.initialize());

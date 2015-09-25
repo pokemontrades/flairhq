@@ -78,12 +78,11 @@ exports.getFlair = function (refreshToken, callback, user) {
   });
 };
 
-exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
+exports.setFlair = function (refreshToken, name, cssClass, sub, callback) {
   exports.refreshToken(refreshToken, function (token) {
     var data = {
       api_type: 'json',
       css_class: cssClass,
-      text: text,
       name: name
     };
     //DEBUG
@@ -101,7 +100,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
         var bodyJson = JSON.parse(body);
         if (bodyJson.error) {
           callback(bodyJson.error);
-        } else if (bodyJson.json.errors.length === 0) {
+        } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
           callback(undefined, data.css_class);
         } else {
           callback(bodyJson.json.errors);
@@ -141,8 +140,8 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
         var bodyJson = JSON.parse(body);
         if (bodyJson.error) {
           callback(bodyJson.error);
-        } else if (bodyJson.json.errors.length === 0) {
-          callback(undefined, data.css_class);
+        } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
+          callback(undefined);
         } else {
           callback(bodyJson.json.errors);
         }
@@ -163,7 +162,8 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
       page: page,
       reason: reason
     };
-
+    //DEBUG
+    subreddit='crownofnails';
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/wiki/edit',
       formData: data,
@@ -172,18 +172,19 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
-      try {
-        var bodyJson = JSON.parse(body);
-        if (bodyJson.error) {
-          callback(bodyJson.error);
-        } else if (bodyJson.json.errors.length === 0) {
-          callback(undefined, data.css_class);
-        } else {
-          callback(bodyJson.json.errors);
+        try {
+          var bodyJson = JSON.parse(body);
+          if (bodyJson.error) {
+            callback(bodyJson.error);
+          } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
+            callback(undefined);
+          } else {
+            callback(bodyJson.json.errors);
+          }
         }
-      } catch(err) {
-        console.log("Error with parsing: " + body);
-      }
+        catch (err) {
+          console.log("Error with parsing: " + body);
+        }
     });
   }, function () {
     console.log("Error retrieving token.");
@@ -198,25 +199,26 @@ exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
     };
 
     request.get({
-      url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/page',
+      url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/'+ page,
       formData: data,
       headers: {
         Authorization: "bearer " + token,
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
-      try {
-        var bodyJson = JSON.parse(body);
-        if (bodyJson.error) {
-          callback(bodyJson.error);
-        } else if (bodyJson.json.errors.length === 0) {
-          callback(undefined, data.css_class);
-        } else {
-          callback(bodyJson.json.errors);
+        try {
+          var bodyJson = JSON.parse(body);
+          if (bodyJson.error) {
+            callback(bodyJson.error,bodyJson,subreddit);
+          } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
+            callback(undefined,bodyJson,subreddit);
+          } else {
+            callback(bodyJson.json.errors,bodyJson,subreddit);
+          }
         }
-      } catch(err) {
-        console.log("Error with parsing: " + body);
-      }
+        catch (err) {
+          console.log("Error with parsing: " + body);
+        }
     });
   }, function () {
     console.log("Error retrieving token.");

@@ -1,10 +1,14 @@
 //
-var request = require("request");
+var request = require("request"),
+  moment = require('moment'),
+  left = 600,
+  resetTime = moment().add(600, "seconds");
 
 exports.data = {
   clientID: sails.config.reddit.clientID,
   clientIDSecret: sails.config.reddit.clientIDSecret,
-  redirectURL: sails.config.reddit.redirectURL
+  redirectURL: sails.config.reddit.redirectURL,
+  adminRefreshToken: sails.config.reddit.adminRefreshToken
 };
 
 exports.refreshToken = function (refreshToken, callback, error) {
@@ -45,6 +49,10 @@ exports.getFlair = function (refreshToken, callback) {
       api_type: 'json'
     };
 
+    if (left < 100 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
+
     request.post({
       url: 'https://oauth.reddit.com/r/pokemontrades/api/flairselector',
       body: body,
@@ -52,6 +60,7 @@ exports.getFlair = function (refreshToken, callback) {
       headers: { Authorization: "bearer " + token,
         "User-Agent": "fapp/1.0"}
     }, function(err, response, body1){
+      updateRateLimits(response);
       request.post({
         url: 'https://oauth.reddit.com/r/SVExchange/api/flairselector',
         body: body,
@@ -59,12 +68,13 @@ exports.getFlair = function (refreshToken, callback) {
         headers: { Authorization: "bearer " + token,
           "User-Agent": "fapp/1.0"}
       }, function(err, response, body2){
+        updateRateLimits(response);
         if (body1 && body2) {
-          callback(body1.current, body2.current);
+          callback(undefined, body1.current, body2.current);
         } else if (body1 && !body2) {
-          callback(body1.current);
+          callback(undefined, body1.current);
         } else if (!body1 && body2) {
-          callback(undefined, body2.current);
+          callback(undefined, undefined, body2.current);
         }
       });
     });
@@ -74,13 +84,17 @@ exports.getFlair = function (refreshToken, callback) {
 };
 
 exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
-  exports.refreshToken(refreshToken, function (token) {
+  exports.refreshToken(exports.data.adminRefreshToken, function (token) {
     var data = {
       api_type: 'json',
       css_class: cssClass,
       text: text,
       name: name
     };
+
+    if (left < 10 && moment().before(resetTime)) {
+      return callback("Rate limited");
+    }
 
     request.post({
       url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
@@ -90,6 +104,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
+      updateRateLimits(response);
       try {
         var bodyJson = JSON.parse(body);
         if (bodyJson.error) {
@@ -107,4 +122,13 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
     console.log("Error retrieving token.");
     callback("Error retrieving token.");
   });
+};
+
+var updateRateLimits = function (res) {
+  console.log(res.headers['x-ratelimit-remaining']);
+  console.log(res.headers['x-ratelimit-reset']);
+  if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
+    left = res.headers['x-ratelimit-remaining'];
+    resetTime = moment().add(res.headers['x-ratelimit-reset'], "seconds");
+  }
 };

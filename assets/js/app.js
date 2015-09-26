@@ -21,7 +21,9 @@ define([
     'ngReallyClickModule',
     'numberPaddingModule',
     'yaru22.md',
-    'tooltipModule'
+    'tooltipModule',
+    'genericTooltipModule',
+    'ngMask'
   ]);
 
   // Define controllers, and their angular dependencies

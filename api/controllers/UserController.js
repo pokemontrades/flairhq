@@ -269,22 +269,21 @@ module.exports = {
         res.json(user, 200);
       });
     });
+
     //Ban user from the two subs
-    var banFromSubs = function (username, banNote, banMessage) {
-      //var subs = ["pokemontrades", "SVExchange"];
-      var subs = ["pokemontrades"];
+    var banFromSub = function (subreddit) {
       Reddit.banUser(
       req.user.redToken,
-      username,
-      banMessage,
-      banNote,
-      'pokemontrades',
+      req.params.username,
+      req.params.banMessage,
+      req.params.banNote,
+      subreddit,
       function (err) {
           if (err) {
             console.log(err);
             return res.json(err, 500);
           } else {
-            console.log("Banned " + username + " from /r/pokemontrades");
+            console.log("Banned " + req.params.username + " from /r/" + subreddit);
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
                 return res.json(err, 500);
@@ -293,124 +292,116 @@ module.exports = {
             });
           }
       });
-      Reddit.banUser(
-      req.user.redToken,
-      username,
-      banMessage,
-      banNote,
-      'SVExchange',
-      function (err) {
-          if (err) {
-            console.log(err);
-            return res.json(err, 500);
-          } else {
-            console.log("Banned " + username + " from /r/SVExchange");
-            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-              if (err) {
-                return res.json(err, 500);
-              }
-              return res.json(app, 200);
-            });
-          }
-      });
-      giveBannedUserFlair();
     }
 
     //Give the "BANNED USER" flair on pokemontrades
-    var giveBannedUserFlair = function () {
-      Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
-        if (flair1) {
-          if (flair1.flair_css_class.indexOf(' ') === -1) {
-            flair1.flair_css_class += ' banned';
+    var giveBannedUserFlair = function (css_class) {
+      if (!css_class) {
+        css_class = 'default banned';
+      } else if (css_class.indexOf(' ') === -1) {
+        css_class += ' banned';
+      } else {
+        css_class = css_class.substring(0, css_class.indexOf(' ')) + ' banned';
+      }
+      Reddit.setFlair(
+        req.user.redToken,
+        req.params.username,
+        css_class,
+        'pokemontrades',
+        function (err) {
+          if (err) {
+            console.log(err);
+            return res.json(err, 500);
           } else {
-            flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
+              console.log("Changed " + req.params.username + "'s flair to " + css_class);
+              Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+                if (err) {
+                  return res.json(err, 500);
+                }
+                  return res.json(app, 200);
+              });
           }
-        } else {
-          flair1 = {flair_css_class: 'banned'};
-          flair1.flair_text = '';
         }
-        if (!flair2) {
-          flair2 = {flair_text: ''};
-        }
-        Reddit.setFlair(
-          req.user.redToken,
-          req.params.username,
-          flair1.flair_css_class,
-          'pokemontrades',
-          function (err) {
-            if (err) {
-              console.log(err);
-              return res.json(err, 500);
-            } else {
-                console.log("Changed " + req.params.username + "'s flair to " + flair1.flair_css_class);
-                updateAutomod(flair1.flair_text,flair2.flair_text);
-                Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-                  if (err) {
-                    return res.json(err, 500);
-                  }
-                    return res.json(app, 200);
-                });
-            }
-          }
-        );
-      }, req.params.username);
+      );
     }
 
-    //Update the AutoModerator config by adding the user's info
-    var updateAutomod = function (pokemontrades_flair_text, svexchange_flair_text) {
-      var ptrades_fcs = pokemontrades_flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
-      var svex_fcs = svexchange_flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
-      var combined = ptrades_fcs.concat(svex_fcs);
-      var unique_fcs = combined.filter(function(elem, pos) {
-        return combined.indexOf(elem) == pos;
-      });
-      var igns = pokemontrades_flair_text.substring(pokemontrades_flair_text.indexOf("||") + 3);
-      var subreddits = ["pokemontrades", "SVExchange"];
-      for (var sub = 0; sub < subreddits.length; sub++)
-      {
-        Reddit.getWikiPage(
-          req.user.redToken,
-          subreddits[sub],
-          'config/automoderator',
-          function (err, current_config, current_sub) {
-            if (err) {
-              console.log(err);
-              return res.json(err, 500);
+    //Update the AutoModerator config with the user's friend codes
+    var updateAutomod = function (subreddit, friend_codes) {
+      Reddit.getWikiPage(
+        req.user.redToken,
+        subreddit,
+        'config/automoderator',
+        function (err, current_config) {
+          if (err) {
+            console.log(err);
+            return res.json(err, 500);
+          }
+          else {
+            var lines = current_config.data.content_md.split("\r\n");
+            var fclist_indices = [lines.indexOf("#FCList1") + 1, lines.indexOf("#FCList2") + 1];
+            if (fclist_indices.indexOf(0) != -1) {
+              console.log("Error: Could not find #FCList tags in /r/" + subreddit + " AutoModerator config");
+              return;
             }
-            else {
-              var lines = current_config.data.content_md.split("\r\n");
-              var fclist_indices = [lines.indexOf("#FCList1") + 1, lines.indexOf("#FCList2") + 1];
-              if (fclist_indices.indexOf(0) != -1) {
-                console.log("Error: Could not find #FCList tags in /r/" + current_sub + " AutoModerator config");
-                return;
+            try {
+              for (var listno = 0; listno < fclist_indices.length; listno++) {
+                var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf("]"));
+                for (var i = 0; i < friend_codes.length; i++) {
+                  before_bracket += ", \"" + friend_codes[i] + "\"";
+                }
+                lines[fclist_indices[listno]] = before_bracket + "]";
               }
-              try {
-                for (var listno = 0; listno < fclist_indices.length; listno++) {
-                  var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf("]"));
-                  for (var i = 0; i < unique_fcs.length; i++) {
-                    before_bracket += ", \"" + unique_fcs[i] + "\"";
-                  }
-                  lines[fclist_indices[listno]] = before_bracket + "]";
+            }
+            catch (err) {
+              console.log("Error parsing /r/" + subreddit + " AutoModerator config");
+              return;
+            }
+            var content = lines.join("\r\n");
+            Reddit.editWikiPage(
+              req.user.redToken,
+              subreddit,
+              'config/automoderator',
+              content,
+              'FlairHQ: Updated banned friend codes',
+              function (err, response) {
+                if (err) {
+                  console.log(err);
+                  return res.json(err, 500);
+                } else {
+                    console.log("Added /u/" + req.params.username + "'s friend codes to /r/" + subreddit + " AutoModerator blacklist");
+                    Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+                      if (err) {
+                        return res.json(err, 500);
+                      }
+                        return res.json(app, 200);
+                    });
                 }
               }
-              catch (err) {
-                console.log("Error parsing /r/" + current_sub + " AutoModerator config");
-                return;
-              }
-              var content = lines.join("\r\n");
-              content = _.unescape(content);
-              Reddit.editWikiPage(
+            );
+          }
+        }
+      );
+    };
+
+    //Remove the user's TSV threads on /r/SVExchange.
+    var removeTSVThreads = function() {
+      Reddit.searchTSVThreads(
+        req.user.redToken,
+        req.params.username,
+        function (err, response) {
+          if (err) {
+            return res.json(err, 500);
+          } else {
+            response.data.children.forEach(function (entry) {
+              Reddit.removePost(
                 req.user.redToken,
-                current_sub,
-                'config/automoderator',
-                content,
-                'FlairHQ: Updated banned friend codes',
+                entry.data.id,
                 function (err) {
                   if (err) {
                     console.log(err);
                     return res.json(err, 500);
                   } else {
-                      console.log("Added " + req.params.username + "'s friend codes to /r/" + current_sub + " AutoModerator blacklist");
+                      console.log('Removed the TSV thread at redd.it/' + entry.data.id + ' (OP banned)');
                       Application.destroy({id: req.allParams().id}).exec(function (err, app) {
                         if (err) {
                           return res.json(err, 500);
@@ -420,16 +411,94 @@ module.exports = {
                   }
                 }
               );
-            }
+            });
+            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+              if (err) {
+                return res.json(err, 500);
+              }
+                return res.json(app, 200);
+            });
           }
-        );
-      }
+        }
+      );
     };
 
-    //banFromSubs(req.params.username,req.params.banNote,req.params.banMessage, "pokemontrades");
-    updateAutomod("0000-0000-0000, 3540-1693-1135 || Teddy (ΩR, X)","3540-1693-1135, 1234-5432-1234 || Teddy (ΩR, X)");
+    //Update the public banlist withe the user's information
+    var updateBanlist = function (friend_codes, igns) {
+      Reddit.getWikiPage(
+        req.user.redToken,
+        'pokemontrades',
+        'banlist',
+        function (err, current_list) {
+          if (err) {
+            console.log(err);
+            return res.json(err, 500);
+          }
+          else {
+            var lines = current_list.data.content_md.split("\r\n");
+            var start_index = lines.indexOf("[//]:# (BEGIN BANLIST)") + 3;
+            if (start_index == 2) {
+              console.log("Error: Could not find start marker in public banlist");
+              return;
+            }
+            var line_to_add = '/u/' + req.params.username + ' | ' + friend_codes.join(", ") + ' | ' + req.params.banlistEntry + ' | ' + igns;
+            var content = lines.slice(0,start_index).join("\r\n") + "\r\n" + line_to_add + "\r\n" + lines.slice(start_index).join("\r\n");
+            Reddit.editWikiPage(
+              req.user.redToken,
+              'pokemontrades',
+              'banlist',
+              content,
+              '',
+              function (err, response) {
+                if (err) {
+                  console.log(err);
+                  return res.json(err, 500);
+                } else {
+                    console.log("Added /u/" + req.params.username + " to public banlist");
+                    Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+                      if (err) {
+                        return res.json(err, 500);
+                      }
+                        return res.json(app, 200);
+                    });
+                }
+              }
+            );
+          }
+        }
+      );
+    };
+
+    Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
+      if (flair1) {
+        if (flair1.flair_css_class.indexOf(' ') === -1) {
+          flair1.flair_css_class += ' banned';
+        } else {
+          flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
+        }
+      } else {
+        flair1 = {flair_css_class: 'banned'};
+        flair1.flair_text = '';
+      }
+      if (!flair2) {
+        flair2 = {flair_text: ''};
+      }
+      var ptrades_fcs = flair1.flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
+      var svex_fcs = flair2.flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
+      var combined = ptrades_fcs.concat(svex_fcs);
+      var unique_fcs = combined.filter(function(elem, pos) {
+        return combined.indexOf(elem) == pos;
+      });
+      var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
+      //banFromSub('pokemontrades');
+      //banFromSub('SVExchange');
+      //giveBannedUserFlair(flair1.flair_css_class);
+      //updateAutomod('pokemontrades', unique_fcs);
+      //updateAutomod('SVExchange', unique_fcs)
+      //removeTSVThreads();
+      updateBanlist(unique_fcs, igns);
+    }, req.params.username);
   },
-  
   
   bannedUsers: function (req, res) {
     if (!req.user.isMod) {

@@ -155,6 +155,40 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
   });
 };
 
+exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    var data = {
+      page: page
+    };
+
+    request.get({
+      url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page + '?raw_json=1',
+      formData: data,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+        try {
+          var bodyJson = JSON.parse(body);
+        }
+        catch (err) {
+          console.log("Error with parsing: " + body);
+        }
+        if (bodyJson.error) {
+          callback(bodyJson.error,bodyJson,subreddit);
+        } else if (!bodyJson.json || !bodyJson.json.errors || bodyJson.json.errors.length === 0) {
+          callback(undefined,bodyJson,subreddit);
+        } else {
+          callback(bodyJson.json.errors,bodyJson,subreddit);
+        }
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
+};
+
 exports.editWikiPage = function (refreshToken, subreddit, page, content, reason, callback) {
   exports.refreshToken(refreshToken, function (token) {
     var data = {
@@ -174,16 +208,16 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
     }, function(err, response, body){
         try {
           var bodyJson = JSON.parse(body);
-          if (bodyJson.error) {
-            callback(bodyJson.error);
-          } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-            callback(undefined);
-          } else {
-            callback(bodyJson.json.errors);
-          }
         }
         catch (err) {
           console.log("Error with parsing: " + body);
+        }
+        if (bodyJson.reason) {
+          callback(bodyJson.reason, bodyJson);
+        } else if (!bodyJson.json || !bodyJson.json.errors || bodyJson.json.errors.length === 0) {
+          callback(undefined, bodyJson);
+        } else {
+          callback(bodyJson.json.errors, bodyJson);
         }
     });
   }, function () {
@@ -192,14 +226,44 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
   });
 };
 
-exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
+exports.searchTSVThreads = function (refreshToken, username, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    request.get({
+      //DEBUG
+      url: 'https://oauth.reddit.com/r/crownofnails/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
+      //url: 'https://oauth.reddit.com/r/SVExchange/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+        try {
+          var bodyJson = JSON.parse(body);
+        } catch (err) {
+          console.log("Error with parsing: " + body);
+        }
+          if (bodyJson.error) {
+            callback(bodyJson.error);
+          } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
+            callback(undefined,bodyJson);
+          } else {
+            callback(bodyJson.json.errors,bodyJson);
+          }
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
+};
+
+exports.removePost = function (refreshToken, id, callback) {
   exports.refreshToken(refreshToken, function (token) {
     var data = {
-      page: page
+      id: 't3_' + id
     };
 
-    request.get({
-      url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/'+ page,
+    request.post({
+      url: 'https://oauth.reddit.com/api/remove',
       formData: data,
       headers: {
         Authorization: "bearer " + token,
@@ -209,11 +273,11 @@ exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
         try {
           var bodyJson = JSON.parse(body);
           if (bodyJson.error) {
-            callback(bodyJson.error,bodyJson,subreddit);
+            callback(bodyJson.error,bodyJson);
           } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-            callback(undefined,bodyJson,subreddit);
+            callback(undefined,bodyJson);
           } else {
-            callback(bodyJson.json.errors,bodyJson,subreddit);
+            callback(bodyJson.json.errors,bodyJson);
           }
         }
         catch (err) {
@@ -224,4 +288,4 @@ exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
     console.log("Error retrieving token.");
     callback("Error retrieving token.");
   });
-};
+}

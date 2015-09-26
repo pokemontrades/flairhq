@@ -46,7 +46,7 @@ define([
 
         $scope.permaBanUser = function (user) {
             var url = "/user/permaBan";
-            io.socket.post(url, {userId: user.id, username: "actually_an_aardvark", banNote: "banned alt account as test", banMessage: "you should be able to see this"}, function (data, res) {
+            io.socket.post(url, {userId: user.id, username: "actually_an_aardvark", banNote: "banned alt account as test", banMessage: "you should be able to see this", banlistEntry: "Spamming the mod log"}, function (data, res) {
                 if (res.statusCode === 200) {
                     $scope.getBannedUsers();
                     $scope.$apply();

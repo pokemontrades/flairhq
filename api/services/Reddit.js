@@ -70,11 +70,11 @@ exports.getFlair = function (refreshToken, callback) {
       }, function(err, response, body2){
         updateRateLimits(response);
         if (body1 && body2) {
-          callback(body1.current, body2.current);
+          callback(undefined, body1.current, body2.current);
         } else if (body1 && !body2) {
-          callback(body1.current);
+          callback(undefined, body1.current);
         } else if (!body1 && body2) {
-          callback(undefined, body2.current);
+          callback(undefined, undefined, body2.current);
         }
       });
     });

@@ -103,7 +103,7 @@ module.exports = {
           flair,
           app.sub, function (err, css_class) {
           if (err) {
-            return res.json(err, 500);
+            return res.json({error: err}, 400);
           } else {
             Event.create({
               type: "flairTextChange",
@@ -162,7 +162,7 @@ module.exports = {
         req.allParams().ptrades,
         "PokemonTrades", function (err, css_class) {
           if (err) {
-            return res.json(err, 500);
+            return res.json({error: err}, 400);
           } else {
             Reddit.setFlair(
               Reddit.data.adminRefreshToken,
@@ -171,7 +171,7 @@ module.exports = {
               req.allParams().svex,
               "SVExchange", function (err, css_class) {
                 if (err) {
-                  return res.json(err, 500);
+                  return res.json({error: err}, 400);
                 } else {
                   var ipAddress = req.headers['x-forwarded-for'] || req.ip;
                   Event.create([{

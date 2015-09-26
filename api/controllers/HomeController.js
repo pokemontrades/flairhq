@@ -12,7 +12,7 @@ module.exports = {
     User.findOne({id: req.user.id}, function(err, user) {
       if (user) {
         res.view();
-        Reddit.getFlair(user.redToken, function (flair1, flair2) {
+        Reddit.getFlair(user.redToken, function (err, flair1, flair2) {
           if (flair1 || flair2) {
             user.flair = {ptrades: flair1, svex: flair2};
             user.save(function (err) {

@@ -294,7 +294,7 @@ define(['lodash', 'regex'], function (_, regex) {
           $('#tabList li:eq(3) a').tab('show');
         } else if (window.location.hash === "#/privacypolicy") {
           $('#privacypolicy').modal('show');
-        } else if (window.location.hash.indexOf("#/flairtext") > -1) {
+        } else if (window.location.hash === "#/flairtext") {
           $('#flairText').modal('show');
         }
       }
@@ -374,7 +374,7 @@ define(['lodash', 'regex'], function (_, regex) {
             $('#tabList li:eq(3) a').tab('show');
           } else if (window.location.hash === "#/privacypolicy") {
             $('#privacypolicy').modal('show');
-          } else if (window.location.hash.indexOf("#/flairtext") > -1) {
+          } else if (window.location.hash === "#/flairtext") {
             $('#flairText').modal('show');
           }
         });
@@ -641,7 +641,7 @@ define(['lodash', 'regex'], function (_, regex) {
             text += ", ";
           }
           text += ign;
-          ignsGames = _.without(ignsGames, "");
+          ignsGames = _.without(ignsGames, "", undefined);
           text += ignsGames.length > 0 ?  " (" : "";
           for (var k = 0; k < ignsGames.length; k++) {
             text += ignsGames[k];

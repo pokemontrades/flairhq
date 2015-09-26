@@ -294,7 +294,7 @@ define(['lodash', 'regex'], function (_, regex) {
           $('#tabList li:eq(3) a').tab('show');
         } else if (window.location.hash === "#/privacypolicy") {
           $('#privacypolicy').modal('show');
-        } else if (window.location.hash === "#/flairtext") {
+        } else if (window.location.hash.indexOf("#/flairtext") > -1) {
           $('#flairText').modal('show');
         }
       }
@@ -374,7 +374,7 @@ define(['lodash', 'regex'], function (_, regex) {
             $('#tabList li:eq(3) a').tab('show');
           } else if (window.location.hash === "#/privacypolicy") {
             $('#privacypolicy').modal('show');
-          } else if (window.location.hash === "#/flairtext") {
+          } else if (window.location.hash.indexOf("#/flairtext") > -1) {
             $('#flairText').modal('show');
           }
         });

@@ -108,7 +108,7 @@ module.exports = {
             Event.create({
               type: "flairTextChange",
               user: req.user.id,
-              userName: req.user.uid,
+              userName: req.user.name,
               content: "Changed " + user.name + "'s flair to " + css_class
             }).exec(function () {
 
@@ -178,12 +178,12 @@ module.exports = {
                   Event.create([{
                     type: "flairTextChange",
                     user: req.user.id,
-                    userName: req.user.uid,
+                    userName: req.user.name,
                     content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
                   }, {
                     type: "flairTextChange",
                     user: req.user.id,
-                    userName: req.user.uid,
+                    userName: req.user.name,
                     content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
                   }]).exec(function () {
 

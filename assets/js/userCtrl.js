@@ -541,8 +541,7 @@ define(['lodash', 'regex'], function (_, regex) {
       $scope.user.flairGames.push({tsv: "", ign: ""});
     };
 
-    $scope.delflairGame = function (game) {
-      var index = $scope.user.games.indexOf(game);
+    $scope.delflairGame = function (index) {
       $scope.user.flairGames.splice(index, 1);
     };
 

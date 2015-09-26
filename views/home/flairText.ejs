@@ -49,7 +49,7 @@
               </div>
             </div>
 
-            <div class="form-group col-sm-12" ng-repeat="game in user.flairGames | orderBy:'createdAt'">
+            <div class="form-group col-sm-12" ng-repeat="game in user.flairGames | orderBy:'createdAt' track by $index">
               <label class="col-md-3 control-label">IGN:*</label>
 
               <div class="col-md-2" ng-class="{'has-error': !game.ign}">
@@ -68,11 +68,11 @@
 
               <div class="col-md-2">
                 <div class="input-group">
-                  <select class="form-control" ng-model="game.game" ng-options="game for game in possibleGames">
+                  <select class="form-control" ng-model="game.game" ng-options="gameName for gameName in possibleGames">
                     <option value=""></option>
                   </select>
                   <span class="input-group-btn">
-                    <button class="btn btn-default" ng-click="delflairGame(game)">
+                    <button class="btn btn-default" ng-click="delflairGame($index)">
                       <span class="glyphicon glyphicon-trash"></span>
                     </button>
                   </span>

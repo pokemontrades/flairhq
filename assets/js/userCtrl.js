@@ -730,7 +730,7 @@ define(['lodash', 'regex'], function (_, regex) {
       return {correct: true};
     };
 
-    $scope.possibleGames = ["", "X", "Y", "ΩR", "αS"];
+    $scope.possibleGames = ["X", "Y", "ΩR", "αS"];
 
     $scope.setFlairText = function () {
       $("#setTextError").html("").hide();

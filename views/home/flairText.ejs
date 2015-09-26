@@ -68,7 +68,9 @@
 
               <div class="col-md-2">
                 <div class="input-group">
-                  <select class="form-control" ng-model="game.game" ng-options="game for game in possibleGames"></select>
+                  <select class="form-control" ng-model="game.game" ng-options="game for game in possibleGames">
+                    <option value=""></option>
+                  </select>
                   <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="delflairGame(game)">
                       <span class="glyphicon glyphicon-trash"></span>

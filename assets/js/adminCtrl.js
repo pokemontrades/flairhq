@@ -4,6 +4,13 @@ define([
 ], function () {
 
     var adminCtrl = function ($scope) {
+
+        $scope.banInfo = {
+            username: "",
+            banNote: "",
+            banMessage: "",
+            banlistEntry: ""
+        };
         $scope.users = [];
         $scope.flairApps = [];
         $scope.flairAppError = "";
@@ -12,6 +19,14 @@ define([
         };
         $scope.adminspin = {
             appFlair: {}
+        };
+
+        $scope.permaBanError = "";
+        $scope.indexOk = {};
+        $scope.indexSpin = {};
+
+        $scope.focus = {
+            gavegot: false
         };
 
         $scope.getFlairApps = function () {
@@ -45,13 +60,56 @@ define([
         };
 
         $scope.permaBanUser = function (user) {
+            $scope.permaBanError = "";
+            $scope.indexOk.permaBan = false;
+            $scope.indexSpin.permaBan = true;
             var url = "/user/permaBan";
-            io.socket.post(url, {userId: user.id, username: "actually_an_aardvark", banNote: "banned alt account as test", banMessage: "you should be able to see this", banlistEntry: "Spamming the mod log"}, function (data, res) {
+            if (!$scope.banInfo.username) {
+                $scope.permaBanError = "Please enter a username.";
+                return $scope.indexSpin.permaBan = false;
+            }
+
+            if ($scope.banInfo.banNote.length > 300) {
+                $scope.permaBanError = "The ban note cannot be longer than 300 characters.";
+                return $scope.indexSpin.permaBan = false;
+            }
+
+            if (!$scope.banInfo.banlistEntry) {
+                $scope.permaBanError = "Please enter a ban reason for the public banlist.";
+                return $scope.indexSpin.permaBan = false;
+            }
+
+            if ($scope.banInfo.username.substring(0,3) === '/u/') {
+                $scope.banInfo.username = $scope.banInfo.username.substring(3);
+            }
+
+            var post = {
+                "username": $scope.banInfo.username,
+                "banNote": $scope.banInfo.banNote,
+                "banMessage": $scope.banInfo.banMessage,
+                "banlistEntry": $scope.banInfo.banlistEntry
+            };
+
+            io.socket.post(url, post, function (data, res) {
+                $scope.indexSpin.permaBan = false;
                 if (res.statusCode === 200) {
+                    console.log(res.statusCode);
+                    $scope.banInfo.username = "";
+                    $scope.banInfo.banNote = "";
+                    $scope.banInfo.banMessage = "";
+                    $scope.banInfo.banlistEntry = "";
+                    $scope.indexOk.permaBan = true;
+                    window.setTimeout(function () {
+                      $scope.indexOk.addRef = false;
+                      $scope.$apply();
+                    }, 1500);
+                    $scope.$apply();
                     $scope.getBannedUsers();
                     $scope.$apply();
                 } else {
-                    console.log("Error");
+                    $scope.indexOk = false;
+                    $scope.permaBanError = "Sorry, something went wrong. You might have to do some stuff manually.";
+                    $scope.$apply();
                 }
             });
         };

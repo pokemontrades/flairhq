@@ -388,30 +388,6 @@ define([
             });
         };
 
-        $scope.permaBanUser = function () {
-            var url = "/user/permaBan";
-            io.socket.post(url, {userId: $scope.refUser.id, username: "actually_an_aardvark", banNote: "banned alt account as test", banMessage: "you should be able to see this", banlistEntry: "Spamming the mod log"}, function (data, res) {
-                if (res.statusCode === 200) {
-                    //$scope.getBannedUsers();
-                    $scope.$apply();
-                } else {
-                    console.log("Error");
-                }
-            });
-        };
-
-        $scope.deleteRef = function (id, index, type) {
-            var url = "/reference/delete";
-            io.socket.post(url, {refId: id, type: type}, function (data, res) {
-                if (res.statusCode === 200) {
-                    $scope.refUser.references = $filter("filter")($scope.refUser.references, {id: "!" + id});
-                    $scope.$apply();
-                } else {
-                    console.log(res.statusCode + ": " + data);
-                }
-            });
-        };
-
     };
 
     return refCtrl;

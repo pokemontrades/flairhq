@@ -250,25 +250,20 @@ module.exports = {
           6. Remove all of the user's TSV threads on /r/SVExchange
           7. Add user's info to banlist wiki on /r/pokemontrades
     */
+    var number_of_tasks = 7;
+    var completed_tasks = 0;
     if (!req.user.isMod) {
       res.json("Not a mod", 403);
       return;
     }
     req.params = req.allParams();
-    //Add user to the local FlairHQ banlist
-    User.findOne(req.allParams().userId).exec(function (err, user) {
-      if (!user) {
-        return res.json("Can't find user", 404);
-      }
-
-      user.banned = true;
-      user.save(function (err) {
-        if (err) {
-          return res.json(err, 500);
-        }
-        res.json(user, 200);
-      });
-    });
+    if (!req.params.username) {
+      res.json("No username", 400);
+      return;
+    }
+    if (req.params.banNote.length > 300) {
+      res.json("Ban note too long", 400);
+    }
 
     //Ban user from the two subs
     var banFromSub = function (subreddit) {
@@ -288,7 +283,10 @@ module.exports = {
               if (err) {
                 return res.json(err, 500);
               }
-              return res.json(app, 200);
+              completed_tasks++;
+              if (completed_tasks >= number_of_tasks) {
+                return res.json('ok', 200);
+              }
             });
           }
       });
@@ -318,7 +316,10 @@ module.exports = {
                 if (err) {
                   return res.json(err, 500);
                 }
-                  return res.json(app, 200);
+                  completed_tasks++;
+                  if (completed_tasks >= number_of_tasks) {
+                    return res.json('ok', 200);
+                  }
               });
           }
         }
@@ -373,7 +374,10 @@ module.exports = {
                       if (err) {
                         return res.json(err, 500);
                       }
-                        return res.json(app, 200);
+                        completed_tasks++;
+                        if (completed_tasks >= number_of_tasks) {
+                          return res.json('ok', 200);
+                        }
                     });
                 }
               }
@@ -406,7 +410,6 @@ module.exports = {
                         if (err) {
                           return res.json(err, 500);
                         }
-                          return res.json(app, 200);
                       });
                   }
                 }
@@ -416,7 +419,10 @@ module.exports = {
               if (err) {
                 return res.json(err, 500);
               }
-                return res.json(app, 200);
+              completed_tasks++;
+              if (completed_tasks >= number_of_tasks) {
+                return res.json('ok', 200);
+              }
             });
           }
         }
@@ -459,7 +465,10 @@ module.exports = {
                       if (err) {
                         return res.json(err, 500);
                       }
-                        return res.json(app, 200);
+                        completed_tasks++;
+                        if (completed_tasks >= number_of_tasks) {
+                          return res.json('ok', 200);
+                        }
                     });
                 }
               }
@@ -490,12 +499,12 @@ module.exports = {
         return combined.indexOf(elem) == pos;
       });
       var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-      //banFromSub('pokemontrades');
-      //banFromSub('SVExchange');
-      //giveBannedUserFlair(flair1.flair_css_class);
-      //updateAutomod('pokemontrades', unique_fcs);
-      //updateAutomod('SVExchange', unique_fcs)
-      //removeTSVThreads();
+      banFromSub('pokemontrades');
+      banFromSub('SVExchange');
+      giveBannedUserFlair(flair1.flair_css_class);
+      updateAutomod('pokemontrades', unique_fcs);
+      updateAutomod('SVExchange', unique_fcs)
+      removeTSVThreads();
       updateBanlist(unique_fcs, igns);
     }, req.params.username);
   },

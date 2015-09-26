@@ -165,11 +165,14 @@ module.exports.routes = {
     controller : 'user',
     action     : 'ban'
   },
+  '/mod/banuser' : {
+    controller  : 'home',
+    action      : 'banuser'
+  },
   '/user/permaBan' : {
     controller  : 'user',
     action      : 'permaBan'
   },
-
   '/user/banned' : {
     controller : 'user',
     action     : 'bannedUsers'

@@ -100,7 +100,6 @@ module.exports = {
           req.user.redToken,
           user.name,
           css_class,
-          flair,
           app.sub, function (err, css_class) {
           if (err) {
             return res.json({error: err}, 400);

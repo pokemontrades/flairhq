@@ -50,6 +50,10 @@ module.exports = {
     res.view();
   },
 
+  banuser: function (req, res) {
+    res.view()
+  },
+
   applist: function (req, res) {
     res.view();
   },

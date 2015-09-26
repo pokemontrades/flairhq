@@ -1,0 +1,44 @@
+<div class="container" ng-controller="adminCtrl">
+  <div class="main container clearfix">
+
+    <div class="content">
+      <form class="form-horizontal col-md-7" role="form">
+        <div id="addBan">
+          <ng-tooltip data-label="Username"
+              title="The username of the person getting banned">
+            <input type="text" class="form-control" ng-model="banInfo.username" />
+          </ng-tooltip>
+
+          <ng-tooltip data-label="Ban Note"
+                      title="The reason for the ban. The banned user will <strong>not</strong> see this. 300 characters max.">
+            <input type="text" class="form-control" ng-model="banInfo.banNote">
+          </ng-tooltip>
+
+          <ng-tooltip data-label="Ban Message"
+                      title="The ban message that will get PM'd to the user">
+              <textarea class="form-control" ng-model="banInfo.banMessage"></textarea>
+          </ng-tooltip>
+
+          <ng-tooltip data-label="Banlist Entry"
+                      title="The ban reason that will get listed on the public banlist page, e.g. 'Scamming'">
+            <input type="text" class="form-control" ng-model="banInfo.banlistEntry">
+          </ng-tooltip>
+          <div class="form-group">
+            <div class="col-md-offset-4 col-md-2">
+              <button type="button" class="btn btn-default has-spinner" ng-click="permaBanUser()"
+                      ng-class="[indexOk.permaBan ? 'glyphicon glyphicon-ok' : '',
+                        indexSpin.permaBan ? 'active' : '']"
+                      ng-disabled="indexSpin.permaBan">
+                <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+                {{indexOk.permaBan ? "" : "Ban"}}
+              </button>
+            </div>
+            <div class="col-md-6">
+              <div class="alert alert-danger" role="alert" ng-hide="!permaBanError">{{permaBanError}}</div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

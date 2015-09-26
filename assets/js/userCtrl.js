@@ -733,6 +733,7 @@ define(['lodash', 'regex'], function (_, regex) {
     $scope.possibleGames = ["", "X", "Y", "ΩR", "αS"];
 
     $scope.setFlairText = function () {
+      $("#setTextError").html("").hide();
       $scope.userok.setFlairText = false;
       $scope.userspin.setFlairText = true;
       var ptrades = $scope.ptradesCreatedFlair(),
@@ -745,8 +746,8 @@ define(['lodash', 'regex'], function (_, regex) {
       }, function (data, res) {
         if (res.statusCode === 200) {
           $scope.userok.setFlairText = true;
-        } else if (res.statusCode === 400 && res.data === "Changed string") {
-          $("#setTextError").html("Don't modify the text.").show();
+        }  else if (res.statusCode === 400) {
+          $("#setTextError").html(data.error).show();
           console.log(data);
         } else if (res.statusCode === 500) {
           $("#setTextError").html("There was some issue setting flair.").show();

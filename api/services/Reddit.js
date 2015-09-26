@@ -85,8 +85,6 @@ exports.setFlair = function (refreshToken, name, cssClass, sub, callback) {
       css_class: cssClass,
       name: name
     };
-    //DEBUG
-    sub = 'crownofnails';
     request.post({
       url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
       formData: data,
@@ -120,14 +118,10 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
     var data = {
       api_type: 'json',
       ban_message: ban_message,
-      //DEBUG
-      name: 'actually_an_aardvark',
-      //name: username,
+      name: username,
       note: note,
       type: 'banned'
     };
-    //DEBUG
-    subreddit = 'crownofnails';
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/friend',
       formData: data,
@@ -196,8 +190,6 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
       page: page,
       reason: reason
     };
-    //DEBUG
-    subreddit='crownofnails';
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/wiki/edit',
       formData: data,
@@ -229,9 +221,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
 exports.searchTSVThreads = function (refreshToken, username, callback) {
   exports.refreshToken(refreshToken, function (token) {
     request.get({
-      //DEBUG
-      url: 'https://oauth.reddit.com/r/crownofnails/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
-      //url: 'https://oauth.reddit.com/r/SVExchange/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
+      url: 'https://oauth.reddit.com/r/SVExchange/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
       headers: {
         Authorization: "bearer " + token,
         "User-Agent": "fapp/1.0"

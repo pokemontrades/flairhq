@@ -640,7 +640,7 @@ define(['lodash', 'regex'], function (_, regex) {
             text += ", ";
           }
           text += ign;
-          ignsGames = _.without(ignsGames, "", undefined);
+          ignsGames = _.without(ignsGames, "", undefined, null);
           text += ignsGames.length > 0 ?  " (" : "";
           for (var k = 0; k < ignsGames.length; k++) {
             text += ignsGames[k];

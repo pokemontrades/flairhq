@@ -28,6 +28,6 @@ define(["angular"], function (ng) {
           }, 100);
         });
       }
-    }
-  })
+    };
+  });
 });

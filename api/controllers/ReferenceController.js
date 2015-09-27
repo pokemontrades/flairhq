@@ -43,7 +43,7 @@ module.exports = {
       type: ["event", "casual", "shiny", "redemption", "bank"]
     };
     if (Object.keys(dateQuery).length > 0) {
-      query["createdAt"] = dateQuery;
+      query.createdAt = dateQuery;
     }
 
     Reference.find(query)
@@ -238,7 +238,7 @@ module.exports = {
             return res.json(ref, 200);
           });
         }
-      })
+      });
     });
   },
 

@@ -30,5 +30,5 @@ define(["angular"], function (ng) {
 
     ptradesFlair : single(regex.ptradesFlair),
     svexFlair : single(regex.svexFlair)
-  }
+  };
 });

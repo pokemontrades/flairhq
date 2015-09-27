@@ -18,10 +18,10 @@ module.exports = {
 
     Application.find(appData).exec(function (err, app) {
       if (err) {
-        return res.json({error: err}, 500)
+        return res.json({error: err}, 500);
       }
       if (app.length > 0) {
-        return res.json({error: "Application already exists"}, 400)
+        return res.json({error: "Application already exists"}, 400);
       }
       Application.create(appData).exec(function (err, apps) {
         if (err) {

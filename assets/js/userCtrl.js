@@ -329,8 +329,8 @@ define(['lodash', 'regex'], function (_, regex) {
                 var tsvs = sv.match(regex.tsv) || [];
 
 
-                for (var j = 0; j < fcs.length; j++) {
-                  $scope.user.flairFriendCodes.push(fcs[j]);
+                for (var k = 0; k < fcs.length; k++) {
+                  $scope.user.flairFriendCodes.push(fcs[k]);
                 }
 
                 $scope.user.flairGames = [];
@@ -691,7 +691,7 @@ define(['lodash', 'regex'], function (_, regex) {
         tsvText += tsv;
       }
       if (!tsvText) {
-        tsvText = "XXXX"
+        tsvText = "XXXX";
       }
       text += tsvText;
 
@@ -716,8 +716,8 @@ define(['lodash', 'regex'], function (_, regex) {
         }
       }
 
-      for (var i = 0; i < $scope.user.flairGames.length; i++) {
-        var game = $scope.user.flairGames[i];
+      for (var j = 0; j < $scope.user.flairGames.length; j++) {
+        var game = $scope.user.flairGames[j];
         if (!game.ign) {
           return {correct: false, error: "Please fill in all friend codes and IGNs."};
         }
@@ -864,7 +864,7 @@ define(['lodash', 'regex'], function (_, regex) {
         url += "&categories=" + $scope.searchInfo.category;
       }
       if ($scope.searchInfo.user) {
-        url += "&user=" + $scope.searchInfo.user
+        url += "&user=" + $scope.searchInfo.user;
       }
       url += "&skip=" + skip;
 

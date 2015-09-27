@@ -12,17 +12,15 @@ exports.data = {
 };
 
 exports.refreshToken = function (refreshToken, callback, error) {
-  var data = "client_secret=" + exports.data.clientIDSecret
-    + "&client_id=" + exports.data.clientID
-    + "&duration=permanent"
-    + "&state=fapprefresh"
-    + "&scope=identity"
-    + "&grant_type=refresh_token"
-    + "&refresh_token=" + refreshToken
-    + "&redirect_uri=" + exports.data.redirectURL;
-  var auth = "Basic "
-    + new Buffer(exports.data.clientID + ":" + exports.data.clientIDSecret)
-      .toString("base64");
+  var data = "client_secret=" + exports.data.clientIDSecret +
+    "&client_id=" + exports.data.clientID +
+    "&duration=permanent" +
+    "&state=fapprefresh" +
+    "&scope=identity" +
+    "&grant_type=refresh_token" +
+    "&refresh_token=" + refreshToken +
+    "&redirect_uri=" + exports.data.redirectURL;
+  var auth = "Basic " + new Buffer(exports.data.clientID + ":" + exports.data.clientIDSecret).toString("base64");
 
   request.post({
     url: 'https://ssl.reddit.com/api/v1/access_token',
@@ -114,7 +112,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
         } else {
           callback(bodyJson.json.errors);
         }
-      } catch(err) {
+      } catch(e) {
         console.log("Error with parsing: " + body);
       }
     });

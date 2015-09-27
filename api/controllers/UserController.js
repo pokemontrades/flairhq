@@ -105,7 +105,7 @@ module.exports = {
 
         Application.find(appData).exec(function (err, app) {
           if (err) {
-            return res.json({error: err}, 500)
+            return res.json({error: err}, 500);
           }
           req.user.apps = app;
           res.json(req.user, 200);

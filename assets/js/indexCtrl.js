@@ -156,29 +156,34 @@ define([
 
             if (!$scope.addInfo.type) {
                 $scope.addRefError = "Please choose a type.";
-                return $scope.indexSpin.addRef = false;
+              $scope.indexSpin.addRef = false;
+              return;
             }
             if ($scope.isNotNormalTrade($scope.addInfo.type)) {
                 if (!$scope.addInfo.descrip) {
                     $scope.addRefError = "Make sure you enter all the information";
-                    return $scope.indexSpin.addRef = false;
+                    $scope.indexSpin.addRef = false;
+                    return;
                 }
             } else {
                 if (!$scope.addInfo.got || !$scope.addInfo.gave) {
                     $scope.addRefError = "Make sure you enter all the information";
-                    return $scope.indexSpin.addRef = false;
+                    $scope.indexSpin.addRef = false;
+                    return;
                 }
             }
             if (!$scope.addInfo.refUrl ||
                 (($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc" && $scope.addInfo.type !== "eggcheck") && !$scope.addInfo.user2)) {
                 $scope.addRefError = "Make sure you enter all the information";
-                return $scope.indexSpin.addRef = false;
+                $scope.indexSpin.addRef = false;
+                return;
             }
             if ((($scope.addInfo.type === "giveaway" || $scope.addInfo.type === "eggcheck") && !regexpGive.test($scope.addInfo.refUrl)) ||
                 ($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc" && $scope.addInfo.type !== "eggcheck" && !regexp.test($scope.addInfo.refUrl)) ||
                 ($scope.addInfo.type === "misc" && !regexpMisc.test($scope.addInfo.refUrl))) {
                 $scope.addRefError = "Looks like you didn't input a proper permalink";
-                return $scope.indexSpin.addRef = false;
+                $scope.indexSpin.addRef = false;
+                return;
             }
 
             if (user2.indexOf("/u/") === -1) {
@@ -187,12 +192,14 @@ define([
 
             if (user2 === ("/u/" + $scope.user.name)) {
                 $scope.addRefError = "Don't put your own username there.";
-                return $scope.indexSpin.addRef = false;
+                $scope.indexSpin.addRef = false;
+                return;
             }
 
             if (($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc") && !regexpUser.test(user2)) {
                 $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
-                return $scope.indexSpin.addRef = false;
+                $scope.indexSpin.addRef = false;
+                return;
             }
 
             var post = {

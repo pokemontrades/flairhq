@@ -125,7 +125,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
 };
 
 var updateRateLimits = function (res) {
-  if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
+  if (res && res.headers && res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];
     resetTime = moment().add(res.headers['x-ratelimit-reset'], "seconds");
   }

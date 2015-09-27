@@ -156,10 +156,19 @@ module.exports = {
         }
       }
 
+      var newPFlair = req.user.flair.ptrades.flair_css_class;
+      if (!newPFlair) {
+        newPFlair = "default";
+      }
+      var newsvFlair = req.user.flair.svex.flair_css_class;
+      if (newsvFlair.indexof("2") > -1) {
+        newsvFlair = newsvFlair.replace(/2/, "");
+      }
+
       Reddit.setFlair(
         Reddit.data.adminRefreshToken,
         req.user.name,
-        req.user.flair.ptrades.flair_css_class,
+        newPFlair,
         req.allParams().ptrades,
         "PokemonTrades", function (err, css_class) {
           if (err) {
@@ -168,7 +177,7 @@ module.exports = {
             Reddit.setFlair(
               Reddit.data.adminRefreshToken,
               req.user.name,
-              req.user.flair.svex.flair_css_class,
+              newsvFlair,
               req.allParams().svex,
               "SVExchange", function (err, css_class) {
                 if (err) {

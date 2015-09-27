@@ -161,7 +161,7 @@ module.exports = {
         newPFlair = "default";
       }
       var newsvFlair = req.user.flair.svex.flair_css_class;
-      if (newsvFlair.indexof("2") > -1) {
+      if (newsvFlair.indexOf("2") > -1) {
         newsvFlair = newsvFlair.replace(/2/, "");
       }
 

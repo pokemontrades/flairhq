@@ -23,6 +23,12 @@
                       title="The ban reason that will get listed on the public banlist page, e.g. 'Scamming'">
             <input type="text" class="form-control" ng-model="banInfo.banlistEntry">
           </ng-tooltip>
+
+          <ng-tooltip data-label="Duration" 
+                      title="The number of days that the user will be banned for. Leave blank for a permanent ban.">
+            <input type="text" class="form-control" ng-model="banInfo.duration">
+          </ng-tooltip>
+
           <div class="form-group">
             <div class="col-md-offset-4 col-md-2">
               <button type="button" class="btn btn-default has-spinner" ng-click="permaBanUser()"

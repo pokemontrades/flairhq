@@ -112,8 +112,7 @@ exports.setFlair = function (refreshToken, name, cssClass, sub, callback) {
     callback("Error retrieving token.");
   });
 };
-
-exports.banUser = function (refreshToken, username, ban_message, note, subreddit, callback) {
+exports.banUser = function (refreshToken, username, ban_message, note, subreddit, duration, callback) {
   exports.refreshToken(refreshToken, function (token) {
     var data = {
       api_type: 'json',
@@ -122,6 +121,12 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
       note: note,
       type: 'banned'
     };
+    if (duration) {
+      data.duration = duration;
+    }
+    if (left < 100 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/friend',
       formData: data,

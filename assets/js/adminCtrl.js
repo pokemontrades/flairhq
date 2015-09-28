@@ -9,7 +9,8 @@ define([
             username: "",
             banNote: "",
             banMessage: "",
-            banlistEntry: ""
+            banlistEntry: "",
+            duration: ""
         };
         $scope.users = [];
         $scope.flairApps = [];
@@ -83,11 +84,24 @@ define([
                 $scope.banInfo.username = $scope.banInfo.username.substring(3);
             }
 
+            if ($scope.banInfo.duration) {
+                try {
+                    if (parseInt($scope.banInfo) < 0) {
+                        $scope.permaBanError = "Invalid duration";
+                        return scope.indexSpin.permaBan = false;
+                    }
+                } catch (err) {
+                    $scope.permaBanError = "Invalid duration";
+                    return scope.indexSpin.permaBan = false;
+                }
+            }
+
             var post = {
                 "username": $scope.banInfo.username,
                 "banNote": $scope.banInfo.banNote,
                 "banMessage": $scope.banInfo.banMessage,
-                "banlistEntry": $scope.banInfo.banlistEntry
+                "banlistEntry": $scope.banInfo.banlistEntry,
+                "duration": $scope.banInfo.duration
             };
 
             io.socket.post(url, post, function (data, res) {
@@ -98,6 +112,7 @@ define([
                     $scope.banInfo.banNote = "";
                     $scope.banInfo.banMessage = "";
                     $scope.banInfo.banlistEntry = "";
+                    $scope.banInfo.duration = ""
                     $scope.indexOk.permaBan = true;
                     window.setTimeout(function () {
                       $scope.indexOk.addRef = false;

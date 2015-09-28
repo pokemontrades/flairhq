@@ -241,6 +241,7 @@ module.exports = {
           req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max)
           req.params.banMessage: The note that gets sent with the "you are banned" PM
           req.params.banlistEntry: The ban reason to appear on the public banlist
+          req.params.duration: The number of days that the user will be banned for.
         Permaban process:
           1. Ban user from /r/pokemontrades
           2. Ban user from /r/SVExchange
@@ -250,8 +251,6 @@ module.exports = {
           6. Remove all of the user's TSV threads on /r/SVExchange
           7. Add user's info to banlist wiki on /r/pokemontrades
     */
-    var number_of_tasks = 7;
-    var completed_tasks = 0;
     if (!req.user.isMod) {
       res.json("Not a mod", 403);
       return;
@@ -264,6 +263,19 @@ module.exports = {
     if (req.params.banNote.length > 300) {
       res.json("Ban note too long", 400);
     }
+    try {
+      var duration = req.params.duration ? parseInt(req.params.duration) : undefined;
+      if (duration == 0) {
+        duration = undefined;
+      } else if (duration < 0) {
+        res.json("Invalid duration", 400);
+      }
+    } catch (err) {
+      res.json("Invalid duraton", 400);
+    }
+
+    var number_of_tasks = duration ? 2 : 7;
+    var completed_tasks = 0;
 
     //Ban user from the two subs
     var banFromSub = function (subreddit) {
@@ -273,6 +285,7 @@ module.exports = {
       req.params.banMessage,
       req.params.banNote,
       subreddit,
+      duration,
       function (err) {
           if (err) {
             console.log(err);
@@ -499,13 +512,17 @@ module.exports = {
         return combined.indexOf(elem) == pos;
       });
       var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
+      var duration = req.params.duration ? parseInt(req.params.duration) : 0;
       banFromSub('pokemontrades');
       banFromSub('SVExchange');
-      giveBannedUserFlair(flair1.flair_css_class);
-      updateAutomod('pokemontrades', unique_fcs);
-      updateAutomod('SVExchange', unique_fcs)
-      removeTSVThreads();
-      updateBanlist(unique_fcs, igns);
+      if (!duration) { // Permanent ban
+        giveBannedUserFlair(flair1.flair_css_class);
+        updateAutomod('pokemontrades', unique_fcs);
+        updateAutomod('SVExchange', unique_fcs)
+        removeTSVThreads();
+        updateBanlist(unique_fcs, igns);
+      }
+
     }, req.params.username);
   },
   

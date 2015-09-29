@@ -289,12 +289,13 @@ module.exports = {
       function (err) {
           if (err) {
             console.log(err);
-            return res.json(err, 500);
+            return res.json('Failed to ban user from /r/' + subreddit, 500);
           } else {
             console.log("Banned " + req.params.username + " from /r/" + subreddit);
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
-                return res.json(err, 500);
+                console.log(err);
+                return res.json('Error while banning user from /r/' + subreddit, 500);
               }
               completed_tasks++;
               if (completed_tasks >= number_of_tasks) {
@@ -323,12 +324,13 @@ module.exports = {
         function (err) {
           if (err) {
             console.log(err);
-            return res.json(err, 500);
+            return res.json('Failed to give banned user flair', 500);
           } else {
               console.log("Changed " + req.params.username + "'s flair to " + css_class);
               Application.destroy({id: req.allParams().id}).exec(function (err, app) {
                 if (err) {
-                  return res.json(err, 500);
+                  console.log(err);
+                  return res.json('Error while giving banned user flair', 500);
                 }
                   completed_tasks++;
                   if (completed_tasks >= number_of_tasks) {
@@ -349,14 +351,14 @@ module.exports = {
         function (err, current_config) {
           if (err) {
             console.log(err);
-            return res.json(err, 500);
+            return res.json('Error retrieving /r/' + subreddit + ' AutoModerator config', 500);
           }
           else {
             var lines = current_config.data.content_md.split("\r\n");
             var fclist_indices = [lines.indexOf("#FCList1") + 1, lines.indexOf("#FCList2") + 1];
             if (fclist_indices.indexOf(0) != -1) {
               console.log("Error: Could not find #FCList tags in /r/" + subreddit + " AutoModerator config");
-              return;
+              return res.json('Error parsing /r/' + subreddit + ' AutoModerator config', 500);
             }
             try {
               for (var listno = 0; listno < fclist_indices.length; listno++) {
@@ -368,8 +370,8 @@ module.exports = {
               }
             }
             catch (err) {
-              console.log("Error parsing /r/" + subreddit + " AutoModerator config");
-              return;
+              console.log('Error parsing /r/" + subreddit + " AutoModerator config');
+              return res.json('Error parsing /r/" + subreddit + " AutoModerator config', 500);
             }
             var content = lines.join("\r\n");
             Reddit.editWikiPage(
@@ -381,12 +383,13 @@ module.exports = {
               function (err, response) {
                 if (err) {
                   console.log(err);
-                  return res.json(err, 500);
+                  return res.json('Failed to update /r/' + subreddit + ' AutoModerator config', 500);
                 } else {
                     console.log("Added /u/" + req.params.username + "'s friend codes to /r/" + subreddit + " AutoModerator blacklist");
                     Application.destroy({id: req.allParams().id}).exec(function (err, app) {
                       if (err) {
-                        return res.json(err, 500);
+                        console.log(err);
+                        return res.json('Error while updating /r/' + subreddit + 'AutoModerator config', 500);
                       }
                         completed_tasks++;
                         if (completed_tasks >= number_of_tasks) {
@@ -408,7 +411,8 @@ module.exports = {
         req.params.username,
         function (err, response) {
           if (err) {
-            return res.json(err, 500);
+            console.log(err);
+            return res.json('Failed to search for user\'s TSV threads', 500);
           } else {
             response.data.children.forEach(function (entry) {
               Reddit.removePost(
@@ -417,7 +421,7 @@ module.exports = {
                 function (err) {
                   if (err) {
                     console.log(err);
-                    return res.json(err, 500);
+                    return res.json('Failed to remove the TSV thread at redd.it/' + entry.data.id, 500);
                   } else {
                       console.log('Removed the TSV thread at redd.it/' + entry.data.id + ' (OP banned)');
                       Application.destroy({id: req.allParams().id}).exec(function (err, app) {
@@ -431,7 +435,8 @@ module.exports = {
             });
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
-                return res.json(err, 500);
+                console.log(err);
+                return res.json('Error while removing the user\'s TSV threads', 500);
               }
               completed_tasks++;
               if (completed_tasks >= number_of_tasks) {
@@ -443,7 +448,7 @@ module.exports = {
       );
     };
 
-    //Update the public banlist withe the user's information
+    //Update the public banlist with the user's information
     var updateBanlist = function (friend_codes, igns) {
       Reddit.getWikiPage(
         req.user.redToken,
@@ -452,14 +457,14 @@ module.exports = {
         function (err, current_list) {
           if (err) {
             console.log(err);
-            return res.json(err, 500);
+            return res.json('Failed to retrieve current banlist', 500);
           }
           else {
             var lines = current_list.data.content_md.split("\r\n");
             var start_index = lines.indexOf("[//]:# (BEGIN BANLIST)") + 3;
             if (start_index == 2) {
               console.log("Error: Could not find start marker in public banlist");
-              return;
+              return res.json('Error while parsing public banlist', 500);
             }
             var line_to_add = '/u/' + req.params.username + ' | ' + friend_codes.join(", ") + ' | ' + req.params.banlistEntry + ' | ' + igns;
             var content = lines.slice(0,start_index).join("\r\n") + "\r\n" + line_to_add + "\r\n" + lines.slice(start_index).join("\r\n");
@@ -472,12 +477,13 @@ module.exports = {
               function (err, response) {
                 if (err) {
                   console.log(err);
-                  return res.json(err, 500);
+                  return res.json('Failed to update public banlist', 500);
                 } else {
                     console.log("Added /u/" + req.params.username + " to public banlist");
                     Application.destroy({id: req.allParams().id}).exec(function (err, app) {
                       if (err) {
-                        return res.json(err, 500);
+                        console.log(err);
+                        return res.json('Error while updating public banlist', 500);
                       }
                         completed_tasks++;
                         if (completed_tasks >= number_of_tasks) {

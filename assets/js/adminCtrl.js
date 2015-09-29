@@ -123,7 +123,7 @@ define([
                     $scope.$apply();
                 } else {
                     $scope.indexOk = false;
-                    $scope.permaBanError = "Sorry, something went wrong. You might have to do some stuff manually.";
+                    $scope.permaBanError = "Something went wrong; you might have to do stuff manually. ERROR: " + res.body;
                     $scope.$apply();
                 }
             });

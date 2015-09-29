@@ -426,7 +426,7 @@ module.exports = {
                       console.log('Removed the TSV thread at redd.it/' + entry.data.id + ' (OP banned)');
                       Application.destroy({id: req.allParams().id}).exec(function (err, app) {
                         if (err) {
-                          return res.json(err, 500);
+                          return res.json('Error while removing the user\'s TSV threads', 500);
                         }
                       });
                   }

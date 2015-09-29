@@ -78,12 +78,13 @@ exports.getFlair = function (refreshToken, callback, user) {
   });
 };
 
-exports.setFlair = function (refreshToken, name, cssClass, sub, callback) {
+exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
   exports.refreshToken(refreshToken, function (token) {
     var data = {
       api_type: 'json',
       css_class: cssClass,
-      name: name
+      name: name,
+      text: text
     };
     request.post({
       url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
@@ -135,6 +136,7 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
+      updateRateLimits(response);
       try {
         var bodyJson = JSON.parse(body);
         if (bodyJson.error) {
@@ -168,6 +170,7 @@ exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
+      updateRateLimits(response);
         try {
           var bodyJson = JSON.parse(body);
         }
@@ -203,6 +206,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
+      updateRateLimits(response);
         try {
           var bodyJson = JSON.parse(body);
         }
@@ -232,6 +236,7 @@ exports.searchTSVThreads = function (refreshToken, username, callback) {
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
+      updateRateLimits(response);
         try {
           var bodyJson = JSON.parse(body);
         } catch (err) {
@@ -265,6 +270,7 @@ exports.removePost = function (refreshToken, id, callback) {
         "User-Agent": "fapp/1.0"
       }
     }, function(err, response, body){
+      updateRateLimits(response);
         try {
           var bodyJson = JSON.parse(body);
           if (bodyJson.error) {

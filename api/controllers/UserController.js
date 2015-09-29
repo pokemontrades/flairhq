@@ -306,7 +306,7 @@ module.exports = {
     }
 
     //Give the "BANNED USER" flair on pokemontrades
-    var giveBannedUserFlair = function (css_class) {
+    var giveBannedUserFlair = function (css_class, flair_text) {
       if (!css_class) {
         css_class = 'default banned';
       } else if (css_class.indexOf(' ') === -1) {
@@ -318,6 +318,7 @@ module.exports = {
         req.user.redToken,
         req.params.username,
         css_class,
+        flair_text,
         'pokemontrades',
         function (err) {
           if (err) {
@@ -516,7 +517,7 @@ module.exports = {
       banFromSub('pokemontrades');
       banFromSub('SVExchange');
       if (!duration) { // Permanent ban
-        giveBannedUserFlair(flair1.flair_css_class);
+        giveBannedUserFlair(flair1.flair_css_class, flair1.flair_text);
         updateAutomod('pokemontrades', unique_fcs);
         updateAutomod('SVExchange', unique_fcs)
         removeTSVThreads();

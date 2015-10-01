@@ -272,7 +272,7 @@ module.exports = {
       res.json("Invalid duration", 400);
     }
 
-    var number_of_tasks = duration ? 2 : 7;
+    var number_of_tasks = duration ? 2 : 8;
     var completed_tasks = 0;
 
     //Ban user from the two subs
@@ -525,8 +525,25 @@ module.exports = {
         updateAutomod('SVExchange', unique_fcs)
         removeTSVThreads();
         updateBanlist(unique_fcs, igns);
+        User.findOne({name: req.params.username}).exec(function (err, user) {
+          if (!user) {
+            console.log("User was not locally banned because user does not exist in FlairHQ database");
+          }
+          else {
+            user.banned = true;
+            user.save(function (err) {
+            if (err) {
+              return res.json('Error banning user from local FlairHQ database', 500);
+            }
+            console.log("Banned /u/" + req.params.username + " from local FlairHQ database");
+          });
+          }
+          completed_tasks++;
+          if (completed_tasks >= number_of_tasks) {
+            return res.json('ok', 200);
+          }
+        });
       }
-
     }, req.params.username);
   },
   

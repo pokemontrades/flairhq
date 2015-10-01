@@ -75,11 +75,6 @@ define([
                 return $scope.indexSpin.permaBan = false;
             }
 
-            if (!$scope.banInfo.banlistEntry) {
-                $scope.permaBanError = "Please enter a ban reason for the public banlist.";
-                return $scope.indexSpin.permaBan = false;
-            }
-
             if ($scope.banInfo.username.substring(0,3) === '/u/') {
                 $scope.banInfo.username = $scope.banInfo.username.substring(3);
             }

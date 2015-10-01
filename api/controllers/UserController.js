@@ -264,14 +264,12 @@ module.exports = {
       res.json("Ban note too long", 400);
     }
     try {
-      var duration = req.params.duration ? parseInt(req.params.duration) : undefined;
-      if (duration == 0) {
-        duration = undefined;
-      } else if (duration < 0) {
+      var duration = req.params.duration ? parseInt(req.params.duration) : 0;
+      if (duration < 0) {
         res.json("Invalid duration", 400);
       }
     } catch (err) {
-      res.json("Invalid duraton", 400);
+      res.json("Invalid duration", 400);
     }
 
     var number_of_tasks = duration ? 2 : 7;
@@ -519,7 +517,6 @@ module.exports = {
         return combined.indexOf(elem) == pos;
       });
       var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-      var duration = req.params.duration ? parseInt(req.params.duration) : 0;
       banFromSub('pokemontrades');
       banFromSub('SVExchange');
       if (!duration) { // Permanent ban

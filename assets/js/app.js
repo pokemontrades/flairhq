@@ -5,6 +5,7 @@ define([
   'indexCtrl',
   'userCtrl',
   'adminCtrl',
+  'banCtrl',
   'angular-spinner',
   'angular-md'
 ], function (
@@ -13,7 +14,8 @@ define([
     refCtrl,
     indexCtrl,
     userCtrl,
-    adminCtrl
+    adminCtrl,
+    banCtrl
     ) {
 
   var fapp = ng.module("fapp", [
@@ -31,6 +33,7 @@ define([
   fapp.controller("indexCtrl", ['$scope', '$filter', indexCtrl]);
   fapp.controller("userCtrl", ['$scope', '$filter', '$location', '$timeout', userCtrl]);
   fapp.controller("adminCtrl", ['$scope', adminCtrl]);
+  fapp.controller("banCtrl", ['$scope', banCtrl]);
 
   // Bug fix for iOS safari
   $(function () {

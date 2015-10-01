@@ -215,34 +215,13 @@ module.exports = {
   },
 
   ban: function (req, res) {
-    if (!req.user.isMod) {
-      res.json("Not a mod", 403);
-      return;
-    }
-
-    User.findOne(req.allParams().userId).exec(function (err, user) {
-      if (!user) {
-        return res.json("Can't find user", 404);
-      }
-
-      user.banned = req.allParams().ban;
-      user.save(function (err) {
-        if (err) {
-          return res.json(err, 500);
-        }
-        res.json(user, 200);
-      });
-    });
-  },
-
-  permaBan: function (req, res) {
     /*  Form parameters:
           req.params.username: The user who is being banned
           req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max)
           req.params.banMessage: The note that gets sent with the "you are banned" PM
           req.params.banlistEntry: The ban reason to appear on the public banlist
           req.params.duration: The number of days that the user will be banned for.
-        Permaban process:
+        Ban process:
           1. Ban user from /r/pokemontrades
           2. Ban user from /r/SVExchange
           3. Add "BANNED USER" to user's flair on /r/pokemontrades
@@ -250,272 +229,26 @@ module.exports = {
           5. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
           6. Remove all of the user's TSV threads on /r/SVExchange
           7. Add user's info to banlist wiki on /r/pokemontrades
+          8. Locally ban user from FlairHQ
     */
     if (!req.user.isMod) {
-      res.json("Not a mod", 403);
-      return;
+      return res.json({"error": "Not a mod"}, 403);
     }
     req.params = req.allParams();
     if (!req.params.username) {
-      res.json("No username", 400);
-      return;
+      return res.json({"error": "No username"}, 400);
     }
     if (req.params.banNote.length > 300) {
-      res.json("Ban note too long", 400);
+      return res.json("Ban note too long", 400);
     }
     try {
       var duration = req.params.duration ? parseInt(req.params.duration) : 0;
       if (duration < 0) {
-        res.json("Invalid duration", 400);
+        return res.json("Invalid duration", 400);
       }
     } catch (err) {
-      res.json("Invalid duration", 400);
+      return res.json("Invalid duration", 400);
     }
-
-    var number_of_tasks = duration ? 2 : 8;
-    var completed_tasks = 0;
-
-    //Ban user from the two subs
-    var banFromSub = function (subreddit) {
-      Reddit.banUser(
-      req.user.redToken,
-      req.params.username,
-      req.params.banMessage,
-      req.params.banNote,
-      subreddit,
-      duration,
-      function (err) {
-          if (err) {
-            console.log(err);
-            return res.json('Failed to ban user from /r/' + subreddit, 500);
-          } else {
-            console.log("Banned " + req.params.username + " from /r/" + subreddit);
-            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-              if (err) {
-                console.log(err);
-                return res.json('Error while banning user from /r/' + subreddit, 500);
-              }
-              completed_tasks++;
-              if (completed_tasks >= number_of_tasks) {
-                return res.json('ok', 200);
-              }
-            });
-          }
-      });
-    }
-
-    //Give the "BANNED USER" flair on pokemontrades
-    var giveBannedUserFlair = function (css_class, flair_text) {
-      if (!css_class) {
-        css_class = 'default banned';
-      } else if (css_class.indexOf(' ') === -1) {
-        css_class += ' banned';
-      } else {
-        css_class = css_class.substring(0, css_class.indexOf(' ')) + ' banned';
-      }
-      Reddit.setFlair(
-        req.user.redToken,
-        req.params.username,
-        css_class,
-        flair_text,
-        'pokemontrades',
-        function (err) {
-          if (err) {
-            console.log(err);
-            return res.json('Failed to give banned user flair', 500);
-          } else {
-              console.log("Changed " + req.params.username + "'s flair to " + css_class);
-              Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-                if (err) {
-                  console.log(err);
-                  return res.json('Error while giving banned user flair', 500);
-                }
-                  completed_tasks++;
-                  if (completed_tasks >= number_of_tasks) {
-                    return res.json('ok', 200);
-                  }
-              });
-          }
-        }
-      );
-    }
-
-    //Update the AutoModerator config with the user's friend codes
-    var updateAutomod = function (subreddit, friend_codes) {
-      Reddit.getWikiPage(
-        req.user.redToken,
-        subreddit,
-        'config/automoderator',
-        function (err, current_config) {
-          if (err) {
-            console.log(err);
-            return res.json('Error retrieving /r/' + subreddit + ' AutoModerator config', 500);
-          }
-          else {
-            var lines = current_config.data.content_md.split("\r\n");
-            var fclist_indices = [lines.indexOf("#FCList1") + 1, lines.indexOf("#FCList2") + 1];
-            if (fclist_indices.indexOf(0) != -1) {
-              console.log("Error: Could not find #FCList tags in /r/" + subreddit + " AutoModerator config");
-              return res.json('Error parsing /r/' + subreddit + ' AutoModerator config', 500);
-            }
-            try {
-              for (var listno = 0; listno < fclist_indices.length; listno++) {
-                var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf("]"));
-                for (var i = 0; i < friend_codes.length; i++) {
-                  before_bracket += ", \"" + friend_codes[i] + "\"";
-                }
-                lines[fclist_indices[listno]] = before_bracket + "]";
-              }
-            }
-            catch (err) {
-              console.log('Error parsing /r/" + subreddit + " AutoModerator config');
-              return res.json('Error parsing /r/" + subreddit + " AutoModerator config', 500);
-            }
-            var content = lines.join("\r\n");
-            Reddit.editWikiPage(
-              req.user.redToken,
-              subreddit,
-              'config/automoderator',
-              content,
-              'FlairHQ: Updated banned friend codes',
-              function (err, response) {
-                if (err) {
-                  console.log(err);
-                  return res.json('Failed to update /r/' + subreddit + ' AutoModerator config', 500);
-                } else {
-                    console.log("Added /u/" + req.params.username + "'s friend codes to /r/" + subreddit + " AutoModerator blacklist");
-                    Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-                      if (err) {
-                        console.log(err);
-                        return res.json('Error while updating /r/' + subreddit + 'AutoModerator config', 500);
-                      }
-                        completed_tasks++;
-                        if (completed_tasks >= number_of_tasks) {
-                          return res.json('ok', 200);
-                        }
-                    });
-                }
-              }
-            );
-          }
-        }
-      );
-    };
-
-    //Remove the user's TSV threads on /r/SVExchange.
-    var removeTSVThreads = function() {
-      Reddit.searchTSVThreads(
-        req.user.redToken,
-        req.params.username,
-        function (err, response) {
-          if (err) {
-            console.log(err);
-            return res.json('Failed to search for user\'s TSV threads', 500);
-          } else {
-            response.data.children.forEach(function (entry) {
-              Reddit.removePost(
-                req.user.redToken,
-                entry.data.id,
-                function (err) {
-                  if (err) {
-                    console.log(err);
-                    return res.json('Failed to remove the TSV thread at redd.it/' + entry.data.id, 500);
-                  } else {
-                      console.log('Removed the TSV thread at redd.it/' + entry.data.id + ' (OP banned)');
-                      Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-                        if (err) {
-                          return res.json('Error while removing the user\'s TSV threads', 500);
-                        }
-                      });
-                  }
-                }
-              );
-            });
-            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-              if (err) {
-                console.log(err);
-                return res.json('Error while removing the user\'s TSV threads', 500);
-              }
-              completed_tasks++;
-              if (completed_tasks >= number_of_tasks) {
-                return res.json('ok', 200);
-              }
-            });
-          }
-        }
-      );
-    };
-
-    //Update the public banlist with the user's information
-    var updateBanlist = function (friend_codes, igns) {
-      Reddit.getWikiPage(
-        req.user.redToken,
-        'pokemontrades',
-        'banlist',
-        function (err, current_list) {
-          if (err) {
-            console.log(err);
-            return res.json('Failed to retrieve current banlist', 500);
-          }
-          else {
-            var lines = current_list.data.content_md.split("\r\n");
-            var start_index = lines.indexOf("[//]:# (BEGIN BANLIST)") + 3;
-            if (start_index == 2) {
-              console.log("Error: Could not find start marker in public banlist");
-              return res.json('Error while parsing public banlist', 500);
-            }
-            var line_to_add = '/u/' + req.params.username + ' | ' + friend_codes.join(", ") + ' | ' + req.params.banlistEntry + ' | ' + igns;
-            var content = lines.slice(0,start_index).join("\r\n") + "\r\n" + line_to_add + "\r\n" + lines.slice(start_index).join("\r\n");
-            Reddit.editWikiPage(
-              req.user.redToken,
-              'pokemontrades',
-              'banlist',
-              content,
-              '',
-              function (err, response) {
-                if (err) {
-                  console.log(err);
-                  return res.json('Failed to update public banlist', 500);
-                } else {
-                    console.log("Added /u/" + req.params.username + " to public banlist");
-                    Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-                      if (err) {
-                        console.log(err);
-                        return res.json('Error while updating public banlist', 500);
-                      }
-                        completed_tasks++;
-                        if (completed_tasks >= number_of_tasks) {
-                          return res.json('ok', 200);
-                        }
-                    });
-                }
-              }
-            );
-          }
-        }
-      );
-    };
-
-    var localBanUser = function() {
-      User.findOne({name: req.params.username}).exec(function (err, user) {
-        if (!user) {
-          console.log("/u/" + req.params.username + " was not locally banned because that user does not exist in FlairHQ database");
-        }
-        else {
-          user.banned = true;
-          user.save(function (err) {
-          if (err) {
-            return res.json('Error banning user from local FlairHQ database', 500);
-          }
-          console.log("Banned /u/" + req.params.username + " from local FlairHQ database");
-        });
-        }
-        completed_tasks++;
-        if (completed_tasks >= number_of_tasks) {
-          return res.json('ok', 200);
-        }
-      });
-    };
 
     Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
       if (flair1) {
@@ -538,16 +271,55 @@ module.exports = {
         return combined.indexOf(elem) == pos;
       });
       var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-      banFromSub('pokemontrades');
-      banFromSub('SVExchange');
-      if (!duration) { // Permanent ban
-        giveBannedUserFlair(flair1.flair_css_class, flair1.flair_text);
-        updateAutomod('pokemontrades', unique_fcs);
-        updateAutomod('SVExchange', unique_fcs)
-        removeTSVThreads();
-        updateBanlist(unique_fcs, igns);
-        localBanUser();
+      var promises = [
+
+      ];
+      var ptradesBanPromise = new Promise(function(resolve, reject) {
+        ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
+      });
+      var svexBanPromise = new Promise(function(resolve, reject) {
+        ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
+      });
+      if (duration) {
+        var promises = [ //Tasks for tempbanning
+          ptradesBanPromise, 
+          svexBanPromise
+        ];
+      } else {
+        var bannedFlairPromise = new Promise(function(resolve, reject) {
+          ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, resolve, reject);
+        });
+        var ptradesAutomodPromise = new Promise(function(resolve, reject) {
+          ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
+        });
+        var svexAutomodPromise = new Promise(function(resolve, reject) {
+          ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs, resolve, reject);
+        });
+        var removeTSVPromise = new Promise(function(resolve, reject) {
+          ban.removeTSVThreads(req.user.redToken, req.params.username, resolve, reject);
+        });
+        var updateBanlistPromise = new Promise(function(resolve, reject) {
+          ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, resolve, reject);
+        });
+        var localBanPromise = new Promise(function(resolve, reject) {
+          ban.localBanUser(req.params.username, resolve, reject);
+        });
+        var promises = [ //Tasks for permabanning
+          ptradesBanPromise,
+          svexBanPromise,
+          bannedFlairPromise,
+          ptradesAutomodPromise,
+          svexAutomodPromise,
+          removeTSVPromise,
+          updateBanlistPromise,
+          localBanPromise
+        ];
       }
+      Promise.all(promises).then(function(result) {
+        res.json('ok', 200);
+      }, function(error) {
+        res.json(error, 500);
+      });
     }, req.params.username);
   },
   

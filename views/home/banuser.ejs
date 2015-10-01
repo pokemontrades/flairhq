@@ -1,4 +1,4 @@
-<div class="container" ng-controller="adminCtrl">
+<div class="container" ng-controller="banCtrl">
   <div class="main container clearfix">
 
     <div class="content">
@@ -31,16 +31,16 @@
 
           <div class="form-group">
             <div class="col-md-offset-4 col-md-2">
-              <button type="button" class="btn btn-default has-spinner" ng-click="permaBanUser()"
-                      ng-class="[indexOk.permaBan ? 'glyphicon glyphicon-ok' : '',
-                        indexSpin.permaBan ? 'active' : '']"
-                      ng-disabled="indexSpin.permaBan">
+              <button type="button" class="btn btn-default has-spinner" ng-click="banUser()"
+                      ng-class="[indexOk.ban ? 'glyphicon glyphicon-ok' : '',
+                        indexSpin.ban ? 'active' : '']"
+                      ng-disabled="indexSpin.ban">
                 <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
-                {{indexOk.permaBan ? "" : "Ban"}}
+                {{indexOk.ban ? "" : "Ban"}}
               </button>
             </div>
             <div class="col-md-6">
-              <div class="alert alert-danger" role="alert" ng-hide="!permaBanError">{{permaBanError}}</div>
+              <div class="alert alert-danger" role="alert" ng-hide="!banError">{{banError}}</div>
             </div>
           </div>
         </div>

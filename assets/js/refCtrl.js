@@ -387,8 +387,17 @@ define([
                 }
             });
         };
-
+        $scope.deleteRef = function (id, index, type) {
+            var url = "/reference/delete";
+            io.socket.post(url, {refId: id, type: type}, function (data, res) {
+                if (res.statusCode === 200) {
+                    $scope.refUser.references = $filter("filter")($scope.refUser.references, {id: "!" + id});
+                    $scope.$apply();
+                } else {
+                    console.log(res.statusCode + ": " + data);
+                }
+            });
+        };
     };
-
     return refCtrl;
 });

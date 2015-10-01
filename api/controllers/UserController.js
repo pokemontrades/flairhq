@@ -496,6 +496,27 @@ module.exports = {
       );
     };
 
+    var localBanUser = function() {
+      User.findOne({name: req.params.username}).exec(function (err, user) {
+        if (!user) {
+          console.log("/u/" + req.params.username + " was not locally banned because that user does not exist in FlairHQ database");
+        }
+        else {
+          user.banned = true;
+          user.save(function (err) {
+          if (err) {
+            return res.json('Error banning user from local FlairHQ database', 500);
+          }
+          console.log("Banned /u/" + req.params.username + " from local FlairHQ database");
+        });
+        }
+        completed_tasks++;
+        if (completed_tasks >= number_of_tasks) {
+          return res.json('ok', 200);
+        }
+      });
+    };
+
     Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
       if (flair1) {
         if (flair1.flair_css_class.indexOf(' ') === -1) {
@@ -525,24 +546,7 @@ module.exports = {
         updateAutomod('SVExchange', unique_fcs)
         removeTSVThreads();
         updateBanlist(unique_fcs, igns);
-        User.findOne({name: req.params.username}).exec(function (err, user) {
-          if (!user) {
-            console.log("User was not locally banned because user does not exist in FlairHQ database");
-          }
-          else {
-            user.banned = true;
-            user.save(function (err) {
-            if (err) {
-              return res.json('Error banning user from local FlairHQ database', 500);
-            }
-            console.log("Banned /u/" + req.params.username + " from local FlairHQ database");
-          });
-          }
-          completed_tasks++;
-          if (completed_tasks >= number_of_tasks) {
-            return res.json('ok', 200);
-          }
-        });
+        localBanUser();
       }
     }, req.params.username);
   },

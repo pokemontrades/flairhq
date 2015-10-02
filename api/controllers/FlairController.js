@@ -137,6 +137,7 @@ module.exports = {
       return res.json({error: "Please don't change the string."}, 400);
     }
 
+
     var appData = {
       limit: 1,
       sort: "createdAt DESC",
@@ -170,6 +171,15 @@ module.exports = {
         }
         console.log("Set /u/" + req.user.name + "'s logged friend codes to " + friend_codes.toString());
       });
+
+      var newPFlair = req.user.flair.ptrades.flair_css_class;
+      if (!newPFlair) {
+        newPFlair = "default";
+      }
+      var newsvFlair = req.user.flair.svex.flair_css_class;
+      if (newsvFlair.indexOf("2") > -1) {
+        newsvFlair = newsvFlair.replace(/2/, "");
+      }
       
       Reddit.setFlair(
         Reddit.data.adminRefreshToken,

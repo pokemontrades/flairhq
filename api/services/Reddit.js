@@ -160,7 +160,7 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
         } else {
           callback(bodyJson.json.errors);
         }
-      } catch(err) {
+      } catch(banusererr) {
         console.log("Error with parsing: " + body);
       }
     });
@@ -185,10 +185,11 @@ exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
       }
     }, function(err, response, body){
       updateRateLimits(response);
+        var bodyJson;
         try {
-          var bodyJson = JSON.parse(body);
+          bodyJson = JSON.parse(body);
         }
-        catch (err) {
+        catch (getwikipageerror) {
           console.log("Error with parsing: " + body);
         }
         if (bodyJson.error) {
@@ -227,10 +228,11 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
       }
     }, function(err, response, body){
       updateRateLimits(response);
+        var bodyJson;
         try {
-          var bodyJson = JSON.parse(body);
+          bodyJson = JSON.parse(body);
         }
-        catch (err) {
+        catch (editwikipageerror) {
           console.log("Error with parsing: " + body);
         }
         if (bodyJson.reason) {
@@ -264,9 +266,10 @@ exports.searchTSVThreads = function (refreshToken, username, callback) {
       }
     }, function(err, response, body){
       updateRateLimits(response);
+        var bodyJson;
         try {
-          var bodyJson = JSON.parse(body);
-        } catch (err) {
+          bodyJson = JSON.parse(body);
+        } catch (tsvsearcherr) {
           console.log("Error with parsing: " + body);
         }
           if (bodyJson.error) {
@@ -303,22 +306,32 @@ exports.removePost = function (refreshToken, id, callback) {
       }
     }, function(err, response, body){
       updateRateLimits(response);
-        try {
-          var bodyJson = JSON.parse(body);
-          if (bodyJson.error) {
-            callback(bodyJson.error,bodyJson);
-          } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-            callback(undefined,bodyJson);
-          } else {
-            callback(bodyJson.json.errors,bodyJson);
-          }
-        }
-        catch (err) {
-          console.log("Error with parsing: " + body);
-        }
+      var bodyJson;
+      try {
+        bodyJson = JSON.parse(body);
+      }
+      catch (removeposterr) {
+        console.log("Error with parsing: " + body);
+      }
+      if (bodyJson.error) {
+        callback(bodyJson.error,bodyJson);
+      } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
+        callback(undefined,bodyJson);
+      } else {
+        callback(bodyJson.json.errors,bodyJson);
+      }
     });
   }, function () {
     console.log("Error retrieving token.");
     callback("Error retrieving token.");
   });
-}
+};
+
+var updateRateLimits = function (res) {
+  console.log(res.headers['x-ratelimit-remaining']);
+  console.log(res.headers['x-ratelimit-reset']);
+  if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
+    left = res.headers['x-ratelimit-remaining'];
+    resetTime = moment().add(res.headers['x-ratelimit-reset'], "seconds");
+  }
+};

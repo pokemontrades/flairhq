@@ -28,12 +28,14 @@ define([
             var url = "/user/ban";
             if (!$scope.banInfo.username) {
                 $scope.banError = "Please enter a username.";
-                return $scope.indexSpin.ban = false;
+                $scope.indexSpin.ban = false;
+                return;
             }
 
             if ($scope.banInfo.banNote.length > 300) {
                 $scope.banError = "The ban note cannot be longer than 300 characters.";
-                return $scope.indexSpin.ban = false;
+                $scope.indexSpin.ban = false;
+                return;
             }
 
             if ($scope.banInfo.username.substring(0,3) === '/u/') {
@@ -44,11 +46,13 @@ define([
                 try {
                     if (parseInt($scope.banInfo) < 0) {
                         $scope.banError = "Invalid duration";
-                        return scope.indexSpin.ban = false;
+                        $scope.indexSpin.ban = false;
+                        return;
                     }
                 } catch (err) {
                     $scope.banError = "Invalid duration";
-                    return scope.indexSpin.ban = false;
+                    $scope.indexSpin.ban = false;
+                    return;
                 }
             }
 
@@ -68,7 +72,7 @@ define([
                     $scope.banInfo.banNote = "";
                     $scope.banInfo.banMessage = "";
                     $scope.banInfo.banlistEntry = "";
-                    $scope.banInfo.duration = ""
+                    $scope.banInfo.duration = "";
                     $scope.indexOk.ban = true;
                     window.setTimeout(function () {
                       $scope.indexOk.addRef = false;
@@ -88,6 +92,6 @@ define([
                 }
             });
         };
-    }
+    };
     return banCtrl;
 });

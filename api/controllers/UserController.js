@@ -280,8 +280,9 @@ module.exports = {
       var svexBanPromise = new Promise(function(resolve, reject) {
         Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
       });
+      var promises;
       if (duration) {
-        var promises = [ //Tasks for tempbanning
+        promises = [ //Tasks for tempbanning
           ptradesBanPromise, 
           svexBanPromise
         ];
@@ -304,7 +305,7 @@ module.exports = {
         var localBanPromise = new Promise(function(resolve, reject) {
           Ban.localBanUser(req.params.username, resolve, reject);
         });
-        var promises = [ //Tasks for permabanning
+        promises = [ //Tasks for permabanning
           ptradesBanPromise,
           svexBanPromise,
           bannedFlairPromise,

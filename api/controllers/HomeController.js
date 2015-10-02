@@ -51,7 +51,7 @@ module.exports = {
   },
 
   banuser: function (req, res) {
-    res.view()
+    res.view();
   },
 
   applist: function (req, res) {

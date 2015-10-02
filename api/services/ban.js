@@ -64,7 +64,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
             lines[fclist_indices[listno]] = before_bracket + ']';
           }
         }
-        catch (err) {
+        catch (automodparseerr) {
           console.log('Error parsing /r/' + subreddit + ' AutoModerator config');
           reject({'error': 'Error parsing /r/' + subreddit + ' AutoModerator config'});
           return;

@@ -221,6 +221,7 @@ module.exports = {
           req.params.banMessage: The note that gets sent with the "you are banned" PM
           req.params.banlistEntry: The ban reason to appear on the public banlist
           req.params.duration: The number of days that the user will be banned for.
+          req.params.additionalFCs: A list of additional friend codes that should be banned.
         Ban process:
           1. Ban user from /r/pokemontrades
           2. Ban user from /r/SVExchange
@@ -233,11 +234,11 @@ module.exports = {
     */
 
     if (!req.user.isMod) {
-      return res.json({"error": "Not a mod"}, 403);
+      return res.json({error: "Not a mod"}, 403);
     }
     req.params = req.allParams();
     if (!req.params.username) {
-      return res.json({"error": "No username"}, 400);
+      return res.json({error: "No username"}, 400);
     }
     if (req.params.banNote.length > 300) {
       return res.json("Ban note too long", 400);
@@ -245,12 +246,23 @@ module.exports = {
     try {
       var duration = req.params.duration ? parseInt(req.params.duration) : 0;
       if (duration < 0) {
-        return res.json({"error": "Invalid duration"}, 400);
+        return res.json({error: "Invalid duration"}, 400);
       }
     } catch (err) {
-      return res.json({"error": "Invalid duration"}, 400);
+      return res.json({error: "Invalid duration"}, 400);
     }
-
+    console.log(req.params.additionalFCs);
+    try {
+      for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
+        if (!req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
+          return res.json({error: "Invalid friendcode list"}, 400);
+        }
+      }
+    }
+    catch (invalidfcerr) {
+      return res.json({error: "Invalid friendcode list"}, 400);
+    }
+    return res.json({error: "Unknown bad things!"}, 500);
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
       Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
         if (err) {
@@ -276,7 +288,8 @@ module.exports = {
         var unique_fcs = _.union(
           flair1.flair_text.match(/(\d{4}-){2}\d{4}/g),
           flair2.flair_text.match(/(\d{4}-){2}\d{4}/g),
-          logged_fcs
+          logged_fcs,
+          req.params.additionalFCs
         );
         var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
         var ptradesBanPromise = new Promise(function(resolve, reject) {
@@ -324,7 +337,7 @@ module.exports = {
         Promise.all(promises).then(function(result) {
           res.json('ok', 200);
         }, function(error) {
-          res.json(error, 500);
+          res.json({errors: error}, 500);
         });
       }, req.params.username);
     });
@@ -349,7 +362,7 @@ module.exports = {
       } else {
         console.log("Locally unbanned " + req.allParams().username);
       }
-      return res.json(undefined, 200);
+      return res.json({errors: ''}, 200);
     });
   },
   

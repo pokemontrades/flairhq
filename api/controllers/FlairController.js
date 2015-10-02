@@ -169,7 +169,6 @@ module.exports = {
           console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
           return;
         }
-        console.log("Set /u/" + req.user.name + "'s logged friend codes to " + friend_codes.toString());
       });
 
       var newPFlair = req.user.flair.ptrades.flair_css_class;

@@ -29,6 +29,11 @@
             <input type="text" class="form-control" ng-model="banInfo.duration">
           </ng-tooltip>
 
+          <ng-tooltip data-label="Additional Friend Codes" 
+                      title="FlairHQ will ban any friend code that has ever been in the user's flairs. If there are additional friend codes that should be banned, list them here.">
+            <input type="text" class="form-control" ng-model="banInfo.additionalFCs">
+          </ng-tooltip>
+
           <div class="form-group">
             <div class="col-md-offset-4 col-md-2">
               <button type="button" class="btn btn-default has-spinner" ng-click="banUser()"

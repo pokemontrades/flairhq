@@ -10,7 +10,8 @@ define([
             banNote: "",
             banMessage: "",
             banlistEntry: "",
-            duration: ""
+            duration: "",
+            additionalFCs: ""
         };
 
         $scope.banError = "";
@@ -55,13 +56,23 @@ define([
                     return;
                 }
             }
-
+            var FCs = [];
+            if ($scope.banInfo.additionalFCs) {
+                $scope.banInfo.additionalFCs.match(/(^|[^-])(\d{4}-){2}\d{4}($|[^-])/g);
+                if (!$scope.banInfo.additionalFCs.match(/(^|[^-])(\d{4}-){2}\d{4}($|[^-])/g)) {
+                    $scope.banError = "Invalid friend code(s)";
+                    $scope.indexSpin.ban = false;
+                    return;
+                }
+                FCs = $scope.banInfo.additionalFCs.match(/(\d{4}-){2}\d{4}/g);
+            }
             var post = {
                 "username": $scope.banInfo.username,
                 "banNote": $scope.banInfo.banNote,
                 "banMessage": $scope.banInfo.banMessage,
                 "banlistEntry": $scope.banInfo.banlistEntry,
-                "duration": $scope.banInfo.duration
+                "duration": $scope.banInfo.duration,
+                "additionalFCs": ['EVIL HAHA']
             };
 
             io.socket.post(url, post, function (data, res) {
@@ -73,6 +84,7 @@ define([
                     $scope.banInfo.banMessage = "";
                     $scope.banInfo.banlistEntry = "";
                     $scope.banInfo.duration = "";
+                    $scope.banInfo.additionalFCs = "";
                     $scope.indexOk.ban = true;
                     window.setTimeout(function () {
                       $scope.indexOk.addRef = false;
@@ -84,7 +96,7 @@ define([
                 } else {
                     $scope.indexOk = false;
                     if (res.body.error) {
-                        $scope.banError = "Something went wrong; you might have to do stuff manually. ERROR: " + res.body.error;
+                        $scope.banError = "Something went wrong; you might have to do stuff manually. Error " + res.statusCode + ": " + res.body.error;
                     } else {
                         $scope.banError = "Something went wrong; you might have to do stuff manually.";
                     }
@@ -93,6 +105,5 @@ define([
             });
         };
     };
-
     return banCtrl;
 });

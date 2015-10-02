@@ -278,8 +278,6 @@ module.exports = {
           flair2.flair_text.match(/(\d{4}-){2}\d{4}/g),
           logged_fcs
         );
-        console.log(unique_fcs);
-        return;
         var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
         var ptradesBanPromise = new Promise(function(resolve, reject) {
           Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
@@ -336,7 +334,7 @@ module.exports = {
   // io.socket.post("/mod/setlocalban", {username: "example_user", ban: true});
   setLocalBan: function(req, res) {
     if (!req.user.isMod) {
-      return res.json({"errors": "Not a mod"}, 403);
+      return res.json({errors: "Not a mod"}, 403);
     }
     if (req.allParams().ban !== true && req.allParams().ban !== false) {
       //Requires an explicit statement of true or false, to prevent accidental unbans if the parameter is undefined.
@@ -344,7 +342,7 @@ module.exports = {
     }
     User.update({name: req.allParams().username}, {banned: req.allParams().ban}, function (err, updated) {
       if (err) {
-        return res.json({"errors": "Internal server error"}, 500);
+        return res.json({errors: "Internal server error"}, 500);
       }
       if (req.allParams().ban) {
         console.log("Locally banned " + req.allParams().username);

@@ -14,7 +14,7 @@ exports.data = {
 /* If 'debug' is set to true, all modifying actions are redirected to /r/crownofnails. This prevents accidental damage to a live sub while debugging.
 This also makes the searchTSVThreads() function only return posts from /r/crownofnails. However, note that removePost() will still remove any post
 sent to it, because it doesn't have a subreddit parameter. */
-var debug = true;
+var debug = false;
 
 exports.refreshToken = function (refreshToken, callback, error) {
   var data = "client_secret=" + exports.data.clientIDSecret +

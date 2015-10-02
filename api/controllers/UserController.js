@@ -327,7 +327,7 @@ module.exports = {
           res.json(error, 500);
         });
       }, req.params.username);
-    })
+    });
   },
 
   // Sets a local ban on a user. There's no frontend, but an authorized mod can call it directly through a POST request from the JS console.

@@ -112,7 +112,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
             }
           );
         });
-        resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + 'total)');
+        resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
         console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + 'total)');
       }
     }

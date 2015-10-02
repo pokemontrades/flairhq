@@ -136,7 +136,7 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
     if (duration) {
       data.duration = duration;
     }
-    if (left < 100 && moment().before(resetTime)) {
+    if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
     if (debug) {
@@ -175,7 +175,9 @@ exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
     var data = {
       page: page
     };
-
+    if (left < 25 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
     request.get({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page + '?raw_json=1',
       formData: data,
@@ -213,7 +215,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
       page: page,
       reason: reason
     };
-    if (left < 100 && moment().before(resetTime)) {
+    if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
     if (debug) {
@@ -251,7 +253,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
 
 exports.searchTSVThreads = function (refreshToken, username, callback) {
   exports.refreshToken(refreshToken, function (token) {
-    if (left < 100 && moment().before(resetTime)) {
+    if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
     var sub = 'SVExchange';
@@ -291,7 +293,7 @@ exports.removePost = function (refreshToken, id, callback) {
     var data = {
       id: 't3_' + id
     };
-    if (left < 100 && moment().before(resetTime)) {
+    if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
     if (debug) {
@@ -328,8 +330,6 @@ exports.removePost = function (refreshToken, id, callback) {
 };
 
 var updateRateLimits = function (res) {
-  console.log(res.headers['x-ratelimit-remaining']);
-  console.log(res.headers['x-ratelimit-reset']);
   if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];
     resetTime = moment().add(res.headers['x-ratelimit-reset'], "seconds");

@@ -15,15 +15,8 @@ exports.banFromSub = function (redToken, username, banMessage, banNote, subreddi
       }
   });
 };
-//Give the "BANNED USER" flair on a subreddit
+//Give the 'BANNED USER' flair on a subreddit
 exports.giveBannedUserFlair = function (redToken, username, css_class, flair_text, subreddit, resolve, reject) {
-  if (!css_class) {
-    css_class = 'default banned';
-  } else if (css_class.indexOf(' ') === -1) {
-    css_class += ' banned';
-  } else {
-    css_class = css_class.substring(0, css_class.indexOf(' ')) + ' banned';
-  }
   Reddit.setFlair(
     redToken,
     username,
@@ -35,7 +28,8 @@ exports.giveBannedUserFlair = function (redToken, username, css_class, flair_tex
         console.log(err);
         reject({'error': 'Failed to give banned user flair'});
       } else {
-        resolve("Changed " + username + "'s flair to " + css_class + " on /r/" + subreddit);
+        resolve('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
+        console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
       }
     }
   );
@@ -53,20 +47,21 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
         return;
       }
       else {
-        var lines = current_config.data.content_md.split("\r\n");
-        var fclist_indices = [lines.indexOf("#FCList1") + 1, lines.indexOf("#FCList2") + 1];
+        var lines = current_config.data.content_md.replace(/\r/g, '').split("\n");
+        var fclist_indices = [lines.indexOf('#FCList1') + 1, lines.indexOf('#FCList2') + 1];
         if (fclist_indices.indexOf(0) != -1) {
-          console.log("Error: Could not find #FCList tags in /r/" + subreddit + " AutoModerator config");
+          console.log(lines);
+          console.log('Error: Could not find #FCList tags in /r/' + subreddit + ' AutoModerator config');
           reject({'error': 'Error parsing /r/' + subreddit + ' AutoModerator config'});
           return;
         }
         try {
           for (var listno = 0; listno < fclist_indices.length; listno++) {
-            var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf("]"));
+            var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf(']'));
             for (var i = 0; i < friend_codes.length; i++) {
-              before_bracket += ", \"" + friend_codes[i] + "\"";
+              before_bracket += ', "' + friend_codes[i] + '"';
             }
-            lines[fclist_indices[listno]] = before_bracket + "]";
+            lines[fclist_indices[listno]] = before_bracket + ']';
           }
         }
         catch (err) {
@@ -74,7 +69,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
           reject({'error': 'Error parsing /r/' + subreddit + ' AutoModerator config'});
           return;
         }
-        var content = lines.join("\r\n");
+        var content = lines.join("\n");
         Reddit.editWikiPage(
           redToken,
           subreddit,
@@ -86,7 +81,8 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
               console.log(err);
               reject({'error': 'Failed to update /r/' + subreddit + ' AutoModerator config'});
             } else {
-              resolve("Added /u/" + username + "'s friend codes to /r/" + subreddit + " AutoModerator blacklist");
+              resolve('Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist');
+              console.log('Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist');
             }
           }
         );
@@ -116,7 +112,8 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
             }
           );
         });
-        resolve('Removed /u/' + username + '\'s TSV threads');
+        resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + 'total)');
+        console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + 'total)');
       }
     }
   );
@@ -134,15 +131,15 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
         return;
       }
       else {
-        var lines = current_list.data.content_md.split("\r\n");
-        var start_index = lines.indexOf("[//]:# (BEGIN BANLIST)") + 3;
+        var lines = current_list.data.content_md.replace(/\r/g, '').split("\n");
+        var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
         if (start_index == 2) {
           console.log('Error: Could not find start marker in public banlist');
           reject({'error': 'Error while parsing public banlist'});
           return;
         }
-        var line_to_add = '/u/' + username + ' | ' + friend_codes.join(", ") + ' | ' + banlistEntry + ' | ' + igns;
-        var content = lines.slice(0,start_index).join("\r\n") + "\r\n" + line_to_add + "\r\n" + lines.slice(start_index).join("\r\n");
+        var line_to_add = '/u/' + username + ' | ' + friend_codes.join(', ') + ' | ' + banlistEntry + ' | ' + igns;
+        var content = lines.slice(0,start_index).join("\n") + "\n" + line_to_add + "\n" + lines.slice(start_index).join("\n");
         Reddit.editWikiPage(
           redToken,
           'pokemontrades',
@@ -155,6 +152,7 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
               reject({'error': 'Failed to update public banlist'});
             } else {
               resolve('Added /u/' + username + ' to public banlist');
+              console.log('Added /u/' + username + ' to public banlist');
             }
           }
         );
@@ -166,6 +164,7 @@ exports.localBanUser = function(username, resolve, reject) {
   User.findOne({name: username}).exec(function (err, user) {
     if (!user) {
       resolve('/u/' + username + ' was not locally banned because that user does not exist in the FlairHQ database.');
+      console.log('/u/' + username + ' was not locally banned because that user does not exist in the FlairHQ database.');
     }
     else {
       user.banned = true;
@@ -173,7 +172,8 @@ exports.localBanUser = function(username, resolve, reject) {
       if (err) {
         reject({'error': 'Error banning user from local FlairHQ database'});
       }
-      resolve('Banned /u/' + req.params.username + ' from local FlairHQ database');
+      resolve('Banned /u/' + username + ' from local FlairHQ database');
+      console.log('Banned /u/' + username + ' from local FlairHQ database');
     });
     }
   });

@@ -244,13 +244,16 @@ module.exports = {
     try {
       var duration = req.params.duration ? parseInt(req.params.duration) : 0;
       if (duration < 0) {
-        return res.json("Invalid duration", 400);
+        return res.json({"error": "Invalid duration"}, 400);
       }
     } catch (err) {
-      return res.json("Invalid duration", 400);
+      return res.json({"error": "Invalid duration"}, 400);
     }
 
-    Reddit.getFlair(req.user.redToken, function (flair1, flair2) {
+    Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
+      if (err) {
+        return res.json(err, 500);
+      }
       if (flair1) {
         if (flair1.flair_css_class.indexOf(' ') === -1) {
           flair1.flair_css_class += ' banned';
@@ -258,7 +261,7 @@ module.exports = {
           flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
         }
       } else {
-        flair1 = {flair_css_class: 'banned'};
+        flair1 = {flair_css_class: 'default banned'};
         flair1.flair_text = '';
       }
       if (!flair2) {
@@ -271,14 +274,11 @@ module.exports = {
         return combined.indexOf(elem) == pos;
       });
       var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-      var promises = [
-
-      ];
       var ptradesBanPromise = new Promise(function(resolve, reject) {
-        ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
+        Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
       });
       var svexBanPromise = new Promise(function(resolve, reject) {
-        ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
+        Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
       });
       if (duration) {
         var promises = [ //Tasks for tempbanning
@@ -287,22 +287,22 @@ module.exports = {
         ];
       } else {
         var bannedFlairPromise = new Promise(function(resolve, reject) {
-          ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, resolve, reject);
+          Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades', resolve, reject);
         });
         var ptradesAutomodPromise = new Promise(function(resolve, reject) {
-          ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
+          Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
         });
         var svexAutomodPromise = new Promise(function(resolve, reject) {
-          ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs, resolve, reject);
+          Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs, resolve, reject);
         });
         var removeTSVPromise = new Promise(function(resolve, reject) {
-          ban.removeTSVThreads(req.user.redToken, req.params.username, resolve, reject);
+          Ban.removeTSVThreads(req.user.redToken, req.params.username, resolve, reject);
         });
         var updateBanlistPromise = new Promise(function(resolve, reject) {
-          ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, resolve, reject);
+          Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, resolve, reject);
         });
         var localBanPromise = new Promise(function(resolve, reject) {
-          ban.localBanUser(req.params.username, resolve, reject);
+          Ban.localBanUser(req.params.username, resolve, reject);
         });
         var promises = [ //Tasks for permabanning
           ptradesBanPromise,

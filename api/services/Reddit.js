@@ -11,6 +11,11 @@ exports.data = {
   adminRefreshToken: sails.config.reddit.adminRefreshToken
 };
 
+/* If 'debug' is set to true, all modifying actions are redirected to /r/crownofnails. This prevents accidental damage to a live sub while debugging.
+This also makes the searchTSVThreads() function only return posts from /r/crownofnails. However, note that removePost() will still remove any post
+sent to it, because it doesn't have a subreddit parameter. */
+var debug = true;
+
 exports.refreshToken = function (refreshToken, callback, error) {
   var data = "client_secret=" + exports.data.clientIDSecret +
     "&client_id=" + exports.data.clientID +
@@ -86,6 +91,12 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
       name: name,
       text: text
     };
+    if (left < 10 && moment().before(resetTime)) {
+      return callback("Rate limited");
+    }
+    if (debug) {
+      sub = 'crownofnails';
+    }
     request.post({
       url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
       formData: data,
@@ -127,6 +138,9 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
     }
     if (left < 100 && moment().before(resetTime)) {
       return callback("Rate limited.");
+    }
+    if (debug) {
+      subreddit = 'crownofnails';
     }
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/friend',
@@ -198,6 +212,12 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
       page: page,
       reason: reason
     };
+    if (left < 100 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
+    if (debug) {
+      subreddit = 'crownofnails';
+    }
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/wiki/edit',
       formData: data,
@@ -229,8 +249,15 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
 
 exports.searchTSVThreads = function (refreshToken, username, callback) {
   exports.refreshToken(refreshToken, function (token) {
+    if (left < 100 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
+    var sub = 'SVExchange';
+    if (debug) {
+      sub = 'crownofnails';
+    }
     request.get({
-      url: 'https://oauth.reddit.com/r/SVExchange/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
+      url: 'https://oauth.reddit.com/r/' + sub + '/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
       headers: {
         Authorization: "bearer " + token,
         "User-Agent": "fapp/1.0"
@@ -261,7 +288,12 @@ exports.removePost = function (refreshToken, id, callback) {
     var data = {
       id: 't3_' + id
     };
+    if (left < 100 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
+    if (debug) {
 
+    }
     request.post({
       url: 'https://oauth.reddit.com/api/remove',
       formData: data,

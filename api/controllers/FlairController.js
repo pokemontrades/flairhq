@@ -136,6 +136,7 @@ module.exports = {
     if (!req.allParams().ptrades.match(new RegExp(ptradesFlair)) || !req.allParams().svex.match(new RegExp(svExFlair))) {
       return res.json({error: "Please don't change the string."}, 400);
     }
+
     var appData = {
       limit: 1,
       sort: "createdAt DESC",
@@ -156,15 +157,20 @@ module.exports = {
         }
       }
 
-      var newPFlair = req.user.flair.ptrades.flair_css_class;
-      if (!newPFlair) {
-        newPFlair = "default";
-      }
-      var newsvFlair = req.user.flair.svex.flair_css_class;
-      if (newsvFlair.indexOf("2") > -1) {
-        newsvFlair = newsvFlair.replace(/2/, "");
-      }
+      friend_codes = _.union(
+        req.allParams().ptrades.match(/(\d{4}-){2}\d{4}/g),
+        req.allParams().svex.match(/(\d{4}-){2}\d{4}/g),
+        req.user.loggedFriendCodes
+      );
 
+      User.update({id: req.user.id}, {loggedFriendCodes: friend_codes}, function (err, updated) {
+        if (err) {
+          console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
+          return;
+        }
+        console.log("Set /u/" + req.user.name + "'s logged friend codes to " + friend_codes.toString());
+      });
+      
       Reddit.setFlair(
         Reddit.data.adminRefreshToken,
         req.user.name,

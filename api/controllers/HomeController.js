@@ -15,9 +15,19 @@ module.exports = {
         Reddit.getFlair(user.redToken, function (err, flair1, flair2) {
           if (flair1 || flair2) {
             user.flair = {ptrades: flair1, svex: flair2};
+            var ptrades_fcs, svex_fcs;
+            if (flair1) {
+              ptrades_fcs = flair1.flair_text.match(/(\d{4}-){2}\d{4}/g);
+            }
+            if (flair2) {
+              svex_fcs = flair2.flair_text.match(/(\d{4}-){2}\d{4}/g);
+            }
+            user.loggedFriendCodes = _.union(ptrades_fcs, svex_fcs, user.loggedFriendCodes);
             user.save(function (err) {
               if (err) {
                 console.log(err);
+              } else {
+                console.log("set /u/" + req.user.name + "'s logged friend codes to " + user.loggedFriendCodes.toString());
               }
             });
           }

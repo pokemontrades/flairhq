@@ -31,6 +31,10 @@ module.exports = {
       type: "array",
       friendCodeFormat: true
     },
+    loggedFriendCodes: {
+      type: "array",
+      friendCodeFormat: true
+    },
     isMod: "boolean",
     banned: "boolean",
     redToken: "string",

@@ -231,6 +231,7 @@ module.exports = {
           7. Add user's info to banlist wiki on /r/pokemontrades
           8. Locally ban user from FlairHQ
     */
+
     if (!req.user.isMod) {
       return res.json({"error": "Not a mod"}, 403);
     }
@@ -250,78 +251,108 @@ module.exports = {
       return res.json({"error": "Invalid duration"}, 400);
     }
 
-    Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
-      if (err) {
-        return res.json(err, 500);
-      }
-      if (flair1) {
-        if (flair1.flair_css_class.indexOf(' ') === -1) {
-          flair1.flair_css_class += ' banned';
-        } else {
-          flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
+    User.findOne({name: req.params.username}, function (finding_user_error, user) {
+      Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
+        if (err) {
+          return res.json(err, 500);
         }
+        if (flair1) {
+          if (flair1.flair_css_class.indexOf(' ') === -1) {
+            flair1.flair_css_class += ' banned';
+          } else {
+            flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
+          }
+        } else {
+          flair1 = {flair_css_class: 'default banned'};
+          flair1.flair_text = '';
+        }
+        if (!flair2) {
+          flair2 = {flair_text: ''};
+        }
+        var logged_fcs;
+        if (user) {
+          logged_fcs = user.loggedFriendCodes;
+        }
+        var unique_fcs = _.union(
+          flair1.flair_text.match(/(\d{4}-){2}\d{4}/g),
+          flair2.flair_text.match(/(\d{4}-){2}\d{4}/g),
+          logged_fcs
+        );
+        console.log(unique_fcs);
+        return;
+        var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
+        var ptradesBanPromise = new Promise(function(resolve, reject) {
+          Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
+        });
+        var svexBanPromise = new Promise(function(resolve, reject) {
+          Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
+        });
+        var promises;
+        if (duration) {
+          promises = [ //Tasks for tempbanning
+            ptradesBanPromise, 
+            svexBanPromise
+          ];
+        } else {
+          var bannedFlairPromise = new Promise(function(resolve, reject) {
+            Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades', resolve, reject);
+          });
+          var ptradesAutomodPromise = new Promise(function(resolve, reject) {
+            Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
+          });
+          var svexAutomodPromise = new Promise(function(resolve, reject) {
+            Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs, resolve, reject);
+          });
+          var removeTSVPromise = new Promise(function(resolve, reject) {
+            Ban.removeTSVThreads(req.user.redToken, req.params.username, resolve, reject);
+          });
+          var updateBanlistPromise = new Promise(function(resolve, reject) {
+            Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, resolve, reject);
+          });
+          var localBanPromise = new Promise(function(resolve, reject) {
+            Ban.localBanUser(req.params.username, resolve, reject);
+          });
+          promises = [ //Tasks for permabanning
+            ptradesBanPromise,
+            svexBanPromise,
+            bannedFlairPromise,
+            ptradesAutomodPromise,
+            svexAutomodPromise,
+            removeTSVPromise,
+            updateBanlistPromise,
+            localBanPromise
+          ];
+        }
+        Promise.all(promises).then(function(result) {
+          res.json('ok', 200);
+        }, function(error) {
+          res.json(error, 500);
+        });
+      }, req.params.username);
+    })
+  },
+
+  // Sets a local ban on a user. There's no frontend, but an authorized mod can call it directly through a POST request from the JS console.
+  // io.socket.post("/mod/setlocalban", {username: "example_user", ban: true});
+  setLocalBan: function(req, res) {
+    if (!req.user.isMod) {
+      return res.json({"errors": "Not a mod"}, 403);
+    }
+    if (req.allParams().ban !== true && req.allParams().ban !== false) {
+      //Requires an explicit statement of true or false, to prevent accidental unbans if the parameter is undefined.
+      return res.json({errors: "Unspecified ban state"}, 400);
+    }
+    User.update({name: req.allParams().username}, {banned: req.allParams().ban}, function (err, updated) {
+      if (err) {
+        return res.json({"errors": "Internal server error"}, 500);
+      }
+      if (req.allParams().ban) {
+        console.log("Locally banned " + req.allParams().username);
       } else {
-        flair1 = {flair_css_class: 'default banned'};
-        flair1.flair_text = '';
+        console.log("Locally unbanned " + req.allParams().username);
       }
-      if (!flair2) {
-        flair2 = {flair_text: ''};
-      }
-      var ptrades_fcs = flair1.flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
-      var svex_fcs = flair2.flair_text.match(/(\d{4}-){2}\d{4}/g) || [];
-      var combined = ptrades_fcs.concat(svex_fcs);
-      var unique_fcs = combined.filter(function(elem, pos) {
-        return combined.indexOf(elem) == pos;
-      });
-      var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-      var ptradesBanPromise = new Promise(function(resolve, reject) {
-        Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
-      });
-      var svexBanPromise = new Promise(function(resolve, reject) {
-        Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
-      });
-      var promises;
-      if (duration) {
-        promises = [ //Tasks for tempbanning
-          ptradesBanPromise, 
-          svexBanPromise
-        ];
-      } else {
-        var bannedFlairPromise = new Promise(function(resolve, reject) {
-          Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades', resolve, reject);
-        });
-        var ptradesAutomodPromise = new Promise(function(resolve, reject) {
-          Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
-        });
-        var svexAutomodPromise = new Promise(function(resolve, reject) {
-          Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs, resolve, reject);
-        });
-        var removeTSVPromise = new Promise(function(resolve, reject) {
-          Ban.removeTSVThreads(req.user.redToken, req.params.username, resolve, reject);
-        });
-        var updateBanlistPromise = new Promise(function(resolve, reject) {
-          Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, resolve, reject);
-        });
-        var localBanPromise = new Promise(function(resolve, reject) {
-          Ban.localBanUser(req.params.username, resolve, reject);
-        });
-        promises = [ //Tasks for permabanning
-          ptradesBanPromise,
-          svexBanPromise,
-          bannedFlairPromise,
-          ptradesAutomodPromise,
-          svexAutomodPromise,
-          removeTSVPromise,
-          updateBanlistPromise,
-          localBanPromise
-        ];
-      }
-      Promise.all(promises).then(function(result) {
-        res.json('ok', 200);
-      }, function(error) {
-        res.json(error, 500);
-      });
-    }, req.params.username);
+      return res.json(undefined, 200);
+    });
   },
   
   bannedUsers: function (req, res) {

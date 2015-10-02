@@ -92,6 +92,17 @@ define([
                 }
             });
         };
+
+        /* At the moment there's no way to remove a user from the local banlist.
+        This allows it to be done through the console, if necessary.l */
+        $scope.localUnbanUser = function(username) {
+            var url = '/user/localunban';
+            var post = {"username": username};
+            io.socket.post(url, post, function (data, res) {
+                console.log(res.statusCode);
+            })
+        }
     };
+
     return banCtrl;
 });

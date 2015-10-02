@@ -251,7 +251,7 @@ module.exports = {
     } catch (err) {
       return res.json({error: "Invalid duration"}, 400);
     }
-    console.log(req.params.additionalFCs);
+    
     try {
       for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
         if (!req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
@@ -262,7 +262,7 @@ module.exports = {
     catch (invalidfcerr) {
       return res.json({error: "Invalid friendcode list"}, 400);
     }
-    return res.json({error: "Unknown bad things!"}, 500);
+
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
       Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
         if (err) {

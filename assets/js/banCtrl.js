@@ -72,7 +72,7 @@ define([
                 "banMessage": $scope.banInfo.banMessage,
                 "banlistEntry": $scope.banInfo.banlistEntry,
                 "duration": $scope.banInfo.duration,
-                "additionalFCs": ['EVIL HAHA']
+                "additionalFCs": FCs
             };
 
             io.socket.post(url, post, function (data, res) {

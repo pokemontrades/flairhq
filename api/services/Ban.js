@@ -9,7 +9,7 @@ exports.banFromSub = function (redToken, username, banMessage, banNote, subreddi
   function (err) {
       if (err) {
         console.log(err);
-        reject({'error': 'Failed to ban user from /r/' + subreddit});
+        reject({error: 'Failed to ban user from /r/' + subreddit});
       } else {
         resolve('Banned ' + username + ' from /r/' + subreddit);
       }
@@ -26,7 +26,7 @@ exports.giveBannedUserFlair = function (redToken, username, css_class, flair_tex
     function (err) {
       if (err) {
         console.log(err);
-        reject({'error': 'Failed to give banned user flair'});
+        reject({error: 'Failed to give banned user flair'});
       } else {
         resolve('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
         console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
@@ -43,7 +43,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
     function (err, current_config) {
       if (err) {
         console.log(err);
-        reject({'error': 'Error retrieving /r/' + subreddit + ' AutoModerator config'});
+        reject({error: 'Error retrieving /r/' + subreddit + ' AutoModerator config'});
         return;
       }
       else {
@@ -52,7 +52,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
         if (fclist_indices.indexOf(0) != -1) {
           console.log(lines);
           console.log('Error: Could not find #FCList tags in /r/' + subreddit + ' AutoModerator config');
-          reject({'error': 'Error parsing /r/' + subreddit + ' AutoModerator config'});
+          reject({error: 'Error parsing /r/' + subreddit + ' AutoModerator config'});
           return;
         }
         try {
@@ -66,7 +66,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
         }
         catch (automodparseerr) {
           console.log('Error parsing /r/' + subreddit + ' AutoModerator config');
-          reject({'error': 'Error parsing /r/' + subreddit + ' AutoModerator config'});
+          reject({error: 'Error parsing /r/' + subreddit + ' AutoModerator config'});
           return;
         }
         var content = lines.join("\n");
@@ -79,7 +79,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
           function (err, response) {
             if (err) {
               console.log(err);
-              reject({'error': 'Failed to update /r/' + subreddit + ' AutoModerator config'});
+              reject({error: 'Failed to update /r/' + subreddit + ' AutoModerator config'});
             } else {
               resolve('Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist');
               console.log('Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist');
@@ -98,7 +98,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
     function (err, response) {
       if (err) {
         console.log(err);
-        reject({'error': 'Failed to search for user\'s TSV threads'});
+        reject({error: 'Failed to search for user\'s TSV threads'});
       } else {
         response.data.children.forEach(function (entry) {
           Reddit.removePost(
@@ -107,7 +107,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
             function (err) {
               if (err) {
                 console.log(err);
-                reject({'error': 'Failed to remove the TSV thread at redd.it/' + entry.data.id});
+                reject({error: 'Failed to remove the TSV thread at redd.it/' + entry.data.id});
               }
             }
           );
@@ -127,7 +127,7 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
     function (err, current_list) {
       if (err) {
         console.log(err);
-        reject({'error': 'Failed to retrieve current banlist'});
+        reject({error: 'Failed to retrieve current banlist'});
         return;
       }
       else {
@@ -135,7 +135,7 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
         var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
         if (start_index == 2) {
           console.log('Error: Could not find start marker in public banlist');
-          reject({'error': 'Error while parsing public banlist'});
+          reject({error: 'Error while parsing public banlist'});
           return;
         }
         var line_to_add = '/u/' + username + ' | ' + friend_codes.join(', ') + ' | ' + banlistEntry + ' | ' + igns;
@@ -149,7 +149,7 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
           function (err, response) {
             if (err) {
               console.log(err);
-              reject({'error': 'Failed to update public banlist'});
+              reject({error: 'Failed to update public banlist'});
             } else {
               resolve('Added /u/' + username + ' to public banlist');
               console.log('Added /u/' + username + ' to public banlist');
@@ -170,7 +170,7 @@ exports.localBanUser = function(username, resolve, reject) {
       user.banned = true;
       user.save(function (err) {
       if (err) {
-        reject({'error': 'Error banning user from local FlairHQ database'});
+        reject({error: 'Error banning user from local FlairHQ database'});
       }
       resolve('Banned /u/' + username + ' from local FlairHQ database');
       console.log('Banned /u/' + username + ' from local FlairHQ database');

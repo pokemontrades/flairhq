@@ -226,11 +226,12 @@ module.exports = {
           1. Ban user from /r/pokemontrades
           2. Ban user from /r/SVExchange
           3. Add "BANNED USER" to user's flair on /r/pokemontrades
-          4. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
-          5. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
-          6. Remove all of the user's TSV threads on /r/SVExchange
-          7. Add user's info to banlist wiki on /r/pokemontrades
-          8. Locally ban user from FlairHQ
+          4. Add "BANNED USER" to user's flair on /r/SVExchange
+          5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
+          6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
+          7. Remove all of the user's TSV threads on /r/SVExchange
+          8. Add user's info to banlist wiki on /r/pokemontrades
+          9. Locally ban user from FlairHQ
     */
 
     if (!req.user.isMod) {
@@ -241,7 +242,7 @@ module.exports = {
       return res.json({error: "No username"}, 400);
     }
     if (req.params.banNote.length > 300) {
-      return res.json("Ban note too long", 400);
+      return res.json({error: "Ban note too long"}, 400);
     }
     try {
       var duration = req.params.duration ? parseInt(req.params.duration) : 0;
@@ -251,7 +252,6 @@ module.exports = {
     } catch (err) {
       return res.json({error: "Invalid duration"}, 400);
     }
-    
     try {
       for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
         if (!req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
@@ -262,7 +262,6 @@ module.exports = {
     catch (invalidfcerr) {
       return res.json({error: "Invalid friendcode list"}, 400);
     }
-
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
       Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
         if (err) {
@@ -278,8 +277,15 @@ module.exports = {
           flair1 = {flair_css_class: 'default banned'};
           flair1.flair_text = '';
         }
-        if (!flair2) {
-          flair2 = {flair_text: ''};
+        if (flair2) {
+          if (flair2.flair_css_class) {
+            flair2.flair_css_class+=' banned';
+          }
+          else {
+            flair1.flair_css_class = 'banned';
+          }
+        } else {
+          flair2 = {flair_css_class: 'banned'};
         }
         var logged_fcs;
         if (user) {
@@ -305,8 +311,11 @@ module.exports = {
             svexBanPromise
           ];
         } else {
-          var bannedFlairPromise = new Promise(function(resolve, reject) {
+          var ptradesFlairPromise = new Promise(function(resolve, reject) {
             Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades', resolve, reject);
+          });
+          var svexFlairPromise = new Promise(function(resolve, reject) {
+            Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange', resolve, reject);
           });
           var ptradesAutomodPromise = new Promise(function(resolve, reject) {
             Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
@@ -326,7 +335,8 @@ module.exports = {
           promises = [ //Tasks for permabanning
             ptradesBanPromise,
             svexBanPromise,
-            bannedFlairPromise,
+            ptradesFlairPromise,
+            svexFlairPromise,
             ptradesAutomodPromise,
             svexAutomodPromise,
             removeTSVPromise,
@@ -337,7 +347,8 @@ module.exports = {
         Promise.all(promises).then(function(result) {
           res.json('ok', 200);
         }, function(error) {
-          res.json({errors: error}, 500);
+          console.log(error);
+          res.json({error: error}, 500);
         });
       }, req.params.username);
     });

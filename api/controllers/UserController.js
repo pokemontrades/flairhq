@@ -282,7 +282,7 @@ module.exports = {
             flair2.flair_css_class+=' banned';
           }
           else {
-            flair1.flair_css_class = 'banned';
+            flair2.flair_css_class = 'banned';
           }
         } else {
           flair2 = {flair_css_class: 'banned'};

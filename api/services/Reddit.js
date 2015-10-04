@@ -11,10 +11,9 @@ exports.data = {
   adminRefreshToken: sails.config.reddit.adminRefreshToken
 };
 
-/* If 'debug' is set to true, all modifying actions are redirected to /r/crownofnails. This prevents accidental damage to a live sub while debugging.
-This also makes the searchTSVThreads() function only return posts from /r/crownofnails. However, note that removePost() will still remove any post
-sent to it, because it doesn't have a subreddit parameter. */
-var debug = false;
+/* If sails.config.debug.reddit is set to true, all modifying actions are redirected to /r/crownofnails. This prevents accidental damage 
+to a live sub while debugging. This also makes the searchTSVThreads() function only return posts from /r/crownofnails. However, note that removePost() 
+will still remove any post sent to it, because it doesn't have a subreddit parameter. */
 
 exports.refreshToken = function (refreshToken, callback, error) {
   var data = "client_secret=" + exports.data.clientIDSecret +
@@ -46,7 +45,7 @@ exports.refreshToken = function (refreshToken, callback, error) {
   });
 };
 
-exports.getFlair = function (refreshToken, callback, user) {
+exports.getFlair = function (refreshToken, user, callback) {
   exports.refreshToken(refreshToken, function (token) {
     user = user || '';
     var body = {
@@ -94,7 +93,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
     if (left < 10 && moment().before(resetTime)) {
       return callback("Rate limited");
     }
-    if (debug) {
+    if (sails.config.debug.reddit) {
       sub = 'crownofnails';
     }
     request.post({
@@ -139,7 +138,7 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
     if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
-    if (debug) {
+    if (sails.config.debug.reddit) {
       subreddit = 'crownofnails';
     }
     request.post({
@@ -218,7 +217,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
     if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
-    if (debug) {
+    if (sails.config.debug.reddit) {
       subreddit = 'crownofnails';
     }
     request.post({
@@ -257,7 +256,7 @@ exports.searchTSVThreads = function (refreshToken, username, callback) {
       return callback("Rate limited.");
     }
     var sub = 'SVExchange';
-    if (debug) {
+    if (sails.config.debug.reddit) {
       sub = 'crownofnails';
     }
     request.get({
@@ -295,9 +294,6 @@ exports.removePost = function (refreshToken, id, callback) {
     };
     if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
-    }
-    if (debug) {
-
     }
     request.post({
       url: 'https://oauth.reddit.com/api/remove',

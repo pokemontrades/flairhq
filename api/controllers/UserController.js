@@ -263,7 +263,7 @@ module.exports = {
       return res.json({error: "Invalid friendcode list"}, 400);
     }
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
-      Reddit.getFlair(req.user.redToken, function (err, flair1, flair2) {
+      Reddit.getFlair(req.user.redToken, req.params.username, function (err, flair1, flair2) {
         if (err) {
           return res.json(err, 500);
         }
@@ -298,50 +298,32 @@ module.exports = {
           req.params.additionalFCs
         );
         var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-        var ptradesBanPromise = new Promise(function(resolve, reject) {
-          Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration, resolve, reject);
-        });
-        var svexBanPromise = new Promise(function(resolve, reject) {
-          Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration, resolve, reject);
-        });
+        var ptradesBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration);
+        var svexBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration);
         var promises;
         if (duration) {
           promises = [ //Tasks for tempbanning
-            ptradesBanPromise, 
-            svexBanPromise
+            ptradesBan, 
+            svexBan
           ];
         } else {
-          var ptradesFlairPromise = new Promise(function(resolve, reject) {
-            Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades', resolve, reject);
-          });
-          var svexFlairPromise = new Promise(function(resolve, reject) {
-            Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange', resolve, reject);
-          });
-          var ptradesAutomodPromise = new Promise(function(resolve, reject) {
-            Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs, resolve, reject);
-          });
-          var svexAutomodPromise = new Promise(function(resolve, reject) {
-            Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs, resolve, reject);
-          });
-          var removeTSVPromise = new Promise(function(resolve, reject) {
-            Ban.removeTSVThreads(req.user.redToken, req.params.username, resolve, reject);
-          });
-          var updateBanlistPromise = new Promise(function(resolve, reject) {
-            Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, resolve, reject);
-          });
-          var localBanPromise = new Promise(function(resolve, reject) {
-            Ban.localBanUser(req.params.username, resolve, reject);
-          });
+          var ptradesFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades');
+          var svexFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange');
+          var ptradesAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs);
+          var svexAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs);
+          var removeTSV = Ban.removeTSVThreads(req.user.redToken, req.params.username);
+          var updateBanlist = Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns);
+          var localBan = Ban.localBanUser(req.params.username);
           promises = [ //Tasks for permabanning
-            ptradesBanPromise,
-            svexBanPromise,
-            ptradesFlairPromise,
-            svexFlairPromise,
-            ptradesAutomodPromise,
-            svexAutomodPromise,
-            removeTSVPromise,
-            updateBanlistPromise,
-            localBanPromise
+            ptradesBan,
+            svexBan,
+            ptradesFlair,
+            svexFlair,
+            ptradesAutomod,
+            svexAutomod,
+            removeTSV,
+            updateBanlist,
+            localBan
           ];
         }
         Promise.all(promises).then(function(result) {
@@ -350,7 +332,7 @@ module.exports = {
           console.log(error);
           res.json({error: error}, 500);
         });
-      }, req.params.username);
+      });
     });
   },
 

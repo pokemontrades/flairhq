@@ -12,7 +12,7 @@ module.exports = {
     User.findOne({id: req.user.id}, function(err, user) {
       if (user) {
         res.view();
-        Reddit.getFlair(user.redToken, function (err, flair1, flair2) {
+        Reddit.getFlair(sails.config.reddit.adminRefreshToken, req.user.name, function (err, flair1, flair2) {
           if (flair1 || flair2) {
             user.flair = {ptrades: flair1, svex: flair2};
             var ptrades_fcs, svex_fcs;
@@ -26,8 +26,6 @@ module.exports = {
             user.save(function (err) {
               if (err) {
                 console.log(err);
-              } else {
-                console.log("set /u/" + req.user.name + "'s logged friend codes to " + user.loggedFriendCodes.toString());
               }
             });
           }

@@ -29,7 +29,7 @@ module.exports = {
     passport.authenticate('reddit', {
       state: req.session.state,
       duration: 'permanent',
-      failureRedirect: '/login',
+      failureRedirect: '/login'
     },
     function (err, user) {
       var url = req.session.redirectUrl;

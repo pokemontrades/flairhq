@@ -21,7 +21,6 @@ module.exports = {
   },
 
   reddit: function(req, res) {
-    console.log(req);
     req.session.state = crypto.randomBytes(32).toString('hex');
     if (req.query.url) {
       req.session.redirectUrl = req.query.url;

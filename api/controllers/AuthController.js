@@ -21,6 +21,7 @@ module.exports = {
   },
 
   reddit: function(req, res) {
+    console.log(req);
     req.session.state = crypto.randomBytes(32).toString('hex');
     if (req.query.url) {
       req.session.redirectUrl = req.query.url;
@@ -45,6 +46,9 @@ module.exports = {
         return res.redirect('/');
       });
     })(req, res);
+  },
 
+  modAuth: function(req, res) {
+    res.redirect("https://www.reddit.com/api/v1/authorize?client_id=" + sails.config.reddit.clientID + "&response_type=code&state=" + req.session.state + "&redirect_uri=" + encodeURIComponent(sails.config.reddit.redirectURL) + "&duration=permanent&scope=flair,modflair,modcontributors,wikiread,wikiedit,read,modposts");
   }
 };

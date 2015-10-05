@@ -4,7 +4,7 @@ var passport = require('passport'),
 var verifyHandler = function(token, tokenSecret, profile, done) {
   process.nextTick(function() {
     User.findOne({uid: profile.id}, function(err, user) {
-      Reddit.getFlair(tokenSecret, function (flair1, flair2) {
+      Reddit.getFlair(tokenSecret, profile.name, function (flair1, flair2) {
         if (user) {
           if (user.banned) {
             return done("You are banned from FAPP", user);
@@ -69,8 +69,7 @@ module.exports.http = {
     passport.use(new RedditStrategy({
       clientID: Reddit.data.clientID,
       clientSecret: Reddit.data.clientIDSecret,
-      callbackURL: Reddit.data.redirectURL,
-      scope: "flair,modflair"
+      callbackURL: Reddit.data.redirectURL
     }, verifyHandler));
 
     app.use(passport.initialize());

@@ -166,6 +166,15 @@ module.exports.routes = {
     action     : 'ban'
   },
 
+  '/mod/setlocalban' : {
+    controller : 'user',
+    action     : 'setLocalBan'
+  },
+
+  '/mod/banuser' : {
+    controller  : 'home',
+    action      : 'banuser'
+  },
   '/user/banned' : {
     controller : 'user',
     action     : 'bannedUsers'

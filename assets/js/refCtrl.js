@@ -137,9 +137,7 @@ define([
                 }
             ).forEach(
                 function (ref) {
-                    if (ref.url.indexOf("SVExchange") > -1) {
-                        givenAway += (ref.number || 0);
-                    }
+                    givenAway += (ref.number || 0);
                 }
             );
             return givenAway;
@@ -389,7 +387,6 @@ define([
                 }
             });
         };
-
         $scope.deleteRef = function (id, index, type) {
             var url = "/reference/delete";
             io.socket.post(url, {refId: id, type: type}, function (data, res) {
@@ -401,8 +398,6 @@ define([
                 }
             });
         };
-
     };
-
     return refCtrl;
 });

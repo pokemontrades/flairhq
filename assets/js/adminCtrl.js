@@ -32,19 +32,6 @@ define([
             });
         };
 
-        $scope.banUser = function (user, ban) {
-            var url = "/user/ban";
-
-            io.socket.post(url, {userId: user.id, ban: ban}, function (data, res) {
-                if (res.statusCode === 200) {
-                    $scope.getBannedUsers();
-                    $scope.$apply();
-                } else {
-                    console.log("Error");
-                }
-            });
-        };
-
         $scope.denyApp = function (id, $index) {
             var url = "/flair/app/deny";
             $scope.flairAppError = "";

@@ -28,6 +28,27 @@ module.exports = {
     passport.authenticate('reddit', {
       state: req.session.state,
       duration: 'permanent',
+      failureRedirect: '/login',
+      scope: 'identity'
+    })(req, res);
+  },
+
+  modAuth: function(req, res) {
+    req.session.state = crypto.randomBytes(32).toString('hex');
+    if (req.query.url) {
+      req.session.redirectUrl = req.query.url;
+    }
+    passport.authenticate('reddit', {
+      state: req.session.state,
+      duration: 'permanent',
+      failureRedirect: '/login',
+    })(req, res);
+  },
+
+  callback: function(req, res) {
+    passport.authenticate('reddit', {
+      state: req.session.state,
+      duration: 'permanent',
       failureRedirect: '/login'
     },
     function (err, user) {
@@ -45,9 +66,6 @@ module.exports = {
         return res.redirect('/');
       });
     })(req, res);
-  },
-
-  modAuth: function(req, res) {
-    res.redirect("https://www.reddit.com/api/v1/authorize?client_id=" + sails.config.reddit.clientID + "&response_type=code&state=" + req.session.state + "&redirect_uri=" + encodeURIComponent(sails.config.reddit.redirectURL) + "&duration=permanent&scope=flair,modflair,modcontributors,wikiread,wikiedit,read,modposts");
   }
+
 };

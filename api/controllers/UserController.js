@@ -331,7 +331,7 @@ module.exports = {
           res.json('ok', 200);
         }, function(error) {
           console.log(error);
-          res.json({error: error}, 500);
+          res.json(error, 500);
         });
       });
     });

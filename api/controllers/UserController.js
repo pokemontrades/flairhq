@@ -267,7 +267,7 @@ module.exports = {
         if (err) {
           return res.json(err, 500);
         }
-        if (flair1) {
+        if (flair1 && flair1.flair_css_class && flair1.flair_text) {
           if (flair1.flair_css_class.indexOf(' ') === -1) {
             flair1.flair_css_class += ' banned';
           } else {
@@ -277,7 +277,7 @@ module.exports = {
           flair1 = {flair_css_class: 'default banned'};
           flair1.flair_text = '';
         }
-        if (flair2) {
+        if (flair2 && flair2.flair_text) {
           if (flair2.flair_css_class) {
             flair2.flair_css_class+=' banned';
           }
@@ -286,6 +286,7 @@ module.exports = {
           }
         } else {
           flair2 = {flair_css_class: 'banned'};
+          flair2.flair_text = '';
         }
         var logged_fcs;
         if (user) {

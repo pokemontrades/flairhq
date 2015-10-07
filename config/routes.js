@@ -71,6 +71,11 @@ module.exports.routes = {
     action     : 'logout'
   },
 
+  '/auth/reddit/callback' : {
+    controller : 'auth',
+    action     : 'callback'
+  },
+
   '/reference/get/:userid' : {
     controller : 'reference',
     action     : 'get'

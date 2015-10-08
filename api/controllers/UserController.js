@@ -216,12 +216,12 @@ module.exports = {
 
   ban: function (req, res) {
     /*  Form parameters:
-          req.params.username: The user who is being banned
-          req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max)
-          req.params.banMessage: The note that gets sent with the "you are banned" PM
-          req.params.banlistEntry: The ban reason to appear on the public banlist
-          req.params.duration: The number of days that the user will be banned for.
-          req.params.additionalFCs: A list of additional friend codes that should be banned.
+          req.params.username: The user who is being banned (String)
+          req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
+          req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
+          req.params.banlistEntry: The ban reason to appear on the public banlist (String)
+          req.params.duration: The number of days that the user will be banned for. (Integer)
+          req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
         Ban process:
           1. Ban user from /r/pokemontrades
           2. Ban user from /r/SVExchange
@@ -238,34 +238,43 @@ module.exports = {
       return res.json({error: "Not a mod"}, 403);
     }
     req.params = req.allParams();
-    if (!req.params.username) {
-      return res.json({error: "No username"}, 400);
+
+    if (typeof req.params.username !== 'string' || !req.params.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
+      return res.json({error: "Invalid username"}, 400);
+    }
+
+    if (typeof req.params.banNote !== 'string') {
+      return res.json({error: "Invalid ban note"});
     }
     if (req.params.banNote.length > 300) {
       return res.json({error: "Ban note too long"}, 400);
     }
-    try {
-      var duration = req.params.duration ? parseInt(req.params.duration) : 0;
-      if (duration < 0) {
-        return res.json({error: "Invalid duration"}, 400);
-      }
-    } catch (err) {
+
+    if (typeof req.params.banMessage !== 'string') {
+      return res.json({error: "Invalid ban message"}, 400);
+    }
+
+    if (typeof req.params.banlistEntry !== 'string') {
+      return res.json({error: "Invalid banlist entry"}, 400);
+    }
+
+    if (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0) {
       return res.json({error: "Invalid duration"}, 400);
     }
-    try {
-      for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
-        if (!req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
-          return res.json({error: "Invalid friendcode list"}, 400);
-        }
-      }
-    }
-    catch (invalidfcerr) {
+
+    if (!(req.params.additionalFCs instanceof Array)) {
       return res.json({error: "Invalid friendcode list"}, 400);
     }
+    for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
+      if (typeof req.params.additionalFCs[FC] !== 'string' || !req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
+        return res.json({error: "Invalid friendcode list"}, 400);
+      }
+    }
+
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
       Reddit.getFlair(req.user.redToken, req.params.username, function (err, flair1, flair2) {
         if (err) {
-          return res.json(err, 500);
+          return res.json({error: err}, 500);
         }
         if (flair1 && flair1.flair_css_class && flair1.flair_text) {
           if (flair1.flair_css_class.indexOf(' ') === -1) {
@@ -299,10 +308,10 @@ module.exports = {
           req.params.additionalFCs
         );
         var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-        var ptradesBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', duration);
-        var svexBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', duration);
+        var ptradesBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration);
+        var svexBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration);
         var promises;
-        if (duration) {
+        if (req.params.duration) {
           promises = [ //Tasks for tempbanning
             ptradesBan, 
             svexBan

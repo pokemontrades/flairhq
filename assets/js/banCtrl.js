@@ -33,25 +33,30 @@ define([
                 return;
             }
 
+            if ($scope.banInfo.username.substring(0,3) === '/u/') {
+                $scope.banInfo.username = $scope.banInfo.username.substring(3);
+            }
+
+            if (!$scope.banInfo.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
+                $scope.banError = "Invalid username";
+                $scope.indexSpin.ban = false;
+                return;
+            }
+
             if ($scope.banInfo.banNote.length > 300) {
                 $scope.banError = "The ban note cannot be longer than 300 characters.";
                 $scope.indexSpin.ban = false;
                 return;
             }
 
-            if ($scope.banInfo.username.substring(0,3) === '/u/') {
-                $scope.banInfo.username = $scope.banInfo.username.substring(3);
-            }
-
             if ($scope.banInfo.duration) {
-                try {
-                    if (parseInt($scope.banInfo) < 0) {
-                        $scope.banError = "Invalid duration";
-                        $scope.indexSpin.ban = false;
-                        return;
-                    }
-                } catch (err) {
+                if (isNaN($scope.banInfo.duration) || parseInt($scope.banInfo.duration) < 0) {
                     $scope.banError = "Invalid duration";
+                    $scope.indexSpin.ban = false;
+                    return;
+                }
+                if (parseInt($scope.banInfo.duration) > 999) {
+                    $scope.banError = "The duration cannot be longer than 999 days. For a permanent ban, leave the duration field blank.";
                     $scope.indexSpin.ban = false;
                     return;
                 }
@@ -71,7 +76,7 @@ define([
                 "banNote": $scope.banInfo.banNote,
                 "banMessage": $scope.banInfo.banMessage,
                 "banlistEntry": $scope.banInfo.banlistEntry,
-                "duration": $scope.banInfo.duration,
+                "duration": parseInt($scope.banInfo.duration),
                 "additionalFCs": FCs
             };
 
@@ -90,8 +95,6 @@ define([
                       $scope.indexOk.addRef = false;
                       $scope.$apply();
                     }, 1500);
-                    $scope.$apply();
-                    $scope.getBannedUsers();
                     $scope.$apply();
                 } else {
                     $scope.indexOk = false;

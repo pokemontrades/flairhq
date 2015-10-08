@@ -81,6 +81,10 @@
             <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
             {{ok.modSaveProfile ? "" : "Save changes"}}
           </button>
+          <button type="button" class="btn btn-danger" ng-click="setLocalBan(true)"
+                  ng-if="!refUser.banned">Ban User</button>
+          <button type="button" class="btn btn-danger" ng-click="setLocalBan(false)"
+                  ng-if="refUser.banned">Unban User</button>
         </div>
       </div>
     </div>

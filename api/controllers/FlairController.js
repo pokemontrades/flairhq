@@ -62,6 +62,8 @@ module.exports = {
           return res.json(err, 500);
         }
         var formatted = Flairs.formattedName(app.flair);
+        console.log(app.flair);
+        console.log(formatted);
         var flair,
             css_class;
         if (app.sub === "pokemontrades" && user.flair.ptrades) {

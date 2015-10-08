@@ -375,9 +375,8 @@ define([
             });
         };
 
-        $scope.banUser = function (ban) {
-            var url = "/user/ban";
-
+        $scope.setLocalBan = function (ban) {
+            var url = "/mod/setlocalban";
             io.socket.post(url, {userId: $scope.refUser.id, ban: ban}, function (data, res) {
                 if (res.statusCode === 200) {
                     $scope.refUser.banned = data.banned;
@@ -387,6 +386,7 @@ define([
                 }
             });
         };
+
         $scope.deleteRef = function (id, index, type) {
             var url = "/reference/delete";
             io.socket.post(url, {refId: id, type: type}, function (data, res) {
@@ -398,6 +398,7 @@ define([
                 }
             });
         };
+
     };
     return refCtrl;
 });

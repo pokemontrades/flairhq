@@ -1,6 +1,7 @@
 /* global module, Application, User, Reddit */
 var reddit = require('redwrap'),
-  moment = require('moment');
+  moment = require('moment'),
+  sha1 = require('node-sha1');;
 
 
 module.exports = {
@@ -62,8 +63,6 @@ module.exports = {
           return res.json(err, 500);
         }
         var formatted = Flairs.formattedName(app.flair);
-        console.log(app.flair);
-        console.log(formatted);
         var flair,
             css_class;
         if (app.sub === "pokemontrades" && user.flair.ptrades) {
@@ -145,6 +144,22 @@ module.exports = {
   setText: function (req, res) {
     var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
     var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
+    var isValid = function(code) {
+        code = code.replace(/-/g,'');
+        if (!code.match(/^\d{12}$/) || code > 549755813887) {
+            return 0;
+        }
+        var checksum = Math.floor(code/4294967296);
+        var byte_seq = (code % 4294967296).toString(16)
+        while (byte_seq.length < 8) { byte_seq = "0"+byte_seq; }
+        var byte_arr = byte_seq.match(/../g).reverse();
+        var hash_seq = ""
+        for (var i = 0; i < 4; i++) {
+            hash_seq += String.fromCharCode(parseInt(byte_arr[i],16));
+        }
+        var new_chk = (parseInt(sha1(hash_seq).substring(0,2),16) >> 1);
+        return (new_chk == checksum)?1:0;
+    };
     if (!req.user) {
       return res.json({error: "Not logged in"}, 403);
     }
@@ -174,11 +189,16 @@ module.exports = {
         }
       }
 
-      friend_codes = _.union(
-        req.allParams().ptrades.match(/(\d{4}-){2}\d{4}/g),
-        req.allParams().svex.match(/(\d{4}-){2}\d{4}/g),
-        req.user.loggedFriendCodes
-      );
+      var flair_FCs = _.union(req.allParams().ptrades.match(/(\d{4}-){2}\d{4}/g), req.allParams().svex.match(/(\d{4}-){2}\d{4}/g));
+      var flagged = [];
+
+      for (var i = 0; i < flair_FCs.length; i++) {
+        if (!isValid(flair_FCs[i])) {
+          flagged.push(flair_FCs[i]);
+        }
+      }
+
+      var friend_codes = _.union(flair_FCs, req.user.loggedFriendCodes);
 
       User.update({id: req.user.id}, {loggedFriendCodes: friend_codes}, function (err, updated) {
         if (err) {
@@ -233,6 +253,33 @@ module.exports = {
               });
           }
         });
+      if (flagged.length) {
+        var message = "The user /u/" + req.user.name + " set a flair containing " +
+        (flagged.length == 1 ? "an invalid friend code" : flagged.length + " invalid friend codes") + ".\n\n";
+        if (req.allParams().ptrades) {
+          message += "/u/" + req.user.name + " " + req.allParams().ptrades + " (/r/pokemontrades)\n\n";
+        }
+        if (req.allParams().svex) {
+          message += "/u/" + req.user.name + " " + req.allParams().svex + " (/r/SVExchange)\n\n";
+        }
+        message += "The following friend code" + (flagged.length == 1 ? " is" : "s are") + " invalid:\n\n";
+        for (var i = 0; i < flagged.length; i++) {
+          message += flagged[i] + "\n\n";
+        }
+        Reddit.sendPrivateMessage(
+          Reddit.data.adminRefreshToken,
+          "FlairHQ report: Invalid friend code" + (flagged.length == 1 ? "" : "s"),
+          message,
+          "/r/pokemontrades",
+          function (err) {
+            if (err) {
+              console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+            } else {
+              console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+            }
+          }
+        );
+      }
     });
   },
 

@@ -336,6 +336,9 @@ exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, c
     if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");
     }
+    if (sails.config.debug.reddit && recipient.substring(0,3) === "/r/") {
+      data.to = '/r/crownofnails';
+    }
     request.post({
       url: 'https://oauth.reddit.com/api/compose',
       formData: data,

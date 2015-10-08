@@ -325,6 +325,45 @@ exports.removePost = function (refreshToken, id, callback) {
   });
 };
 
+exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    var data = {
+      api_type: 'json',
+      subject: subject,
+      text: text,
+      to: recipient
+    };
+    if (left < 25 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
+    request.post({
+      url: 'https://oauth.reddit.com/api/compose',
+      formData: data,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+      updateRateLimits(response);
+      try {
+        var bodyJson = JSON.parse(body);
+        if (bodyJson.error) {
+          callback(bodyJson.error);
+        } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
+          callback(undefined);
+        } else {
+          callback(bodyJson.json.errors);
+        }
+      } catch(sendpmerr) {
+        console.log("Error with parsing: " + body);
+      }
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
+};
+
 var updateRateLimits = function (res) {
   if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];

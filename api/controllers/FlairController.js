@@ -61,6 +61,7 @@ module.exports = {
         if (err) {
           return res.json(err, 500);
         }
+        var formatted = Flairs.formattedName(app.flair);
         var flair,
             css_class;
         if (app.sub === "pokemontrades" && user.flair.ptrades) {
@@ -114,6 +115,19 @@ module.exports = {
 
             });
             console.log("Changed " + user.name + "'s flair to " + css_class);
+            Reddit.sendPrivateMessage(
+              sails.config.reddit.adminRefreshToken,
+              'FlairHQ Notification',
+              'Your application for ' + formatted + ' flair has been approved.',
+              user.name,
+              function (err) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log('Sent a confirmation PM to ' + user.name);
+                }
+              }
+            );
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
                 return res.json(err, 500);

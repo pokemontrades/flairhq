@@ -1,7 +1,7 @@
 /* global module, Application, User, Reddit */
 var reddit = require('redwrap'),
   moment = require('moment'),
-  sha1 = require('node-sha1');;
+  sha1 = require('node-sha1');
 
 
 module.exports = {
@@ -150,10 +150,10 @@ module.exports = {
             return 0;
         }
         var checksum = Math.floor(code/4294967296);
-        var byte_seq = (code % 4294967296).toString(16)
+        var byte_seq = (code % 4294967296).toString(16);
         while (byte_seq.length < 8) { byte_seq = "0"+byte_seq; }
         var byte_arr = byte_seq.match(/../g).reverse();
-        var hash_seq = ""
+        var hash_seq = "";
         for (var i = 0; i < 4; i++) {
             hash_seq += String.fromCharCode(parseInt(byte_arr[i],16));
         }
@@ -263,7 +263,7 @@ module.exports = {
           message += "/u/" + req.user.name + " " + req.allParams().svex + " (/r/SVExchange)\n\n";
         }
         message += "The following friend code" + (flagged.length == 1 ? " is" : "s are") + " invalid:\n\n";
-        for (var i = 0; i < flagged.length; i++) {
+        for (i = 0; i < flagged.length; i++) {
           message += flagged[i] + "\n\n";
         }
         Reddit.sendPrivateMessage(

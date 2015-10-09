@@ -1,8 +1,6 @@
 /* global module, Application, User, Reddit */
 var reddit = require('redwrap'),
-  moment = require('moment'),
-  sha1 = require('node-sha1');
-
+  moment = require('moment');
 
 module.exports = {
 
@@ -144,22 +142,7 @@ module.exports = {
   setText: function (req, res) {
     var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
     var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
-    var isValid = function(code) {
-        code = code.replace(/-/g,'');
-        if (!code.match(/^\d{12}$/) || code > 549755813887) {
-            return 0;
-        }
-        var checksum = Math.floor(code/4294967296);
-        var byte_seq = (code % 4294967296).toString(16);
-        while (byte_seq.length < 8) { byte_seq = "0"+byte_seq; }
-        var byte_arr = byte_seq.match(/../g).reverse();
-        var hash_seq = "";
-        for (var i = 0; i < 4; i++) {
-            hash_seq += String.fromCharCode(parseInt(byte_arr[i],16));
-        }
-        var new_chk = (parseInt(sha1(hash_seq).substring(0,2),16) >> 1);
-        return (new_chk == checksum)?1:0;
-    };
+
     if (!req.user) {
       return res.json({error: "Not logged in"}, 403);
     }
@@ -193,7 +176,7 @@ module.exports = {
       var flagged = [];
 
       for (var i = 0; i < flair_FCs.length; i++) {
-        if (!isValid(flair_FCs[i])) {
+        if (!Flairs.isValid(flair_FCs[i])) {
           flagged.push(flair_FCs[i]);
         }
       }

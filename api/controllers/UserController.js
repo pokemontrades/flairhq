@@ -348,13 +348,13 @@ module.exports = {
 
   setLocalBan: function (req, res) {
     if (!req.user.isMod) {
-      res.json("Not a mod", 403);
+      res.json({error: "Not a mod"}, 403);
       return;
     }
 
     User.findOne(req.allParams().userId).exec(function (err, user) {
       if (!user) {
-        return res.json("Can't find user", 404);
+        return res.json({error: "Can't find user"}, 404);
       }
 
       user.banned = req.allParams().ban;
@@ -369,7 +369,7 @@ module.exports = {
   
   bannedUsers: function (req, res) {
     if (!req.user.isMod) {
-      res.json("Not a mod", 403);
+      res.json({error: "Not a mod"}, 403);
       return;
     }
 

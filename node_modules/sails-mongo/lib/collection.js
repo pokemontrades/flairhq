@@ -58,11 +58,6 @@ Collection.prototype.find = function find(criteria, cb) {
   var self = this,
       query;
 
-  // Ignore `select` from waterline core
-  if (typeof criteria === 'object') {
-    delete criteria.select;
-  }
-
   // Catch errors from building query and return to the callback
   try {
     query = new Query(criteria, this.schema);
@@ -98,9 +93,9 @@ Collection.prototype.find = function find(criteria, cb) {
   var queryOptions = _.omit(query.criteria, 'where');
 
   // Run Normal Query on collection
-  collection.find(where, queryOptions).toArray(function(err, docs) {
+  collection.find(where, query.select, queryOptions).toArray(function(err, docs) {
     if(err) return cb(err);
-    cb(null, utils.rewriteIds(docs, self.schema));
+    cb(null, utils.normalizeResults(docs, self.schema));
   });
 };
 
@@ -168,6 +163,7 @@ Collection.prototype.stream = function find(criteria, stream) {
  */
 
 Collection.prototype.insert = function insert(values, cb) {
+
   var self = this;
 
   // Normalize values to an array
@@ -180,7 +176,7 @@ Collection.prototype.insert = function insert(values, cb) {
 
   this.connection.db.collection(this.identity).insert(docs, function(err, results) {
     if(err) return cb(err);
-    cb(null, utils.rewriteIds(results, self.schema));
+    cb(null, utils.rewriteIds(results.ops, self.schema));
   });
 };
 
@@ -354,11 +350,10 @@ Collection.prototype._getPK = function _getPK () {
  */
 
 Collection.prototype._parseDefinition = function _parseDefinition(definition) {
-  var self = this,
-      collectionDef = _.cloneDeep(definition);
+  var self = this;
 
   // Hold the Schema
-  this.schema = collectionDef.definition;
+  this.schema = _.cloneDeep(definition.definition);
 
   if (_.has(this.schema, 'id') && this.schema.id.primaryKey && this.schema.id.type === 'integer') {
     this.schema.id.type = 'objectid';

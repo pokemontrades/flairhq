@@ -1,7 +1,9 @@
 /* global io, define */
 define([
-
-], function () {
+    'sails',
+    'socket'
+], function (sails, socket) {
+    var io = sails(socket);
 
     var refCtrl = function ($scope, $filter) {
         $scope.newStuff = {

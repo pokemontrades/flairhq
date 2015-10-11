@@ -29,6 +29,14 @@ var Query = module.exports = function Query(options, schema) {
   // Check for Aggregate Options
   this.checkAggregate(options);
 
+  // Retrieve select fields from criteria
+  if (options && typeof options === 'object' && options.select) {
+    this.select = this.parseSelect(options.select);
+    delete options.select;
+  } else {
+    this.select = {};
+  }
+
   // Normalize Criteria
   this.criteria = this.normalizeCriteria(options);
 
@@ -291,6 +299,12 @@ Query.prototype.parseValue = function parseValue(field, modifier, val) {
   "use strict";
   var self = this;
 
+  // Omit adding regex value to these modifiers
+  var omitRegExModifiers = ['$ne', 'greaterThan', '>', 'gt', 'greaterThanOrEqual',
+                            '>=', 'gte', '$gt', '$gte', '<', 'lessThan', '<=',
+                            'lessThanOrEqual'
+                           ];
+
   // Look and see if the key is in the schema, id attribute and all association
   // attributes are objectid type by default (@see { @link collection._parseDefinition }).
   if (hop(self.schema, field) && self.schema[field].type === 'objectid') {
@@ -344,13 +358,12 @@ Query.prototype.parseValue = function parseValue(field, modifier, val) {
       if (self.schema[field].type === 'date') {
         return new Date(val);
       }
-      
+
     }
 
-    if(modifier === '$ne') {
+    if (omitRegExModifiers.indexOf(modifier) > -1) {
       return val;
     }
-
     // Replace Percent Signs, work in a case insensitive fashion by default
     val = utils.caseInsensitive(val);
     val = val.replace(/%/g, '.*');
@@ -380,4 +393,20 @@ Query.prototype.parseSort = function parseSort(original) {
 
     return sort;
   }, {});
+};
+/**
+ *
+ * Parse Select
+ *
+ * @param original
+ * @returns {*}
+ */
+Query.prototype.parseSelect = function parseSelect(original) {
+  var select = {};
+
+  _.each(original, function (field) {
+    select[field] = 1;
+  });
+
+  return select;
 };

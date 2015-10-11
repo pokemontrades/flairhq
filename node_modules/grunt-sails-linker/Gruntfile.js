@@ -10,6 +10,8 @@
 
 module.exports = function(grunt) {
 
+  var util = require('util');
+
   // Project configuration.
   grunt.initConfig({
     jshint: {
@@ -34,7 +36,21 @@ module.exports = function(grunt) {
         options: {
           startTag: '<!--SCRIPTS-->',
           endTag: '<!--SCRIPTS END-->',
-          fileTmpl: '\n<script src="%s"></script>',
+          fileTmpl: '<script src="%s"></script>',
+          appRoot: 'test/'
+        },
+        files: {
+          'test/fixtures/**/*.html': 'test/fixtures/*.js'
+        }
+      },
+      fileRef_options: {
+        options: {
+          startTag: '<!--SCRIPTS-->',
+          endTag: '<!--SCRIPTS END-->',
+          fileRef: function (filepath) {
+            var tmpl = '<script src="%s"></script>';
+            return util.format(tmpl, filepath);
+          },
           appRoot: 'test/'
         },
         files: {

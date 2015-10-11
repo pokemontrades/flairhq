@@ -1,5 +1,9 @@
 /* global io, define */
-define(['lodash', 'regex'], function (_, regex) {
+define(['lodash', 'regex', 'sails', 'socket'], function (_, regex, sails, socket) {
+
+  var io = sails(socket);
+
+  io.sails.url = 'http://localhost:1337';
 
   var userCtrl = function ($scope, $filter, $location, $timeout) {
     $scope.regex = regex;

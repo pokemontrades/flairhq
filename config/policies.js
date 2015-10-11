@@ -19,20 +19,24 @@
 
 module.exports.policies = {
 
-  '*': ['sessionAuth', 'isMod'],
+  '*': ['passport', 'sessionAuth', 'isMod'],
 
   'auth': {
-    '*': ['isMod', true]
+    '*': ['passport', 'isMod', true]
   },
 
   HomeController: {
-    'reference': ['isMod', true],
-    'info': ['isMod', true]
+    'reference': ['passport', 'isMod', true],
+    'info': ['passport', 'isMod', true]
   },
 
   UserController: {
-    get: ['isMod', true],
-    mine: ['isMod', true]
+    get: ['passport', 'isMod', true],
+    mine: ['passport', 'isMod', true]
+  },
+
+  ReferenceController: {
+    getFlairs: ['passport', 'isMod', true]
   }
 
 };

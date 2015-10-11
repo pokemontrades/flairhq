@@ -34,6 +34,6 @@ module.exports.session = {
     maxAge: 30 * 24 * 60 * 60 * 1000
   },
 
-  auto_reconnect: true
+  autoReconnect: true
 
 };

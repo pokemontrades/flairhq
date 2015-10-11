@@ -1,9 +1,7 @@
 /**
  * Module dependencies
  */
-var util = require('util'),
-	actionUtil = require('../actionUtil');
-
+var actionUtil = require('../actionUtil');
 
 /**
  * Create Record
@@ -46,8 +44,6 @@ module.exports = function createRecord (req, res) {
 		}
 
 		// Send JSONP-friendly response if it's supported
-		// (HTTP 201: Created)
-		res.status(201);
-		res.ok(newInstance.toJSON());
+		res.created(newInstance);
 	});
 };

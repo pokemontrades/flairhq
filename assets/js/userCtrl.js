@@ -473,7 +473,7 @@ define(['lodash', 'regex'], function (_, regex) {
         userTrades = $filter("filter")(refs, $scope.isTrade).length,
         userInvolvement = $filter("filter")(refs, $scope.isInvolvement).length,
         userEgg = $filter("filter")(refs, $scope.isEgg).length,
-        userGiveaway = $scope.numberOfEggChecks(),
+        userGiveaway = $scope.numberOfEggChecks() + $scope.numberOfEggsGivenAway(),
         currentFlair = $scope.getUserFlair();
 
       if (applicationFlair === currentFlair || ($scope.user.flair.ptrades.flair_css_class === "default" && applicationFlair.name === "involvement")) {

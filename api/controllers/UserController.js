@@ -244,7 +244,7 @@ module.exports = {
     }
 
     if (typeof req.params.banNote !== 'string') {
-      return res.json({error: "Invalid ban note"});
+      return res.json({error: "Invalid ban note"}, 400);
     }
     if (req.params.banNote.length > 300) {
       return res.json({error: "Ban note too long"}, 400);

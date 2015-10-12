@@ -37,6 +37,10 @@ define([
                 $scope.banInfo.username = $scope.banInfo.username.substring(3);
             }
 
+            else if ($scope.banInfo.username.substring(0,2) === 'u/') {
+                $scope.banInfo.username = $scope.banInfo.username.substring(2);
+            }
+
             if (!$scope.banInfo.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
                 $scope.banError = "Invalid username";
                 $scope.indexSpin.ban = false;

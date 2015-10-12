@@ -244,7 +244,7 @@ module.exports = {
     }
 
     if (typeof req.params.banNote !== 'string') {
-      return res.json({error: "Invalid ban note"});
+      return res.json({error: "Invalid ban note"}, 400);
     }
     if (req.params.banNote.length > 300) {
       return res.json({error: "Ban note too long"}, 400);
@@ -346,32 +346,30 @@ module.exports = {
     });
   },
 
-  // Sets a local ban on a user. There's no frontend, but an authorized mod can call it directly through a POST request from the JS console.
-  // io.socket.post("/mod/setlocalban", {username: "example_user", ban: true});
-  setLocalBan: function(req, res) {
+  setLocalBan: function (req, res) {
     if (!req.user.isMod) {
-      return res.json({errors: "Not a mod"}, 403);
+      res.json({error: "Not a mod"}, 403);
+      return;
     }
-    if (req.allParams().ban !== true && req.allParams().ban !== false) {
-      //Requires an explicit statement of true or false, to prevent accidental unbans if the parameter is undefined.
-      return res.json({errors: "Unspecified ban state"}, 400);
-    }
-    User.update({name: req.allParams().username}, {banned: req.allParams().ban}, function (err, updated) {
-      if (err) {
-        return res.json({errors: "Internal server error"}, 500);
+
+    User.findOne(req.allParams().userId).exec(function (err, user) {
+      if (!user) {
+        return res.json({error: "Can't find user"}, 404);
       }
-      if (req.allParams().ban) {
-        console.log("Locally banned " + req.allParams().username);
-      } else {
-        console.log("Locally unbanned " + req.allParams().username);
-      }
-      return res.json({errors: ''}, 200);
+
+      user.banned = req.allParams().ban;
+      user.save(function (err) {
+        if (err) {
+          return res.json(err, 500);
+        }
+        res.json(user, 200);
+      });
     });
   },
   
   bannedUsers: function (req, res) {
     if (!req.user.isMod) {
-      res.json("Not a mod", 403);
+      res.json({error: "Not a mod"}, 403);
       return;
     }
 

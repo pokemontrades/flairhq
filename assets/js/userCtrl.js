@@ -497,16 +497,16 @@ define(['lodash', 'regex', 'sails', 'socket'], function (_, regex, sails, socket
 
       if (applicationFlair.sub === "pokemontrades" &&
         currentFlair &&
-        currentFlair.trades > trades &&
-        currentFlair.involvement > involvement &&
-        currentFlair.giveaways > giveaways) {
+        currentFlair.trades >= trades &&
+        currentFlair.involvement >= involvement &&
+        currentFlair.giveaways >= giveaways) {
         return false;
       }
 
       if (applicationFlair.sub === "svexchange" &&
         currentFlair &&
-        currentFlair.eggs > eggs &&
-        currentFlair.giveaways > giveaways) {
+        currentFlair.eggs >= eggs &&
+        currentFlair.giveaways >= giveaways) {
         return false;
       }
 

@@ -1,7 +1,7 @@
 /* global io, define */
 define(['lodash', 'regex', 'sails', 'socket'], function (_, regex, sails, socket) {
 
-  var io = sails(socket);g
+  var io = sails(socket);
 
   var userCtrl = function ($scope, $filter, $location, $timeout) {
     $scope.regex = regex;

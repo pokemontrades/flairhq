@@ -450,7 +450,7 @@ define(['lodash', 'regex'], function (_, regex) {
     };
 
     $scope.getFlairTextForUserForSVEx = function () {
-      if (!$scope.user || !$scope.user.flair) {
+      if (!$scope.user || !$scope.user.flair || !$scope.user.flair.svex) {
         return;
       }
       var flairs = $scope.user.flair.svex.flair_css_class.split(' '),

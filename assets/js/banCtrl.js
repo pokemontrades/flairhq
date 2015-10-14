@@ -1,7 +1,10 @@
 /* global io, define */
 define([
+    'sails',
+    'socket'
+], function (sails, socket) {
 
-], function () {
+    var io = sails(socket);
 
     var banCtrl = function ($scope) {
 

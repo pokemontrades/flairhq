@@ -1,5 +1,7 @@
 /* global io, define */
-define(['lodash', 'regex'], function (_, regex) {
+define(['lodash', 'regex', 'sails', 'socket'], function (_, regex, sails, socket) {
+
+  var io = sails(socket);
 
   var userCtrl = function ($scope, $filter, $location, $timeout) {
     $scope.regex = regex;
@@ -450,7 +452,7 @@ define(['lodash', 'regex'], function (_, regex) {
     };
 
     $scope.getFlairTextForUserForSVEx = function () {
-      if (!$scope.user || !$scope.user.flair) {
+      if (!$scope.user || !$scope.user.flair || !$scope.user.flair.svex) {
         return;
       }
       var flairs = $scope.user.flair.svex.flair_css_class.split(' '),
@@ -493,16 +495,16 @@ define(['lodash', 'regex'], function (_, regex) {
 
       if (applicationFlair.sub === "pokemontrades" &&
         currentFlair &&
-        currentFlair.trades > trades &&
-        currentFlair.involvement > involvement &&
-        currentFlair.giveaways > giveaways) {
+        currentFlair.trades >= trades &&
+        currentFlair.involvement >= involvement &&
+        currentFlair.giveaways >= giveaways) {
         return false;
       }
 
       if (applicationFlair.sub === "svexchange" &&
         currentFlair &&
-        currentFlair.eggs > eggs &&
-        currentFlair.giveaways > giveaways) {
+        currentFlair.eggs >= eggs &&
+        currentFlair.giveaways >= giveaways) {
         return false;
       }
 

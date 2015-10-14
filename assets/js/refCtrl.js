@@ -1,7 +1,9 @@
 /* global io, define */
 define([
-
-], function () {
+    'sails',
+    'socket'
+], function (sails, socket) {
+    var io = sails(socket);
 
     var refCtrl = function ($scope, $filter) {
         $scope.newStuff = {
@@ -48,7 +50,7 @@ define([
                 $scope.editRefError = "Please choose a type.";
                 return;
             }
-            if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck") {
+            if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck" || ref.type === "involvement") {
                 if (!ref.description) {
                     $scope.editRefError = "Make sure you enter all the information";
                     return;

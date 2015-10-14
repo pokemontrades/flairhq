@@ -9,6 +9,7 @@ require.config({
         'jquery': 'dependencies/jquery.min',
         "angular-bootstrap": 'dependencies/ui-bootstrap-tpls-0.10.0',
         "sails": "dependencies/sails.io",
+        "socket": "dependencies/socket.io",
         "collapse": "dependencies/collapse",
         "dropdown": "dependencies/dropdown",
         "tooltip": "dependencies/tooltip",

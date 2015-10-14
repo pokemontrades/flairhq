@@ -452,7 +452,7 @@ define(['lodash', 'regex', 'sails', 'socket'], function (_, regex, sails, socket
     };
 
     $scope.getFlairTextForUserForSVEx = function () {
-      if (!$scope.user || !$scope.user.flair) {
+      if (!$scope.user || !$scope.user.flair || !$scope.user.flair.svex) {
         return;
       }
       var flairs = $scope.user.flair.svex.flair_css_class.split(' '),

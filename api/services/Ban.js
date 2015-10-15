@@ -113,7 +113,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
             Reddit.removePost(
               redToken,
               entry.data.id,
-              false,
+              'false',
               function (err) {
                 if (err) {
                   console.log(err);

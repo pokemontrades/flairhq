@@ -192,9 +192,7 @@ module.exports = {
 
       var newPFlair = req.user.flair && req.user.flair.ptrades ? req.user.flair.ptrades.flair_css_class : "default";
       var newsvFlair = req.user.flair && req.user.flair.svex ? req.user.flair.svex.flair_css_class : "";
-      if (newsvFlair.indexOf("2") > -1) {
-        newsvFlair = newsvFlair.replace(/2/, "");
-      }
+      newsvFlair = newsvFlair.replace(/2/, "");
       
       Reddit.setFlair(
         Reddit.data.adminRefreshToken,

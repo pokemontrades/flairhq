@@ -11,9 +11,9 @@ exports.data = {
   adminRefreshToken: sails.config.reddit.adminRefreshToken
 };
 
-/* If sails.config.debug.reddit is set to true, all modifying actions are redirected to /r/crownofnails. This prevents accidental damage 
-to a live sub while debugging. This also makes the searchTSVThreads() function only return posts from /r/crownofnails. However, note that removePost() 
-will still remove any post sent to it, because it doesn't have a subreddit parameter. */
+/* If sails.config.debug.reddit is set to true, all modifying actions are redirected to sails.config.debug.subreddit. This prevents accidental damage 
+to a live sub while debugging. This also makes the searchTSVThreads() function only return posts from sails.config.debug.subreddit. However, note that
+removePost() will still remove any post sent to it, because it doesn't have a subreddit parameter. */
 
 exports.refreshToken = function (refreshToken, callback, error) {
   var data = "client_secret=" + exports.data.clientIDSecret +
@@ -94,7 +94,7 @@ exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) 
       return callback("Rate limited");
     }
     if (sails.config.debug.reddit) {
-      sub = 'crownofnails';
+      sub = sails.config.debug.subreddit;
     }
     request.post({
       url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
@@ -139,7 +139,7 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
       return callback("Rate limited.");
     }
     if (sails.config.debug.reddit) {
-      subreddit = 'crownofnails';
+      subreddit = sails.config.debug.subreddit;
     }
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/friend',
@@ -218,7 +218,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason,
       return callback("Rate limited.");
     }
     if (sails.config.debug.reddit) {
-      subreddit = 'crownofnails';
+      subreddit = sails.config.debug.subreddit;
     }
     request.post({
       url: 'https://oauth.reddit.com/r/' + subreddit + '/api/wiki/edit',
@@ -257,7 +257,7 @@ exports.searchTSVThreads = function (refreshToken, username, callback) {
     }
     var sub = 'SVExchange';
     if (sails.config.debug.reddit) {
-      sub = 'crownofnails';
+      sub = sails.config.debug.subreddit;
     }
     request.get({
       url: 'https://oauth.reddit.com/r/' + sub + '/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
@@ -338,7 +338,7 @@ exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, c
       return callback("Rate limited.");
     }
     if (sails.config.debug.reddit && recipient.substring(0,3) === "/r/") {
-      data.to = '/r/crownofnails';
+      data.to = '/r/' + sails.config.debug.subreddit;
     }
     request.post({
       url: 'https://oauth.reddit.com/api/compose',

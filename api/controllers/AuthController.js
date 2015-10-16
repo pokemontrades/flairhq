@@ -34,7 +34,7 @@ module.exports = {
   },
 
   modAuth: function(req, res) {
-    req.session.state = crypto.randomBytes(32).toString('hex');
+    req.session.state = crypto.randomBytes(32).toString('hex') + '_modlogin'; //The bit at the end prevents an infinite loop, see below
     if (req.query.url) {
       req.session.redirectUrl = req.query.url;
     }
@@ -60,10 +60,47 @@ module.exports = {
           res.view(403, {error: err});
           return;
         }
-        if (url) {
-          return res.redirect(url);
-        }
-        return res.redirect('/');
+
+        Reddit.checkModeratorStatus(
+          sails.config.reddit.adminRefreshToken,
+          user.name,
+          'pokemontrades',
+          function(err, response) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+
+            if (response.data.children.length) { //User is a mod, set isMod to true
+              user.isMod = true;
+              user.save(function (err) {
+                if (err) {
+                  console.log('Failed to give /u/' + user.name + ' moderator status');
+                  return res.view(500, {error: err});
+                }
+                // Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so don't redirect there again.
+                if (req.session.state.substr(-9) === '_modlogin') {
+                  return res.redirect('/');
+                }
+                return res.redirect('/auth/modauth');
+              });
+            }
+
+            else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
+              user.isMod = false;
+              user.save(function (err) {
+                if (err) {
+                  console.log('Failed to demote user /u/' + user.name + 'from moderator status');
+                  return res.view(500, {error: err});
+                }
+                return res.redirect('/');
+              });
+            } else { // Regular user
+              return res.redirect('/');
+            }
+          }
+        );
+
       });
     })(req, res);
   }

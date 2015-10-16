@@ -109,31 +109,21 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
           console.log(err);
           reject({error: 'Failed to search for user\'s TSV threads'});
         } else {
-          var removeTSVPromises = [];
           response.data.children.forEach(function (entry) {
-            removeTSVPromises.push(new Promise(function(resolve2, reject2) {
-              Reddit.removePost(
-                redToken,
-                entry.data.id,
-                'false',
-                function (err) {
-                  if (err) {
-                    console.log(err);
-                    reject2({error: 'Failed to remove the TSV thread at redd.it/' + entry.data.id});
-                  } else {
-                    resolve2('Removed the TSV thread at redd.it/' + entry.data.id);
-                    console.log('Removed the TSV thread at redd.it/' + entry.data.id);
-                  }
+            Reddit.removePost(
+              redToken,
+              entry.data.id,
+              'false',
+              function (err) {
+                if (err) {
+                  console.log(err);
+                  reject({error: 'Failed to remove the TSV thread at redd.it/' + entry.data.id});
                 }
-              );
-            }));
+              }
+            );
           });
-          Promise.all(removeTSVPromises).then(function(result) {
-            resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
-            console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
-          }, function(error) {
-            reject(error);
-          });
+          resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
+          console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
         }
       }
     );

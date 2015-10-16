@@ -368,6 +368,44 @@ exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, c
   });
 };
 
+exports.checkModeratorStatus = function (refreshToken, username, subreddit, callback) {
+  exports.refreshToken(refreshToken, function (token) {
+    if (left < 25 && moment().before(resetTime)) {
+      return callback("Rate limited.");
+    }
+    if (subreddit.substring(0,3) === '/r/') {
+      subreddit = subreddit.substring(3);
+    } else if (subreddit.substring(0,2) === 'r/') {
+      subreddit = subreddit.substring(2);
+    }
+
+    request.get({
+      url: 'https://oauth.reddit.com/r/' + subreddit + '/about/moderators?user=' + username,
+      headers: {
+        Authorization: "bearer " + token,
+        "User-Agent": "fapp/1.0"
+      }
+    }, function(err, response, body){
+      updateRateLimits(response);
+      if (err) {
+        return callback(err);
+      }
+      var bodyJson;
+      try {
+        bodyJson = JSON.parse(body);
+      } catch(checkmoderr) {
+        console.log("Error with parsing: " + body);
+        console.log("Failed to check whether /u/" + username + " is a moderator.");
+        return callback(checkmoderr);
+      }
+      callback(undefined, bodyJson);
+    });
+  }, function () {
+    console.log("Error retrieving token.");
+    callback("Error retrieving token.");
+  });
+};
+
 var updateRateLimits = function (res) {
   if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];

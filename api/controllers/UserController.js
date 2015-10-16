@@ -258,7 +258,7 @@ module.exports = {
       return res.json({error: "Invalid banlist entry"}, 400);
     }
 
-    if (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0) {
+    if (req.params.duration && (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0)) {
       return res.json({error: "Invalid duration"}, 400);
     }
 

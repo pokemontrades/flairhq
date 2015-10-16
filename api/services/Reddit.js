@@ -287,10 +287,11 @@ exports.searchTSVThreads = function (refreshToken, username, callback) {
   });
 };
 
-exports.removePost = function (refreshToken, id, callback) {
+exports.removePost = function (refreshToken, id, spam, callback) {
   exports.refreshToken(refreshToken, function (token) {
     var data = {
-      id: 't3_' + id
+      id: 't3_' + id,
+      spam: spam
     };
     if (left < 25 && moment().before(resetTime)) {
       return callback("Rate limited.");

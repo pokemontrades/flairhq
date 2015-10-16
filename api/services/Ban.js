@@ -113,6 +113,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
             Reddit.removePost(
               redToken,
               entry.data.id,
+              'false',
               function (err) {
                 if (err) {
                   console.log(err);
@@ -122,7 +123,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
             );
           });
           resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
-          console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + 'total)');
+          console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
         }
       }
     );

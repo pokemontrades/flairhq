@@ -394,8 +394,6 @@ exports.checkModeratorStatus = function (refreshToken, username, subreddit, call
       try {
         bodyJson = JSON.parse(body);
       } catch(checkmoderr) {
-        console.log("Error with parsing: " + body);
-        console.log("Failed to check whether /u/" + username + " is a moderator.");
         return callback(checkmoderr);
       }
       callback(undefined, bodyJson);

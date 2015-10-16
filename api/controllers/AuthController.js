@@ -67,8 +67,9 @@ module.exports = {
           'pokemontrades',
           function(err, response) {
             if (err) {
+              console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
               console.log(err);
-              return;
+              return res.redirect('/');
             }
 
             if (response.data.children.length) { //User is a mod, set isMod to true

@@ -1,3 +1,4 @@
 module.exports.debug = {
-    reddit: false
+    reddit: false, // If true, redirects reddit-modifying actions to a debug subreddit
+    subreddit: 'crownofnails' // The debug subreddit to redirect to
 };

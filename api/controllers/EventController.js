@@ -14,7 +14,7 @@ module.exports = {
     };
 
     Event.find(appData).exec(function (err, events) {
-      return res.json(events, 200);
+      return res.ok(events);
     });
   }
 };

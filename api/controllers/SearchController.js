@@ -1,15 +1,9 @@
 /* global module, Reference, Search, User */
-var reddit = require('redwrap');
-
 
 module.exports = {
 
   quick: function (req, res) {
     var params = req.allParams();
-    if (!req.user) {
-      return res.json("Not logged in", 403);
-    }
-
     var searchData = {
       description: params.keyword
     };
@@ -25,10 +19,6 @@ module.exports = {
 
   normal: function (req, res) {
     var params = req.allParams();
-    if (!req.user) {
-      return res.json("Not logged in", 403);
-    }
-
     var searchData = {
       description: params.keyword
     };

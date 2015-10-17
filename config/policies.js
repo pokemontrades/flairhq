@@ -22,21 +22,36 @@ module.exports.policies = {
   '*': ['passport', 'sessionAuth'],
 
   'auth': {
-    '*': ['passport', true]
+    '*': 'passport'
+  },
+
+  EventController: {
+    '*': ['passport', 'sessionAuth', 'isMod']
+  },
+
+  FlairController: {
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    apply: ['passport', 'sessionAuth'],
+    setText: ['passport', 'sessionAuth']
   },
 
   HomeController: {
-    'reference': ['passport', true],
-    'info': ['passport', true]
-  },
-
-  UserController: {
-    get: ['passport', true],
-    mine: ['passport', true]
+    '*': 'passport',
+    search: ['passport', 'sessionAuth']
   },
 
   ReferenceController: {
-    getFlairs: ['passport', true]
-  }
+    '*': ['passport', 'sessionAuth'],
+    all: ['passport', 'sessionAuth', 'isMod'],
+    approve: ['passport', 'sessionAuth', 'isMod'],
+    approveAll: ['passport', 'sessionAuth', 'isMod'],
+    saveFlairs: ['passport', 'sessionAuth', 'isMod']
+  },
 
+  UserController: {
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    edit: ['passport', 'sessionAuth'],
+    mine: ['passport', 'sessionAuth'],
+    get: ['passport']
+  }
 };

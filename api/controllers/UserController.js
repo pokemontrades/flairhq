@@ -91,10 +91,6 @@ module.exports = {
   },
 
   mine: function (req, res) {
-    if(!req.user) {
-      return res.json(403);
-    }
-
     Game.find()
       .where({user: req.user.id})
       .exec(function (err, games) {
@@ -172,12 +168,6 @@ module.exports = {
 
   addNote: function (req, res) {
     req.params = req.allParams();
-
-    if (!req.user.isMod) {
-      res.json("Not a mod.", 403);
-      return;
-    }
-
     User.findOne({id: req.params.userid}).exec(function (err, user) {
 
       if (!user) {
@@ -199,12 +189,6 @@ module.exports = {
 
   delNote: function (req, res) {
     req.params = req.allParams();
-
-    if (!req.user.isMod) {
-      res.json("Not a mod.", 403);
-      return;
-    }
-
     User.findOne({id: req.params.userid}).exec(function (err, user) {
 
       if (!user) {
@@ -243,9 +227,6 @@ module.exports = {
           9. Locally ban user from FlairHQ
     */
 
-    if (!req.user.isMod) {
-      return res.json({error: "Not a mod"}, 403);
-    }
     req.params = req.allParams();
 
     if (typeof req.params.username !== 'string' || !req.params.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
@@ -356,11 +337,6 @@ module.exports = {
   },
 
   setLocalBan: function (req, res) {
-    if (!req.user.isMod) {
-      res.json({error: "Not a mod"}, 403);
-      return;
-    }
-
     User.findOne(req.allParams().userId).exec(function (err, user) {
       if (!user) {
         return res.json({error: "Can't find user"}, 404);
@@ -377,11 +353,6 @@ module.exports = {
   },
   
   bannedUsers: function (req, res) {
-    if (!req.user.isMod) {
-      res.json({error: "Not a mod"}, 403);
-      return;
-    }
-
     User.find({banned: true}).exec(function (err, users) {
       res.json(users, 200);
     });

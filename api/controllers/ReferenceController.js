@@ -11,9 +11,6 @@ var Q = require('q'),
 
 module.exports = {
   all: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
     var dateQuery, query;
     dateQuery = {};
     if (req.query.before !== undefined) {
@@ -197,10 +194,6 @@ module.exports = {
   },
 
   approve: function (req, res) {
-    if (!req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     var refUserId = req.allParams().userid,
       id = req.allParams().id,
       approve = req.allParams().approve;
@@ -226,10 +219,6 @@ module.exports = {
   },
 
   approveAll: function (req, res) {
-    if (!req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     var refUserId = req.allParams().userid,
       type = req.allParams().type;
 
@@ -272,11 +261,6 @@ module.exports = {
 
   saveFlairs: function (req, res) {
     var flairs = req.allParams().flairs;
-    if (!req.user.isMod) {
-      res.json(403);
-      return;
-    }
-
     Flair.destroy({}, function (err) {
       if (err) {
         return res.json(err, 500);

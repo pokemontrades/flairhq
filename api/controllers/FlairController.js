@@ -1,14 +1,9 @@
 /* global module, Application, User, Reddit */
-var reddit = require('redwrap'),
-  moment = require('moment');
+var moment = require('moment');
 
 module.exports = {
 
   apply: function (req, res) {
-    if (!req.user) {
-      return res.json("Not logged in", 403);
-    }
-
     var appData = {
       user: req.user.name,
       flair: req.allParams().flair,
@@ -34,10 +29,6 @@ module.exports = {
   },
 
   denyApp: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     Application.destroy({id: req.allParams().id}).exec(function (err, app) {
       if (err) {
         return res.json(err, 500);
@@ -47,11 +38,7 @@ module.exports = {
   },
 
   approveApp: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
     var appId = req.allParams().id;
-
     Application.findOne(appId).exec(function (err, app) {
       if (!app) {
         return res.json("Application not found.", 404);
@@ -262,10 +249,6 @@ module.exports = {
   },
 
   getApps: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     Application.find().exec(function (err, apps) {
       res.json(apps, 200);
     });

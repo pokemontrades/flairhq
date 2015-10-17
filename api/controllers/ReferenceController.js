@@ -12,8 +12,6 @@ var Q = require('q'),
 module.exports = {
 
   get: function (req, res) {
-    console.log(req.params.userid);
-    console.log(req.user);
     User.findOne({id: req.params.userid}, function (err, user) {
       if (!user) {
         res.json({error: "Can't find user"}, 404);

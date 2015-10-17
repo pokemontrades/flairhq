@@ -20,13 +20,7 @@ module.exports = {
           if (err) {
             res.json(400);
           } else {
-            var publicReferences = refs;
-            publicReferences.forEach(function(entry) {
-              //If the current user is not the user that submitted the trade, remove the private notes before sending the trade info.
-              if (!req.user || req.user.id !== entry.user)
-                entry.privatenotes=null;
-            });
-            res.json(publicReferences, 200);
+            res.json(refs, 200);
           }
         });
       }

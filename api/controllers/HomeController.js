@@ -31,17 +31,17 @@ module.exports = {
           }
         });
       } else {
-        res.json(400);
+        return res.badRequest();
       }
     });
   },
 
   reference: function(req, res) {
     User.findOne({name: req.params.user}).exec(function (err, user){
-      if (!user) {
-        res.json(404);
-      } else {
+      if (user) {
         res.view();
+      } else {
+        res.notFound();
       }
     });
   },

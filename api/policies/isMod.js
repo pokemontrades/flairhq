@@ -11,5 +11,6 @@ module.exports = function(req, res, next) {
   if (req.user && req.user.isMod) {
     return next();
   }
-  return res.status(403).json({error: "Not a mod"});
+
+  return res.forbidden('Not a mod');
 };

@@ -8,9 +8,6 @@
 module.exports = {
 
   get: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
     var appData = {
       limit: 20,
       sort: "createdAt DESC"

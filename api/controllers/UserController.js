@@ -14,10 +14,9 @@ module.exports = {
     req.params = req.allParams();
     User.findOne({id: req.params.userid}, function (err, user) {
       if (!user) {
-        return res.json({error: "Can't find user"}, 404);
+        return res.notFound("Can't find user");
       } else if (user.name !== req.user.name && !req.user.isMod) {
-        return res.json("You can't edit another user's information. " +
-        "Unless you are a mod.", 403);
+        return res.forbidden("You can't edit another user's information unless you are a mod.");
       } else {
         var updatedUser = {};
         if (req.params.intro !== undefined) {
@@ -29,7 +28,7 @@ module.exports = {
 
         User.update({id: user.id}, updatedUser).exec(function (err, up) {
           if (err) {
-            res.json(err, 400);
+            res.serverError(err);
           }
 
           var promises = [],
@@ -60,7 +59,7 @@ module.exports = {
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);
-                    res.json(err, 400);
+                    res.serverError(err);
                   } else {
                     games.push(game);
                   }
@@ -72,7 +71,7 @@ module.exports = {
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);
-                    res.json(err, 400);
+                    res.serverError(err);
                   } else {
                     games.push(game);
                   }
@@ -83,7 +82,7 @@ module.exports = {
 
           Q.all(promises).then(function () {
             up.games = games;
-            res.json(up, 200);
+            res.ok(up);
           });
         });
       }
@@ -102,10 +101,10 @@ module.exports = {
 
         Application.find(appData).exec(function (err, app) {
           if (err) {
-            return res.json({error: err}, 500);
+            return serverError(err);
           }
           req.user.apps = app;
-          res.json(req.user, 200);
+          res.ok(req.user);
         });
       });
   },
@@ -158,7 +157,7 @@ module.exports = {
                       user.games = games;
                       user.comments = comments;
                       user.redToken = undefined;
-                      res.json(user, 200);
+                      return res.ok(user);
                     });
                 });
             });
@@ -171,16 +170,15 @@ module.exports = {
     User.findOne({id: req.params.userid}).exec(function (err, user) {
 
       if (!user) {
-        res.json({error: "Can't find user"}, 404);
-        return;
+        return res.notFound("Can't find user");
       }
 
       ModNote.create({user: req.user.name, refUser: user.id, note: req.params.note})
         .exec(function (err, note) {
           if (err) {
-            res.json(err, 400);
+            res.serverError(err);
           } else {
-            res.json(note, 200);
+            res.ok(note);
           }
         });
     });
@@ -190,18 +188,15 @@ module.exports = {
   delNote: function (req, res) {
     req.params = req.allParams();
     User.findOne({id: req.params.userid}).exec(function (err, user) {
-
       if (!user) {
-        res.json({error: "Can't find user"}, 404);
-        return;
+        return res.notFound("Can't find user");
       }
-
       ModNote.destroy({id: req.params.id})
         .exec(function (err, note) {
           if (err) {
-            res.json(err, 400);
+            res.serverError(err);
           } else {
-            res.json(note, 200);
+            res.ok(note);
           }
         });
     });
@@ -230,41 +225,41 @@ module.exports = {
     req.params = req.allParams();
 
     if (typeof req.params.username !== 'string' || !req.params.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
-      return res.json({error: "Invalid username"}, 400);
+      return res.status(400).json({error: "Invalid username"});
     }
 
     if (typeof req.params.banNote !== 'string') {
-      return res.json({error: "Invalid ban note"}, 400);
+      return res.status(400).json({error: "Invalid ban note"});
     }
     if (req.params.banNote.length > 300) {
-      return res.json({error: "Ban note too long"}, 400);
+      return res.status(400).json({error: "Ban note too long"});
     }
 
     if (typeof req.params.banMessage !== 'string') {
-      return res.json({error: "Invalid ban message"}, 400);
+      return res.status(400).json({error: "Invalid ban message"});
     }
 
     if (typeof req.params.banlistEntry !== 'string') {
-      return res.json({error: "Invalid banlist entry"}, 400);
+      return res.status(400).json({error: "Invalid banlist entry"});
     }
 
     if (req.params.duration && (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0)) {
-      return res.json({error: "Invalid duration"}, 400);
+      return res.status(400).json({error: "Invalid duration"});
     }
 
     if (!(req.params.additionalFCs instanceof Array)) {
-      return res.json({error: "Invalid friendcode list"}, 400);
+      return res.status(400).json({error: "Invalid friendcode list"});
     }
     for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
       if (typeof req.params.additionalFCs[FC] !== 'string' || !req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
-        return res.json({error: "Invalid friendcode list"}, 400);
+        return res.status(400).json({error: "Invalid friendcode list"});
       }
     }
 
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
       Reddit.getFlair(req.user.redToken, req.params.username, function (err, flair1, flair2) {
         if (err) {
-          return res.json({error: err}, 500);
+          return res.serverError(err);
         }
         if (flair1 && flair1.flair_css_class && flair1.flair_text) {
           if (flair1.flair_css_class.indexOf(' ') === -1) {
@@ -327,10 +322,10 @@ module.exports = {
           ];
         }
         Promise.all(promises).then(function(result) {
-          res.json('ok', 200);
+          res.ok();
         }, function(error) {
           console.log(error);
-          res.json(error, 500);
+          res.status(500).json(error);
         });
       });
     });
@@ -339,22 +334,22 @@ module.exports = {
   setLocalBan: function (req, res) {
     User.findOne(req.allParams().userId).exec(function (err, user) {
       if (!user) {
-        return res.json({error: "Can't find user"}, 404);
+        return res.notFound("Can't find user");
       }
 
       user.banned = req.allParams().ban;
       user.save(function (err) {
         if (err) {
-          return res.json(err, 500);
+          return res.serverError(err);
         }
-        res.json(user, 200);
+        res.ok(user);
       });
     });
   },
   
   bannedUsers: function (req, res) {
     User.find({banned: true}).exec(function (err, users) {
-      res.json(users, 200);
+      res.ok(users);
     });
   }
 };

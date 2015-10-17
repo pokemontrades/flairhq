@@ -12,17 +12,17 @@ module.exports = {
 
     Application.find(appData).exec(function (err, app) {
       if (err) {
-        return res.json({error: err}, 500);
+        return res.serverError(err);
       }
       if (app.length > 0) {
-        return res.json({error: "Application already exists"}, 400);
+        return res.badRequest("Application already exists");
       }
       Application.create(appData).exec(function (err, apps) {
         if (err) {
-          return res.json({error: err}, 500);
+          return res.serverError(err);
         }
         if (apps) {
-          return res.json(appData, 200);
+          return res.ok(appData);
         }
       });
     });
@@ -31,9 +31,9 @@ module.exports = {
   denyApp: function (req, res) {
     Application.destroy({id: req.allParams().id}).exec(function (err, app) {
       if (err) {
-        return res.json(err, 500);
+        return res.serverError(err);
       }
-      return res.json(app, 200);
+      return res.ok(app);
     });
   },
 
@@ -41,11 +41,11 @@ module.exports = {
     var appId = req.allParams().id;
     Application.findOne(appId).exec(function (err, app) {
       if (!app) {
-        return res.json("Application not found.", 404);
+        return res.notFound("Application not found.");
       }
       User.findOne({name: app.user}).exec(function (err, user) {
         if (err) {
-          return res.json(err, 500);
+          return res.serverError(err);
         }
         var formatted = Flairs.formattedName(app.flair);
         var flair,
@@ -90,7 +90,7 @@ module.exports = {
           flair,
           app.sub, function (err, css_class) {
           if (err) {
-            return res.json({error: err}, 400);
+            return res.badRequest(err);
           } else {
             Event.create({
               type: "flairTextChange",
@@ -116,9 +116,9 @@ module.exports = {
             );
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
-                return res.json(err, 500);
+                return res.serverError(err);
               }
-              return res.json(app, 200);
+              return res.ok(app);
             });
           }
         });
@@ -130,12 +130,8 @@ module.exports = {
     var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
     var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
 
-    if (!req.user) {
-      return res.json({error: "Not logged in"}, 403);
-    }
-
     if (!req.allParams().ptrades.match(new RegExp(ptradesFlair)) || !req.allParams().svex.match(new RegExp(svExFlair))) {
-      return res.json({error: "Please don't change the string."}, 400);
+      return res.status(400).json({error: "Please don't change the string."});
     }
 
 
@@ -148,14 +144,14 @@ module.exports = {
 
     Event.find(appData).exec(function (err, events) {
       if (err) {
-        res.json({error: "Unknown"}, 500);
+        res.status(500).json({error: "Unknown error"});
       }
       var now = moment();
       if (events.length) {
         var then = moment(events[0].createdAt);
         then.add(2, 'minutes');
         if (then.isAfter(now)) {
-          return res.json({error: "You set your flair too recently, please try again in a few minutes."}, 400);
+          return res.status(400).json({error: "You set your flair too recently, please try again in a few minutes."});
         }
       }
 
@@ -188,7 +184,7 @@ module.exports = {
         req.allParams().ptrades,
         "PokemonTrades", function (err, css_class) {
           if (err) {
-            return res.json({error: err}, 400);
+            return res.serverError(err);
           } else {
             Reddit.setFlair(
               Reddit.data.adminRefreshToken,
@@ -197,7 +193,7 @@ module.exports = {
               req.allParams().svex,
               "SVExchange", function (err, css_class) {
                 if (err) {
-                  return res.json({error: err}, 400);
+                  return res.status(500).json({error: err});
                 } else {
                   var ipAddress = req.headers['x-forwarded-for'] || req.ip;
                   Event.create([{
@@ -213,7 +209,7 @@ module.exports = {
                   }]).exec(function () {
 
                   });
-                  return res.json(req.user, 200);
+                  return res.ok(req.user);
                 }
               });
           }
@@ -250,7 +246,7 @@ module.exports = {
 
   getApps: function (req, res) {
     Application.find().exec(function (err, apps) {
-      res.json(apps, 200);
+      return res.ok(data);
     });
   }
 };

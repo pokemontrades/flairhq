@@ -13,7 +13,7 @@ module.exports = {
     }
 
     Search.quick(searchData, function (results) {
-      return res.json(results);
+      return res.ok(results);
     });
   },
 
@@ -34,7 +34,7 @@ module.exports = {
     searchData.skip = params.skip || 0;
 
     Search.quick(searchData, function (results) {
-      return res.json(results);
+      return res.ok(results);
     });
   }
 };

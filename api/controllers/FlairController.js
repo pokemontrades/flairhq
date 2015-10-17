@@ -246,7 +246,7 @@ module.exports = {
 
   getApps: function (req, res) {
     Application.find().exec(function (err, apps) {
-      return res.ok(data);
+      return res.ok(apps);
     });
   }
 };

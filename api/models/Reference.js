@@ -34,7 +34,7 @@ module.exports = {
         "misc"
       ]
     },
-    // This defines whether the other user has added the same url
+    // This is true if the other user has added the same url, and the trade has been approved.
     verified: "boolean",
     // This defines if the mods have approved it as a trade that can count
     approved: "boolean",

@@ -220,6 +220,40 @@ module.exports = {
             return res.ok(ref);
           });
         }
+        if (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event') {
+          User.findOne({name: ref.user2.substring(3)}, function(err, otherUser) {
+            if (!otherUser) {
+              return;
+            }
+            var query = {
+              url: new RegExp(ref.url.substring(ref.url.indexOf("/r/"))),
+              user2: '/u/' + refUser.name,
+              $or: [
+                {type: 'casual'},
+                {type: 'shiny'},
+                {type: 'event'}
+              ],
+            };
+            Reference.findOne(query, function (err, otherRef) {
+              if (!otherRef) {
+                return;
+              }
+              otherRef.approved = approve;
+              ref.verified = approve;
+              otherRef.verified = approve;
+              ref.save(function (err) {
+                if (err) {
+                  console.log(err);
+                }
+              });
+              otherRef.save(function (err) {
+                if (err) {
+                  console.log(err);
+                }
+              });
+            });
+          });
+        }
       });
     });
   },

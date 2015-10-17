@@ -37,6 +37,7 @@ module.exports.policies = {
 
   HomeController: {
     '*': 'passport',
+    index: ['passport', 'sessionAuth'],
     search: ['passport', 'sessionAuth']
   },
 

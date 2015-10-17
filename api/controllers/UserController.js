@@ -351,5 +351,24 @@ module.exports = {
     User.find({banned: true}).exec(function (err, users) {
       res.ok(users);
     });
+  },
+
+  clearSession: function (req, res) {
+    Reddit.checkModeratorStatus(
+      sails.config.reddit.adminRefreshToken,
+      req.user.name,
+      'pokemontrades',
+      function(err, response) {
+        if (err) {
+          console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+          console.log(err);
+          return res.serverError();
+        }
+        if (response.data.children.length) { //User is a mod, clear session
+          // placeholder
+        }
+        return res.ok();
+      }
+    );
   }
 };

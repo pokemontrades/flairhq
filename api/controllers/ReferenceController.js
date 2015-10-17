@@ -11,6 +11,30 @@ var Q = require('q'),
 
 module.exports = {
 
+  get: function (req, res) {
+    console.log(req.params.userid);
+    console.log(req.user);
+    User.findOne({id: req.params.userid}, function (err, user) {
+      if (!user) {
+        res.json({error: "Can't find user"}, 404);
+      } else {
+        Reference.find({user: user.id}, function (err, refs) {
+          if (err) {
+            res.json(400);
+          } else {
+            var publicReferences = refs;
+            publicReferences.forEach(function(entry) {
+              //If the current user is not the user that submitted the trade, remove the private notes before sending the trade info.
+              if (!req.user || req.user.id !== entry.user)
+                entry.privatenotes=null;
+            });
+            res.json(publicReferences, 200);
+          }
+        });
+      }
+    });
+  },
+
   all: function (req, res) {
     if (!req.user || !req.user.isMod) {
       return res.json("Not a mod", 403);

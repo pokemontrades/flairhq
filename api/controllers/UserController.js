@@ -143,13 +143,22 @@ module.exports = {
                         user.isMod = req.user.isMod;
                       }
                       var publicReferences = references;
+                      //Censor confidential/classified info
                       publicReferences.forEach(function(entry) {
-                        //If the current user is not the user that submitted the trade, remove the private notes before sending the trade info.
-                        if (!req.user || req.user.id !== entry.user)
-                          entry.privatenotes=null;
+                        if (!req.user || req.user.id !== entry.user) {
+                          entry.privatenotes = undefined;
+                        }
+                        if (!req.user || !req.user.isMod) {
+                          entry.approved = undefined;
+                          entry.verified = undefined;
+                        }
                       });
+                      if (req.user && req.user.isMod) {
+                        user.modNotes = notes;
+                      } else {
+                        user.loggedFriendCodes = undefined;
+                      }
                       user.references = publicReferences;
-                      user.modNotes = notes;
                       user.games = games;
                       user.comments = comments;
                       user.redToken = undefined;

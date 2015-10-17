@@ -11,22 +11,6 @@ var Q = require('q'),
 
 module.exports = {
 
-  get: function (req, res) {
-    User.findOne({id: req.params.userid}, function (err, user) {
-      if (!user) {
-        res.json({error: "Can't find user"}, 404);
-      } else {
-        Reference.find({user: user.id}, function (err, refs) {
-          if (err) {
-            res.json(400);
-          } else {
-            res.json(refs, 200);
-          }
-        });
-      }
-    });
-  },
-
   all: function (req, res) {
     if (!req.user || !req.user.isMod) {
       return res.json("Not a mod", 403);

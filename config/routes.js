@@ -76,11 +76,6 @@ module.exports.routes = {
     action     : 'callback'
   },
 
-  '/reference/get/:userid' : {
-    controller : 'reference',
-    action     : 'get'
-  },
-
   '/search/quick' : {
     controller : 'search',
     action     : 'quick'

@@ -19,14 +19,10 @@
 
 module.exports.policies = {
 
-  '*': ['passport', 'sessionAuth'],
+  '*': ['passport', 'sessionAuth', 'isMod'],
 
-  'auth': {
+  AuthController: {
     '*': 'passport'
-  },
-
-  EventController: {
-    '*': ['passport', 'sessionAuth', 'isMod']
   },
 
   FlairController: {
@@ -44,17 +40,24 @@ module.exports.policies = {
   },
 
   ReferenceController: {
-    '*': ['passport', 'sessionAuth'],
-    all: ['passport', 'sessionAuth', 'isMod'],
-    approve: ['passport', 'sessionAuth', 'isMod'],
-    approveAll: ['passport', 'sessionAuth', 'isMod'],
-    saveFlairs: ['passport', 'sessionAuth', 'isMod']
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    get: ['passport', 'sessionAuth'],
+    add: ['passport', 'sessionAuth'],
+    edit: ['passport', 'sessionAuth'],
+    deleteRef: ['passport', 'sessionAuth'],
+    comment: ['passport', 'sessionAuth'],
+    delComment: ['passport', 'sessionAuth'],
+    getFlair: ['passport', 'sessionAuth']
+  },
+
+  SearchController: {
+    '*': ['passport', 'sessionAuth']
   },
 
   UserController: {
     '*': ['passport', 'sessionAuth', 'isMod'],
     edit: ['passport', 'sessionAuth'],
     mine: ['passport', 'sessionAuth'],
-    get: ['passport']
+    get: 'passport'
   }
 };

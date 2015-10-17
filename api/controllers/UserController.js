@@ -101,7 +101,7 @@ module.exports = {
 
         Application.find(appData).exec(function (err, app) {
           if (err) {
-            return serverError(err);
+            return res.serverError(err);
           }
           req.user.apps = app;
           res.ok(req.user);

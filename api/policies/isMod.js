@@ -1,9 +1,8 @@
 /**
- * isaMod
+ * isMod
  *
  * @module      :: Policy
  * @description :: Policy to only allow mods to perform certain actions
- *                 Assumes that your login action in one of your controllers sets `req.session.authenticated = true;`
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */

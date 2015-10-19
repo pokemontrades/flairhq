@@ -259,7 +259,6 @@ module.exports = {
         if (err) {
           return res.serverError(err);
         }
-        console.log(refs);
         for (var i = 0; i < refs.length; i++) {
           promises.push(References.approve(refs[i], refUser.name, true));
         }

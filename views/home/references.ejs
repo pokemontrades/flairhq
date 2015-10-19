@@ -35,8 +35,8 @@
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                    ng-model="reference.approved" ng-if="user.isMod"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font color="green" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
+            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="verified" title="This trade has been approved and logged by both users.">✓</font></sup></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
@@ -84,8 +84,8 @@
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                    ng-model="reference.approved" ng-if="user.isMod"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font color="green" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
+            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="verified" title="This trade has been approved and logged by both users.">✓</font></sup></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
@@ -133,8 +133,8 @@
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                    ng-model="reference.approved" ng-if="user.isMod"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font color="green" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
+            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="verified" title="This trade has been approved and logged by both users.">✓</font></sup></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
@@ -214,7 +214,7 @@
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                    ng-model="reference.approved" ng-if="user.isMod"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
+            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
@@ -264,7 +264,7 @@
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                    ng-model="reference.approved" ng-if="user.isMod"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
+            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
@@ -314,7 +314,7 @@
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                      ng-model="reference.approved" ng-if="user.isMod"/>
-              <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
+              <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
           </td>
 
 
@@ -366,7 +366,7 @@
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
                      ng-model="reference.approved" ng-if="user.isMod"/>
-              <span ng-if="user.isMod && refUser && reference.edited"><font color="red" title="This reference was edited at some point.">*</font></span>
+              <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
           </td>
 
 

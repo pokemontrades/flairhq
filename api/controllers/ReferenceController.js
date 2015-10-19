@@ -200,6 +200,11 @@ module.exports = {
   },
 
   approve: function (req, res) {
+    console.log("test");
+    if (!req.user.isMod) {
+      return res.json("Not a mod", 403);
+    }
+
     var refUserId = req.allParams().userid,
       id = req.allParams().id,
       approve = req.allParams().approve;
@@ -209,51 +214,11 @@ module.exports = {
         return res.notFound("User not found");
       }
       Reference.findOne(id, function (err, ref) {
-        if (!ref) {
-          return res.notFound();
-        } else {
-          ref.approved = approve;
-          ref.save(function (err) {
-            if (err) {
-              res.serverError(err);
-            }
-            return res.ok(ref);
-          });
-        }
-        if (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event') {
-          User.findOne({name: ref.user2.substring(3)}, function(err, otherUser) {
-            if (!otherUser) {
-              return;
-            }
-            var query = {
-              url: new RegExp(ref.url.substring(ref.url.indexOf("/r/"))),
-              user2: '/u/' + refUser.name,
-              $or: [
-                {type: 'casual'},
-                {type: 'shiny'},
-                {type: 'event'}
-              ],
-            };
-            Reference.findOne(query, function (err, otherRef) {
-              if (!otherRef) {
-                return;
-              }
-              otherRef.approved = approve;
-              ref.verified = approve;
-              otherRef.verified = approve;
-              ref.save(function (err) {
-                if (err) {
-                  console.log(err);
-                }
-              });
-              otherRef.save(function (err) {
-                if (err) {
-                  console.log(err);
-                }
-              });
-            });
-          });
-        }
+        References.approve(ref, res).then(function (result) {
+          return res.status(200).json(ref);
+        }, function (error) {
+          return res.status(error).end();
+        });
       });
     });
   },
@@ -266,37 +231,16 @@ module.exports = {
       if (!refUser) {
         return res.notFound("User not found");
       }
-      if (type === "event") {
-        Reference.update(
-          {user: refUser.id, type: "event"}, {approved: true}
-        ).exec(function (err, apps) {
-            Reference.update(
-              {user: refUser.id, type: "redemption"}, {approved: true}
-            ).exec(function (err, apps2) {
-                if (!apps.length) {
-                  return res.notFound({error: "No apps of that type found."});
-                }
-                if (err) {
-                  return res.serverError(err);
-                }
-                return res.ok(apps.concat(apps2));
-              });
-          });
-      } else {
-        Reference.update(
-          {user: refUser.id, type: type}, {approved: true}
-        ).exec(function (err, apps) {
-            if (!apps.length) {
-              return res.notFound({error: "No apps of that type found."});
-            }
-            if (err) {
-              return res.serverError(err);
-            }
-            return res.ok(apps);
-          });
-      }
+      var promises = [];
+      Reference.find(req.id).forEach(function (ref) {
+        promises.push(References.approve(ref));
+      });
+      Promise.all(promises).then(function (result) {
+        return res.status(200).json(result);
+      }, function (error) {
+        return res.status(error).end();
+      });
     });
-
   },
 
   saveFlairs: function (req, res) {

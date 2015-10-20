@@ -217,7 +217,7 @@ module.exports = {
           ref.approved = approve;
           ref.save(function (err) {
             if (err) {
-              res.serverError(err);
+              return res.serverError(err);
             }
             return res.json(ref, 200);
           });

@@ -52,13 +52,12 @@ module.exports = {
       failureRedirect: '/login'
     },
     function (err, user) {
-      var url = req.session.redirectUrl;
+      var url = req.session.redirectUrl ? req.session.redirectUrl : '/';
       req.session.redirectUrl = "";
       req.logIn(user, function(err) {
         if (err) {
           console.log("Failed login: " + err);
-          res.view(403, {error: err});
-          return;
+          return res.forbidden();
         }
 
         Reddit.checkModeratorStatus(
@@ -69,7 +68,7 @@ module.exports = {
             if (err) {
               console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
               console.log(err);
-              return res.redirect('/');
+              return res.redirect(url);
             }
 
             if (response.data.children.length) { //User is a mod, set isMod to true
@@ -77,11 +76,11 @@ module.exports = {
               user.save(function (err) {
                 if (err) {
                   console.log('Failed to give /u/' + user.name + ' moderator status');
-                  return res.view(500, {error: err});
+                  return res.view(500, {error: "You appear to be a mod, but you weren't given moderator status for some reason.\nTry logging in again."});
                 }
                 // Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so don't redirect there again.
                 if (req.session.state.substr(-9) === '_modlogin') {
-                  return res.redirect('/');
+                  return res.redirect(url);
                 }
                 return res.redirect('/auth/modauth');
               });
@@ -94,10 +93,10 @@ module.exports = {
                   console.log('Failed to demote user /u/' + user.name + 'from moderator status');
                   return res.view(500, {error: err});
                 }
-                return res.redirect('/');
+                return res.redirect(url);
               });
             } else { // Regular user
-              return res.redirect('/');
+              return res.redirect(url);
             }
           }
         );

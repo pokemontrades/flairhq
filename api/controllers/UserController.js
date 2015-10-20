@@ -6,7 +6,6 @@
  */
 
 var Q = require('q');
-var reddit = require('redwrap');
 
 module.exports = {
 
@@ -365,9 +364,21 @@ module.exports = {
           return res.serverError();
         }
         if (response.data.children.length) { //User is a mod, clear session
-          // placeholder
+          User.findOne({name: req.allParams().name}, function (err, user) {
+            if (err) {
+              return res.serverError(err);
+            }
+            if (!user) {
+              return status(404).json("That user could not be found.");
+            }
+            Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}, function (err, sessions) {
+              if (err) {
+                return res.serverError(err);
+              }
+              res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+            });
+          });
         }
-        return res.ok();
       }
     );
   }

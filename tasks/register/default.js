@@ -1,7 +1,9 @@
 module.exports = function (grunt) {
 	grunt.registerTask('default', [
 		'compileDev',
-		'linkAssets',
+		'sails-linker:devJs',
+		'sails-linker:devStyles',
+		'watch:assets',
 		"browserify:watch"
 	]);
 };

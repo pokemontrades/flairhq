@@ -369,13 +369,23 @@ module.exports = {
               return res.serverError(err);
             }
             if (!user) {
-              return status(404).json("That user could not be found.");
+              return res.status(404).json("404: That user could not be found.");
+            }
+            if (req.allParams().name === req.user.name) {
+              //Can't return a response after the user's own session is destroyed, so preemptively respond here if user is clearing their own session.
+              res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
             }
             Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}).exec(function (err) {
+            //The session entry is stored as a JSON string instead of an object, preventing easy queries. Instead, regex search for the user's id.
               if (err) {
-                return res.serverError(err);
+                console.log(err);
+                if (!res.finished) {
+                  return res.serverError(err);
+                }
               }
-              res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+              if (!res.finished) {
+                return res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+              }
             });
           });
         }

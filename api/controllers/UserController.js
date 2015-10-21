@@ -371,7 +371,7 @@ module.exports = {
             if (!user) {
               return status(404).json("That user could not be found.");
             }
-            Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}, function (err, sessions) {
+            Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}).exec(function (err) {
               if (err) {
                 return res.serverError(err);
               }

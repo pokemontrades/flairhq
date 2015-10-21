@@ -21,22 +21,43 @@ module.exports.policies = {
 
   '*': ['passport', 'sessionAuth', 'isMod'],
 
-  'auth': {
-    '*': ['passport', 'isMod', true]
+  AuthController: {
+    '*': 'passport'
+  },
+
+  FlairController: {
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    apply: ['passport', 'sessionAuth'],
+    setText: ['passport', 'sessionAuth']
   },
 
   HomeController: {
-    'reference': ['passport', 'isMod', true],
-    'info': ['passport', 'isMod', true]
-  },
-
-  UserController: {
-    get: ['passport', 'isMod', true],
-    mine: ['passport', 'isMod', true]
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    index: ['passport', 'sessionAuth'],
+    reference: ['passport'],
+    search: ['passport', 'sessionAuth'],
+    info: ['passport']
   },
 
   ReferenceController: {
-    getFlairs: ['passport', 'isMod', true]
-  }
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    get: ['passport', 'sessionAuth'],
+    add: ['passport', 'sessionAuth'],
+    edit: ['passport', 'sessionAuth'],
+    deleteRef: ['passport', 'sessionAuth'],
+    comment: ['passport', 'sessionAuth'],
+    delComment: ['passport', 'sessionAuth'],
+    getFlair: ['passport', 'sessionAuth']
+  },
 
+  SearchController: {
+    '*': ['passport', 'sessionAuth']
+  },
+
+  UserController: {
+    '*': ['passport', 'sessionAuth', 'isMod'],
+    edit: ['passport', 'sessionAuth'],
+    mine: ['passport', 'sessionAuth'],
+    get: 'passport'
+  }
 };

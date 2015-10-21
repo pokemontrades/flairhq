@@ -8,16 +8,13 @@
 module.exports = {
 
   get: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
     var appData = {
       limit: 20,
       sort: "createdAt DESC"
     };
 
     Event.find(appData).exec(function (err, events) {
-      return res.json(events, 200);
+      return res.ok(events);
     });
   }
 };

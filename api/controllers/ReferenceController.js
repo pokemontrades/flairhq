@@ -11,9 +11,6 @@ var Q = require('q'),
 
 module.exports = {
   all: function (req, res) {
-    if (!req.user || !req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
     var dateQuery, query;
     dateQuery = {};
     if (req.query.before !== undefined) {
@@ -41,7 +38,10 @@ module.exports = {
             callback(null, ref);
           });
         }, function (err, results) {
-          return res.json(results);
+          if (err) {
+            return res.serverError(err);
+          }
+          return res.ok(results);
         });
       });
 
@@ -54,14 +54,14 @@ module.exports = {
 
     User.findOne({id: req.params.userid}, function (err, refUser) {
       if (!refUser) {
-        return res.json({error: "Can't find user"}, 404);
+        return res.notFound("Can't find user");
       } else {
         Reference.findOne({url: {endsWith: endOfUrl}, user: refUser.id}, function (err, ref) {
           if (err) {
-            return res.json(err, 500);
+            return res.serverError(err);
           }
           if (ref && (ref.type !== "egg" || req.params.type !== "egg")) {
-            return res.json(400);
+            return res.badRequest();
           } else {
             Reference.create(
               {
@@ -80,9 +80,9 @@ module.exports = {
               function (err, ref) {
                 if (err) {
                   console.log(err);
-                  return res.json(400);
+                  return res.serverError();
                 } else {
-                  return res.json(ref, 200);
+                  return res.ok(ref);
                 }
               }
             );
@@ -97,7 +97,7 @@ module.exports = {
 
     User.findOne({id: req.user.id}, function (err, refUser) {
       if (!refUser) {
-        return res.json({error: "Can't find user"}, 404);
+        return res.notFound("Can't find user");
       }
       Reference.findOne({id: req.params.id, user: refUser.id}).exec(function (err, ref) {
         if (err || !ref) {
@@ -124,12 +124,12 @@ module.exports = {
             })
             .exec(function (err, ref) {
               if (err) {
-                return res.json(err, 500);
+                return res.serverError(err);
               }
               if (!ref) {
-                return res.json(404);
+                return res.notFound();
               }
-              return res.json(ref, 200);
+              return res.ok(ref);
             });
       });
     });
@@ -140,22 +140,22 @@ module.exports = {
 
     Reference.findOne({id: id}).exec(function (err, ref) {
       if (!ref) {
-        return res.json(404);
+        return res.notFound();
       }
       if (err) {
-        return res.json(err, 500);
+        return res.serverError(err);
       }
       if (ref.user === req.user.id || req.user.isMod) {
         Reference.destroy({id: id})
           .exec(function (err, refs) {
             if (err) {
-              return res.json(err, 400);
+              return res.serverError(err);
             } else {
-              return res.json(refs, 200);
+              return res.ok(refs);
             }
           });
       } else {
-        return res.json("unauthorised", 403);
+        return res.forbidden("unauthorised");
       }
     });
 
@@ -168,7 +168,10 @@ module.exports = {
 
     User.findOne({id: refUser}, function (err, reference) {
       Comment.create({user: reference.id, user2: user.name, message: comment}, function (err, com) {
-        res.json(com, 200);
+        if (err) {
+          return res.serverError(err);
+        }
+        return res.ok(com);
       });
     });
 
@@ -182,14 +185,14 @@ module.exports = {
     User.findOne({id: refUser}, function () {
       Comment.findOne({id: id}, function (err, comment) {
         if (!comment || err) {
-          return res.json(err, 404);
+          return res.notFound(err);
         }
         if ((user.name === comment.user2) || user.isMod) {
           Comment.destroy({id: id}, function (err, com) {
-            return res.json(com, 200);
+            return res.ok(com);
           });
         } else {
-          return res.json(403);
+          return res.forbidden();
         }
       });
     });
@@ -197,17 +200,13 @@ module.exports = {
   },
 
   approve: function (req, res) {
-    if (!req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     var refUserId = req.allParams().userid,
       id = req.allParams().id,
       approve = req.allParams().approve;
 
     User.findOne({id: refUserId}, function (err, refUser) {
       if (!refUser) {
-        return res.json("User not found", 404);
+        return res.notFound("User not found");
       }
       Reference.findOne(id, function (err, ref) {
         if (!ref) {
@@ -218,7 +217,7 @@ module.exports = {
             if (err) {
               res.serverError(err);
             }
-            return res.json(ref, 200);
+            return res.ok(ref);
           });
         }
       });
@@ -226,16 +225,12 @@ module.exports = {
   },
 
   approveAll: function (req, res) {
-    if (!req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     var refUserId = req.allParams().userid,
       type = req.allParams().type;
 
     User.findOne({id: refUserId}, function (err, refUser) {
       if (!refUser) {
-        return res.json("User not found", 404);
+        return res.notFound("User not found");
       }
       if (type === "event") {
         Reference.update(
@@ -245,12 +240,12 @@ module.exports = {
               {user: refUser.id, type: "redemption"}, {approved: true}
             ).exec(function (err, apps2) {
                 if (!apps.length) {
-                  return res.json({error: "No apps of that type found."}, 404);
+                  return res.notFound({error: "No apps of that type found."});
                 }
                 if (err) {
-                  return res.json({error: err}, 500);
+                  return res.serverError(err);
                 }
-                return res.json(apps.concat(apps2), 200);
+                return res.ok(apps.concat(apps2));
               });
           });
       } else {
@@ -258,12 +253,12 @@ module.exports = {
           {user: refUser.id, type: type}, {approved: true}
         ).exec(function (err, apps) {
             if (!apps.length) {
-              return res.json({error: "No apps of that type found."}, 404);
+              return res.notFound({error: "No apps of that type found."});
             }
             if (err) {
-              return res.json({error: err}, 500);
+              return res.serverError(err);
             }
-            return res.json(apps, 200);
+            return res.ok(apps);
           });
       }
     });
@@ -272,14 +267,9 @@ module.exports = {
 
   saveFlairs: function (req, res) {
     var flairs = req.allParams().flairs;
-    if (!req.user.isMod) {
-      res.json(403);
-      return;
-    }
-
     Flair.destroy({}, function (err) {
       if (err) {
-        return res.json(err, 500);
+        return res.serverError(err);
       }
       var promises = [],
         added = [];
@@ -293,7 +283,7 @@ module.exports = {
       });
 
       Q.all(promises).then(function () {
-        res.json(added, 200);
+        res.ok(added);
       });
 
     });
@@ -303,7 +293,7 @@ module.exports = {
 
   getFlairs: function (req, res) {
     Flair.find().exec(function (err, flairs) {
-      res.json(flairs, 200);
+      res.ok(flairs);
     });
   }
 };

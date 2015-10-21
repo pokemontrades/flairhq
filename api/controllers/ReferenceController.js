@@ -224,10 +224,6 @@ module.exports = {
   },
 
   approve: function (req, res) {
-    if (!req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     var id = req.allParams().id,
       approve = req.allParams().approve;
 
@@ -239,17 +235,13 @@ module.exports = {
         References.approve(ref, refUser.name, approve).then(function (result) {
           return res.status(200).json(ref);
         }, function (error) {
-          return res.json(error);
+          return res.status(500).json(error);
         });
       });
     });
   },
 
   approveAll: function (req, res) {
-    if (!req.user.isMod) {
-      return res.json("Not a mod", 403);
-    }
-
     User.findOne({id: req.allParams().userid}, function (err, refUser) {
       if (!refUser) {
         return res.notFound("User not found");

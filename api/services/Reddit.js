@@ -49,7 +49,6 @@ exports.getFlair = function (refreshToken, user, callback) {
   exports.refreshToken(refreshToken, function (token) {
     user = user || '';
     var body = {
-      api_type: 'json',
       name: user
     };
     request.post({

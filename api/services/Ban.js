@@ -64,9 +64,20 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
           }
           try {
             for (var listno = 0; listno < fclist_indices.length; listno++) {
-              var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf(']'));
+              var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].lastIndexOf(']'));
               for (var i = 0; i < friend_codes.length; i++) {
-                before_bracket += ', "' + friend_codes[i] + '"';
+                if (!friend_codes[i].match(/^(\d{4}-){2}\d{4}$/g)) {
+                  reject({error: 'Invalid friend code' + friend_codes[i]});
+                  return;
+                }
+                //Current automod regex: 0000[^\\d]{1,3}0000[^\\d]{1,3}0000
+                var formatted;
+                if (listno == 0) {
+                  formatted = friend_codes[i].substring(0,4) + '[^\\\\d]{1,3}' + friend_codes[i].substring(5,9) + '[^\\\\d]{1,3}' + friend_codes[i].substring(10, 14);
+                } else {
+                  formatted = friend_codes[i];
+                }
+                before_bracket += ', "' + formatted + '"';
               }
               lines[fclist_indices[listno]] = before_bracket + ']';
             }

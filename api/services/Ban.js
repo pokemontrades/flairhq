@@ -72,7 +72,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
                 }
                 //Current automod regex: 0000\\D{0,3}0000\\D{0,3}0000
                 var formatted;
-                if (listno == 0) {
+                if (listno === 0) {
                   formatted = friend_codes[i].substring(0,4) + '\\\\D{0,3}' + friend_codes[i].substring(5,9) + '\\\\D{0,3}' + friend_codes[i].substring(10, 14);
                 } else {
                   formatted = friend_codes[i];

@@ -70,10 +70,10 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
                   reject({error: 'Invalid friend code' + friend_codes[i]});
                   return;
                 }
-                //Current automod regex: 0000\\D{1,3}0000\\D{1,3}0000
+                //Current automod regex: 0000\\D{0,3}0000\\D{0,3}0000
                 var formatted;
                 if (listno == 0) {
-                  formatted = friend_codes[i].substring(0,4) + '\\\\D{1,3}' + friend_codes[i].substring(5,9) + '\\\\D{1,3}' + friend_codes[i].substring(10, 14);
+                  formatted = friend_codes[i].substring(0,4) + '\\\\D{0,3}' + friend_codes[i].substring(5,9) + '\\\\D{0,3}' + friend_codes[i].substring(10, 14);
                 } else {
                   formatted = friend_codes[i];
                 }

@@ -67,7 +67,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
               var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].lastIndexOf(']'));
               for (var i = 0; i < friend_codes.length; i++) {
                 if (!friend_codes[i].match(/^(\d{4}-){2}\d{4}$/g)) {
-                  reject({error: 'Invalid friend code' + friend_codes[i]});
+                  reject({error: 'Invalid friend code: ' + friend_codes[i]});
                   return;
                 }
                 //Current automod regex: 0000\\D{0,3}0000\\D{0,3}0000

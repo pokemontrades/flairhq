@@ -256,7 +256,7 @@ module.exports = {
     }
     console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
-      Reddit.getFlair(req.user.redToken, req.params.username, function (err, flair1, flair2) {
+      Reddit.getBothFlairs(req.user.redToken, req.params.username, function (err, flair1, flair2) {
         if (err) {
           return res.serverError(err);
         }

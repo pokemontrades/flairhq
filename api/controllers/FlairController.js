@@ -223,9 +223,11 @@ module.exports = {
         if (req.allParams().svex) {
           message += "/u/" + req.user.name + " " + req.allParams().svex + " (/r/SVExchange)\n\n";
         }
-        message += "The following friend code" + (flagged.length == 1 ? " is" : "s are") + " invalid:\n\n";
-        for (i = 0; i < flagged.length; i++) {
-          message += flagged[i] + "\n\n";
+        if (flair_FCs.length > flagged.length) {
+          message += "The following friend code" + (flagged.length == 1 ? " is" : "s are") + " invalid:\n\n";
+          for (i = 0; i < flagged.length; i++) {
+            message += flagged[i] + "\n\n";
+          }
         }
         Reddit.sendPrivateMessage(
           Reddit.data.adminRefreshToken,

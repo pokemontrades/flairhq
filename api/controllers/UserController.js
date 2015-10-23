@@ -254,7 +254,7 @@ module.exports = {
         return res.status(400).json({error: "Invalid friendcode list"});
       }
     }
-
+    console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
     User.findOne({name: req.params.username}, function (finding_user_error, user) {
       Reddit.getFlair(req.user.redToken, req.params.username, function (err, flair1, flair2) {
         if (err) {
@@ -326,6 +326,12 @@ module.exports = {
           console.log(error);
           res.status(500).json(error);
         });
+        Event.create({
+          user: req.user.id,
+          userName: req.user.name,
+          type: "banUser",
+          content: "Banned /u/" + req.params.username + "."
+        }).exec(function () {});
       });
     });
   },

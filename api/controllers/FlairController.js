@@ -100,17 +100,15 @@ module.exports = {
             }).exec(function () {
 
             });
-            console.log("Changed " + user.name + "'s flair to " + css_class);
+            console.log("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_class);
             Reddit.sendPrivateMessage(
               sails.config.reddit.adminRefreshToken,
               'FlairHQ Notification',
-              'Your application for ' + formatted + ' flair has been approved.',
+              'Your application for ' + formatted + ' flair on /r/' + app.sub + ' has been approved.',
               user.name,
               function (err) {
                 if (err) {
                   console.log(err);
-                } else {
-                  console.log('Sent a confirmation PM to ' + user.name);
                 }
               }
             );
@@ -133,7 +131,6 @@ module.exports = {
     if (!req.allParams().ptrades.match(new RegExp(ptradesFlair)) || !req.allParams().svex.match(new RegExp(svExFlair))) {
       return res.status(400).json({error: "Please don't change the string."});
     }
-
 
     var appData = {
       limit: 1,

@@ -200,6 +200,11 @@ module.exports.routes = {
     action     : 'info'
   },
 
+  '/version' : {
+    controller : 'home',
+    action     : 'version'
+  },
+
   '/search/s/:searchterm' : {
     controller : 'home',
     action     : 'search'

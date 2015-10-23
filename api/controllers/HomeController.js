@@ -64,5 +64,9 @@ module.exports = {
 
   info: function (req, res) {
     res.view();
+  },
+
+  version: function(req, res) {
+    res.ok(sails.config.version);
   }
 };

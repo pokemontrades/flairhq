@@ -2,7 +2,8 @@
   "globals": {
     "require": false,
     "module": false,
-    "console": false
+    "console": false,
+    "Reddit": false
   },
   "noempty": true,
   "noarg": true,

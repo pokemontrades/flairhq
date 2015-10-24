@@ -1,5 +1,6 @@
 var socket = require("socket.io-client");
 var io = require("sails.io.js")(socket);
+var $ = require('jquery');
 
 module.exports = function ($scope, $filter) {
   $scope.newStuff = {

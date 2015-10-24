@@ -45,4 +45,4 @@ $(function () {
 });
 
 window.marked = marked;
-angular.bootstrap(document, ['fapp']);
+ng.bootstrap(document, ['fapp']);

@@ -1,4 +1,5 @@
 var ng = require("angular");
+var $ = require('jquery');
 
 ng.module("genericTooltipModule", []).directive("ngGenericTooltip", function () {
   return {

@@ -1,8 +1,9 @@
 /* global Reference, User */
 
 var _ = require('lodash');
+var asyn = require('async');
 
-exports.quick = function (searchData, cb) {
+module.exports.quick = function (searchData, cb) {
   var appData = {
       limit: 20,
       sort: "createdAt DESC",

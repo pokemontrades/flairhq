@@ -786,7 +786,7 @@ define(['lodash', 'regex', 'sails', 'socket'], function (_, regex, sails, socket
         }
       }
       if (!reqs) {
-          return 'Unknown requirements';
+        return 'Unknown requirements';
       }
       var formatted = '';
       if (reqs.trades) {

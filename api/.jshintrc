@@ -1,0 +1,19 @@
+{
+  "globals": {
+    "Application": false,
+    "Comment": false,
+    "Event": false,
+    "Flair": false,
+    "Game": false,
+    "ModNote": false,
+    "Reference": false,
+    "Sessions": false,
+    "User": false,
+
+    "Reddit": false,
+    "Search": false,
+    "Ban": false,
+    "Flairs": false,
+    "References": false
+  }
+}

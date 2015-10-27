@@ -175,7 +175,7 @@ module.exports = {
       newsvFlair = newsvFlair.replace(/2/, "");
       
       Reddit.setFlair(
-        Reddit.data.adminRefreshToken,
+        sails.config.reddit.adminRefreshToken,
         req.user.name,
         newPFlair,
         req.allParams().ptrades,
@@ -184,7 +184,7 @@ module.exports = {
             return res.serverError(err);
           } else {
             Reddit.setFlair(
-              Reddit.data.adminRefreshToken,
+              sails.config.reddit.adminRefreshToken,
               req.user.name,
               newsvFlair,
               req.allParams().svex,
@@ -227,7 +227,7 @@ module.exports = {
           }
         }
         Reddit.sendPrivateMessage(
-          Reddit.data.adminRefreshToken,
+          sails.config.reddit.adminRefreshToken,
           "FlairHQ report: Invalid friend code" + (flagged.length == 1 ? "" : "s"),
           message,
           "/r/pokemontrades",

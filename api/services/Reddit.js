@@ -68,13 +68,11 @@ exports.getFlair = function (refreshToken, user, subreddit, callback) {
 };
 
 exports.getBothFlairs = function (refreshToken, user, callback) {
-  var ptradesFlair, svexFlair;
   var ptradesFlairPromise = new Promise(function (resolve, reject) {
     exports.getFlair(refreshToken, user, 'pokemontrades', function(err, flair) {
       if (err) {
         reject(err);
       } else {
-        ptradesFlair = flair;
         resolve(flair);
       }
     });
@@ -84,13 +82,12 @@ exports.getBothFlairs = function (refreshToken, user, callback) {
       if (err) {
         reject(err);
       } else {
-        svexFlair = flair;
         resolve(flair);
       }
     });
   });
-  Promise.all([ptradesFlair, svexFlair]).then(function (result) {
-    callback(undefined, ptradesFlair, svexFlair);
+  Promise.all([ptradesFlairPromise, svexFlairPromise]).then(function (results) {
+    callback(undefined, results[0].current, results[1].current);
   }, function (error) {
     callback(error);
   });

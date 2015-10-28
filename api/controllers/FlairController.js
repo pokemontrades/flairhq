@@ -90,7 +90,7 @@ module.exports = {
           flair,
           app.sub, function (err, css_class) {
           if (err) {
-            return res.badRequest(err);
+            return res.serverError(err);
           } else {
             Event.create({
               type: "flairTextChange",
@@ -108,7 +108,7 @@ module.exports = {
               user.name,
               function (err) {
                 if (err) {
-                  console.log(err);
+                  console.log('Failed to send a confirmation PM to ' + user.name);
                 }
               }
             );

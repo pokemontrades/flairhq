@@ -9,7 +9,6 @@ exports.banFromSub = function (redToken, username, banMessage, banNote, subreddi
     duration,
     function (err) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to ban user from /r/' + subreddit});
         } else {
           console.log('Banned ' + username + ' from /r/' + subreddit);
@@ -30,7 +29,6 @@ exports.giveBannedUserFlair = function (redToken, username, css_class, flair_tex
       subreddit,
       function (err) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to give banned user flair'});
         } else {
           console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
@@ -49,7 +47,6 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
       'config/automoderator',
       function (err, current_config) {
         if (err) {
-          console.log(err);
           reject({error: 'Error retrieving /r/' + subreddit + ' AutoModerator config'});
           return;
         }
@@ -96,7 +93,6 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
             'FlairHQ: Updated banned friend codes',
             function (err, response) {
               if (err) {
-                console.log(err);
                 reject({error: 'Failed to update /r/' + subreddit + ' AutoModerator config'});
               } else {
                 resolve('Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist');
@@ -117,7 +113,6 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
       username,
       function (err, response) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to search for user\'s TSV threads'});
         } else {
           var removeTSVPromises = [];
@@ -159,7 +154,6 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
       'banlist',
       function (err, current_list) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to retrieve current banlist'});
           return;
         }

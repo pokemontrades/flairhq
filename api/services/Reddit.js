@@ -48,7 +48,16 @@ var makeRequest = function (refreshToken, requestType, url, data, rateLimitRemai
         console.log("Error with parsing: " + body);
         return callback("Error with parsing: " + body);
       }
-      callback(err, bodyJson);
+      var callback_error;
+      if (err) {
+        console.log(err);
+        callback_error = err;
+      } else if (response.statusCode != 200) {
+        console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + response.statusCode +
+        ' - ' + response.statusMessage + '.\nResponse body: ' + JSON.stringify(bodyJson) + '\nForm data sent: ' + JSON.stringify(data));
+        callback_error = response.statusMessage;
+      }
+      callback(callback_error, bodyJson);
     };
     var headers = {Authorization: "bearer " + token, "User-Agent": userAgent};
     if (requestType === 'POST') {

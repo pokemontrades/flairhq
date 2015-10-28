@@ -797,7 +797,11 @@ module.exports = function ($scope, $filter, $location, $timeout) {
       formatted += reqs.involvement + (reqs.involvement > 1 ? ' free tradebacks/redemptions, ' : 'free tradeback/redemption, ');
     }
     if (reqs.giveaways) {
-      formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' giveaways, ' : 'giveaway, ');
+      if (reqs.sub === 'pokemontrades') { // reqs.giveaways means two different things on the two subs
+        formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' giveaways, ' : 'giveaway, ');
+      } else {
+        formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' eggs checked/given away, ' : 'egg checked/given away, ');
+      }
     }
     if (reqs.eggs) {
       formatted += reqs.eggs + (reqs.eggs > 1 ? ' hatches, ' : ' hatch, ');

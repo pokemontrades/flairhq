@@ -5,24 +5,16 @@ var request = require("request"),
   userAgent = "Webpage:hq.porygon.co:v" + sails.config.version;
 
 exports.refreshToken = function (refreshToken, error, callback) {
-  var data = "client_secret=" + sails.config.reddit.clientIDSecret +
-    "&client_id=" + sails.config.reddit.clientID +
-    "&duration=permanent" +
-    "&state=fapprefresh" +
-    "&scope=identity" +
-    "&grant_type=refresh_token" +
-    "&refresh_token=" + refreshToken +
-    "&redirect_uri=" + sails.config.reddit.redirectURL;
+  var data = "grant_type=refresh_token&refresh_token=" + refreshToken;
   var auth = "Basic " + new Buffer(sails.config.reddit.clientID + ":" + sails.config.reddit.clientIDSecret).toString("base64");
   request.post({
-    url: 'https://ssl.reddit.com/api/v1/access_token',
+    url: 'https://www.reddit.com/api/v1/access_token',
     body: data,
     json: true,
     headers: {
       "Authorization": auth,
       "User-Agent": userAgent,
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Content-Length": data.length
+      "Content-Type": "application/x-www-form-urlencoded"
     }
   }, function(err, response, body){
     if (body && body.access_token) {

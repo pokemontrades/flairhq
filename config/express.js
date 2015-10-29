@@ -1,10 +1,10 @@
 var passport = require('passport'),
   RedditStrategy = require('passport-reddit').Strategy;
 
-var verifyHandler = function(token, tokenSecret, profile, done) {
+var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
   process.nextTick(function() {
     User.findOne({uid: profile.id}, function(err, user) {
-      Reddit.getBothFlairs(tokenSecret, profile.name, function (flair1, flair2) {
+      Reddit.getBothFlairs(adminToken, profile.name, function (flair1, flair2) {
         if (user) {
           if (user.banned) {
             return done("You are banned from FAPP", user);
@@ -65,12 +65,15 @@ passport.deserializeUser(function(id, done) {
 module.exports.http = {
 
   customMiddleware: function(app) {
+    var callWithToken = function (token, tokenSecret, profile, done) {
+      verifyHandler(sails.config.reddit.adminRefreshToken, token, tokenSecret, profile, done);
+    };
     passport.use(new RedditStrategy({
       clientID: sails.config.reddit.clientID,
       clientSecret: sails.config.reddit.clientIDSecret,
       callbackURL: sails.config.reddit.redirectURL,
       scope: 'flair,modflair,modcontributors,wikiread,wikiedit,read,modposts'
-    }, verifyHandler));
+    }, callWithToken));
 
     app.use(passport.initialize());
     app.use(passport.session());

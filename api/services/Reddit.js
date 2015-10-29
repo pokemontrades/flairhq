@@ -14,7 +14,8 @@ exports.refreshToken = function (refreshToken, error, callback) {
     headers: {
       "Authorization": auth,
       "User-Agent": userAgent,
-      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": data.length
     }
   }, function(err, response, body){
     if (body && body.access_token) {

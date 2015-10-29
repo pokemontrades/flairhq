@@ -1,51 +1,49 @@
 var passport = require('passport'),
   RedditStrategy = require('passport-reddit').Strategy;
 
-module.exports = {
-  verifyHandler: function(token, tokenSecret, profile, done) {
-    process.nextTick(function() {
-      User.findOne({uid: profile.id}, function(err, user) {
-        Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, profile.name, function (flair1, flair2) {
-          if (user) {
-            if (user.banned) {
-              return done("You are banned from FAPP", user);
-            }
-            user.redToken = tokenSecret;
-            user.flair = {ptrades: flair1, svex: flair2};
-            user.save(function (err) {
-              if (!err) {
-                return done(null, user);
-              } else {
-                return done(null, user);
-              }
-            });
-          } else {
-            var data = {
-              redToken : tokenSecret,
-              provider: profile.provider,
-              uid: profile.id,
-              name: profile.name,
-              flair: {ptrades: flair1, svex: flair2}
-            };
-
-            if (profile.emails && profile.emails[0] && profile.emails[0].value) {
-              data.email = profile.emails[0].value;
-            }
-            if (profile.name && profile.name.givenName) {
-              data.firstname = profile.name.givenName;
-            }
-            if (profile.name && profile.name.familyName) {
-              data.lastname = profile.name.familyName;
-            }
-
-            User.create(data, function(err, user) {
-              return done(err, user);
-            });
+var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
+  process.nextTick(function() {
+    User.findOne({uid: profile.id}, function(err, user) {
+      Reddit.getBothFlairs(adminToken, profile.name, function (flair1, flair2) {
+        if (user) {
+          if (user.banned) {
+            return done("You are banned from FAPP", user);
           }
-        });
+          user.redToken = tokenSecret;
+          user.flair = {ptrades: flair1, svex: flair2};
+          user.save(function (err) {
+            if (!err) {
+              return done(null, user);
+            } else {
+              return done(null, user);
+            }
+          });
+        } else {
+          var data = {
+            redToken : tokenSecret,
+            provider: profile.provider,
+            uid: profile.id,
+            name: profile.name,
+            flair: {ptrades: flair1, svex: flair2}
+          };
+
+          if (profile.emails && profile.emails[0] && profile.emails[0].value) {
+            data.email = profile.emails[0].value;
+          }
+          if (profile.name && profile.name.givenName) {
+            data.firstname = profile.name.givenName;
+          }
+          if (profile.name && profile.name.familyName) {
+            data.lastname = profile.name.familyName;
+          }
+
+          User.create(data, function(err, user) {
+            return done(err, user);
+          });
+        }
       });
     });
-  }
+  });
 };
 
 passport.serializeUser(function(user, done) {
@@ -67,12 +65,15 @@ passport.deserializeUser(function(id, done) {
 module.exports.http = {
 
   customMiddleware: function(app) {
+    var callWithToken = function (token, tokenSecret, profile, done) {
+      verifyHandler(sails.config.reddit.adminRefreshToken, token, tokenSecret, profile, done);
+    };
     passport.use(new RedditStrategy({
       clientID: sails.config.reddit.clientID,
       clientSecret: sails.config.reddit.clientIDSecret,
       callbackURL: sails.config.reddit.redirectURL,
       scope: 'flair,modflair,modcontributors,wikiread,wikiedit,read,modposts'
-    }, module.exports.verifyHandler));
+    }, callWithToken));
 
     app.use(passport.initialize());
     app.use(passport.session());

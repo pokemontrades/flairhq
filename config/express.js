@@ -4,7 +4,7 @@ var passport = require('passport'),
 var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
   process.nextTick(function() {
     User.findOne({uid: profile.id}, function(err, user) {
-      Reddit.getBothFlairs(adminToken, profile.name, function (flair1, flair2) {
+      Reddit.getBothFlairs(adminToken, profile.name, function (redditerr, flair1, flair2) {
         if (user) {
           if (user.banned) {
             return done("You are banned from FAPP", user);

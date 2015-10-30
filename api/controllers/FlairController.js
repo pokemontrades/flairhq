@@ -156,7 +156,7 @@ module.exports = {
       var flagged = [];
 
       for (var i = 0; i < flair_FCs.length; i++) {
-        if (!Flairs.isValid(flair_FCs[i])) {
+        if (!Flairs.isValid(flair_FCs[i]) && flair_FCs[i] !== req.user.loggedFriendCodes[i]) {
           flagged.push(flair_FCs[i]);
         }
       }

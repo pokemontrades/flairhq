@@ -53,7 +53,7 @@ module.exports = {
     var protomatch = /^(https?):\/\/(www|[a-z0-9]*\.)?reddit\.com/;
     var endOfUrl = req.params.url.replace(protomatch, '');
 
-    User.findOne({id: req.params.userid}, function (err, refUser) {
+    User.findOne({id: req.user.id}, function (err, refUser) {
       if (!refUser) {
         return res.json({error: "Can't find user"}, 404);
       } else {

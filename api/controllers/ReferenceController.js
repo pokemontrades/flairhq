@@ -130,7 +130,7 @@ module.exports = {
 
   deleteRef: function (req, res) {
     var id = req.allParams().refId;
-    Reference.findOne(id, function (err, ref) {
+    Reference.findOne(id).exec(function (err, ref) {
       if (!ref) {
         return res.notFound();
       }
@@ -151,7 +151,7 @@ module.exports = {
             }
           });
         }
-        Reference.destroy(id, function (err, refs) {
+        Reference.destroy(id).exec(function (err, refs) {
             if (err) {
               return res.serverError(err);
             }

@@ -29,7 +29,7 @@ module.exports = {
   },
 
   denyApp: function (req, res) {
-    Application.destroy(req.allParams().id, function (err, results) {
+    Application.destroy(req.allParams().id).exec(function (err, results) {
       if (err) {
         return res.serverError(err);
       }
@@ -108,7 +108,7 @@ module.exports = {
                 }
               }
             );
-            Application.destroy(req.allParams().id, function (err, app) {
+            Application.destroy(req.allParams().id).exec(function (err, app) {
               if (err) {
                 return res.serverError(err);
               }

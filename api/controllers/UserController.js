@@ -172,7 +172,7 @@ module.exports = {
   },
 
   delNote: function (req, res) {
-    ModNote.destroy(req.allParams().id, function (err, note) {
+    ModNote.destroy(req.allParams().id).exec(function (err, note) {
       if (err) {
         return res.serverError(err);
       }
@@ -321,7 +321,7 @@ module.exports = {
   },
 
   setLocalBan: function (req, res) {
-    User.update(req.allParams().username, {banned: req.allParams().ban}, function (err, user) {
+    User.update(req.allParams().username, {banned: req.allParams().ban}).exec(function (err, user) {
       if (err) {
         console.log(err);
         return res.serverError(err);
@@ -334,7 +334,7 @@ module.exports = {
   },
   
   bannedUsers: function (req, res) {
-    User.find({banned: true}, function (err, users) {
+    User.find({banned: true}).exec(function (err, users) {
       if (err) {
         return res.serverError(err);
       }
@@ -353,7 +353,7 @@ module.exports = {
           return res.serverError();
         }
         if (response.data.children.length) { //User is a mod, clear session
-          Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}, function (err) {
+          Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
             if (err) {
               console.log(err);
               return res.serverError(err);

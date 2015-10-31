@@ -29,17 +29,16 @@ module.exports = {
   },
 
   denyApp: function (req, res) {
-    Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+    Application.destroy(req.allParams().id, function (err, results) {
       if (err) {
         return res.serverError(err);
       }
-      return res.ok(app);
+      return res.ok(results);
     });
   },
 
   approveApp: function (req, res) {
-    var appId = req.allParams().id;
-    Application.findOne(appId).exec(function (err, app) {
+    Application.findOne(req.allParams().id).exec(function (err, app) {
       if (!app) {
         return res.notFound("Application not found.");
       }
@@ -94,11 +93,8 @@ module.exports = {
           } else {
             Event.create({
               type: "flairTextChange",
-              user: req.user.id,
-              userName: req.user.name,
+              user: req.user.name,
               content: "Changed " + user.name + "'s flair to " + css_class
-            }).exec(function () {
-
             });
             console.log("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_class);
             Reddit.sendPrivateMessage(
@@ -112,17 +108,7 @@ module.exports = {
                 }
               }
             );
-            if (app.sub === 'pokemontrades') {
-              user.flair.ptrades.flair_css_class = css_class;
-            } else {
-              user.flair.svex.flair_css_class = css_class;
-            }
-            user.save(function (err, user) {
-              if (err) {
-                console.log(err);
-              }
-            });
-            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+            Application.destroy(req.allParams().id, function (err, app) {
               if (err) {
                 return res.serverError(err);
               }
@@ -145,7 +131,7 @@ module.exports = {
     var appData = {
       limit: 1,
       sort: "createdAt DESC",
-      user: req.user.id,
+      user: req.user.name,
       type: "flairTextChange"
     };
 
@@ -173,7 +159,7 @@ module.exports = {
 
       var friend_codes = _.union(flair_FCs, req.user.loggedFriendCodes);
 
-      User.update({id: req.user.id}, {loggedFriendCodes: friend_codes}, function (err, updated) {
+      User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}, function (err, updated) {
         if (err) {
           console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
           return;
@@ -205,13 +191,11 @@ module.exports = {
                   var ipAddress = req.headers['x-forwarded-for'] || req.ip;
                   Event.create([{
                     type: "flairTextChange",
-                    user: req.user.id,
-                    userName: req.user.name,
+                    user: req.user.name,
                     content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
                   }, {
                     type: "flairTextChange",
-                    user: req.user.id,
-                    userName: req.user.name,
+                    user: req.user.name,
                     content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
                   }]).exec(function () {
 

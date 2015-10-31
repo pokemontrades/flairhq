@@ -31,9 +31,8 @@ module.exports = function ($scope) {
   };
 
   $scope.setLocalBan = function (user, ban) {
-    var url = "/user/setLocalBan";
-
-    io.socket.post(url, {userId: user.id, ban: ban}, function (data, res) {
+    var url = "/mod/setlocalban";
+    io.socket.post(url, {username: user.name, ban: ban}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.getBannedUsers();
         $scope.$apply();

@@ -202,7 +202,6 @@ module.exports = function ($scope, $filter) {
     }
 
     var post = {
-      "userid": $scope.user.id,
       "url": $scope.addInfo.refUrl,
       "user2": user2,
       "type": $scope.addInfo.type,

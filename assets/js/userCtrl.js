@@ -560,7 +560,7 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
     }
 
     io.socket.post(url, {
-      "userid": $scope.user.id,
+      "username": $scope.user.name,
       "intro": intro,
       "fcs": fcs,
       "games": games
@@ -795,6 +795,13 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
     var url = "/flair/save";
     $scope.userok.saveFlairs = false;
     $scope.userspin.saveFlairs = true;
+    for (var i = 0; i < $scope.flairs.length; i++) {
+      for (var key in $scope.flairs[i]) {
+        if ($scope.flairs[i].hasOwnProperty(key) && !$scope.flairs[i][key]) {
+          $scope.flairs[i][key] = 0;
+        }
+      }
+    }
 
     io.socket.post(url, {flairs: $scope.flairs}, function (data, res) {
       if (res.statusCode === 200) {

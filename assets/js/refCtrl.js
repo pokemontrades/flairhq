@@ -215,7 +215,7 @@ module.exports = function ($scope, $filter) {
     }
 
     io.socket.post(url, {
-      "refUser": $scope.refUser.id,
+      "refUsername": $scope.refUser.name,
       "comment": comment
     }, function (data, res) {
       if (res.statusCode === 200) {
@@ -232,7 +232,7 @@ module.exports = function ($scope, $filter) {
   $scope.deleteComment = function (id, index) {
     var url = "/reference/comment/del";
 
-    io.socket.post(url, {refUser: $scope.refUser.id, id: id}, function (data, res) {
+    io.socket.post(url, {id: id}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.refUser.comments.splice(index, 1);
         $scope.$apply();
@@ -271,7 +271,7 @@ module.exports = function ($scope, $filter) {
     }
 
     io.socket.post(url, {
-      "userid": $scope.refUser.id,
+      "username": $scope.refUser.name,
       "intro": intro,
       "fcs": fcs,
       "games": games
@@ -283,9 +283,7 @@ module.exports = function ($scope, $filter) {
           $scope.ok.modSaveProfile = false;
           $scope.$apply();
         }, 1500);
-      } else if (res.statusCode === 400) {
-        $scope.modSaveError = "Your friend code was not correct.";
-      } else if (res.statusCode === 500) {
+      } else {
         $scope.modSaveError = "There was some issue saving.";
       }
       $scope.$apply();
@@ -299,7 +297,7 @@ module.exports = function ($scope, $filter) {
 
     if (newNote) {
       io.socket.post(url, {
-        "userid": $scope.refUser.id,
+        "username": $scope.refUser.name,
         "note": newNote
       }, function (data, res) {
         if (res.statusCode === 200) {
@@ -316,10 +314,7 @@ module.exports = function ($scope, $filter) {
   $scope.delNote = function (id) {
     var url = "/user/delNote";
 
-    io.socket.post(url, {
-      "userid": $scope.refUser.id,
-      "id": id
-    }, function (data, res) {
+    io.socket.post(url, {id: id}, function (data, res) {
       if (res.statusCode === 200) {
         for (var note in $scope.refUser.modNotes) {
           if (id === $scope.refUser.modNotes[note].id) {
@@ -338,9 +333,7 @@ module.exports = function ($scope, $filter) {
 
   $scope.approve = function (id, approve) {
     var url = "/reference/approve";
-
     io.socket.post(url, {
-      userid: $scope.refUser.id,
       id: id,
       approve: approve
     }, function (data, res) {
@@ -356,7 +349,7 @@ module.exports = function ($scope, $filter) {
     $scope.spin.approveAll[type] = true;
 
     io.socket.post(url, {
-      userid: $scope.refUser.id,
+      username: $scope.refUser.name,
       type: type
     }, function (data, res) {
       if (res.statusCode !== 200) {
@@ -376,19 +369,19 @@ module.exports = function ($scope, $filter) {
 
   $scope.setLocalBan = function (ban) {
     var url = "/mod/setlocalban";
-    io.socket.post(url, {userId: $scope.refUser.id, ban: ban}, function (data, res) {
+    io.socket.post(url, {username: $scope.refUser.name, ban: ban}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.refUser.banned = data.banned;
         $scope.$apply();
       } else {
-        console.log("Error");
+        console.log("Error banning " + $scope.refUser.name + ": " + res.statusCode);
       }
     });
   };
 
   $scope.deleteRef = function (id, index, type) {
     var url = "/reference/delete";
-    io.socket.post(url, {refId: id, type: type}, function (data, res) {
+    io.socket.post(url, {refId: id}, function (data, res) {
       if (res.statusCode === 200) {
         $scope.refUser.references = $filter("filter")($scope.refUser.references, {id: "!" + id});
         $scope.$apply();

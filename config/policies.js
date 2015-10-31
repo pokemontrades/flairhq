@@ -47,7 +47,7 @@ module.exports.policies = {
     deleteRef: ['passport', 'sessionAuth'],
     comment: ['passport', 'sessionAuth'],
     delComment: ['passport', 'sessionAuth'],
-    getFlair: ['passport', 'sessionAuth']
+    getFlairs: ['passport', 'sessionAuth']
   },
 
   SearchController: {

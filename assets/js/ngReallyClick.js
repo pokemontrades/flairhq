@@ -1,18 +1,17 @@
 var ng = require("angular");
 
 ng.module('ngReallyClickModule', ['ui.bootstrap'])
+  .controller('ngReallyClickCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+    $scope.ok = function () {
+      $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  }])
   .directive('ngReallyClick', ['$uibModal',
     function ($uibModal) {
-
-      var ModalInstanceCtrl = function ($scope, $modalInstance) {
-        $scope.ok = function () {
-          $modalInstance.close();
-        };
-
-        $scope.cancel = function () {
-          $modalInstance.dismiss('cancel');
-        };
-      };
 
       return {
         restrict: 'A',
@@ -54,7 +53,7 @@ ng.module('ngReallyClickModule', ['ui.bootstrap'])
 
             var modalInstance = $uibModal.open({
               template: modalHtml,
-              controller: ModalInstanceCtrl
+              controller: 'ngReallyClickCtrl'
             });
 
             modalInstance.result.then(function () {

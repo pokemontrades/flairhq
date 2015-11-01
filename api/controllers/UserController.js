@@ -216,9 +216,11 @@ module.exports = {
           4. Add "BANNED USER" to user's flair on /r/SVExchange
           5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
           6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
-          7. Remove all of the user's TSV threads on /r/SVExchange
-          8. Add user's info to banlist wiki on /r/pokemontrades
-          9. Locally ban user from FlairHQ
+          7. Add a usernote for the user on /r/pokemontrades
+          8. Add a usernote for the user on /r/SVExchange
+          9. Remove all of the user's TSV threads on /r/SVExchange
+          10. Add user's info to banlist wiki on /r/pokemontrades
+          11. Locally ban user from FlairHQ
     */
 
     req.params = req.allParams();
@@ -305,6 +307,8 @@ module.exports = {
           var svexFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange');
           var ptradesAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs);
           var svexAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs);
+          var ptradesUsernote = Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote);
+          var svexUsernote = Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote);
           var removeTSV = Ban.removeTSVThreads(req.user.redToken, req.params.username);
           var updateBanlist = Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns);
           var localBan = Ban.localBanUser(req.params.username);
@@ -315,6 +319,8 @@ module.exports = {
             svexFlair,
             ptradesAutomod,
             svexAutomod,
+            ptradesUsernote,
+            svexUsernote,
             removeTSV,
             updateBanlist,
             localBan

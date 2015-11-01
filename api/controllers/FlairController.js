@@ -249,6 +249,20 @@ module.exports = {
             }
           }
         );
+        var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();
+        Usernotes.addUsernote(
+          sails.config.reddit.adminRefreshToken,
+          'FlairHQ',
+          'pokemontrades',
+          req.user.name,
+          formattedNote,
+          'spamwatch',
+          ''
+        ).then(function (result) {
+          console.log('Created a usernote on /u/' + req.user.name);
+        }, function (error) {
+          console.log('Failed to create a usernote on /u/' + req.user.name);
+        });
       }
     });
   },

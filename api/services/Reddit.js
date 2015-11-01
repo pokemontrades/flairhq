@@ -139,6 +139,12 @@ exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, c
   makeRequest(refreshToken, 'POST', url, data, 25, callback);
 };
 
+exports.sendReply = function (refreshToken, text, parent_id, callback) {
+  var url = 'https://oauth.reddit.com/api/comment';
+  var data = {api_type: 'json', text: text, thing_id: parent_id};
+  makeRequest(refreshToken, 'POST', url, data, 30, callback);
+};
+
 exports.checkModeratorStatus = function (refreshToken, username, subreddit, callback) {
   var url = 'https://oauth.reddit.com/r/' + subreddit + '/about/moderators?user=' + username;
   makeRequest(refreshToken, 'GET', url, undefined, 5, callback);

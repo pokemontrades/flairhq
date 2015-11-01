@@ -798,9 +798,9 @@ module.exports = function ($scope, $filter, $location, $timeout) {
     }
     if (reqs.giveaways) {
       if (reqs.sub === 'pokemontrades') { // reqs.giveaways means two different things on the two subs
-        formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' giveaways, ' : 'giveaway, ');
+        formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' giveaways, ' : ' giveaway, ');
       } else {
-        formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' eggs checked/given away, ' : 'egg checked/given away, ');
+        formatted += reqs.giveaways + (reqs.giveaways > 1 ? ' eggs checked/given away, ' : ' egg checked/given away, ');
       }
     }
     if (reqs.eggs) {

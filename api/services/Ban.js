@@ -39,7 +39,7 @@ exports.giveBannedUserFlair = function (redToken, username, css_class, flair_tex
   });
 };
 //Update the AutoModerator config with the user's friend codes
-exports.updateAutomod = function (redToken, username, subreddit, friend_codes, resolve, reject) {
+exports.updateAutomod = function (redToken, username, subreddit, friend_codes) {
   return new Promise(function(resolve, reject) {
     Reddit.getWikiPage(
       redToken,
@@ -106,7 +106,7 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
   });
 };
 //Remove the user's TSV threads on /r/SVExchange.
-exports.removeTSVThreads = function(redToken, username, resolve, reject) {
+exports.removeTSVThreads = function(redToken, username) {
   return new Promise(function(resolve, reject) {
     Reddit.searchTSVThreads(
       redToken,
@@ -146,7 +146,7 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
   });
 };
 //Update the public banlist with the user's information
-exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes, igns, resolve, reject) {
+exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes, igns) {
   return new Promise(function(resolve, reject) {
     Reddit.getWikiPage(
       redToken,
@@ -188,7 +188,7 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
     );
   });
 };
-exports.localBanUser = function(username, resolve, reject) {
+exports.localBanUser = function(username) {
   return new Promise(function(resolve, reject) {
     User.findOne({name: username}).exec(function (err, user) {
       if (!user) {
@@ -208,3 +208,6 @@ exports.localBanUser = function(username, resolve, reject) {
     });
   });
 };
+exports.addUsernote = function(redToken, modname, subreddit, username, banNote) {
+  return Usernotes.addUsernote(redToken, modname, subreddit, username, 'Banned - ' + banNote, 'ban', '');
+}

@@ -16,6 +16,9 @@ exports.formattedName = function(name) {
   } else if (name.indexOf("ribbon") > -1) {
     suffix = "Ribbon";
     numberToSliceTill = -6;
+  } else if (name === "eggcup") {
+    suffix = "Cup";
+    numberToSliceTill = -3;
   } else if (name !== "egg" && name !== "involvement") {
     suffix = "Egg";
   }

@@ -162,7 +162,7 @@ module.exports = function ($scope, $filter) {
   };
 
   $scope.getFlairTextForSVEx = function () {
-    if (!$scope.refUser || !$scope.refUser.flair) {
+    if (!$scope.refUser || !$scope.refUser.flair || !$scope.refUser.flair.svex || !$scope.refUser.flair.svex.flair_css_class) {
       return;
     }
     var flairs = $scope.refUser.flair.svex.flair_css_class.split(' '),

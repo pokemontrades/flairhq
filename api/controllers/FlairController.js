@@ -88,7 +88,7 @@ module.exports = {
           user.name,
           css_class,
           flair,
-          app.sub, function (err, css_class) {
+          app.sub, function (err, response) {
           if (err) {
             return res.serverError(err);
           } else {

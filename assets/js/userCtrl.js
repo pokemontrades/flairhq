@@ -794,7 +794,7 @@ module.exports = function ($scope, $filter, $location, $timeout) {
       formatted += reqs.trades + (reqs.trades > 1 ? ' trades, ' : ' trade, ');
     }
     if (reqs.involvement) {
-      formatted += reqs.involvement + (reqs.involvement > 1 ? ' free tradebacks/redemptions, ' : 'free tradeback/redemption, ');
+      formatted += reqs.involvement + (reqs.involvement > 1 ? ' free tradebacks/redemptions, ' : ' free tradeback/redemption, ');
     }
     if (reqs.giveaways) {
       if (reqs.sub === 'pokemontrades') { // reqs.giveaways means two different things on the two subs

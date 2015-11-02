@@ -210,4 +210,4 @@ exports.localBanUser = function(username) {
 };
 exports.addUsernote = function(redToken, modname, subreddit, username, banNote) {
   return Usernotes.addUsernote(redToken, modname, subreddit, username, 'Banned - ' + banNote, 'ban', '');
-}
+};

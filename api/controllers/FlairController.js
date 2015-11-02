@@ -88,7 +88,7 @@ module.exports = {
           user.name,
           css_class,
           flair,
-          app.sub, function (err, css_class) {
+          app.sub, function (err, response) {
           if (err) {
             return res.serverError(err);
           } else {
@@ -112,6 +112,16 @@ module.exports = {
                 }
               }
             );
+            if (app.sub === 'pokemontrades') {
+              user.flair.ptrades.flair_css_class = css_class;
+            } else {
+              user.flair.svex.flair_css_class = css_class;
+            }
+            user.save(function (err, user) {
+              if (err) {
+                console.log(err);
+              }
+            });
             Application.destroy({id: req.allParams().id}).exec(function (err, app) {
               if (err) {
                 return res.serverError(err);

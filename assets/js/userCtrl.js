@@ -3,7 +3,7 @@ var io = require("sails.io.js")(socket);
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
-var flairsService = require("../../api/services/Flairs.js");
+var flairService = require("../../api/services/Flairs.js");
 
 module.exports = function ($scope, $filter, $location, $timeout) {
   $scope.regex = regex;
@@ -106,9 +106,7 @@ module.exports = function ($scope, $filter, $location, $timeout) {
     return el.type === "misc";
   };
 
-  $scope.formattedName = function (name) {
-    return flairsService.formattedName(name);
-  };
+  $scope.formattedName = flairService.formattedName;
 
   $scope.getName = function (id) {
     var name = "";

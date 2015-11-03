@@ -145,7 +145,7 @@ exports.checkModeratorStatus = function (refreshToken, username, subreddit, call
 };
 
 var updateRateLimits = function (res) {
-  if (res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
+  if (res.headers && res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];
     resetTime = moment().add(res.headers['x-ratelimit-reset'], "seconds");
   }

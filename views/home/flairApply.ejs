@@ -17,7 +17,7 @@
                     <a ng-repeat="flair in flairs | filter:inPokemonTradesTrader | orderBy: 'trades' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
+                       href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small>
                     </a>
                 </div>
@@ -26,7 +26,7 @@
                     <a ng-repeat="flair in flairs | filter:inPokemonTradesHelper | orderBy: 'involvement' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedTradeFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))">
+                       href="#" ng-click="setSelectedTradeFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small>
                     </a>
                 </div>
@@ -38,7 +38,7 @@
                     <a ng-repeat="flair in flairs | filter:inSVExchangeHatcher | orderBy: 'eggs' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedExchFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
+                       href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small>
                     </a>
                 </div>
@@ -47,7 +47,7 @@
                     <a ng-repeat="flair in flairs | filter:inSVExchangeGiver | orderBy: 'giveaways' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedExchFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))">
+                       href="#" ng-click="setSelectedExchFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair2-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small>
                     </a>
                 </div>

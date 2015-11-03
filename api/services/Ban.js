@@ -9,7 +9,6 @@ exports.banFromSub = function (redToken, username, banMessage, banNote, subreddi
     duration,
     function (err) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to ban user from /r/' + subreddit});
         } else {
           console.log('Banned ' + username + ' from /r/' + subreddit);
@@ -30,7 +29,6 @@ exports.giveBannedUserFlair = function (redToken, username, css_class, flair_tex
       subreddit,
       function (err) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to give banned user flair'});
         } else {
           console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
@@ -49,7 +47,6 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
       'config/automoderator',
       function (err, current_config) {
         if (err) {
-          console.log(err);
           reject({error: 'Error retrieving /r/' + subreddit + ' AutoModerator config'});
           return;
         }
@@ -64,9 +61,20 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
           }
           try {
             for (var listno = 0; listno < fclist_indices.length; listno++) {
-              var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].indexOf(']'));
+              var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].lastIndexOf(']'));
               for (var i = 0; i < friend_codes.length; i++) {
-                before_bracket += ', "' + friend_codes[i] + '"';
+                if (!friend_codes[i].match(/^(\d{4}-){2}\d{4}$/g)) {
+                  reject({error: 'Invalid friend code: ' + friend_codes[i]});
+                  return;
+                }
+                //Current automod regex: 0000\\D{0,3}0000\\D{0,3}0000
+                var formatted;
+                if (listno === 0) {
+                  formatted = friend_codes[i].substring(0,4) + '\\\\D{0,3}' + friend_codes[i].substring(5,9) + '\\\\D{0,3}' + friend_codes[i].substring(10, 14);
+                } else {
+                  formatted = friend_codes[i];
+                }
+                before_bracket += ', "' + formatted + '"';
               }
               lines[fclist_indices[listno]] = before_bracket + ']';
             }
@@ -85,7 +93,6 @@ exports.updateAutomod = function (redToken, username, subreddit, friend_codes, r
             'FlairHQ: Updated banned friend codes',
             function (err, response) {
               if (err) {
-                console.log(err);
                 reject({error: 'Failed to update /r/' + subreddit + ' AutoModerator config'});
               } else {
                 resolve('Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist');
@@ -106,24 +113,33 @@ exports.removeTSVThreads = function(redToken, username, resolve, reject) {
       username,
       function (err, response) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to search for user\'s TSV threads'});
         } else {
+          var removeTSVPromises = [];
           response.data.children.forEach(function (entry) {
-            Reddit.removePost(
-              redToken,
-              entry.data.id,
-              'false',
-              function (err) {
-                if (err) {
-                  console.log(err);
-                  reject({error: 'Failed to remove the TSV thread at redd.it/' + entry.data.id});
+            removeTSVPromises.push(new Promise(function(resolve2, reject2) {
+              Reddit.removePost(
+                redToken,
+                entry.data.id,
+                'false',
+                function (err) {
+                  if (err) {
+                    console.log(err);
+                    reject2({error: 'Failed to remove the TSV thread at redd.it/' + entry.data.id});
+                  } else {
+                    resolve2('Removed the TSV thread at redd.it/' + entry.data.id);
+                    console.log('Removed the TSV thread at redd.it/' + entry.data.id);
+                  }
                 }
-              }
-            );
+              );
+            }));
           });
-          resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
-          console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
+          Promise.all(removeTSVPromises).then(function(result) {
+            resolve('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
+            console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
+          }, function(error) {
+            reject(error);
+          });
         }
       }
     );
@@ -138,7 +154,6 @@ exports.updateBanlist = function (redToken, username, banlistEntry, friend_codes
       'banlist',
       function (err, current_list) {
         if (err) {
-          console.log(err);
           reject({error: 'Failed to retrieve current banlist'});
           return;
         }

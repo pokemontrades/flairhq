@@ -34,7 +34,7 @@ module.exports = {
   },
 
   modAuth: function(req, res) {
-    req.session.state = crypto.randomBytes(32).toString('hex');
+    req.session.state = crypto.randomBytes(32).toString('hex') + '_modlogin'; //The bit at the end prevents an infinite loop, see below
     if (req.query.url) {
       req.session.redirectUrl = req.query.url;
     }
@@ -52,18 +52,58 @@ module.exports = {
       failureRedirect: '/login'
     },
     function (err, user) {
-      var url = req.session.redirectUrl;
+      var url = req.session.redirectUrl ? req.session.redirectUrl : '/';
       req.session.redirectUrl = "";
       req.logIn(user, function(err) {
         if (err) {
           console.log("Failed login: " + err);
-          res.view(403, {error: err});
-          return;
+          return res.forbidden();
         }
-        if (url) {
-          return res.redirect(url);
-        }
-        return res.redirect('/');
+
+        Reddit.checkModeratorStatus(
+          sails.config.reddit.adminRefreshToken,
+          user.name,
+          'pokemontrades',
+          function(err, response) {
+            if (err) {
+              console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+              console.log(err);
+              return res.redirect(url);
+            }
+
+            if (response.data.children.length) { //User is a mod, set isMod to true
+              user.isMod = true;
+              user.save(function (err) {
+                if (err) {
+                  console.log('Failed to give /u/' + user.name + ' moderator status');
+                  return res.view(500, {error: "You appear to be a mod, but you weren't given moderator status for some reason.\nTry logging in again."});
+                }
+                /* Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so get rid of the _modlogin flag
+                *  instead of redirecting there again. If a mod ends up on a different page while they still have the _modlogin flag, they have not
+                *  successfully authenticated, so they will get redirected to /auth/modauth. */
+                if (req.session.state.substr(-9) === '_modlogin') {
+                  req.session.state = req.session.state.slice(0,-9);
+                  return res.redirect(url);
+                }
+                return res.redirect('/auth/modauth');
+              });
+            }
+
+            else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
+              user.isMod = false;
+              user.save(function (err) {
+                if (err) {
+                  console.log('Failed to demote user /u/' + user.name + 'from moderator status');
+                  return res.view(500, {error: err});
+                }
+                return res.redirect(url);
+              });
+            } else { // Regular user
+              return res.redirect(url);
+            }
+          }
+        );
+
       });
     })(req, res);
   }

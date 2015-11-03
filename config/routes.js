@@ -180,6 +180,11 @@ module.exports.routes = {
     action     : 'bannedUsers'
   },
 
+  '/clearsession/:name' : {
+    controller : 'user',
+    action     : 'clearSession'
+  },
+
   '/mod/applist' : {
     controller : 'home',
     action     : 'applist'
@@ -193,6 +198,11 @@ module.exports.routes = {
   '/info' : {
     controller : 'home',
     action     : 'info'
+  },
+
+  '/version' : {
+    controller : 'home',
+    action     : 'version'
   },
 
   '/search/s/:searchterm' : {

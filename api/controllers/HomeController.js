@@ -12,7 +12,7 @@ module.exports = {
     User.findOne({id: req.user.id}, function(err, user) {
       if (user) {
         res.view();
-        Reddit.getFlair(sails.config.reddit.adminRefreshToken, req.user.name, function (err, flair1, flair2) {
+        Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name, function (err, flair1, flair2) {
           if (flair1 || flair2) {
             user.flair = {ptrades: flair1, svex: flair2};
             var ptrades_fcs, svex_fcs;
@@ -31,26 +31,22 @@ module.exports = {
           }
         });
       } else {
-        res.json(400);
+        return res.badRequest();
       }
     });
   },
 
   reference: function(req, res) {
     User.findOne({name: req.params.user}).exec(function (err, user){
-      if (!user) {
-        res.json(404);
-      } else {
+      if (user) {
         res.view();
+      } else {
+        res.notFound();
       }
     });
   },
 
   search: function(req, res) {
-    if (!req.user) {
-      return res.json("Not logged in", 403);
-    }
-
     return res.view({searchTerm: decodeURIComponent(req.params.searchterm)});
   },
 
@@ -68,5 +64,9 @@ module.exports = {
 
   info: function (req, res) {
     res.view();
+  },
+
+  version: function(req, res) {
+    res.ok(sails.config.version);
   }
 };

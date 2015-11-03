@@ -16,7 +16,7 @@
               <h4>
                 <a href="/u/{{app.user}}">{{app.user}}</a>
                 <span class="pull-right">
-                  {{formattedName(app.flair)}}
+                  <span title={{formattedRequirements(app.flair)}}>{{formattedName(app.flair)}}</span>
                   <small>({{app.sub}})</small>
                   <button class="btn btn-primary has-spinner" ng-really-user="{{app.user}}"
                           ng-really-flair="{{formattedName(app.flair)}}"

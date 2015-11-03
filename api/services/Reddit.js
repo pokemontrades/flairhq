@@ -1,38 +1,19 @@
-//
 var request = require("request"),
   moment = require('moment'),
   left = 600,
-  resetTime = moment().add(600, "seconds");
+  resetTime = moment().add(600, "seconds"),
+  userAgent = "Webpage:hq.porygon.co:v" + sails.config.version;
 
-exports.data = {
-  clientID: sails.config.reddit.clientID,
-  clientIDSecret: sails.config.reddit.clientIDSecret,
-  redirectURL: sails.config.reddit.redirectURL,
-  adminRefreshToken: sails.config.reddit.adminRefreshToken
-};
-
-/* If sails.config.debug.reddit is set to true, all modifying actions are redirected to /r/crownofnails. This prevents accidental damage 
-to a live sub while debugging. This also makes the searchTSVThreads() function only return posts from /r/crownofnails. However, note that removePost() 
-will still remove any post sent to it, because it doesn't have a subreddit parameter. */
-
-exports.refreshToken = function (refreshToken, callback, error) {
-  var data = "client_secret=" + exports.data.clientIDSecret +
-    "&client_id=" + exports.data.clientID +
-    "&duration=permanent" +
-    "&state=fapprefresh" +
-    "&scope=identity" +
-    "&grant_type=refresh_token" +
-    "&refresh_token=" + refreshToken +
-    "&redirect_uri=" + exports.data.redirectURL;
-  var auth = "Basic " + new Buffer(exports.data.clientID + ":" + exports.data.clientIDSecret).toString("base64");
-
+exports.refreshToken = function (refreshToken, error, callback) {
+  var data = "grant_type=refresh_token&refresh_token=" + refreshToken;
+  var auth = "Basic " + new Buffer(sails.config.reddit.clientID + ":" + sails.config.reddit.clientIDSecret).toString("base64");
   request.post({
-    url: 'https://ssl.reddit.com/api/v1/access_token',
+    url: 'https://www.reddit.com/api/v1/access_token',
     body: data,
     json: true,
     headers: {
       "Authorization": auth,
-      "User-Agent": "fapp/1.0",
+      "User-Agent": userAgent,
       "Content-Type": "application/x-www-form-urlencoded",
       "Content-Length": data.length
     }
@@ -40,332 +21,127 @@ exports.refreshToken = function (refreshToken, callback, error) {
     if (body && body.access_token) {
       callback(body.access_token);
     } else {
-      error();
+      console.log("Error retrieving token.");
+      error("Error retrieving token");
     }
   });
 };
 
-exports.getFlair = function (refreshToken, user, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    user = user || '';
-    var body = {
-      api_type: 'json',
-      name: user
-    };
-    request.post({
-      url: 'https://oauth.reddit.com/r/pokemontrades/api/flairselector',
-      formData: body,
-      json: true,
-      headers: { Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"}
-    }, function(err, response, body1){
-      updateRateLimits(response);
-      request.post({
-        url: 'https://oauth.reddit.com/r/SVExchange/api/flairselector',
-        formData: body,
-        json: true,
-        headers: { Authorization: "bearer " + token,
-          "User-Agent": "fapp/1.0"}
-      }, function(err, response, body2){
-        updateRateLimits(response);
-        if (body1 && body2) {
-          callback(undefined, body1.current, body2.current);
-        } else if (body1 && !body2) {
-          callback(undefined, body1.current);
-        } else if (!body1 && body2) {
-          callback(undefined, undefined, body2.current);
-        }
-      });
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-  });
-};
-
-exports.setFlair = function (refreshToken, name, cssClass, text, sub, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    var data = {
-      api_type: 'json',
-      css_class: cssClass,
-      name: name,
-      text: text
-    };
-    if (left < 10 && moment().before(resetTime)) {
+var makeRequest = function (refreshToken, requestType, url, data, rateLimitRemainingThreshold, callback) {
+  exports.refreshToken(refreshToken, callback, function (token) {
+    if (left < rateLimitRemainingThreshold && moment().before(resetTime)) {
       return callback("Rate limited");
     }
-    if (sails.config.debug.reddit) {
-      sub = 'crownofnails';
-    }
-    request.post({
-      url: 'https://oauth.reddit.com/r/' + sub + '/api/flair',
-      formData: data,
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
-      updateRateLimits(response);
-      try {
-        var bodyJson = JSON.parse(body);
-        if (bodyJson.error) {
-          callback(bodyJson.error);
-        } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-          callback(undefined, data.css_class);
-        } else {
-          callback(bodyJson.json.errors);
-        }
-      } catch(e) {
-        console.log("Error with parsing: " + body);
-      }
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
-  });
-};
-exports.banUser = function (refreshToken, username, ban_message, note, subreddit, duration, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    var data = {
-      api_type: 'json',
-      ban_message: ban_message,
-      name: username,
-      note: note,
-      type: 'banned'
-    };
-    if (duration) {
-      data.duration = duration;
-    }
-    if (left < 25 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-    if (sails.config.debug.reddit) {
-      subreddit = 'crownofnails';
-    }
-    request.post({
-      url: 'https://oauth.reddit.com/r/' + subreddit + '/api/friend',
-      formData: data,
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
-      updateRateLimits(response);
-      try {
-        var bodyJson = JSON.parse(body);
-        if (bodyJson.error) {
-          callback(bodyJson.error);
-        } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-          callback(undefined);
-        } else {
-          callback(bodyJson.json.errors);
-        }
-      } catch(banusererr) {
-        console.log("Error with parsing: " + body);
-      }
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
-  });
-};
-
-exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    var data = {
-      page: page
-    };
-    if (left < 25 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-    request.get({
-      url: 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page + '?raw_json=1',
-      formData: data,
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
-      updateRateLimits(response);
-        var bodyJson;
-        try {
-          bodyJson = JSON.parse(body);
-        }
-        catch (getwikipageerror) {
-          console.log("Error with parsing: " + body);
-        }
-        if (bodyJson.error) {
-          callback(bodyJson.error,bodyJson,subreddit);
-        } else if (!bodyJson.json || !bodyJson.json.errors || bodyJson.json.errors.length === 0) {
-          callback(undefined,bodyJson,subreddit);
-        } else {
-          callback(bodyJson.json.errors,bodyJson,subreddit);
-        }
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
-  });
-};
-
-exports.editWikiPage = function (refreshToken, subreddit, page, content, reason, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    var data = {
-      content: content,
-      page: page,
-      reason: reason
-    };
-    if (left < 25 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-    if (sails.config.debug.reddit) {
-      subreddit = 'crownofnails';
-    }
-    request.post({
-      url: 'https://oauth.reddit.com/r/' + subreddit + '/api/wiki/edit',
-      formData: data,
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
-      updateRateLimits(response);
-        var bodyJson;
-        try {
-          bodyJson = JSON.parse(body);
-        }
-        catch (editwikipageerror) {
-          console.log("Error with parsing: " + body);
-        }
-        if (bodyJson.reason) {
-          callback(bodyJson.reason, bodyJson);
-        } else if (!bodyJson.json || !bodyJson.json.errors || bodyJson.json.errors.length === 0) {
-          callback(undefined, bodyJson);
-        } else {
-          callback(bodyJson.json.errors, bodyJson);
-        }
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
-  });
-};
-
-exports.searchTSVThreads = function (refreshToken, username, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    if (left < 25 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-    var sub = 'SVExchange';
-    if (sails.config.debug.reddit) {
-      sub = 'crownofnails';
-    }
-    request.get({
-      url: 'https://oauth.reddit.com/r/' + sub + '/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all',
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
-      updateRateLimits(response);
-        var bodyJson;
-        try {
-          bodyJson = JSON.parse(body);
-        } catch (tsvsearcherr) {
-          console.log("Error with parsing: " + body);
-        }
-          if (bodyJson.error) {
-            callback(bodyJson.error);
-          } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-            callback(undefined,bodyJson);
-          } else {
-            callback(bodyJson.json.errors,bodyJson);
-          }
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
-  });
-};
-
-exports.removePost = function (refreshToken, id, spam, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    var data = {
-      id: 't3_' + id,
-      spam: spam
-    };
-    if (left < 25 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-    request.post({
-      url: 'https://oauth.reddit.com/api/remove',
-      formData: data,
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
+    var parseResponse = function (err, response, body) {
       updateRateLimits(response);
       var bodyJson;
       try {
         bodyJson = JSON.parse(body);
-      }
-      catch (removeposterr) {
+      } catch (error) {
         console.log("Error with parsing: " + body);
+        return callback("Error with parsing: " + body);
       }
-      if (bodyJson.error) {
-        callback(bodyJson.error,bodyJson);
-      } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-        callback(undefined,bodyJson);
-      } else {
-        callback(bodyJson.json.errors,bodyJson);
+      var callback_error;
+      if (err) {
+        console.log(err);
+        callback_error = err;
+      } else if (response.statusCode != 200) {
+        console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + response.statusCode +
+        ' - ' + response.statusMessage + '.\nResponse body: ' + JSON.stringify(bodyJson) + '\nForm data sent: ' + JSON.stringify(data));
+        callback_error = response.statusMessage;
       }
-    });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
+      callback(callback_error, bodyJson);
+    };
+    var headers = {Authorization: "bearer " + token, "User-Agent": userAgent};
+    if (requestType === 'POST') {
+      request.post({url: url, formData: data, headers: headers}, parseResponse);
+    } else if (requestType === 'GET') {
+      request.get({url: url, headers: headers}, parseResponse);
+    } else {
+      callback('Invalid makeRequest() call');
+    }
   });
 };
 
-exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, callback) {
-  exports.refreshToken(refreshToken, function (token) {
-    var data = {
-      api_type: 'json',
-      subject: subject,
-      text: text,
-      to: recipient
-    };
-    if (left < 25 && moment().before(resetTime)) {
-      return callback("Rate limited.");
-    }
-    if (sails.config.debug.reddit && recipient.substring(0,3) === "/r/") {
-      data.to = '/r/crownofnails';
-    }
-    request.post({
-      url: 'https://oauth.reddit.com/api/compose',
-      formData: data,
-      headers: {
-        Authorization: "bearer " + token,
-        "User-Agent": "fapp/1.0"
-      }
-    }, function(err, response, body){
-      updateRateLimits(response);
-      try {
-        var bodyJson = JSON.parse(body);
-        if (bodyJson.error) {
-          callback(bodyJson.error);
-        } else if (!bodyJson.json || bodyJson.json.errors.length === 0) {
-          callback(undefined);
-        } else {
-          callback(bodyJson.json.errors);
-        }
-      } catch(sendpmerr) {
-        console.log("Error with parsing: " + body);
+exports.getFlair = function (refreshToken, user, subreddit, callback) {
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/api/flairselector';
+  var data = {name: user};
+  makeRequest(refreshToken, 'POST', url, data, 20, callback);
+};
+
+exports.getBothFlairs = function (refreshToken, user, callback) {
+  var ptradesFlairPromise = new Promise(function (resolve, reject) {
+    exports.getFlair(refreshToken, user, 'pokemontrades', function(err, flair) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(flair);
       }
     });
-  }, function () {
-    console.log("Error retrieving token.");
-    callback("Error retrieving token.");
   });
+  var svexFlairPromise = new Promise(function (resolve, reject) {
+    exports.getFlair(refreshToken, user, 'SVExchange', function(err, flair) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(flair);
+      }
+    });
+  });
+  Promise.all([ptradesFlairPromise, svexFlairPromise]).then(function (results) {
+    callback(undefined, results[0].current, results[1].current);
+  }, function (error) {
+    callback(error);
+  });
+};
+
+exports.setFlair = function (refreshToken, name, cssClass, text, subreddit, callback) {
+  var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : subreddit;
+  var url = 'https://oauth.reddit.com/r/' + actual_sub + '/api/flair';
+  var data = {api_type: 'json', css_class: cssClass, name: name, text: text};
+  makeRequest(refreshToken, 'POST', url, data, 5, callback);
+};
+
+exports.banUser = function (refreshToken, username, ban_message, note, subreddit, duration, callback) {
+  var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : subreddit;
+  var url = 'https://oauth.reddit.com/r/' + actual_sub + '/api/friend';
+  var data = {api_type: 'json', ban_message: ban_message, duration: (duration ? duration : 'undefined'), name: username, note: note, type: 'banned'};
+  makeRequest(refreshToken, 'POST', url, data, 5, callback);
+};
+
+exports.getWikiPage = function (refreshToken, subreddit, page, callback) {
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page + '?raw_json=1';
+  makeRequest(refreshToken, 'GET', url, undefined, 5, callback);
+};
+
+exports.editWikiPage = function (refreshToken, subreddit, page, content, reason, callback) {
+  var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : subreddit;
+  var url = 'https://oauth.reddit.com/r/' + actual_sub + '/api/wiki/edit';
+  var data = {content: content, page: page, reason: reason};
+  makeRequest(refreshToken, 'POST', url, data, 5, callback);
+};
+
+exports.searchTSVThreads = function (refreshToken, username, callback) {
+  var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
+  var url = 'https://oauth.reddit.com/r/' + actual_sub + '/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all';
+  makeRequest(refreshToken, 'GET', url, undefined, 15, callback);
+};
+
+exports.removePost = function (refreshToken, id, isSpam, callback) {
+  var url = 'https://oauth.reddit.com/api/remove';
+  var data = {id: 't3_' + id, spam: isSpam};
+  makeRequest(refreshToken, 'POST', url, data, 5, callback);
+};
+
+exports.sendPrivateMessage = function (refreshToken, subject, text, recipient, callback) {
+  var url = 'https://oauth.reddit.com/api/compose';
+  var data = {api_type: 'json', subject: subject, text: text, to: recipient};
+  makeRequest(refreshToken, 'POST', url, data, 25, callback);
+};
+
+exports.checkModeratorStatus = function (refreshToken, username, subreddit, callback) {
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/about/moderators?user=' + username;
+  makeRequest(refreshToken, 'GET', url, undefined, 5, callback);
 };
 
 var updateRateLimits = function (res) {

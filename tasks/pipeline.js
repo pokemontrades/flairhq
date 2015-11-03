@@ -22,10 +22,10 @@ var cssFilesToInject = [
 // Client-side javascript files to inject in order
 // (uses Grunt-style wildcard/glob/splat expressions)
 var jsFilesToInject = [
-  'js/dependencies/require.js'
+  'js/app.js'
 ];
 var prodJSFilesToInject = [
-  'min/production.js'
+  'min/production.min.js'
 ];
 
 

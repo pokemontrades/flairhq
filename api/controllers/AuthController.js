@@ -78,8 +78,11 @@ module.exports = {
                   console.log('Failed to give /u/' + user.name + ' moderator status');
                   return res.view(500, {error: "You appear to be a mod, but you weren't given moderator status for some reason.\nTry logging in again."});
                 }
-                // Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so don't redirect there again.
+                /* Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so get rid of the _modlogin flag
+                *  instead of redirecting there again. If a mod ends up on a different page while they still have the _modlogin flag, they have not
+                *  successfully authenticated, so they will get redirected to /auth/modauth. */
                 if (req.session.state.substr(-9) === '_modlogin') {
+                  req.session.state = req.session.state.slice(0,-9);
                   return res.redirect(url);
                 }
                 return res.redirect('/auth/modauth');

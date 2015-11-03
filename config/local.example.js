@@ -2,6 +2,7 @@
 module.exports = {
   port: 1337,
   environment: "development",
+  hookTimeout: "50000",
   reddit: {
     clientID: "CLIENT ID GOES HERE",
     clientIDSecret: "SECRET ID GOES HERE",

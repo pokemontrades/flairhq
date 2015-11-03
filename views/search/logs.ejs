@@ -1,0 +1,47 @@
+<div class="container" ng-init="setSearch('log')" ng-controller="searchCtrl">
+  <div class="main container clearfix">
+
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Log Viewer</h2>
+        </div>
+
+      </div>
+      <div class="row">
+        <form>
+          <div class="form-group col-md-3">
+            <label>Search keyword</label>
+            <input type="text" class="form-control" placeholder="Search"
+                   ng-change="searchMaybe()" ng-model="searchInfo.keyword"
+                   ng-init="searchInfo.keyword='<%- searchTerm %>'"/>
+          </div>
+        </form>
+
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="list-group search-results-adv">
+            <li class="list-group-item" ng-if="searching">Searching...</li>
+            <a ng-href="/u/{{result.userName}}"
+               ng-repeat="result in searchResults track by $index"
+               ng-if="result !== null"
+               class="list-group-item">
+              <h4 class="list-group-item-heading">
+                /u/{{result.userName}}
+              </h4>
+              <p class="list-group-iitem-text">
+                {{result.content}}
+              </p>
+            </a>
+            <a class="list-group-item" ng-if="!searching"
+               ng-click="getMore()">
+              More results
+            </a>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

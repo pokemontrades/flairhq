@@ -8,6 +8,7 @@ var indexCtrl = require('./indexCtrl');
 var adminCtrl = require('./adminCtrl');
 var banCtrl = require('./banCtrl');
 var userCtrl = require('./userCtrl');
+var searchCtrl = require('./searchCtrl');
 require('angular-spinner');
 require('angular-md');
 require('angular-bootstrap-npm');
@@ -33,6 +34,7 @@ var fapp = ng.module("fapp", [
 fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
 fapp.controller("indexCtrl", ['$scope', '$filter', indexCtrl]);
 fapp.controller("userCtrl", ['$scope', '$filter', '$location', '$timeout', userCtrl]);
+fapp.controller("searchCtrl", ['$scope', '$timeout', searchCtrl]);
 fapp.controller("adminCtrl", ['$scope', adminCtrl]);
 fapp.controller("banCtrl", ['$scope', banCtrl]);
 

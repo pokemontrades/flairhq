@@ -5,7 +5,7 @@ var _ = require("lodash");
 var $ = require("jquery");
 var flairService = require("../../api/services/Flairs.js");
 
-module.exports = function ($scope, $filter, $location, $timeout) {
+module.exports = function ($scope, $filter, $location) {
   $scope.regex = regex;
   $scope.scope = $scope;
   $scope.user = undefined;
@@ -806,112 +806,4 @@ module.exports = function ($scope, $filter, $location, $timeout) {
   $scope.deleteFlair = function (index) {
     $scope.flairs.splice(index, 1);
   };
-
-  $scope.searchInfo = {
-    keyword: "",
-    category: [],
-    user: "",
-    quick: true
-  };
-  $scope.searchInfo.uriKeyword = function () {
-    return encodeURIComponent($scope.searchInfo.keyword.replace(/\//g, "%2F"));
-  };
-  $scope.searching = false;
-  $scope.searchResults = [];
-  $scope.searchedFor = "";
-  $scope.lastSearch = "";
-  $scope.numberSearched = 0;
-
-  $scope.toggleCategory = function (name) {
-    var index = $scope.searchInfo.category.indexOf(name);
-
-    if (index > -1) {
-      $scope.searchInfo.category.splice(index, 1);
-    } else {
-      $scope.searchInfo.category.push(name);
-    }
-
-    if ($scope.searchInfo.keyword) {
-      $scope.search();
-    }
-  };
-
-  $scope.getMore = function () {
-    if ($scope.searching) {
-      return;
-    }
-    $scope.numberSearched += 20;
-    $scope.search($scope.numberSearched);
-  };
-
-  $scope.search = function (skip) {
-    $('.search-results').show();
-    $scope.searching = true;
-    if (!$scope.searchInfo.keyword) {
-      $scope.searching = false;
-      $scope.searchResults = [];
-      $scope.numberSearched = 0;
-      return;
-    }
-
-    if (!skip) {
-      $scope.numberSearched = 0;
-      skip = 0;
-    }
-
-    var url = "/search";
-    if ($scope.searchInfo.quick) {
-      url += "/quick";
-    } else {
-      url += "/normal";
-    }
-    url += "?keyword=" + $scope.searchInfo.keyword;
-    if ($scope.searchInfo.category.length > 0) {
-      url += "&categories=" + $scope.searchInfo.category;
-    }
-    if ($scope.searchInfo.user) {
-      url += "&user=" + $scope.searchInfo.user;
-    }
-    url += "&skip=" + skip;
-
-    console.log(url);
-    $scope.searchedFor = url;
-    io.socket.get(url, function (data, res) {
-      if (res.statusCode === 200 && $scope.searchedFor === url) {
-        console.log($scope.searchResults);
-        if (skip) {
-          $scope.searchResults = $scope.searchResults.concat(data);
-        } else {
-          $scope.searchResults = data;
-        }
-        $scope.searching = false;
-        $scope.$apply();
-      } else if (res.statusCode !== 200) {
-        // Some error
-        console.log(res);
-      }
-    });
-  };
-
-  var searchTimeout;
-  $scope.searchMaybe = function () {
-    if (searchTimeout) {
-      $timeout.cancel(searchTimeout);
-    }
-
-    searchTimeout = $timeout(function () {
-      if (!_.isEqual($scope.lastSearch, $scope.searchInfo)) {
-        $scope.lastSearch = _.cloneDeep($scope.searchInfo);
-        $scope.search();
-        console.log("searching " + $scope.searchInfo);
-      }
-    }, 500);
-  };
-
-  $timeout(function () {
-    if ($scope.searchInfo.keyword) {
-      $scope.search();
-    }
-  }, 300);
-  $scope.getFlairs();
 };

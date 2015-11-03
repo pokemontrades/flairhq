@@ -46,10 +46,6 @@ module.exports = {
     });
   },
 
-  search: function(req, res) {
-    return res.view({searchTerm: decodeURIComponent(req.params.searchterm)});
-  },
-
   banlist: function (req, res) {
     res.view();
   },

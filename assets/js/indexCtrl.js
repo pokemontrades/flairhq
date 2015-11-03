@@ -264,7 +264,11 @@ module.exports = function ($scope, $filter) {
         $scope.$apply();
       } else {
         $scope.indexOk.addRef = false;
-        $scope.addRefError = "Already added that URL.";
+        if (data && data.err) {
+          $scope.addRefError = data.err;
+        } else {
+          $scope.addRefError = "Already added that URL.";
+        }
         $scope.$apply();
       }
     });

@@ -51,6 +51,9 @@ module.exports = {
     req.params = req.allParams();
     var protomatch = /^(https?):\/\/(www|[a-z0-9]*\.)?reddit\.com/;
     var endOfUrl = req.params.url.replace(protomatch, '');
+    if (req.params.number && isNaN(req.params.number)) {
+      return res.badRequest({err: "Number must be a number"});
+    }
 
     User.findOne({id: req.user.id}, function (err, refUser) {
       if (!refUser) {

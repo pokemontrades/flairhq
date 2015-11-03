@@ -16,48 +16,53 @@
  * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.policies.html
  */
 
+var mod = ['passport', 'sessionAuth', 'isMod'];
+var user = ['passport', 'sessionAuth'];
+var anyone = ['passport'];
 
 module.exports.policies = {
 
-  '*': ['passport', 'sessionAuth', 'isMod'],
+  '*': mod,
 
   AuthController: {
-    '*': 'passport'
+    '*': anyone
   },
 
   FlairController: {
-    '*': ['passport', 'sessionAuth', 'isMod'],
-    apply: ['passport', 'sessionAuth'],
-    setText: ['passport', 'sessionAuth']
+    '*': mod,
+    apply: user,
+    setText: user
   },
 
   HomeController: {
-    '*': ['passport', 'sessionAuth', 'isMod'],
-    index: ['passport', 'sessionAuth'],
-    reference: ['passport'],
-    search: ['passport', 'sessionAuth'],
-    info: ['passport']
+    '*': mod,
+    index: user,
+    reference: anyone,
+    search: user,
+    info: anyone
   },
 
   ReferenceController: {
-    '*': ['passport', 'sessionAuth', 'isMod'],
-    get: ['passport', 'sessionAuth'],
-    add: ['passport', 'sessionAuth'],
-    edit: ['passport', 'sessionAuth'],
-    deleteRef: ['passport', 'sessionAuth'],
-    comment: ['passport', 'sessionAuth'],
-    delComment: ['passport', 'sessionAuth'],
-    getFlairs: ['passport', 'sessionAuth']
+    '*': mod,
+    get: user,
+    add: user,
+    edit: user,
+    deleteRef: user,
+    comment: user,
+    delComment: user,
+    getFlairs: user
   },
 
   SearchController: {
-    '*': ['passport', 'sessionAuth']
+    '*': mod,
+    refs: user,
+    refView: user
   },
 
   UserController: {
-    '*': ['passport', 'sessionAuth', 'isMod'],
-    edit: ['passport', 'sessionAuth'],
-    mine: ['passport', 'sessionAuth'],
-    get: 'passport'
+    '*': mod,
+    edit: user,
+    mine: user,
+    get: anyone
   }
 };

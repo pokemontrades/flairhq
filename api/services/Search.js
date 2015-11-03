@@ -1,9 +1,9 @@
 /* global Reference, User */
 
 var _ = require('lodash');
-var asyn = require('async');
+var async = require('async');
 
-module.exports.quick = function (searchData, cb) {
+module.exports.refs = function (searchData, cb) {
   var appData = {
       limit: 20,
       sort: "createdAt DESC",
@@ -60,5 +60,22 @@ module.exports.quick = function (searchData, cb) {
         cb(results);
       });
     });
+  });
+};
+
+module.exports.logs = function (searchData, cb) {
+  var appData = {
+      "limit": 20,
+      "sort": "createdAt DESC",
+      "skip": searchData.skip || 0,
+      "or": [
+        {"content": {'contains': searchData.keyword}},
+        {"userName": {'contains': searchData.keyword}},
+        {"type": {'contains': searchData.keyword}}
+      ]
+    };
+
+  Event.find(appData).exec(function (err, apps) {
+    cb(apps);
   });
 };

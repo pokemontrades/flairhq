@@ -425,7 +425,7 @@ module.exports = function ($scope, $filter, $location, $timeout) {
   };
 
   $scope.getFlairTextForUserForSVEx = function () {
-    if (!$scope.user || !$scope.user.flair || !$scope.user.flair.svex) {
+    if (!$scope.user || !$scope.user.flair || !$scope.user.flair.svex || !$scope.user.flair.svex.flair_css_class) {
       return;
     }
     var flairs = $scope.user.flair.svex.flair_css_class.split(' '),

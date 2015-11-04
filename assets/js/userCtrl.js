@@ -5,10 +5,15 @@ var _ = require("lodash");
 var $ = require("jquery");
 var flairService = require("../../api/services/Flairs.js");
 
-module.exports = function ($scope, $filter, $location) {
+module.exports = function ($scope, $filter, $location, UserFactory) {
   $scope.regex = regex;
   $scope.scope = $scope;
   $scope.user = undefined;
+  $scope.$watch('user', function (newU, oldU) {
+    if (newU !== oldU) {
+      UserFactory.setUser(newU);
+    }
+  });
   $scope.flairs = {};
   $scope.selectedTradeFlair = undefined;
   $scope.selectedExchFlair = undefined;

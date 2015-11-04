@@ -30,11 +30,24 @@ var fapp = ng.module("fapp", [
   'ngMask'
 ]);
 
+fapp.factory('UserFactory', function () {
+  var user;
+
+  return {
+    getUser: function () {
+      return user;
+    },
+    setUser: function (newUser) {
+      user = newUser;
+    }
+  };
+});
+
 // Define controllers, and their angular dependencies
 fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
 fapp.controller("indexCtrl", ['$scope', '$filter', indexCtrl]);
-fapp.controller("userCtrl", ['$scope', '$filter', '$location', '$timeout', userCtrl]);
-fapp.controller("searchCtrl", ['$scope', '$timeout', searchCtrl]);
+fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', userCtrl]);
+fapp.controller("searchCtrl", ['$scope', '$timeout', 'UserFactory', searchCtrl]);
 fapp.controller("adminCtrl", ['$scope', adminCtrl]);
 fapp.controller("banCtrl", ['$scope', banCtrl]);
 

@@ -47,7 +47,7 @@ var makeRequest = function (refreshToken, requestType, url, data, rateLimitRemai
         callback_error = err;
       } else if (response.statusCode != 200) {
         console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + response.statusCode +
-        ' - ' + response.statusMessage + '.\nResponse body: ' + JSON.stringify(bodyJson) + '\nForm data sent: ' + JSON.stringify(data));
+        ' - ' + response.statusMessage + '\nForm data sent: ' + JSON.stringify(data));
         callback_error = response.statusMessage;
       }
       callback(callback_error, bodyJson);

@@ -41,7 +41,7 @@ module.exports = {
       if (user) {
         res.view();
       } else {
-        res.notFound();
+        res.view('404', {data: {user: req.params.user, error: "User not found"}});
       }
     });
   },

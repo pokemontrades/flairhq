@@ -30,7 +30,7 @@
                 /u/{{result.userName}}
               </h4>
               <p class="list-group-iitem-text">
-                {{result.content}}. {{result.createdAt}}
+                {{result.content}}. {{result.createdAt | date:'yyyy-MM-dd HH:mm:ss'}} UTC
               </p>
             </a>
             <a class="list-group-item" ng-if="!searching"

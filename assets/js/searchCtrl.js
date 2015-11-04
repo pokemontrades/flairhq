@@ -83,10 +83,6 @@ module.exports = function ($scope, $timeout) {
         } else {
           $scope.searchResults = data;
         }
-        for (var i = 0; i < $scope.searchResults.length; i++) {
-          //Otherwise the date ends up in a messy format like 2015-01-01T00:00:00.000Z
-          $scope.searchResults[i].createdAt = $scope.searchResults[i].createdAt.replace("T", " ").replace(/\.\d*Z/, " UTC");
-        }
         $scope.searching = false;
         $scope.$apply();
       } else if (res.statusCode !== 200) {

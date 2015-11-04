@@ -23,15 +23,14 @@
         <div class="col-md-12">
           <ul class="list-group search-results-adv">
             <li class="list-group-item" ng-if="searching">Searching...</li>
-            <a ng-href="/u/{{result.userName}}"
-               ng-repeat="result in searchResults track by $index"
+            <a ng-repeat="result in searchResults track by $index"
                ng-if="result !== null"
                class="list-group-item">
               <h4 class="list-group-item-heading">
                 /u/{{result.userName}}
               </h4>
               <p class="list-group-iitem-text">
-                {{result.content}}
+                {{result.content}}. {{result.createdAt}}
               </p>
             </a>
             <a class="list-group-item" ng-if="!searching"

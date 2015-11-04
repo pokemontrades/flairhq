@@ -3,16 +3,31 @@ var io = require("sails.io.js")(socket);
 var _ = require("lodash");
 var $ = require("jquery");
 
-module.exports = function ($scope, $timeout) {
+module.exports = function ($scope, $timeout, UserFactory) {
+
+  $scope.user = {};
+  $scope.$watch(
+    UserFactory.getUser,
+    function (newU, oldU) {
+      if (newU !== oldU) {
+        $scope.searchInfo.searches = [
+          {long: "ref", short: "s", name: "References"}
+        ];
+        $scope.user = UserFactory.getUser();
+        if ($scope.user.isMod) {
+          $scope.searchInfo.searches.push({long: "log", short: "l", name: "Logs"});
+        }
+        $scope.searchInfo.search = $scope.searchInfo.searches[0];
+      }
+    }
+  );
 
   $scope.searchInfo = {
     keyword: "",
     category: [],
     user: "",
-    searches: [{long: "ref", short: "s", name: "References"},
-      {long: "log", short: "l", name: "Logs"}]
+    searches: []
   };
-  $scope.searchInfo.search = $scope.searchInfo.searches[0];
 
   $scope.setSearch = function (long) {
     $scope.searchInfo.search = _.find($scope.searchInfo.searches, function (item) {

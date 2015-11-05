@@ -126,7 +126,9 @@ module.exports = function ($scope, $timeout, UserFactory) {
   };
 
   $scope.submit = function () {
-    window.location.href = "/search/" + $scope.searchInfo.search.short + "/" + $scope.searchInfo.uriKeyword();
+    if ($scope.searchInfo.keyword) {
+      window.location.href = "/search/" + $scope.searchInfo.search.short + "/" + $scope.searchInfo.uriKeyword();
+    }
   };
 
   $timeout(function () {

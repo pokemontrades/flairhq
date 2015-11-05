@@ -336,7 +336,7 @@ module.exports = {
           user: req.user.id,
           userName: req.user.name,
           type: "banUser",
-          content: "Banned /u/" + req.params.username + "."
+          content: "Banned /u/" + req.params.username
         }).exec(function () {});
       });
     });

@@ -2,22 +2,15 @@
 
 module.exports = {
 
-  quick: function (req, res) {
-    var params = req.allParams();
-    var searchData = {
-      description: params.keyword
-    };
-
-    if (params.categories) {
-      searchData.categories = params.categories.split(",");
-    }
-
-    Search.quick(searchData, function (results) {
-      return res.ok(results);
-    });
+  refView: function(req, res) {
+    return res.view("search/refs", {searchTerm: decodeURIComponent(req.params.searchterm)});
   },
 
-  normal: function (req, res) {
+  logView: function(req, res) {
+    return res.view("search/logs", {searchTerm: decodeURIComponent(req.params.searchterm)});
+  },
+
+  refs: function (req, res) {
     var params = req.allParams();
     var searchData = {
       description: params.keyword
@@ -33,7 +26,20 @@ module.exports = {
 
     searchData.skip = params.skip || 0;
 
-    Search.quick(searchData, function (results) {
+    Search.refs(searchData, function (results) {
+      return res.ok(results);
+    });
+  },
+
+  log: function (req, res) {
+    var params = req.allParams();
+    var searchData = {
+      keyword: params.keyword
+    };
+
+    searchData.skip = params.skip || 0;
+
+    Search.logs(searchData, function (results) {
       return res.ok(results);
     });
   }

@@ -76,16 +76,6 @@ module.exports.routes = {
     action     : 'callback'
   },
 
-  '/search/quick' : {
-    controller : 'search',
-    action     : 'quick'
-  },
-
-  '/search/normal' : {
-    controller : 'search',
-    action     : 'normal'
-  },
-
   '/reference/add' : {
     controller : 'reference',
     action     : 'add'
@@ -206,8 +196,23 @@ module.exports.routes = {
   },
 
   '/search/s/:searchterm' : {
-    controller : 'home',
-    action     : 'search'
+    controller : 'search',
+    action     : 'refView'
+  },
+
+  '/search/l/:searchterm' : {
+    controller : 'search',
+    action     : 'logView'
+  },
+
+  '/search/ref' : {
+    controller : 'search',
+    action     : 'refs'
+  },
+
+  '/search/log' : {
+    controller : 'search',
+    action     : 'log'
   }
 
 };

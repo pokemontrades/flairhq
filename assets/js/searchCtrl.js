@@ -10,17 +10,20 @@ module.exports = function ($scope, $timeout, UserFactory) {
     UserFactory.getUser,
     function (newU, oldU) {
       if (newU !== oldU) {
-        $scope.searchInfo.searches = [
-          {long: "ref", short: "s", name: "References"}
-        ];
         $scope.user = UserFactory.getUser();
-        if ($scope.user.isMod) {
-          $scope.searchInfo.searches.push({long: "log", short: "l", name: "Logs"});
+        for (var i = 0; i < $scope.potentialSearches.length; i++) {
+          if ($scope.user.isMod || !$scope.potentialSearches[i].modOnly) {
+            $scope.searchInfo.searches.push($scope.potentialSearches[i]);
+          }
         }
-        $scope.searchInfo.search = $scope.searchInfo.searches[0];
+        if (!$scope.searchInfo.search) {
+          $scope.searchInfo.search = $scope.searchInfo.searches[0];
+        }
       }
     }
   );
+
+  $scope.potentialSearches = [{long: "ref", short: "s", name: "References"}, {long: "log", short: "l", name: "Logs", modOnly: true}];
 
   $scope.searchInfo = {
     keyword: "",
@@ -30,7 +33,7 @@ module.exports = function ($scope, $timeout, UserFactory) {
   };
 
   $scope.setSearch = function (long) {
-    $scope.searchInfo.search = _.find($scope.searchInfo.searches, function (item) {
+    $scope.searchInfo.search = _.find($scope.potentialSearches, function (item) {
       return item.long === long;
     });
   };

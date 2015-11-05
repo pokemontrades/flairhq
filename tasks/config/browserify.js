@@ -8,16 +8,6 @@ module.exports = function (grunt) {
       options: {
         transform: [["babelify"]]
       }
-    },
-    watch: {
-      files: {
-        ".tmp/public/js/app.js": "assets/js/app.js"
-      },
-      options: {
-        transform: [["babelify"]],
-        watch: true,
-        keepAlive: true
-      }
     }
   });
 

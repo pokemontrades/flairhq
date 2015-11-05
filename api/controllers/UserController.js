@@ -237,10 +237,9 @@ module.exports = {
     }
     console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
     User.findOne(req.params.username, function (finding_user_error, user) {
-      Reddit.getBothFlairs(req.user.redToken, req.params.username, function (err, flair1, flair2) {
-        if (err) {
-          return res.serverError(err);
-        }
+      Reddit.getBothFlairs(req.user.redToken, req.params.username).then(function (flairs) {
+        var flair1 = flairs[0];
+        var flair2 = flairs[1];
         if (flair1 && flair1.flair_css_class && flair1.flair_text) {
           if (flair1.flair_css_class.indexOf(' ') === -1) {
             flair1.flair_css_class += ' banned';
@@ -315,7 +314,9 @@ module.exports = {
           user: req.user.name,
           type: "banUser",
           content: "Banned /u/" + req.params.username
-        });
+        }).exec(function () {});
+      }, function (err) {
+        return res.serverError(err);
       });
     });
   },
@@ -343,28 +344,23 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(
-      sails.config.reddit.adminRefreshToken,
-      req.user.name,
-      'pokemontrades',
-      function(err, response) {
-        if (err) {
-          console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
-          return res.serverError();
-        }
-        if (response.data.children.length) { //User is a mod, clear session
-          Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
-            if (err) {
-              console.log(err);
-              return res.serverError(err);
-            }
-            if (req.allParams().name === req.user.name) {
-              req.session.destroy();
-              return res.redirect('/login');
-            }
-          });
-        }
+    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function(response) {
+      if (response.data.children.length) { //User is a mod, clear session
+        Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
+          if (err) {
+            console.log(err);
+            return res.serverError(err);
+          }
+          if (req.allParams().name === req.user.name) {
+            req.session.destroy();
+            return res.redirect('/login');
+          }
+          return res.ok("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+        });
       }
-    );
+    }, function (err) {
+      console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+      return res.serverError();
+    });
   }
 };

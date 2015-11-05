@@ -8,17 +8,17 @@
 
 module.exports = {
 
-  index: function(req, res) {
+  index: async function (req, res) {
     res.view();
-    Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name, function (err, flair1, flair2) {
-      if ((flair1 || flair2)) {
-        req.user.flair = {ptrades: flair1, svex: flair2};
+    Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name).then(function (flairs) {
+      if (flairs[0] || flairs[1]) {
+        req.user.flair = {ptrades: flairs[0], svex: flairs[1]};
         var ptrades_fcs, svex_fcs;
-        if (flair1 && flair1.flair_text) {
-          ptrades_fcs = flair1.flair_text.match(/(\d{4}-){2}\d{4}/g);
+        if (flairs[0] && flairs[0].flair_text) {
+          ptrades_fcs = flairs[0].flair_text.match(/(\d{4}-){2}\d{4}/g);
         }
-        if (flair2 && flair2.flair_text) {
-          svex_fcs = flair2.flair_text.match(/(\d{4}-){2}\d{4}/g);
+        if (flairs[1] && flairs[1].flair_text) {
+          svex_fcs = flairs[1].flair_text.match(/(\d{4}-){2}\d{4}/g);
         }
         req.user.loggedFriendCodes = _.union(ptrades_fcs, svex_fcs, req.user.loggedFriendCodes);
         req.user.save(function (err) {

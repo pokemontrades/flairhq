@@ -33,7 +33,9 @@ module.exports = function(grunt) {
 				'less:dev',
 				'copy:dev',
 				'sails-linker:devJs',
-				'sails-linker:devStyles'
+				'sails-linker:devStyles',
+				'eslint',
+				'browserify:dev'
 			]
 		}
 	});

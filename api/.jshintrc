@@ -15,5 +15,6 @@
     "Ban": false,
     "Flairs": false,
     "References": false
-  }
+  },
+  "experimental": ["asyncawait"]
 }

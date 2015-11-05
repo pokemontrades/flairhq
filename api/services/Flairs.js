@@ -31,7 +31,7 @@ exports.formattedName = function(name) {
   return formatted;
 };
 
-exports.isValid = function(code) {
+exports.validFC = function(code) {
   code = code.replace(/-/g,'');
   if (!code.match(/^\d{12}$/) || code > 549755813887) {
       return 0;
@@ -46,4 +46,25 @@ exports.isValid = function(code) {
   }
   var new_chk = (parseInt(sha1(hash_seq).substring(0,2),16) >> 1);
   return (new_chk == checksum)?1:0;
+};
+
+exports.flairCheck = function (ptrades, svex) {
+  var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
+  var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
+
+  var response = {
+    correct: true,
+    error: null,
+    ptrades: ptrades,
+    svex: svex,
+    fcs: []
+  };
+
+  if (!req.allParams().ptrades.match(new RegExp(ptradesFlair)) || !req.allParams().svex.match(new RegExp(svExFlair))) {
+    response.error = "Error with format.";
+  }
+
+  response.fcs = _.union(flairs.ptrades.match(/(\d{4}-){2}\d{4}/g), svexFlair.flair.match(/(\d{4}-){2}\d{4}/g));
+
+  return response;
 };

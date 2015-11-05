@@ -105,11 +105,8 @@ module.exports = {
               sails.config.reddit.adminRefreshToken,
               'FlairHQ Notification',
               'Your application for ' + formatted + ' flair on /r/' + app.sub + ' has been approved.',
-              user.name,
-              function (err) {
-                if (err) {
-                  console.log('Failed to send a confirmation PM to ' + user.name);
-                }
+              user.name).then(undefined, function (err) {
+                console.log('Failed to send a confirmation PM to ' + user.name);
               }
             );
             if (app.sub === 'pokemontrades') {
@@ -135,11 +132,9 @@ module.exports = {
   },
 
   setText: function (req, res) {
-    var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
-    var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
-
-    if (!req.allParams().ptrades.match(new RegExp(ptradesFlair)) || !req.allParams().svex.match(new RegExp(svExFlair))) {
-      return res.status(400).json({error: "Please don't change the string."});
+    var flairs = Flairs.flairCheck(req.allParams().ptrades, req.allParams().svex);
+    if (!flairs.correct) {
+      return res.status(400).json({error: flairs.error});
     }
 
     var appData = {
@@ -162,33 +157,34 @@ module.exports = {
         }
       }
 
-      var flair_FCs = _.union(req.allParams().ptrades.match(/(\d{4}-){2}\d{4}/g), req.allParams().svex.match(/(\d{4}-){2}\d{4}/g));
       var flagged = [];
 
-      for (var i = 0; i < flair_FCs.length; i++) {
-        if (!Flairs.isValid(flair_FCs[i]) && flair_FCs[i] !== req.user.loggedFriendCodes[i]) {
-          flagged.push(flair_FCs[i]);
+      for (var i = 0; i < flairs.fcs.length; i++) {
+        let fc = flairs.fcs[i];
+        if (!Flairs.validFC(fc) && _.contains(req.user.loggedFriendCodes, fc)) {
+          flagged.push(fc);
         }
       }
 
-      var friend_codes = _.union(flair_FCs, req.user.loggedFriendCodes);
+      var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
-      User.update({id: req.user.id}, {loggedFriendCodes: friend_codes}, function (err, updated) {
+      User.update({id: req.user.id}, {loggedFriendCodes: friend_codes}, function (err) {
         if (err) {
           console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
           return;
         }
       });
 
-      var newPFlair = req.user.flair && req.user.flair.ptrades && req.user.flair.ptrades.flair_css_class ? req.user.flair.ptrades.flair_css_class : "default";
-      var newsvFlair = req.user.flair && req.user.flair.svex && req.user.flair.svex.flair_css_class ? req.user.flair.svex.flair_css_class : "";
+      console.log(_.get(req, "user.flair.ptrades.flair"));
+      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
+      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       newsvFlair = newsvFlair.replace(/2/, "");
-      
+
       Reddit.setFlair(
         sails.config.reddit.adminRefreshToken,
         req.user.name,
         newPFlair,
-        req.allParams().ptrades,
+        ptradesFlair.flair,
         "PokemonTrades", function (err, css_class) {
           if (err) {
             return res.serverError(err);
@@ -197,7 +193,7 @@ module.exports = {
               sails.config.reddit.adminRefreshToken,
               req.user.name,
               newsvFlair,
-              req.allParams().svex,
+              svexFlair.flair,
               "SVExchange", function (err, css_class) {
                 if (err) {
                   return res.status(500).json({error: err});
@@ -240,13 +236,10 @@ module.exports = {
           sails.config.reddit.adminRefreshToken,
           "FlairHQ report: Invalid friend code" + (flagged.length == 1 ? "" : "s"),
           message,
-          "/r/pokemontrades",
-          function (err) {
-            if (err) {
-              console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-            } else {
-              console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-            }
+          "/r/pokemontrades").then(function () {
+            console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+          }, function () {
+            console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
           }
         );
         var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();

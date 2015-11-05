@@ -365,42 +365,36 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(
-      sails.config.reddit.adminRefreshToken,
-      req.user.name,
-      'pokemontrades',
-      function(err, response) {
-        if (err) {
-          console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
-          return res.serverError();
-        }
-        if (response.data.children.length) { //User is a mod, clear session
-          User.findOne({name: req.allParams().name}, function (err, user) {
+    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function(response) {
+      if (response.data.children.length) { //User is a mod, clear session
+        User.findOne({name: req.allParams().name}, function (err, user) {
+          if (err) {
+            return res.serverError(err);
+          }
+          if (!user) {
+            return res.status(404).json("404: That user could not be found.");
+          }
+          if (req.allParams().name === req.user.name) {
+            //Can't return a response after the user's own session is destroyed, so preemptively respond here if user is clearing their own session.
+            res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+          }
+          Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}).exec(function (err) {
+          //The session entry is stored as a JSON string instead of an object, preventing easy queries. Instead, regex search for the user's id.
             if (err) {
-              return res.serverError(err);
-            }
-            if (!user) {
-              return res.status(404).json("404: That user could not be found.");
-            }
-            if (req.allParams().name === req.user.name) {
-              //Can't return a response after the user's own session is destroyed, so preemptively respond here if user is clearing their own session.
-              res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
-            }
-            Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}).exec(function (err) {
-            //The session entry is stored as a JSON string instead of an object, preventing easy queries. Instead, regex search for the user's id.
-              if (err) {
-                console.log(err);
-                if (!res.finished) {
-                  return res.serverError(err);
-                }
-              }
+              console.log(err);
               if (!res.finished) {
-                return res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+                return res.serverError(err);
               }
-            });
+            }
+            if (!res.finished) {
+              return res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+            }
           });
-        }
+        });
       }
-    );
+    }, function (err) {
+      console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+      return res.serverError();
+    });
   }
 };

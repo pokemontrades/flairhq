@@ -35,21 +35,13 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   }
   try {
     for (var listno = 0; listno < fclist_indices.length; listno++) {
-      var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].lastIndexOf(']'));
+      var punctuation = listno ? [']', ', "', '-', '"'] : ['"', '|', ' ?-? ?', ''];
+      var end_delimiter_index = lines[fclist_indices[listno]].lastIndexOf(punctuation[0]);
+      var before_end = lines[fclist_indices[listno]].substring(0, end_delimiter_index);
       for (var i = 0; i < friend_codes.length; i++) {
-        if (!friend_codes[i].match(/^(\d{4}-){2}\d{4}$/g)) {
-          throw {error: 'Invalid friend code: ' + friend_codes[i]};
-        }
-        //Current automod regex: 0000\\D{0,3}0000\\D{0,3}0000
-        var formatted;
-        if (listno === 0) {
-          formatted = friend_codes[i].substring(0,4) + '\\\\D{0,3}' + friend_codes[i].substring(5,9) + '\\\\D{0,3}' + friend_codes[i].substring(10, 14);
-        } else {
-          formatted = friend_codes[i];
-        }
-        before_bracket += ', "' + formatted + '"';
+        before_end += punctuation[1] + friend_codes[i].replace(/-/g, punctuation[2]) + punctuation[3];
       }
-      lines[fclist_indices[listno]] = before_bracket + ']';
+      lines[fclist_indices[listno]] = before_end + lines[fclist_indices[listno]].substring(end_delimiter_index);
     }
   }
   catch (automodparseerr) {

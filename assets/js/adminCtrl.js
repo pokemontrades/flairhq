@@ -1,5 +1,6 @@
 var socket = require("socket.io-client");
 var io = require("sails.io.js")(socket);
+var sharedService = require("./sharedClientFunctions.js");
 
 module.exports = function ($scope) {
   $scope.users = [];
@@ -31,15 +32,7 @@ module.exports = function ($scope) {
   };
 
   $scope.setLocalBan = function (user, ban) {
-    var url = "/mod/setlocalban";
-    io.socket.post(url, {username: user.name, ban: ban}, function (data, res) {
-      if (res.statusCode === 200) {
-        $scope.getBannedUsers();
-        $scope.$apply();
-      } else {
-        console.log("Error");
-      }
-    });
+    return sharedService.setLocalBan($scope, user.name, ban);
   };
 
   $scope.denyApp = function (id, $index) {

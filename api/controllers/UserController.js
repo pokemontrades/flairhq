@@ -314,7 +314,7 @@ module.exports = {
         Event.create({
           user: req.user.name,
           type: "banUser",
-          content: "Banned /u/" + req.params.username + "."
+          content: "Banned /u/" + req.params.username
         });
       });
     });

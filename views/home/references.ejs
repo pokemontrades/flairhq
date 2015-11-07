@@ -3,7 +3,7 @@
     <tr>
       <td class="firstHeading" colspan="2"><h3>Trades ({{numberOfTrades()}})</h3></td>
       <td><h3 class="text-center"><small></small></h3></td>
-      <td><h3 ng-if="user.isMod"><small>Approved</small></h3></td>
+      <td><h3 ng-if="user.isMod && refUser"><small>Approved</small></h3></td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
 
@@ -19,7 +19,7 @@
           {{ok.approveAll.event ? "" : "Approve all"}}
         </button>
       <td>
-        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -34,21 +34,21 @@
       </td>
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod"/>
+                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
             <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="verified" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#" ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'events')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -68,7 +68,7 @@
         </button>
       </td>
       <td>
-        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -83,21 +83,21 @@
       </td>
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod"/>
+                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
             <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="verified" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'shinies')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -117,7 +117,7 @@
         </button>
       </td>
       <td>
-        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -132,21 +132,21 @@
       </td>
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod"/>
+                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
             <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="verified" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
         </td>
       <td>
         <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'casuals')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -173,12 +173,12 @@
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'banks')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -198,7 +198,7 @@
         </button>
       </td>
       <td>
-        <span ng-if="user.isMod">{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
@@ -213,7 +213,7 @@
       </td>
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod"/>
+                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
             <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
         </td>
       <td>
@@ -221,12 +221,12 @@
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'eggs')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -263,7 +263,7 @@
           </a></td>
         <td>
             <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod"/>
+                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
             <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
         </td>
       <td>
@@ -271,12 +271,12 @@
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'giveaways')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
@@ -313,7 +313,7 @@
           </td>
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                     ng-model="reference.approved" ng-if="user.isMod"/>
+                     ng-model="reference.approved" ng-if="user.isMod && refUser"/>
               <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
           </td>
 
@@ -323,12 +323,12 @@
                   <span class="glyphicon glyphicon-info-sign"></span>
               </a>
               <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-                 ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+                 ng-if="(!refUser || (user.name === refUser.name))" class="icon">
                   <span class="glyphicon glyphicon-edit"></span>
               </a>
               <a href="#"  ng-really-switch="deleteRef" class="icon"
-                 ng-really-click="deleteRef(reference.id, reference, 'eggchecks')"
-                 ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+                 ng-really-click="deleteRef(reference.id)"
+                 ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
                   <span class="glyphicon glyphicon-trash"></span>
               </a>
           </td>
@@ -365,7 +365,7 @@
           </td>
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                     ng-model="reference.approved" ng-if="user.isMod"/>
+                     ng-model="reference.approved" ng-if="user.isMod && refUser"/>
               <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
           </td>
 
@@ -375,12 +375,12 @@
                   <span class="glyphicon glyphicon-info-sign"></span>
               </a>
               <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-                 ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+                 ng-if="(!refUser || (user.name === refUser.name))" class="icon">
                   <span class="glyphicon glyphicon-edit"></span>
               </a>
               <a href="#"  ng-really-switch="deleteRef" class="icon"
-                 ng-really-click="deleteRef(reference.id, reference, 'eggchecks')"
-                 ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+                 ng-really-click="deleteRef(reference.id)"
+                 ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
                   <span class="glyphicon glyphicon-trash"></span>
               </a>
           </td>
@@ -414,12 +414,12 @@
           <span class="glyphicon glyphicon-info-sign"></span>
         </a>
         <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.id === refUser.id))" class="icon">
+           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id, reference, 'misc')"
-           ng-if="(!refUser || (user.id === refUser.id) || user.isMod)">
+           ng-really-click="deleteRef(reference.id)"
+           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
           <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>

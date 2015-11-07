@@ -3,7 +3,7 @@ var passport = require('passport'),
 
 var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
   process.nextTick(function() {
-    User.findOne({uid: profile.id}, function(err, user) {
+    User.findOne({name: profile.name}, function(err, user) {
       Reddit.getBothFlairs(adminToken, profile.name, function (redditerr, flair1, flair2) {
         if (user) {
           if (user.banned) {
@@ -12,17 +12,15 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
           user.redToken = tokenSecret;
           user.flair = {ptrades: flair1, svex: flair2};
           user.save(function (err) {
-            if (!err) {
-              return done(null, user);
-            } else {
-              return done(null, user);
+            if (err) {
+              console.log(err);
             }
+            return done(null, user);
           });
         } else {
           var data = {
-            redToken : tokenSecret,
+            redToken: tokenSecret,
             provider: profile.provider,
-            uid: profile.id,
             name: profile.name,
             flair: {ptrades: flair1, svex: flair2}
           };
@@ -47,11 +45,11 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
 };
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user.name);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findOne({id: id}, function(err, user) {
+passport.deserializeUser(function(name, done) {
+  User.findOne({name}, function(err, user) {
     done(err, user);
   });
 });

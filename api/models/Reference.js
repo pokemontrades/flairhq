@@ -43,4 +43,3 @@ module.exports = {
     privatenotes: "string"
   }
 };
-

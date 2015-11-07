@@ -12,6 +12,7 @@ module.exports = function ($scope) {
   $scope.adminspin = {
     appFlair: {}
   };
+  sharedService.addRepeats($scope);
 
   $scope.getFlairApps = function () {
     io.socket.get("/flair/apps/all", function (data, res) {
@@ -29,10 +30,6 @@ module.exports = function ($scope) {
         $scope.$apply();
       }
     });
-  };
-
-  $scope.setLocalBan = function (user, ban) {
-    return sharedService.setLocalBan($scope, user.name, ban);
   };
 
   $scope.denyApp = function (id, $index) {

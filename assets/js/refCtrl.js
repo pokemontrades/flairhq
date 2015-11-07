@@ -1,8 +1,6 @@
 var socket = require("socket.io-client");
 var io = require("sails.io.js")(socket);
 var $ = require('jquery');
-var flairService = require('../../api/services/Flairs.js');
-var referenceService = require('../../api/services/References.js');
 var sharedService = require('./sharedClientFunctions.js');
 
 module.exports = function ($scope, $filter) {
@@ -36,26 +34,7 @@ module.exports = function ($scope, $filter) {
     $scope.user.references[index] = $.extend(true, {}, $scope.referenceToRevert);
   };
 
-  $scope.isEvent = referenceService.isEvent;
-  $scope.isShiny = referenceService.isShiny;
-  $scope.isCasual = referenceService.isCasual;
-  $scope.isEggCheck = referenceService.isEggCheck;
-
-  $scope.numberOfTrades = function () {
-    return referenceService.numberOfTrades($scope.refUser);
-  };
-  $scope.numberOfGivenAway = function () {
-    return referenceService.numberOfGivenAway($scope.refUser);
-  };
-  $scope.numberOfEggsGivenAway = function () {
-    return referenceService.numberOfEggsGivenAway($scope.refUser);
-  };
-  $scope.numberOfEggChecks = function () {
-    return referenceService.numberOfEggChecks($scope.refUser);
-  };
-  $scope.getFlairTextForSVEx = function () {
-    return flairService.getFlairTextForUserForSVEx($scope.refUser);
-  };
+  sharedService.addRepeats($scope);
 
   io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
     if (res.statusCode === 200) {
@@ -70,10 +49,6 @@ module.exports = function ($scope, $filter) {
       $scope.$apply();
     }
   });
-
-  $scope.editRef = function () {
-    return sharedService.editRef($scope);
-  };
 
   $scope.addComment = function () {
     var comment = $scope.newStuff.newComment,
@@ -202,11 +177,14 @@ module.exports = function ($scope, $filter) {
 
   $scope.approve = function (id, approve) {
     var url = "/reference/approve";
-    io.socket.post(url, {
-      id: id,
-      approve: approve
-    }, function (data, res) {
-      if (res.statusCode !== 200) {
+    io.socket.post(url, {id: id, approve: approve}, function (data, res) {
+      if (res.statusCode === 200) {
+        var index = $scope.refUser.references.findIndex(function (ref) {
+          return ref.id === id;
+        });
+        $scope.refUser.references[index].verified = data.verified;
+        $scope.$apply();
+      } else {
         console.log(res.statusCode + ": " + data);
       }
     });
@@ -234,13 +212,5 @@ module.exports = function ($scope, $filter) {
       $scope.spin.approveAll[type] = false;
       $scope.$apply();
     });
-  };
-
-  $scope.setLocalBan = function (ban) {
-    return sharedService.setLocalBan($scope, $scope.refUser.name, ban);
-  };
-
-  $scope.deleteRef = function (id) {
-    return sharedService.deleteRef($scope, $filter, id);
   };
 };

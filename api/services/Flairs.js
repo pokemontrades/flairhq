@@ -52,38 +52,6 @@ exports.isValid = function(code) {
   var new_chk = (parseInt(sha1(hash_seq).substring(0, 2), 16) >> 1);
   return (new_chk == checksum) ? 1 : 0;
 };
-
-var gameText = function (games) {
-  var mergedGames = {},
-    text = "";
-  for (var j = 0; j < games.length; j++) {
-    if (games[j] && mergedGames[games[j].ign]) {
-      mergedGames[games[j].ign].push(games[j].game);
-    } else if (games[j]) {
-      mergedGames[games[j].ign] = [games[j].game];
-    }
-  }
-  for (var ign in mergedGames) {
-    if (mergedGames.hasOwnProperty(ign)) {
-      var ignsGames = mergedGames[ign];
-      if (text) {
-        text += ", ";
-      }
-      text += ign;
-      ignsGames = _.without(ignsGames, "", undefined, null);
-      text += ignsGames.length > 0 ? " (" : "";
-      for (var k = 0; k < ignsGames.length; k++) {
-        text += ignsGames[k];
-        if (k + 1 !== ignsGames.length) {
-          text += ", ";
-        }
-      }
-      text += ignsGames.length > 0 ? ")" : "";
-    }
-  }
-  return text;
-};
-
 exports.getFlair = function (name, flairs) {
   return _.find(flairs, function (flair) {
     return flair.name === name;
@@ -138,7 +106,7 @@ exports.getUserFlairs = function (user, allflairs) {
     return exports.userHasFlair(user, flair);
   });
 };
-exports.getFlairTextForUserForSVEx = function (user) {
+exports.getFlairTextForSVEx = function (user) {
   if (!user || !user.flair || !user.flair.svex || !user.flair.svex.flair_css_class) {
     return;
   }
@@ -184,48 +152,6 @@ exports.canUserApply = function (user, applicationFlair, allflairs) {
   userInvolvement >= involvement &&
   userEgg >= eggs &&
   userGiveaway >= giveaways);
-};
-exports.ptradesCreatedFlair = function (user) {
-  if (!user || !user.flairFriendCodes) {
-    return "";
-  }
-  var fcs = user.flairFriendCodes.slice(0),
-    text = "";
-  for (var i = 0; i < fcs.length; i++) {
-    text += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
-    if (i + 1 !== fcs.length) {
-      text += ", ";
-    }
-  }
-  return text + " || " + (gameText(user.flairGames) || "");
-};
-exports.svexCreatedFlair = function (user) {
-  if (!user || !user.flairFriendCodes) {
-    return "";
-  }
-  var fcs = user.flairFriendCodes.slice(0),
-    games = user.flairGames,
-    text = "";
-  var fcText = "";
-  for (var i = 0; i < fcs.length; i++) {
-    fcText += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
-    if (i + 1 !== fcs.length) {
-      fcText += ", ";
-    }
-  }
-  text += fcText + " || " + gameText(user.flairGames) + " || ";
-  var tsvText = "";
-  for (var k = 0; k < games.length; k++) {
-    var tsv = "";
-    if (games[k].tsv && games[k].tsv < 4096) {
-      tsv = games[k].tsv;
-    }
-    if (tsv && tsvText) {
-      tsvText += ", ";
-    }
-    tsvText += tsv;
-  }
-  return text + (tsvText || "XXXX");
 };
 exports.formattedRequirements = function (flair, flairs) {
   var reqs;

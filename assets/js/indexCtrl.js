@@ -17,28 +17,18 @@ module.exports = function ($scope, $filter) {
     privatenotes: ""
   };
 
-  $scope.isNotNormalTrade = referenceService.isNotNormalTrade;
-  $scope.hasNumber = referenceService.hasNumber;
-  $scope.isEvent = referenceService.isEvent;
-  $scope.isShiny = referenceService.isShiny;
-  $scope.isCasual = referenceService.isCasual;
-  $scope.isEggCheck = referenceService.isEggCheck;
-
   $scope.selectedRef = {};
   $scope.referenceToRevert = {};
-
   $scope.addRefError = "";
   $scope.editRefError = "";
   $scope.indexOk = {};
   $scope.indexSpin = {};
+  sharedService.addRepeats($scope);
 
   $scope.focus = {
     gavegot: false
   };
 
-  $scope.editRef = function () {
-    return sharedService.editRef($scope);
-  };
   $scope.isFocused = function () {
     return $scope.focus.gavegot || $scope.got || $scope.gave;
   };
@@ -177,11 +167,5 @@ module.exports = function ($scope, $filter) {
         $scope.$apply();
       }
     });
-  };
-  $scope.numberOfTrades = function () {
-    return referenceService.numberOfTrades($scope.user);
-  };
-  $scope.deleteRef = function (id, ref, type) {
-    return sharedService.deleteRef($scope, $filter, id);
   };
 };

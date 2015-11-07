@@ -1,35 +1,42 @@
-var _ = require('lodash');
-
 exports.approve = function (ref, approve) {
   return new Promise(function (resolve, reject) {
     ref.approved = approve;
-    ref.save(function (err) {
-      if (err) {
-        return reject({statusCode: 500});
+    var query = {
+      user: ref.user2.slice(3),
+      url: {endsWith: ref.url.substring(ref.url.indexOf("/r/"))},
+      user2: '/u/' + ref.user,
+      or: [
+        {type: 'casual'},
+        {type: 'shiny'},
+        {type: 'event'}
+      ],
+    };
+    Reference.findOne(query, function (searcherr, otherRef) {
+      if (searcherr) {
+        console.log(searcherr);
+        return reject(searcherr);
       }
-      return resolve({statusCode: 200});
+      if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event')) {
+        otherRef.approved = approve;
+        ref.verified = approve;
+        otherRef.verified = approve;
+        ref.save(function (err1, newRef) {
+          otherRef.save(function (err2, newOtherRef) {
+            if (err1 || err2) {
+              return reject(err1 || err2);
+            }
+            resolve(newRef);
+          });
+        });
+      } else {
+        ref.save(function (err, newRef) {
+          if (err) {
+            return reject(err);
+          }
+          resolve(newRef);
+        });
+      }
     });
-    if (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event') {
-      var query = {
-        user: ref.user2.slice(3),
-        url: {endsWith: ref.url.substring(ref.url.indexOf("/r/"))},
-        user2: '/u/' + ref.user,
-        or: [
-          {type: 'casual'},
-          {type: 'shiny'},
-          {type: 'event'}
-        ],
-      };
-      Reference.findOne(query, function (err, otherRef) {
-        if (otherRef) {
-          otherRef.approved = approve;
-          ref.verified = approve;
-          otherRef.verified = approve;
-          ref.save(function (err) {});
-          otherRef.save(function (err) {});
-        }
-      });
-    }
   });
 };
 exports.isApproved = function (el) {
@@ -83,7 +90,7 @@ exports.numberOfGivenAway = function (user) {
   if (!user || !user.references) {
     return;
   }
-  _.filter(user.references, function (item) {
+  user.references.filter(function (item) {
       return exports.isGiveaway(item);
   }).forEach(function (ref) {
       givenAway += (ref.number || 0);
@@ -95,7 +102,7 @@ exports.numberOfEggsGivenAway = function (user) {
   if (!user || !user.references) {
     return;
   }
-  _.filter(user.references, function (item) {
+  user.references.filter(function (item) {
       return exports.isGiveaway(item) && item.url.indexOf("SVExchange") > -1;
   }).forEach(function (ref) {
     givenAway += (ref.number || 0);
@@ -107,7 +114,7 @@ exports.numberOfEggChecks = function (user) {
   if (!user || !user.references) {
     return;
   }
-  _.filter(user.references, function (item) {
+  user.references.filter(function (item) {
       return exports.isEggCheck(item);
   }).forEach(function (ref) {
       if (ref.url.indexOf("SVExchange") > -1) {
@@ -120,5 +127,5 @@ exports.numberOfTrades = function (user) {
   if (!user || !user.references) {
     return 0;
   }
-  return _.filter(user.references, exports.isTrade).length;
+  return user.references.filter(exports.isTrade).length;
 };

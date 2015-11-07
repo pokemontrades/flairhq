@@ -3,8 +3,7 @@ var io = require("sails.io.js")(socket);
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
-var flairService = require("../../api/services/Flairs.js");
-var referenceService = require("../../api/services/References.js");
+var sharedService = require("./sharedClientFunctions.js");
 
 module.exports = function ($scope, $filter, $location, UserFactory) {
   $scope.regex = regex;
@@ -67,35 +66,14 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   ];
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') === -1;
-  $scope.isApproved = referenceService.isApproved;
-  $scope.isTrade = referenceService.isTrade;
-  $scope.isInvolvement = referenceService.isInvolvement;
-  $scope.isEvent = referenceService.isEvent;
-  $scope.isShiny = referenceService.isShiny;
-  $scope.isCasual = referenceService.isCasual;
-  $scope.isEgg = referenceService.isEgg;
-  $scope.isBank = referenceService.isBank;
-  $scope.isGiveaway = referenceService.isGiveaway;
-  $scope.isEggCheck = referenceService.isEggCheck;
-  $scope.isMisc = referenceService.isMisc;
-  $scope.getRedditUser = referenceService.getRedditUser;
-  $scope.formattedName = flairService.formattedName;
-  $scope.inPokemonTradesTrader = flairService.inPokemonTradesTrader;
-  $scope.inPokemonTradesHelper = flairService.inPokemonTradesHelper;
-  $scope.inSVExchangeHatcher = flairService.inSVExchangeHatcher;
-  $scope.inSVExchangeGiver = flairService.inSVExchangeGiver;
-
-  $scope.applied = function (flair) {
-    return flairService.applied($scope.user, flair);
-  };
-
+  sharedService.addRepeats($scope);
   $scope.applyFlair = function () {
     var done = 0;
     $scope.errors.flairApp = "";
     $scope.userok.applyFlair = false;
     $scope.userspin.applyFlair = true;
-    var flair = flairService.getFlair($scope.selectedFlair, $scope.flairs);
-    if ($scope.selectedFlair && flairService.canUserApply($scope.user, flair, $scope.flairs)) {
+    var flair = $scope.getFlair($scope.selectedFlair, $scope.flairs);
+    if ($scope.selectedFlair && $scope.canUserApply($scope.user, flair, $scope.flairs)) {
       io.socket.post("/flair/apply", {flair: $scope.selectedFlair, sub: flair.sub}, function (data, res) {
         if (res.statusCode === 200) {
           $scope.user.apps.push(data);
@@ -225,30 +203,6 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
     }
   };
 
-  $scope.numberOfGivenAway = function () {
-    return referenceService.numberOfGivenAway($scope.user);
-  };
-
-  $scope.numberOfEggsGivenAway = function () {
-    return referenceService.numberOfEggsGivenAway($scope.user);
-  };
-
-  $scope.numberOfEggChecks = function () {
-    return referenceService.numberOfEggChecks($scope.user);
-  };
-
-  $scope.getFlairTextForUserForSVEx = function () {
-    return flairService.getFlairTextForUserForSVEx($scope.user);
-  };
-
-  $scope.userHasFlair = function (applicationFlair) {
-    return flairService.userHasFlair($scope.user, applicationFlair);
-  };
-
-  $scope.canUserApply = function (applicationFlair) {
-    return flairService.canUserApply($scope.user, applicationFlair || $scope.selectedFlair, $scope.flairs);
-  };
-
   $scope.addFc = function () {
     $scope.user.friendCodes.push("");
   };
@@ -333,20 +287,84 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
       $scope.userspin.saveProfile = false;
       $scope.$apply();
     });
-
   };
-
+  var gameText = function (games) {
+    var mergedGames = {},
+      text = "";
+    for (var j = 0; j < games.length; j++) {
+      if (games[j] && mergedGames[games[j].ign]) {
+        mergedGames[games[j].ign].push(games[j].game);
+      } else if (games[j]) {
+        mergedGames[games[j].ign] = [games[j].game];
+      }
+    }
+    for (var ign in mergedGames) {
+      if (mergedGames.hasOwnProperty(ign)) {
+        var ignsGames = mergedGames[ign];
+        if (text) {
+          text += ", ";
+        }
+        text += ign;
+        ignsGames = _.without(ignsGames, "", undefined, null);
+        text += ignsGames.length > 0 ? " (" : "";
+        for (var k = 0; k < ignsGames.length; k++) {
+          text += ignsGames[k];
+          if (k + 1 !== ignsGames.length) {
+            text += ", ";
+          }
+        }
+        text += ignsGames.length > 0 ? ")" : "";
+      }
+    }
+    return text;
+  };
   $scope.ptradesCreatedFlair = function () {
-    return flairService.ptradesCreatedFlair($scope.user);
+    if (!$scope.user || !$scope.user.flairFriendCodes) {
+      return "";
+    }
+    var fcs = $scope.user.flairFriendCodes.slice(0),
+      text = "";
+    for (var i = 0; i < fcs.length; i++) {
+      text += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
+      if (i + 1 !== fcs.length) {
+        text += ", ";
+      }
+    }
+    return text + " || " + (gameText($scope.user.flairGames) || "");
   };
 
   $scope.svexCreatedFlair = function () {
-    return flairService.svexCreatedFlair($scope.user);
+    if (!$scope.user || !$scope.user.flairFriendCodes) {
+      return "";
+    }
+    var fcs = $scope.user.flairFriendCodes.slice(0),
+      games = $scope.user.flairGames,
+      text = "";
+    var fcText = "";
+    for (var i = 0; i < fcs.length; i++) {
+      fcText += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
+      if (i + 1 !== fcs.length) {
+        fcText += ", ";
+      }
+    }
+    text += fcText + " || " + gameText($scope.user.flairGames) + " || ";
+    var tsvText = "";
+    for (var k = 0; k < games.length; k++) {
+      var tsv = "";
+      if (games[k].tsv && games[k].tsv < 4096) {
+        tsv = games[k].tsv;
+      }
+      if (tsv && tsvText) {
+        tsvText += ", ";
+      }
+      tsvText += tsv;
+    }
+    return text + (tsvText || "XXXX");
   };
 
   $scope.isCorrectFlairText = function () {
-    var svex = flairService.svexCreatedFlair();
-    var ptrades = flairService.ptradesCreatedFlair();
+    var svex = $scope.svexCreatedFlair();
+    var ptrades = $scope.ptradesCreatedFlair();
     if (!$scope.user || !$scope.user.flairFriendCodes || !$scope.user.flairGames) {
       return;
     }
@@ -419,10 +437,6 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
         }
       }
     });
-  };
-
-  $scope.formattedRequirements = function (flair) {
-    return flairService.formattedRequirements(flair, $scope.flairs);
   };
 
   $scope.addFlair = function () {

@@ -193,10 +193,10 @@ module.exports = {
         return res.notFound(err);
       }
       References.approve(ref, req.allParams().approve).then(function (result) {
-        return res.ok(ref);
+        return res.ok(result);
       }, function (error) {
         console.log(error);
-        return res.status(error.statusCode).json(error);
+        return res.serverError(error);
       });
     });
   },
@@ -210,11 +210,11 @@ module.exports = {
       for (var i = 0; i < refs.length; i++) {
         promises.push(References.approve(refs[i], true));
       }
-      Promise.all(promises).then(function (err, results) {
-        return res.status(200).json(results);
+      Promise.all(promises).then(function (results) {
+        return res.ok(results);
       }, function (error) {
         console.log(error);
-        return res.status(error.statusCode).json(error);
+        return res.serverError(error);
       });
     });
   },

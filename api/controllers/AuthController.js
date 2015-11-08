@@ -60,8 +60,8 @@ module.exports = {
           return res.forbidden();
         }
 
-        Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades').then(function(response) {
-          if (response.data.children.length) { //User is a mod, set isMod to true
+        Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades').then(function(modStatus) {
+          if (modStatus) { //User is a mod, set isMod to true
             user.isMod = true;
             user.save(function (err) {
               if (err) {

@@ -4,13 +4,13 @@ var passport = require('passport'),
 var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
   process.nextTick(function() {
     User.findOne({name: profile.name}, function(err, user) {
-      Reddit.getBothFlairs(adminToken, profile.name, function (redditerr, flair1, flair2) {
+      Reddit.getBothFlairs(adminToken, profile.name).then(function (flairs) {
         if (user) {
           if (user.banned) {
             return done("You are banned from FAPP", user);
           }
           user.redToken = tokenSecret;
-          user.flair = {ptrades: flair1, svex: flair2};
+          user.flair = {ptrades: flairs[0], svex: flairs[1]};
           user.save(function (err) {
             if (err) {
               console.log(err);
@@ -39,6 +39,8 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
             return done(err, user);
           });
         }
+      }, function (error) {
+        return res.serverError(error);
       });
     });
   });

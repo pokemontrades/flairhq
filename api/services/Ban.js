@@ -25,7 +25,7 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   } catch (e) {
     throw {error: 'Error retrieving /r/' + subreddit + ' AutoModerator config'};
   }
-  var lines = current_config.data.content_md.replace(/\r/g, '').split("\n");
+  var lines = current_config.replace(/\r/g, '').split("\n");
   var fclist_indices = [lines.indexOf('#FCList1') + 1, lines.indexOf('#FCList2') + 1];
   if (fclist_indices.indexOf(0) != -1) {
     console.log(lines);
@@ -35,21 +35,13 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   }
   try {
     for (var listno = 0; listno < fclist_indices.length; listno++) {
-      var before_bracket = lines[fclist_indices[listno]].substring(0,lines[fclist_indices[listno]].lastIndexOf(']'));
+      var punctuation = listno ? [']', ', "', '-', '"'] : ['"', '|', ' ?-? ?', ''];
+      var end_delimiter_index = lines[fclist_indices[listno]].lastIndexOf(punctuation[0]);
+      var before_end = lines[fclist_indices[listno]].substring(0, end_delimiter_index);
       for (var i = 0; i < friend_codes.length; i++) {
-        if (!friend_codes[i].match(/^(\d{4}-){2}\d{4}$/g)) {
-          throw {error: 'Invalid friend code: ' + friend_codes[i]};
-        }
-        //Current automod regex: 0000\\D{0,3}0000\\D{0,3}0000
-        var formatted;
-        if (listno === 0) {
-          formatted = friend_codes[i].substring(0,4) + '\\\\D{0,3}' + friend_codes[i].substring(5,9) + '\\\\D{0,3}' + friend_codes[i].substring(10, 14);
-        } else {
-          formatted = friend_codes[i];
-        }
-        before_bracket += ', "' + formatted + '"';
+        before_end += punctuation[1] + friend_codes[i].replace(/-/g, punctuation[2]) + punctuation[3];
       }
-      lines[fclist_indices[listno]] = before_bracket + ']';
+      lines[fclist_indices[listno]] = before_end + lines[fclist_indices[listno]].substring(end_delimiter_index);
     }
   }
   catch (automodparseerr) {
@@ -70,14 +62,14 @@ exports.removeTSVThreads = async function(redToken, username) {
     removeTSVPromises.push(Reddit.removePost(redToken, entry.data.id, 'false'));
   });
   await Promise.all(removeTSVPromises);
-  var output = console.log('Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)');
+  var output = 'Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)';
   console.log(output);
   return output;
 };
 //Update the public banlist with the user's information
 exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns) {
     var current_list = await Reddit.getWikiPage(redToken, 'pokemontrades', 'banlist');
-    var lines = current_list.data.content_md.replace(/\r/g, '').split("\n");
+    var lines = current_list.replace(/\r/g, '').split("\n");
     var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
     if (start_index == 2) {
       console.log('Error: Could not find start marker in public banlist');
@@ -113,5 +105,10 @@ exports.localBanUser = async function(username) {
   });
 };
 exports.addUsernote = function(redToken, modname, subreddit, username, banNote) {
-  return Usernotes.addUsernote(redToken, modname, subreddit, username, 'Banned - ' + banNote, 'ban', '');
+  return Usernotes.addUsernote(redToken, modname, subreddit, username, 'Banned - ' + banNote, 'ban', '').then(function (response) {
+    console.log('Created a usernote on ' + username + ' in /r/' + subreddit);
+    return response;
+  }, function (err) {
+    throw {error: 'Failed to update /u/' + subreddit + 'usernotes.'};
+  });
 };

@@ -61,7 +61,12 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
 exports.getFlair = async function (refreshToken, user, subreddit) {
   var url = 'https://oauth.reddit.com/r/' + subreddit + '/api/flairselector';
   var data = {name: user};
-  return makeRequest(refreshToken, 'POST', url, data, 20);
+  //Return a Promise containing `response.current` (the flair itself) instead of `response` (the object which contains the flair).
+  return makeRequest(refreshToken, 'POST', url, data, 20).then(function (response) {
+    return response.current;
+  }, function (err) {
+    throw err;
+  });
 };
 
 exports.getBothFlairs = async function (refreshToken, user) {
@@ -86,7 +91,12 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
 
 exports.getWikiPage = function (refreshToken, subreddit, page) {
   var url = 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page + '?raw_json=1';
-  return makeRequest(refreshToken, 'GET', url, undefined, 5);
+  //Return a Promise for content of the page instead of all the other data
+  return makeRequest(refreshToken, 'GET', url, undefined, 5).then(function (response) {
+    return response.data.content_md;
+  }, function (err) {
+    throw err;
+  });
 };
 
 exports.editWikiPage = function (refreshToken, subreddit, page, content, reason) {
@@ -122,7 +132,11 @@ exports.sendReply = function (refreshToken, text, parent_id) {
 
 exports.checkModeratorStatus = function (refreshToken, username, subreddit) {
   var url = 'https://oauth.reddit.com/r/' + subreddit + '/about/moderators?user=' + username;
-  return makeRequest(refreshToken, 'GET', url, undefined, 5);
+  return makeRequest(refreshToken, 'GET', url, undefined, 5).then(function (response) {
+    return response.data.children.length !== 0;
+  }, function (err) {
+    throw err;
+  });
 };
 
 var updateRateLimits = function (res) {

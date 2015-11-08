@@ -344,8 +344,8 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function(response) {
-      if (response.data.children.length) { //User is a mod, clear session
+    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function(modStatus) {
+      if (modStatus) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {
             console.log(err);

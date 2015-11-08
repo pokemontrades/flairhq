@@ -37,10 +37,10 @@ module.exports = {
         $scope.editRefError = "Looks like you didn't input a proper permalink";
         return;
       }
-      if (ref.user2.indexOf("/u/") === -1) {
-        ref.user2 = "/u/" + ref.user2;
+      if (ref.user2.substring(0,3) === "/u/") {
+        ref.user2 = ref.user2.slice(3);
       }
-      if (ref.user2 === ("/u/" + $scope.user.name)) {
+      if (ref.user2 === ($scope.user.name)) {
         $scope.addRefError = "Don't put your own username there.";
         return;
       }

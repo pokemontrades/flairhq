@@ -14,8 +14,8 @@
               <strong>Trade Info</strong>
             </div>
             <div class="panel-body">
-              <h4 ng-hide="selectedRef.user2 === '/u/'">
-                Traded with: <small class="pull-right">{{selectedRef.user2}}</small>
+              <h4 ng-hide="selectedRef.user2 === ''">
+                Traded with: <small class="pull-right">/u/{{selectedRef.user2}}</small>
               </h4>
               <div ng-hide="selectedRef.type === 'egg' ||
                     selectedRef.type === 'giveaway' ||

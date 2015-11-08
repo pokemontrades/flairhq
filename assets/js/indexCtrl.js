@@ -86,10 +86,10 @@ module.exports = function ($scope, $filter) {
       $scope.indexSpin.addRef = false;
       return;
     }
-    if (user2.indexOf("/u/") === -1) {
-      user2 = "/u/" + user2;
+    if (user2.substring(0,3) === "/u/") {
+      user2 = user2.slice(3);
     }
-    if (user2 === ("/u/" + $scope.user.name)) {
+    if (user2 === $scope.user.name) {
       $scope.addRefError = "Don't put your own username there.";
       $scope.indexSpin.addRef = false;
       return;

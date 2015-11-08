@@ -2,9 +2,9 @@ exports.approve = function (ref, approve) {
   return new Promise(function (resolve, reject) {
     ref.approved = approve;
     var query = {
-      user: ref.user2.slice(3),
+      user: ref.user2,
       url: {endsWith: ref.url.substring(ref.url.indexOf("/r/"))},
-      user2: '/u/' + ref.user,
+      user2: ref.user,
       or: [
         {type: 'casual'},
         {type: 'shiny'},

@@ -272,37 +272,19 @@ module.exports = {
           req.params.additionalFCs
         );
         var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-        var ptradesBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration);
-        var svexBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration);
-        var promises;
-        if (req.params.duration) {
-          promises = [ //Tasks for tempbanning
-            ptradesBan, 
-            svexBan
-          ];
-        } else {
-          var ptradesFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades');
-          var svexFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange');
-          var ptradesAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs);
-          var svexAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs);
-          var ptradesUsernote = Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote);
-          var svexUsernote = Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote);
-          var removeTSV = Ban.removeTSVThreads(req.user.redToken, req.params.username);
-          var updateBanlist = Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns);
-          var localBan = Ban.localBanUser(req.params.username);
-          promises = [ //Tasks for permabanning
-            ptradesBan,
-            svexBan,
-            ptradesFlair,
-            svexFlair,
-            ptradesAutomod,
-            svexAutomod,
-            ptradesUsernote,
-            svexUsernote,
-            removeTSV,
-            updateBanlist,
-            localBan
-          ];
+        var promises = [];
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
+        if (!req.params.duration) {
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades'));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange'));
+          promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
+          promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+          promises.push(Ban.removeTSVThreads(req.user.redToken, req.params.username));
+          promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns));
+          promises.push(Ban.localBanUser(req.params.username));
         }
         Promise.all(promises).then(function(result) {
           res.ok();

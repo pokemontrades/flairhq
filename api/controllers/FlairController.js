@@ -202,26 +202,13 @@ module.exports = {
             message += flagged[i] + "\n\n";
           }
         }
-        Reddit.sendPrivateMessage(
-          refreshToken,
-          "FlairHQ report: Invalid friend code" + (flagged.length == 1 ? "" : "s"),
-          message,
-          "/r/pokemontrades").then(function () {
+        Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades").then(function (result) {
             console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-          }, function () {
+        }, function (error) {
             console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-          }
-        );
+        });
         var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();
-        Usernotes.addUsernote(
-          sails.config.reddit.adminRefreshToken,
-          'FlairHQ',
-          'pokemontrades',
-          req.user.name,
-          formattedNote,
-          'spamwatch',
-          ''
-        ).then(function (result) {
+        Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwatch', '').then(function (result) {
           console.log('Created a usernote on /u/' + req.user.name);
         }, function (error) {
           console.log('Failed to create a usernote on /u/' + req.user.name);

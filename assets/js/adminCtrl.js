@@ -1,5 +1,6 @@
 var socket = require("socket.io-client");
 var io = require("sails.io.js")(socket);
+var sharedService = require("./sharedClientFunctions.js");
 
 module.exports = function ($scope) {
   $scope.users = [];
@@ -11,6 +12,7 @@ module.exports = function ($scope) {
   $scope.adminspin = {
     appFlair: {}
   };
+  sharedService.addRepeats($scope);
 
   $scope.getFlairApps = function () {
     io.socket.get("/flair/apps/all", function (data, res) {
@@ -26,19 +28,6 @@ module.exports = function ($scope) {
       if (res.statusCode === 200) {
         $scope.users = data;
         $scope.$apply();
-      }
-    });
-  };
-
-  $scope.setLocalBan = function (user, ban) {
-    var url = "/user/setLocalBan";
-
-    io.socket.post(url, {userId: user.id, ban: ban}, function (data, res) {
-      if (res.statusCode === 200) {
-        $scope.getBannedUsers();
-        $scope.$apply();
-      } else {
-        console.log("Error");
       }
     });
   };

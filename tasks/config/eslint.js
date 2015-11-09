@@ -11,13 +11,10 @@
  */
 module.exports = function(grunt) {
 
-	grunt.config.set('jshint', {
-		all: ['Gruntfile.js', 'app.js', 'api/**/*.js', 'tasks/**/*.js', 'assets/js/*.js', 'assets/common/*.js'],
-		options: {
-			jshintrc: true
-		}
+	grunt.config.set('eslint', {
+		target: ['Gruntfile.js', 'app.js', 'api/**/*.js', 'tasks/**/*.js', 'assets/js/*.js', 'assets/common/*.js']
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-eslint');
 
 };

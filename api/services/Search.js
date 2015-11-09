@@ -31,13 +31,13 @@ module.exports.refs = function (searchData, cb) {
       orData = tempOrData;
       appData.user2 = {'contains': userName};
     } else {
-      var userIds = [];
+      var usernames = [];
       users.forEach(function (user) {
-        userIds.push(user.id);
+        usernames.push(user.name);
       });
       tempOrData.forEach(function (elUser1) {
         var elUser2 = _.cloneDeep(elUser1);
-        elUser1.user = userIds;
+        elUser1.user = usernames;
         orData.push(elUser1);
         elUser2.user2 = {'contains': userName};
         orData.push(elUser2);
@@ -48,7 +48,7 @@ module.exports.refs = function (searchData, cb) {
 
     Reference.find(appData).exec(function (err, apps) {
       async.map(apps, function (ref, callback) {
-        User.findOne({id: ref.user}).exec(function (err, refUser) {
+        User.findOne({name: ref.user}).exec(function (err, refUser) {
           if (refUser) {
             ref.user = refUser.name;
             callback(null, ref);

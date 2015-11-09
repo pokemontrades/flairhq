@@ -43,7 +43,7 @@
                        ng-if="result !== null"
                        class="list-group-item">
                       <h4 class="list-group-item-heading">
-                        <span ng-if="searchInfo.search.long === 'ref'">/u/{{result.user}} and {{result.user2}}</span>
+                        <span ng-if="searchInfo.search.long === 'ref'">/u/{{result.user}} and /u/{{result.user2}}</span>
                         <span ng-if="searchInfo.search.long === 'log'">/u/{{result.userName}}</span>
                       </h4>
                       <p class="list-group-item-text">
@@ -72,7 +72,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span ng-class="'flair-' + user.flair.ptrades.flair_css_class"></span>
-            <span ng-class="getFlairTextForUserForSVEx()">
+            <span ng-class="getFlairTextForSVEx()">
                 {{user.name}}
             </span>
             <span class="caret"></span>

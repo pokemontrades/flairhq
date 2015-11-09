@@ -19,10 +19,16 @@ module.exports = {
     }
   },
 
+  autoPK: false,
+
   attributes: {
     provider: 'STRING',
-    uid: "string",
-    name: "string",
+    name: {
+      type: "string",
+      columnName: 'id',
+      unique: true,
+      primaryKey: true
+    },
     email: "string",
     firstname: "string",
     lastname: "string",

@@ -1,49 +1,131 @@
-exports.approve = function (ref, name, approve) {
+exports.approve = function (ref, approve) {
   return new Promise(function (resolve, reject) {
-    if (!ref) {
-      return reject({statusCode: 404});
-    }
     ref.approved = approve;
-    ref.save(function (err) {
-      if (err) {
-        return reject({statusCode: 500});
+    var query = {
+      user: ref.user2,
+      url: {endsWith: ref.url.substring(ref.url.indexOf("/r/"))},
+      user2: ref.user,
+      or: [
+        {type: 'casual'},
+        {type: 'shiny'},
+        {type: 'event'}
+      ],
+    };
+    Reference.findOne(query, function (searcherr, otherRef) {
+      if (searcherr) {
+        console.log(searcherr);
+        return reject(searcherr);
       }
-      return resolve({statusCode: 200});
-    });
-    if (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event') {
-      User.findOne({name: ref.user2.substring(3)}, function(err, otherUser) {
-        if (!otherUser) {
-          return;
-        }
-        var query = {
-          user: otherUser.id,
-          url: new RegExp(ref.url.substring(ref.url.indexOf("/r/"))),
-          user2: '/u/' + name,
-          $or: [
-            {type: 'casual'},
-            {type: 'shiny'},
-            {type: 'event'}
-          ],
-        };
-        Reference.findOne(query, function (err, otherRef) {
-          if (!otherRef) {
-            return;
-          }
-          otherRef.approved = approve;
-          ref.verified = approve;
-          otherRef.verified = approve;
-          ref.save(function (err) {
-            if (err) {
-              console.log(err);
+      if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event')) {
+        otherRef.approved = approve;
+        ref.verified = approve;
+        otherRef.verified = approve;
+        ref.save(function (err1, newRef) {
+          otherRef.save(function (err2, newOtherRef) {
+            if (err1 || err2) {
+              return reject(err1 || err2);
             }
-          });
-          otherRef.save(function (err) {
-            if (err) {
-              console.log(err);
-            }
+            resolve(newRef);
           });
         });
-      });
-    }
+      } else {
+        ref.save(function (err, newRef) {
+          if (err) {
+            return reject(err);
+          }
+          resolve(newRef);
+        });
+      }
+    });
   });
+};
+exports.isApproved = function (el) {
+  return el.approved;
+};
+exports.isTrade = function (el) {
+  return exports.isEvent(el) || exports.isShiny(el) || exports.isCasual(el);
+};
+exports.isInvolvement = function (el) {
+  return el.type === "involvement";
+};
+exports.isEvent = function (el) {
+  return el.type === "event" || el.type === "redemption";
+};
+exports.isShiny = function (el) {
+  return el.type === "shiny";
+};
+exports.isCasual = function (el) {
+  return el.type === "casual";
+};
+exports.isEgg = function (el) {
+  return el.type === "egg";
+};
+exports.isBank = function (el) {
+  return el.type === "bank";
+};
+exports.isGiveaway = function (el) {
+  return el.type === "giveaway";
+};
+exports.isEggCheck = function (el) {
+  return el.type === "eggcheck";
+};
+exports.isMisc = function (el) {
+  return el.type === "misc";
+};
+exports.isNotNormalTrade = function (type) {
+  return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';
+};
+exports.hasNumber = function (type) {
+  return type === 'giveaway' || type === 'eggcheck';
+};
+exports.getRedditUser = function (username) {
+  if (username && username.indexOf("/u/") === -1) {
+    return "/u/" + username;
+  } else {
+    return username;
+  }
+};
+exports.numberOfGivenAway = function (user) {
+  var givenAway = 0;
+  if (!user || !user.references) {
+    return;
+  }
+  user.references.filter(function (item) {
+      return exports.isGiveaway(item);
+  }).forEach(function (ref) {
+      givenAway += (ref.number || 0);
+  });
+  return givenAway;
+};
+exports.numberOfEggsGivenAway = function (user) {
+  var givenAway = 0;
+  if (!user || !user.references) {
+    return;
+  }
+  user.references.filter(function (item) {
+      return exports.isGiveaway(item) && item.url.indexOf("SVExchange") > -1;
+  }).forEach(function (ref) {
+    givenAway += (ref.number || 0);
+  });
+  return givenAway;
+};
+exports.numberOfEggChecks = function (user) {
+  var givenAway = 0;
+  if (!user || !user.references) {
+    return;
+  }
+  user.references.filter(function (item) {
+      return exports.isEggCheck(item);
+  }).forEach(function (ref) {
+      if (ref.url.indexOf("SVExchange") > -1) {
+        givenAway += (ref.number || 0);
+      }
+  });
+  return givenAway;
+};
+exports.numberOfTrades = function (user) {
+  if (!user || !user.references) {
+    return 0;
+  }
+  return user.references.filter(exports.isTrade).length;
 };

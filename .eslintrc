@@ -1,0 +1,17 @@
+{
+  "parser": "babel-eslint",
+  "globals": {
+    "require": false,
+    "module": false,
+    "console": false,
+    "Reddit": false
+  },
+  "no-empty": true,
+  "no-caller": true,
+  "eqeqeq": true,
+  "no-bitwise": true,
+  "curly": true,
+  "no-undef": true,
+  "no-new": true,
+  "guard-for-in": true
+}

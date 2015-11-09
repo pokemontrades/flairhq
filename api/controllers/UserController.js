@@ -11,7 +11,7 @@ module.exports = {
 
   edit: function (req, res) {
     req.params = req.allParams();
-    User.findOne({id: req.params.userid}, function (err, user) {
+    User.findOne(req.params.username, function (err, user) {
       if (!user) {
         return res.notFound("Can't find user");
       } else if (user.name !== req.user.name && !req.user.isMod) {
@@ -25,7 +25,7 @@ module.exports = {
           updatedUser.friendCodes = req.params.fcs;
         }
 
-        User.update({id: user.id}, updatedUser).exec(function (err, up) {
+        User.update(user.name, updatedUser).exec(function (err, up) {
           if (err) {
             res.serverError(err);
           }
@@ -34,7 +34,7 @@ module.exports = {
             games = [];
 
           Game.find()
-            .where({user: user.id}).exec(function (err, games) {
+            .where({user: user.name}).exec(function (err, games) {
             games.forEach(function (game) {
               var deleteGame = true;
               req.params.games.forEach(function (game2) {
@@ -43,9 +43,7 @@ module.exports = {
                 }
               });
               if (deleteGame) {
-                promises.push(
-                  Game.destroy(game.id).exec(function () {})
-                );
+                promises.push(Game.destroy(game.id));
               }
             });
           });
@@ -66,7 +64,7 @@ module.exports = {
               ));
             } else if (!game.id && (game.tsv || game.ign)) {
               promises.push(Game.create(
-                {user: user.id, tsv: parseInt(game.tsv), ign: game.ign})
+                {user: user.name, tsv: parseInt(game.tsv), ign: game.ign})
                 .exec(function (err, game) {
                   if (err) {
                     console.log(err);
@@ -90,7 +88,7 @@ module.exports = {
 
   mine: function (req, res) {
     Game.find()
-      .where({user: req.user.id})
+      .where({user: req.user.name})
       .exec(function (err, games) {
         req.user.games = games;
 
@@ -109,27 +107,27 @@ module.exports = {
   },
 
   get: function (req, res) {
-    User.findOne({name: req.params.name}, function (err, user) {
+    User.findOne(req.params.name, function (err, user) {
       if (!user) {
         return res.notFound();
       }
       Game.find()
-        .where({user: user.id})
+        .where({user: user.name})
         .sort({createdAt: "desc"})
         .exec(function (err, games) {
 
           Reference.find()
-            .where({user: user.id})
+            .where({user: user.name})
             .sort({type: "asc", createdAt: "desc"})
             .exec(function (err, references) {
 
               Comment.find()
-                .where({user: user.id})
+                .where({user: user.name})
                 .sort({createdAt: "desc"})
                 .exec(function (err, comments) {
 
                   ModNote.find()
-                    .where({refUser: user.id})
+                    .where({refUser: user.name})
                     .sort({createdAt: "desc"})
                     .exec(function (err, notes) {
 
@@ -139,7 +137,7 @@ module.exports = {
                       var publicReferences = references;
                       //Censor confidential/classified info
                       publicReferences.forEach(function(entry) {
-                        if (!req.user || req.user.id !== entry.user) {
+                        if (!req.user || req.user.name !== req.params.name) {
                           entry.privatenotes = undefined;
                         }
                         if (!req.user || !req.user.isMod) {
@@ -165,39 +163,20 @@ module.exports = {
   },
 
   addNote: function (req, res) {
-    req.params = req.allParams();
-    User.findOne({id: req.params.userid}).exec(function (err, user) {
-
-      if (!user) {
-        return res.notFound("Can't find user");
+    ModNote.create({user: req.user.name, refUser: req.allParams().username, note: req.allParams().note}).exec(function (err, note) {
+      if (err) {
+        return res.serverError(err);
       }
-
-      ModNote.create({user: req.user.name, refUser: user.id, note: req.params.note})
-        .exec(function (err, note) {
-          if (err) {
-            res.serverError(err);
-          } else {
-            res.ok(note);
-          }
-        });
+      return res.ok(note);
     });
-
   },
 
   delNote: function (req, res) {
-    req.params = req.allParams();
-    User.findOne({id: req.params.userid}).exec(function (err, user) {
-      if (!user) {
-        return res.notFound("Can't find user");
+    ModNote.destroy(req.allParams().id).exec(function (err, note) {
+      if (err) {
+        return res.serverError(err);
       }
-      ModNote.destroy({id: req.params.id})
-        .exec(function (err, note) {
-          if (err) {
-            res.serverError(err);
-          } else {
-            res.ok(note);
-          }
-        });
+      return res.ok(note);
     });
   },
 
@@ -257,11 +236,10 @@ module.exports = {
       }
     }
     console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
-    User.findOne({name: req.params.username}, function (finding_user_error, user) {
-      Reddit.getBothFlairs(req.user.redToken, req.params.username, function (err, flair1, flair2) {
-        if (err) {
-          return res.serverError(err);
-        }
+    User.findOne(req.params.username, function (finding_user_error, user) {
+      Reddit.getBothFlairs(req.user.redToken, req.params.username).then(function (flairs) {
+        var flair1 = flairs[0];
+        var flair2 = flairs[1];
         if (flair1 && flair1.flair_css_class && flair1.flair_text) {
           if (flair1.flair_css_class.indexOf(' ') === -1) {
             flair1.flair_css_class += ' banned';
@@ -333,74 +311,56 @@ module.exports = {
           res.status(500).json(error);
         });
         Event.create({
-          user: req.user.id,
-          userName: req.user.name,
+          user: req.user.name,
           type: "banUser",
           content: "Banned /u/" + req.params.username
         }).exec(function () {});
+      }, function (err) {
+        return res.serverError(err);
       });
     });
   },
 
   setLocalBan: function (req, res) {
-    User.findOne(req.allParams().userId).exec(function (err, user) {
-      if (!user) {
-        return res.notFound("Can't find user");
+    User.update(req.allParams().username, {banned: req.allParams().ban}).exec(function (err, user) {
+      if (err) {
+        console.log(err);
+        return res.serverError(err);
       }
-
-      user.banned = req.allParams().ban;
-      user.save(function (err) {
-        if (err) {
-          return res.serverError(err);
-        }
-        res.ok(user);
-      });
+      if (!user) {
+        return res.notFound();
+      }
+      return res.ok(user[0]);
     });
   },
   
   bannedUsers: function (req, res) {
     User.find({banned: true}).exec(function (err, users) {
-      res.ok(users);
+      if (err) {
+        return res.serverError(err);
+      }
+      return res.ok(users);
     });
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(
-      sails.config.reddit.adminRefreshToken,
-      req.user.name,
-      'pokemontrades',
-      function(err, response) {
-        if (err) {
-          console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
-          return res.serverError();
-        }
-        if (response.data.children.length) { //User is a mod, clear session
-          User.findOne({name: req.allParams().name}, function (err, user) {
-            if (err) {
-              return res.serverError(err);
-            }
-            if (!user) {
-              return res.status(404).json("404: That user could not be found.");
-            }
-            if (req.allParams().name === req.user.name) {
-              //Can't return a response after the user's own session is destroyed, so preemptively respond here if user is clearing their own session.
-              res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
-            }
-            Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}).exec(function (err) {
-            //The session entry is stored as a JSON string instead of an object, preventing easy queries. Instead, regex search for the user's id.
-              if (err) {
-                console.log(err);
-                if (!res.finished) {
-                  return res.serverError(err);
-                }
-              }
-              if (!res.finished) {
-                return res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
-              }
-            });
-          });
-        }
+    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function(modStatus) {
+      if (modStatus) { //User is a mod, clear session
+        Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
+          if (err) {
+            console.log(err);
+            return res.serverError(err);
+          }
+          if (req.allParams().name === req.user.name) {
+            req.session.destroy();
+            return res.redirect('/login');
+          }
+          return res.ok("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+        });
       }
-    );
+    }, function (err) {
+      console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+      return res.serverError();
+    });
   }
 };

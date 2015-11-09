@@ -1,10 +1,16 @@
 var request = require("request-promise"),
   moment = require('moment'),
+  NodeCache = require('node-cache'),
   left = 600,
   resetTime = moment().add(600, "seconds"),
   userAgent = "Webpage:hq.porygon.co:v" + sails.config.version;
+var cache = new NodeCache({stdTTL: 3480}); // Cached tokens expire after 58 minutes, leave a bit of breathing room in case stuff is slow
 
 exports.refreshToken = async function(refreshToken) {
+  let token = await cache.get(refreshToken);
+  if (token) {
+    return token;
+  }
   var data = "grant_type=refresh_token&refresh_token=" + refreshToken;
   var auth = "Basic " + new Buffer(sails.config.reddit.clientID + ":" + sails.config.reddit.clientIDSecret).toString("base64");
   var body = await request.post({
@@ -19,6 +25,7 @@ exports.refreshToken = async function(refreshToken) {
     }
   });
   if (body && body.access_token) {
+    cache.set(refreshToken, body.access_token);
     return body.access_token;
   } else {
     throw "Error retrieving token";

@@ -123,6 +123,18 @@ exports.numberOfEggChecks = function (user) {
   });
   return givenAway;
 };
+exports.numberOfApprovedEggChecks = function (user) {
+  var num = 0;
+  if (!user || !user.references) {
+    return;
+  }
+  user.references.filter(function (item) {
+    return exports.isEggCheck(item) && exports.isApproved(item);
+  }).forEach(function (ref) {
+    num += ref.number || 0;
+  });
+  return num;
+};
 exports.numberOfTrades = function (user) {
   if (!user || !user.references) {
     return 0;

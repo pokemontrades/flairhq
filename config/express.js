@@ -3,7 +3,7 @@ var passport = require('passport'),
 
 var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
   process.nextTick(function() {
-    User.findOne({name: profile.name}, function(err, user) {
+    User.findOne({id: profile.name}, function(err, user) {
       Reddit.getBothFlairs(adminToken, profile.name).then(function (flairs) {
         if (user) {
           if (user.banned) {
@@ -51,7 +51,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(name, done) {
-  User.findOne({name}, function(err, user) {
+  User.findOne({id: name}, function(err, user) {
     done(err, user);
   });
 });

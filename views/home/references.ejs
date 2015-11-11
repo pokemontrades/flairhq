@@ -354,14 +354,11 @@
       <tbody id="collapseinvolvement" class="collapse">
       <tr ng-repeat="reference in <%= theUser %>.references | filter: isInvolvement | orderBy: 'createdAt'">
           <td><strong>{{$index + 1}}.</strong></td>
-          <td colspan="2" class="hidden-sm hidden-xs">
-              <a ng-href="{{reference.url}}">
-                  {{reference.description || reference.descrip}}
+          <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
+          <td class="hidden-sm hidden-xs">
+              <a ng-href="{{getRedditUser(reference.user2)}}">
+                  {{getRedditUser(reference.user2)}}
               </a>
-          </td>
-          <td class="hidden-md hidden-lg">
-              <a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}
-                  {{reference.number ? "(" + reference.number + " checked)" : ""}}</a>
           </td>
           <td>
               <input type="checkbox" ng-change="approve(reference.id, reference.approved)"

@@ -117,8 +117,8 @@ module.exports = {
     $scope.numberOfTrades = function () {
       return referenceService.numberOfTrades($scope.user);
     };
-    $scope.numberOfGivenAway = function () {
-      return referenceService.numberOfGivenAway($scope.user);
+    $scope.numberOfPokemonGivenAway = function () {
+      return referenceService.numberOfPokemonGivenAway($scope.user);
     };
     $scope.numberOfEggsGivenAway = function () {
       return referenceService.numberOfEggsGivenAway($scope.user);

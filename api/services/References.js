@@ -85,13 +85,13 @@ exports.getRedditUser = function (username) {
     return username;
   }
 };
-exports.numberOfGivenAway = function (user) {
+exports.numberOfPokemonGivenAway = function (user) {
   var givenAway = 0;
   if (!user || !user.references) {
     return;
   }
   user.references.filter(function (item) {
-      return exports.isGiveaway(item);
+      return exports.isGiveaway(item) && item.url.indexOf("pokemontrades") !== -1;
   }).forEach(function (ref) {
       givenAway += (ref.number || 0);
   });

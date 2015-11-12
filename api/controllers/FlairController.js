@@ -86,7 +86,7 @@ module.exports = {
         Reddit.setFlair(req.user.redToken, user.name, css_class, flair, app.sub).then(function () {
           Event.create({
             type: "flairTextChange",
-            userName: req.user.name,
+            user: req.user.name,
             content: "Changed " + user.name + "'s flair to " + css_class
           }).exec(function () {});
 
@@ -133,7 +133,7 @@ module.exports = {
     var appData = {
       limit: 1,
       sort: "createdAt DESC",
-      userName: req.user.name,
+      user: req.user.name,
       type: "flairTextChange"
     };
 
@@ -178,11 +178,11 @@ module.exports = {
         var ipAddress = req.headers['x-forwarded-for'] || req.ip;
         Event.create([{
           type: "flairTextChange",
-          userName: req.user.name,
+          user: req.user.name,
           content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
         }, {
           type: "flairTextChange",
-          userName: req.user.name,
+          user: req.user.name,
           content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
         }]).exec(function(){});
         return res.ok(req.user);

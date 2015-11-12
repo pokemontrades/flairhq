@@ -293,7 +293,7 @@ module.exports = {
           res.status(500).json(error);
         });
         Event.create({
-          userName: req.user.name,
+          user: req.user.name,
           type: "banUser",
           content: "Banned /u/" + req.params.username
         }).exec(function () {});

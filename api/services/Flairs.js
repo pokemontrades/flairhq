@@ -189,16 +189,32 @@ exports.flairCheck = function (ptrades, svex) {
   }
   var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
   var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
+  var tradesParts = ptrades.split("||");
+  var svexParts = svex.split("||");
+  if (tradesParts.length !== 2 || svexParts.length !== 3) {
+    throw "Error with format.";
+  }
+  var tradesFCs = tradesParts[0];
+  var tradesGames = tradesParts[1];
+  var svexFCs = svexParts[0];
+  var svexGames = svexParts[1];
+
+  if (!tradesFCs.trim().match(new RegExp("(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))*")) ||
+    !svexFCs.trim().match(new RegExp("(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))*"))) {
+    throw "Error with FCs";
+  }
+  if (tradesGames.trim() === "" || svexGames.trim() === "") {
+    throw "We need at least 1 game.";
+  }
+  if (!ptrades.match(new RegExp(ptradesFlair)) || !svex.match(new RegExp(svExFlair))) {
+    throw "Error with format.";
+  }
 
   var response = {
     ptrades: ptrades,
     svex: svex,
     fcs: []
   };
-
-  if (!ptrades.match(new RegExp(ptradesFlair)) || !svex.match(new RegExp(svExFlair))) {
-    throw "Error with format.";
-  }
 
   response.fcs = _.union(ptrades.match(/(\d{4}-){2}\d{4}/g), svex.match(/(\d{4}-){2}\d{4}/g));
 

@@ -5,6 +5,7 @@ var flairService = require('../../api/services/Flairs.js');
 
 module.exports = {
   addRepeats: function ($scope) {
+    var current_user = window.location.pathname.substring(0, 3) === '/u/' ? 'refUser' : 'user';
     $scope.editRef = function () {
       $scope.editRefError = "";
       $scope.indexOk.editRef = false;
@@ -45,7 +46,7 @@ module.exports = {
         return;
       }
       if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
-        $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
+        $scope.addRefError = "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
         return;
       }
       $scope.indexSpin.editRef = true;
@@ -80,11 +81,10 @@ module.exports = {
       });
     };
     $scope.deleteRef = function (id) {
-      var current_user = $scope.refUser || $scope.user;
       var url = "/reference/delete";
       io.socket.post(url, {refId: id}, function (data, res) {
         if (res.statusCode === 200) {
-          current_user.references = current_user.references.filter(function (ref) {
+          $scope[current_user].references = $scope[current_user].references.filter(function (ref) {
             return ref.id !== id;
           });
           $scope.$apply();
@@ -114,20 +114,26 @@ module.exports = {
     $scope.inSVExchangeHatcher = flairService.inSVExchangeHatcher;
     $scope.inSVExchangeGiver = flairService.inSVExchangeGiver;
     $scope.getFlair = flairService.getFlair;
+    $scope.userHasFlair = function (flair) {
+      return flairService.userHasFlair($scope.user, flair);
+    };
     $scope.numberOfTrades = function () {
-      return referenceService.numberOfTrades($scope.user);
+      return referenceService.numberOfTrades($scope[current_user]);
     };
     $scope.numberOfPokemonGivenAway = function () {
-      return referenceService.numberOfPokemonGivenAway($scope.user);
+      return referenceService.numberOfPokemonGivenAway($scope[current_user]);
     };
     $scope.numberOfEggsGivenAway = function () {
-      return referenceService.numberOfEggsGivenAway($scope.user);
+      return referenceService.numberOfEggsGivenAway($scope[current_user]);
     };
     $scope.numberOfEggChecks = function () {
-      return referenceService.numberOfEggChecks($scope.user);
+      return referenceService.numberOfEggChecks($scope[current_user]);
+    };
+    $scope.numberOfApprovedEggChecks = function () {
+      return referenceService.numberOfApprovedEggChecks($scope[current_user]);
     };
     $scope.getFlairTextForSVEx = function () {
-      return flairService.getFlairTextForSVEx($scope.user);
+      return flairService.getFlairTextForSVEx($scope[current_user]);
     };
     $scope.applied = function (flair) {
       return flairService.applied($scope.user, flair);

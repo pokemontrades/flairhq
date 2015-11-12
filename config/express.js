@@ -22,7 +22,7 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
             redToken: tokenSecret,
             provider: profile.provider,
             name: profile.name,
-            flair: {ptrades: flair1, svex: flair2}
+            flair: {ptrades: flairs[0], svex: flairs[1]}
           };
 
           if (profile.emails && profile.emails[0] && profile.emails[0].value) {

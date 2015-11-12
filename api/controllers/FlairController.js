@@ -145,7 +145,7 @@ module.exports = {
       if (events.length) {
         var then = moment(events[0].createdAt);
         then.add(2, 'minutes');
-        if (then.isAfter(now) && false) {
+        if (then.isAfter(now)) {
           return res.status(400).json({error: "You set your flair too recently, please try again in a few minutes."});
         }
       }
@@ -154,7 +154,7 @@ module.exports = {
 
       for (var i = 0; i < flairs.fcs.length; i++) {
         let fc = flairs.fcs[i];
-        if (!Flairs.validFC(fc) && _.contains(req.user.loggedFriendCodes, fc)) {
+        if (!Flairs.validFC(fc) && flairs.fcs[i] !== req.user.loggedFriendCodes[i]) {
           flagged.push(fc);
         }
       }
@@ -168,8 +168,8 @@ module.exports = {
         }
       });
 
-      var newPFlair = _.get(req, "user.flair.ptrades.current.flair_css_class") || "default";
-      var newsvFlair = _.get(req, "user.flair.svex.current.flair_css_class") || "";
+      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class", "default");
+      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class", "");
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
       promises.push(Reddit.setFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
@@ -209,7 +209,6 @@ module.exports = {
         });
         var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();
         Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwatch', '').then(function (result) {
-          console.log('Created a usernote on /u/' + req.user.name);
         }, function (error) {
           console.log('Failed to create a usernote on /u/' + req.user.name);
         });

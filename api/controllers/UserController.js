@@ -179,27 +179,28 @@ module.exports = {
     });
   },
 
-  ban: function (req, res) {
+  ban: async function (req, res) {
     /*  Form parameters:
-     req.params.username: The user who is being banned (String)
-     req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
-     req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
-     req.params.banlistEntry: The ban reason to appear on the public banlist (String)
-     req.params.duration: The number of days that the user will be banned for. (Integer)
-     req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
-     Ban process:
-     1. Ban user from /r/pokemontrades
-     2. Ban user from /r/SVExchange
-     3. Add "BANNED USER" to user's flair on /r/pokemontrades
-     4. Add "BANNED USER" to user's flair on /r/SVExchange
-     5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
-     6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
-     7. Add a usernote for the user on /r/pokemontrades
-     8. Add a usernote for the user on /r/SVExchange
-     9. Remove all of the user's TSV threads on /r/SVExchange
-     10. Add user's info to banlist wiki on /r/pokemontrades
-     11. Locally ban user from FlairHQ
-     */
+          req.params.username: The user who is being banned (String)
+          req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
+          req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
+          req.params.banlistEntry: The ban reason to appear on the public banlist (String)
+          req.params.duration: The number of days that the user will be banned for. (Integer)
+          req.params.knownAlt: Known alt of the user for the public banlist (String)
+          req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
+        Ban process:
+          1. Ban user from /r/pokemontrades
+          2. Ban user from /r/SVExchange
+          3. Add "BANNED USER" to user's flair on /r/pokemontrades
+          4. Add "BANNED USER" to user's flair on /r/SVExchange
+          5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
+          6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
+          7. Add a usernote for the user on /r/pokemontrades
+          8. Add a usernote for the user on /r/SVExchange
+          9. Remove all of the user's TSV threads on /r/SVExchange
+          10. Add user's info to banlist wiki on /r/pokemontrades
+          11. Locally ban user from FlairHQ
+    */
 
     req.params = req.allParams();
 
@@ -226,6 +227,10 @@ module.exports = {
       return res.status(400).json({error: "Invalid duration"});
     }
 
+    if (req.params.knownAlt && (typeof req.params.knownAlt !== 'string' || !req.params.knownAlt.match(/^[A-Za-z0-9_-]{1,20}$/))) {
+      return res.status(400).json({error: "Invalid username of alt"});
+    }
+
     if (!(req.params.additionalFCs instanceof Array)) {
       return res.status(400).json({error: "Invalid friendcode list"});
     }
@@ -235,84 +240,66 @@ module.exports = {
       }
     }
     console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
-    User.findOne(req.params.username, function (finding_user_error, user) {
-      Reddit.getBothFlairs(req.user.redToken, req.params.username).then(function (flairs) {
-        var flair1 = flairs[0];
-        var flair2 = flairs[1];
-        if (flair1 && flair1.flair_css_class && flair1.flair_text) {
-          if (flair1.flair_css_class.indexOf(' ') === -1) {
-            flair1.flair_css_class += ' banned';
-          } else {
-            flair1.flair_css_class = flair1.flair_css_class.substring(0, flair1.flair_css_class.indexOf(' ')) + ' banned';
-          }
-        } else {
-          flair1 = {flair_css_class: 'default banned'};
-          flair1.flair_text = '';
+    var user;
+    try {
+      user = await User.findOne(req.params.username);
+      if (!user) {
+        if (await Reddit.checkUsernameAvailable(req.params.username)) {
+          console.log("Ban aborted (user does not exist)");
+          return res.status(404).json({error: "That user does not exist."});
         }
-        if (flair2 && flair2.flair_text) {
-          if (flair2.flair_css_class) {
-            flair2.flair_css_class += ' banned';
-          }
-          else {
-            flair2.flair_css_class = 'banned';
-          }
-        } else {
-          flair2 = {flair_css_class: 'banned'};
-          flair2.flair_text = '';
-        }
-        var logged_fcs;
-        if (user) {
-          logged_fcs = user.loggedFriendCodes;
-        }
-        var unique_fcs = _.union(
-          flair1.flair_text.match(/(\d{4}-){2}\d{4}/g),
-          flair2.flair_text.match(/(\d{4}-){2}\d{4}/g),
-          logged_fcs,
-          req.params.additionalFCs
-        );
-        var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-        var promises = [];
-        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
-        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
-        if (!req.params.duration) {
-          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades'));
-          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange'));
-          promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
-          promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
-          promises.push(Ban.removeTSVThreads(req.user.redToken, req.params.username));
-          promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns));
-          promises.push(Ban.localBanUser(req.params.username));
-        }
-        Promise.all(promises).then(function () {
-          res.ok();
-        }, function (error) {
-          console.log(error);
-          res.status(500).json(error);
-        });
-        Event.create({
-          user: req.user.name,
-          type: "banUser",
-          content: "Banned /u/" + req.params.username
-        }).exec(function () {
-        });
-      }, function (err) {
-        return res.serverError(err);
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+    Reddit.getBothFlairs(req.user.redToken, req.params.username).then(function (flairs) {
+      var logged_fcs = user ? user.loggedFriendCodes : [];
+      var fc_match = /(\d{4}-){2}\d{4}/g;
+      var unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), logged_fcs, req.params.additionalFCs);
+      var igns = flairs[0].flair_text.substring(flairs[0].flair_text.indexOf("||") + 3);
+      var promises = [];
+      promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
+      promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
+      if (!req.params.duration) {
+        promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
+        promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
+        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+        promises.push(Ban.removeTSVThreads(req.user.redToken, req.params.username));
+        promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
+        promises.push(Ban.localBanUser(req.params.username));
+      }
+      Promise.all(promises).then(function(result) {
+        console.log('Process to ban /u/' + req.params.username + 'was completed successfully.');
+        res.ok();
+      }, function(error) {
+        console.log(error);
+        res.status(error.statusCode || 500).json(error);
       });
+      Event.create({
+        user: req.user.name,
+        type: "banUser",
+        content: "Banned /u/" + req.params.username
+      });
+    }, function (err) {
+      console.log(err);
+      res.status(500).json(err);
     });
   },
 
   setLocalBan: function (req, res) {
-    User.update(req.allParams().username, {banned: req.allParams().ban}).exec(function (err, user) {
+    User.update(req.allParams().username, {banned: req.allParams().ban}).exec(function (err, users) {
       if (err) {
         console.log(err);
         return res.serverError(err);
       }
-      if (!user) {
+      if (!users.length) {
         return res.notFound();
       }
-      return res.ok(user[0]);
+      return res.ok(users[0]);
     });
   },
 

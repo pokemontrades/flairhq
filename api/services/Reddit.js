@@ -3,7 +3,7 @@ var request = require("request-promise"),
   NodeCache = require('node-cache'),
   left = 600,
   resetTime = moment().add(600, "seconds"),
-  userAgent = "Webpage:hq.porygon.co:v" + sails.config.version;
+  userAgent = "Webpage:hq.porygon.co/info:v" + sails.config.version;
 var cache = new NodeCache({stdTTL: 3480}); // Cached tokens expire after 58 minutes, leave a bit of breathing room in case stuff is slow
 
 exports.refreshToken = async function(refreshToken) {
@@ -23,6 +23,8 @@ exports.refreshToken = async function(refreshToken) {
       "Content-Type": "application/x-www-form-urlencoded",
       "Content-Length": data.length
     }
+  }).catch(function (error) {
+    throw {statusCode: 502, error: 'Error retrieving token; Reddit responded with status code ' + error.statusCode};
   });
   if (body && body.access_token) {
     cache.set(refreshToken, body.access_token);
@@ -33,13 +35,13 @@ exports.refreshToken = async function(refreshToken) {
 };
 
 var makeRequest = async function (refreshToken, requestType, url, data, rateLimitRemainingThreshold) {
-  let token = await exports.refreshToken(refreshToken);
   if (left < rateLimitRemainingThreshold && moment().before(resetTime)) {
-    throw "Rate limited";
+    throw {statusCode: 504, error: "Rate limited"};
   }
-  var headers = {
-    Authorization: "bearer " + token, "User-Agent": userAgent
-  };
+  var headers = {"User-Agent": userAgent};
+  if (url.indexOf("oauth.reddit.com") !== -1) {
+    headers.Authorization = "bearer " + await exports.refreshToken(refreshToken);
+  }
   var options = {
     url: url,
     headers: headers,
@@ -47,20 +49,18 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
     method: requestType,
     formData: data
   };
-  let response = await request(options);
+  let response = await request(options).catch(function (error) {
+    console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode +
+      ' - ' + error.statusMessage + '\nForm data sent: ' + JSON.stringify(data));
+    throw {statusCode: 502, error: 'Reddit responded with status code ' + error.statusCode};
+  });
   updateRateLimits(response);
   var bodyJson;
   try {
     bodyJson = JSON.parse(response.body);
   } catch (error) {
     console.log("Error with parsing: " + response.body);
-    throw "Error with parsing: " + response.body;
-  }
-
-  if (response.statusCode !== 200) {
-    console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + response.statusCode +
-      ' - ' + response.statusMessage + '\nForm data sent: ' + JSON.stringify(data));
-    throw response.statusMessage;
+    throw {error: "Error with parsing: " + response.body};
   }
   return bodyJson;
 };
@@ -84,6 +84,10 @@ exports.setFlair = function (refreshToken, name, cssClass, text, subreddit) {
   var url = 'https://oauth.reddit.com/r/' + actual_sub + '/api/flair';
   var data = {api_type: 'json', css_class: cssClass, name: name, text: text};
   return makeRequest(refreshToken, 'POST', url, data, 5);
+};
+
+exports.checkUsernameAvailable = async function (name) {
+  return makeRequest(undefined, 'GET', 'https://www.reddit.com/api/username_available.json?user=' + name, undefined, 10);
 };
 
 exports.banUser = function (refreshToken, username, ban_message, note, subreddit, duration) {

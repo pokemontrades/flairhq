@@ -9,6 +9,7 @@ module.exports = function ($scope) {
     banMessage: "",
     banlistEntry: "",
     duration: "",
+    knownAlt: "",
     additionalFCs: ""
   };
 
@@ -31,18 +32,17 @@ module.exports = function ($scope) {
       return;
     }
 
-    if ($scope.banInfo.username.substring(0, 3) === '/u/') {
-      $scope.banInfo.username = $scope.banInfo.username.substring(3);
-    }
+    var names = ['username', 'knownAlt'];
+    for (let i = 0; i < names.length; i++) {
 
-    else if ($scope.banInfo.username.substring(0, 2) === 'u/') {
-      $scope.banInfo.username = $scope.banInfo.username.substring(2);
-    }
-
-    if (!$scope.banInfo.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
-      $scope.banError = "Invalid username";
-      $scope.indexSpin.ban = false;
-      return;
+      if ($scope.banInfo[names[i]].match(/^\/?u\//)) {
+        $scope.banInfo[names[i]] = $scope.banInfo[names[i]].substring($scope.banInfo[names[i]].indexOf('u/') + 2);
+      }
+      if ($scope.banInfo[names[i]] && !$scope.banInfo[names[i]].match(/^[A-Za-z0-9_-]{1,20}$/)) {
+        $scope.banError = "Invalid " + names[i];
+        $scope.indexSpin.ban = false;
+        return;
+      }
     }
 
     if ($scope.banInfo.banNote.length > 300) {
@@ -79,6 +79,7 @@ module.exports = function ($scope) {
       "banMessage": $scope.banInfo.banMessage,
       "banlistEntry": $scope.banInfo.banlistEntry,
       "duration": parseInt($scope.banInfo.duration),
+      "knownAlt": $scope.banInfo.knownAlt,
       "additionalFCs": FCs
     };
 
@@ -91,6 +92,7 @@ module.exports = function ($scope) {
         $scope.banInfo.banMessage = "";
         $scope.banInfo.banlistEntry = "";
         $scope.banInfo.duration = "";
+        $scope.banInfo.knownAlt = "";
         $scope.banInfo.additionalFCs = "";
         $scope.indexOk.ban = true;
         window.setTimeout(function () {
@@ -99,11 +101,11 @@ module.exports = function ($scope) {
         }, 1500);
         $scope.$apply();
       } else {
-        $scope.indexOk = false;
+        $scope.indexOk.ban = false;
         if (res.body.error) {
-          $scope.banError = "Something went wrong; you might have to do stuff manually. Error " + res.statusCode + ": " + res.body.error;
+          $scope.banError = "Error " + res.statusCode + ": " + res.body.error;
         } else {
-          $scope.banError = "Something went wrong; you might have to do stuff manually.";
+          $scope.banError = "Error " + res.statusCode;
         }
         $scope.$apply();
       }

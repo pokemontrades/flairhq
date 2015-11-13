@@ -1,3 +1,4 @@
+var _ = require('lodash');
 exports.banFromSub = async function (redToken, username, banMessage, banNote, subreddit, duration) {
   try {
     await Reddit.banUser(redToken, username, banMessage, banNote, subreddit, duration);
@@ -9,8 +10,15 @@ exports.banFromSub = async function (redToken, username, banMessage, banNote, su
 };
 
 //Give the 'BANNED USER' flair on a subreddit
-exports.giveBannedUserFlair = async function (redToken, username, css_class, flair_text, subreddit) {
+exports.giveBannedUserFlair = async function (redToken, username, current_css_class, current_flair_text, subreddit) {
   try {
+    var flair_text = current_flair_text || '';
+    var css_class;
+    if (subreddit === 'pokemontrades') {
+      css_class = current_css_class ? current_css_class.replace(/ [^ ]*/, '') + ' banned' : 'default banned';
+    } else {
+      css_class = current_css_class ? current_css_class + ' banned' : 'banned';
+    }
     await Reddit.setFlair(redToken, username, css_class, flair_text, subreddit);
     console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
     return 'Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit;
@@ -38,7 +46,10 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
       var end_delimiter_index = lines[fclist_indices[listno]].lastIndexOf(punctuation[0]);
       var before_end = lines[fclist_indices[listno]].substring(0, end_delimiter_index);
       for (var i = 0; i < friend_codes.length; i++) {
-        before_end += punctuation[1] + friend_codes[i].replace(/-/g, punctuation[2]) + punctuation[3];
+        let formatted = friend_codes[i].replace(/-/g, punctuation[2]);
+        if (lines[fclist_indices[listno]].indexOf(formatted) === -1) {
+          before_end += punctuation[1] + formatted + punctuation[3];
+        }
       }
       lines[fclist_indices[listno]] = before_end + lines[fclist_indices[listno]].substring(end_delimiter_index);
     }
@@ -66,18 +77,41 @@ exports.removeTSVThreads = async function (redToken, username) {
   return output;
 };
 //Update the public banlist with the user's information
-exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns) {
+exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns, knownAlt) {
+  var valid_FCs = friend_codes.filter(Flairs.validFC);
+  if (valid_FCs.length) {
+    friend_codes = valid_FCs;
+  }
   var current_list = await Reddit.getWikiPage(redToken, 'pokemontrades', 'banlist');
   var lines = current_list.replace(/\r/g, '').split("\n");
   var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
-  if (start_index == 2) {
-    console.log('Error: Could not find start marker in public banlist');
-    throw {error: 'Error while parsing public banlist'};
+  var end_index = lines.indexOf('[//]:# (END BANLIST)')
+  if (start_index === 2 || end_index === -1) {
+    console.log('Error: Could not find parsing marker in public banlist');
+    throw {error: 'Error: Could not find parsing marker in public banlist'};
   }
-  var line_to_add = '/u/' + username + ' | ' + friend_codes.join(', ') + ' | ' + banlistEntry + ' | ' + igns;
-  var content = lines.slice(0, start_index).join("\n") + "\n" + line_to_add + "\n" + lines.slice(start_index).join("\n");
+  var updated_content = '';
+  for (let i = start_index; i < end_index; i++) {
+    if (knownAlt && lines[i].match(new RegExp('/u/' + knownAlt)) || _.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
+      // User was an alt account, modify the existing line instead of creating a new one
+      let blocks = lines[i].split(' | ');
+      if (blocks.length !== 4) {
+        break;
+      }
+      blocks[0] += ', /u/' + username;
+      blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
+      blocks[3] = _.union(blocks[3].split(', '), [igns]).join(', ');
+      let new_line = blocks.join(' | ');
+      var updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index, i)).concat(lines.slice(i + 1)).join('\n');
+    }
+  }
+  if (!updated_content) {
+    // User was probably not an alt, create a new line
+    let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, igns].join(' | ');
+    updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
+  }
   try {
-    await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', content, '');
+    await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', updated_content, '');
   } catch (e) {
     console.log(e);
     throw {error: 'Failed to update public banlist'};
@@ -85,23 +119,15 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   console.log('Added /u/' + username + ' to public banlist');
   return 'Added /u/' + username + ' to public banlist';
 };
-exports.localBanUser = async function (username) {
-  User.findOne({name: username}).exec(function (err, user) {
-    if (!user) {
-      console.log('/u/' + username + ' was not locally banned because that user does not exist in the FlairHQ database.');
-      return '/u/' + username + ' was not locally banned because that user does not exist in the FlairHQ database.';
-    }
-    else {
-      user.banned = true;
-      user.save(function (err) {
-        if (err) {
-          throw {error: 'Error banning user from local FlairHQ database'};
-        }
-        console.log('Banned /u/' + username + ' from local FlairHQ database');
-        return 'Banned /u/' + username + ' from local FlairHQ database';
-      });
-    }
-  });
+exports.localBanUser = async function(username) {
+  try {
+    let update = await User.update(username, {banned: true});
+    console.log('Updated local banlist');
+    return update;
+  } catch (err) {
+    console.log(err);
+    throw {error: 'Failed to locally ban /u/' + username};
+  }
 };
 exports.addUsernote = function (redToken, modname, subreddit, username, banNote, duration) {
   var type = duration ? 'ban' : 'permban';

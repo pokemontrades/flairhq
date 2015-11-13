@@ -10,7 +10,7 @@
           </ng-tooltip>
 
           <ng-tooltip data-label="Ban Note"
-                      title="The reason for the ban. The banned user will <strong>not</strong> see this. 300 characters max.">
+                      title="The reason for the ban. The banned user will not see this. 300 characters max.">
             <input type="text" class="form-control" ng-model="banInfo.banNote">
           </ng-tooltip>
 
@@ -20,13 +20,18 @@
           </ng-tooltip>
 
           <ng-tooltip data-label="Banlist Entry"
-                      title="The ban reason that will get listed on the public banlist page, e.g. 'Scamming'">
+                      title="The ban reason that will get listed on the public banlist page, e.g. 'Scamming'. This field will be ignored if the user is an alt of another banned user.">
             <input type="text" class="form-control" ng-model="banInfo.banlistEntry">
           </ng-tooltip>
 
           <ng-tooltip data-label="Duration" 
                       title="The number of days that the user will be banned for. Leave blank for a permanent ban.">
             <input type="text" class="form-control" ng-model="banInfo.duration">
+          </ng-tooltip>
+
+          <ng-tooltip data-label="Known Alt"
+                      title="If this user is a known alt of another banned user, put that username here to combine the entries on the banlist. This field is not necessary if both accounts used the same friend code.">
+            <input type="text" class="form-control" ng-model="banInfo.knownAlt">
           </ng-tooltip>
 
           <ng-tooltip data-label="Additional Friend Codes" 

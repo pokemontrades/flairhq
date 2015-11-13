@@ -137,6 +137,15 @@ exports.checkModeratorStatus = async function (refreshToken, username, subreddit
   return res.data.children.length !== 0;
 };
 
+exports.getModmail = async function (refreshToken, subreddit, after, before, limit) {
+  //after/before (mutually exclusive): Fullname of a modmail -- will start retrieving modmail from after/before this point
+  //limit: The limit on the number of modmails to display, max 100
+  limit = limit || 100;
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/about/message/inbox?show=all&count=102&limit=' + limit;
+  url += after ? '&after=' + after : before ? '&before=' + before : '';
+  return makeRequest(refreshToken, 'GET', url, undefined, 20);
+};
+
 var updateRateLimits = function (res) {
   if (res && res.headers && res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];

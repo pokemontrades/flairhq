@@ -16,12 +16,12 @@ var addModmailsToDatabase = async function (batch) {
 };
 exports.updateArchive = async function (subreddit) {
   let most_recent = await Modmail.find({subreddit: subreddit, limit: 1, sort: 'created_utc DESC'});
-  var before = most_recent[0].first_message_name || most_recent[0].name;
-  if (!before) {
-    console.log('Archived modmail for ' + subreddit + ' could not be found for some reason. Recreating from scratch.');
+  if (!most_recent.length) {
+    console.log('Modmail archives for /r/' + subreddit + ' could not be found for some reason. Recreating from scratch...');
     await exports.createArchiveFromScratch(subreddit);
     return;
   }
+  var before = most_recent[0].first_message_name || most_recent[0].name;
   while (before !== null) {
     let batch = await Reddit.getModmail(sails.config.reddit.adminRefreshToken, subreddit, undefined, before);
     before = batch.data.before;

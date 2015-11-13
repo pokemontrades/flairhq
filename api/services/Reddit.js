@@ -141,7 +141,7 @@ exports.getModmail = async function (refreshToken, subreddit, after, before, lim
   //after/before (mutually exclusive): Fullname of a modmail -- will start retrieving modmail from after/before this point
   //limit: The limit on the number of modmails to display, max 100
   limit = limit || 100;
-  var url = 'https://oauth.reddit.com/r/' + subreddit + '/about/message/inbox?show=all&count=102&limit=' + limit;
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/message/moderator?show=all&count=102&limit=' + limit;
   url += after ? '&after=' + after : before ? '&before=' + before : '';
   return makeRequest(refreshToken, 'GET', url, undefined, 20);
 };

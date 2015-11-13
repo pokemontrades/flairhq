@@ -10,7 +10,6 @@ module.exports.schedule = {
         }, function (error) {
           console.log('There was an issue updating the modmail archives.');
           console.log(error);
-
         });
       },
       context : {}

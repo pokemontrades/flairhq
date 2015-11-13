@@ -15,6 +15,7 @@
     "Sessions": true,
     "Game": true,
     "Application": true,
-    "ModNote": true
+    "ModNote": true,
+    "Modmail": true
   }
 }

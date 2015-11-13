@@ -31,7 +31,7 @@ module.exports = {
       stringOrNull: true
     },
     distinguished: { //This will be 'moderator' if the author was a mod, 'admin' if the author was a reddit admin, or null otherwise
-      enum: ['moderator', 'admin', null],
+      enum: ['moderator', 'admin', null]
     }
   }
 };

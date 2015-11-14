@@ -1,10 +1,11 @@
-/* global module, User, Reddit */
 /**
  * HomeController.js
  *
  * @description ::
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
+
+var _ = require("lodash");
 
 module.exports = {
 

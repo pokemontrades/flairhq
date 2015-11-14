@@ -9,7 +9,7 @@ exports.approve = function (ref, approve) {
         {type: 'casual'},
         {type: 'shiny'},
         {type: 'event'}
-      ],
+      ]
     };
     Reference.findOne(query, function (searcherr, otherRef) {
       if (searcherr) {
@@ -21,7 +21,7 @@ exports.approve = function (ref, approve) {
         ref.verified = approve;
         otherRef.verified = approve;
         ref.save(function (err1, newRef) {
-          otherRef.save(function (err2, newOtherRef) {
+          otherRef.save(function (err2) {
             if (err1 || err2) {
               return reject(err1 || err2);
             }
@@ -91,9 +91,9 @@ exports.numberOfPokemonGivenAway = function (user) {
     return;
   }
   user.references.filter(function (item) {
-      return exports.isGiveaway(item) && item.url.indexOf("pokemontrades") !== -1;
+    return exports.isGiveaway(item) && item.url.indexOf("pokemontrades") !== -1;
   }).forEach(function (ref) {
-      givenAway += (ref.number || 0);
+    givenAway += (ref.number || 0);
   });
   return givenAway;
 };
@@ -103,7 +103,7 @@ exports.numberOfEggsGivenAway = function (user) {
     return;
   }
   user.references.filter(function (item) {
-      return exports.isGiveaway(item) && item.url.indexOf("SVExchange") > -1;
+    return exports.isGiveaway(item) && item.url.indexOf("SVExchange") > -1;
   }).forEach(function (ref) {
     givenAway += (ref.number || 0);
   });
@@ -115,11 +115,11 @@ exports.numberOfEggChecks = function (user) {
     return;
   }
   user.references.filter(function (item) {
-      return exports.isEggCheck(item);
+    return exports.isEggCheck(item);
   }).forEach(function (ref) {
-      if (ref.url.indexOf("SVExchange") > -1) {
-        givenAway += (ref.number || 0);
-      }
+    if (ref.url.indexOf("SVExchange") > -1) {
+      givenAway += (ref.number || 0);
+    }
   });
   return givenAway;
 };

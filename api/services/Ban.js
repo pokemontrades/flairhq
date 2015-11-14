@@ -30,8 +30,7 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   if (fclist_indices.indexOf(0) != -1) {
     console.log(lines);
     console.log('Error: Could not find #FCList tags in /r/' + subreddit + ' AutoModerator config');
-    reject({error: 'Error parsing /r/' + subreddit + ' AutoModerator config'});
-    return;
+    throw {error: 'Error parsing /r/' + subreddit + ' AutoModerator config'};
   }
   try {
     for (var listno = 0; listno < fclist_indices.length; listno++) {
@@ -55,7 +54,7 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   return output;
 };
 //Remove the user's TSV threads on /r/SVExchange.
-exports.removeTSVThreads = async function(redToken, username) {
+exports.removeTSVThreads = async function (redToken, username) {
   var response = await Reddit.searchTSVThreads(redToken, username);
   var removeTSVPromises = [];
   response.data.children.forEach(function (entry) {
@@ -68,25 +67,25 @@ exports.removeTSVThreads = async function(redToken, username) {
 };
 //Update the public banlist with the user's information
 exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns) {
-    var current_list = await Reddit.getWikiPage(redToken, 'pokemontrades', 'banlist');
-    var lines = current_list.replace(/\r/g, '').split("\n");
-    var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
-    if (start_index == 2) {
-      console.log('Error: Could not find start marker in public banlist');
-      throw {error: 'Error while parsing public banlist'};
-    }
-    var line_to_add = '/u/' + username + ' | ' + friend_codes.join(', ') + ' | ' + banlistEntry + ' | ' + igns;
-    var content = lines.slice(0,start_index).join("\n") + "\n" + line_to_add + "\n" + lines.slice(start_index).join("\n");
-    try {
-      await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', content, '');
-    } catch (e) {
-      console.log(e);
-      throw {error: 'Failed to update public banlist'};
-    }
-    console.log('Added /u/' + username + ' to public banlist');
-    return 'Added /u/' + username + ' to public banlist';
+  var current_list = await Reddit.getWikiPage(redToken, 'pokemontrades', 'banlist');
+  var lines = current_list.replace(/\r/g, '').split("\n");
+  var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
+  if (start_index == 2) {
+    console.log('Error: Could not find start marker in public banlist');
+    throw {error: 'Error while parsing public banlist'};
+  }
+  var line_to_add = '/u/' + username + ' | ' + friend_codes.join(', ') + ' | ' + banlistEntry + ' | ' + igns;
+  var content = lines.slice(0, start_index).join("\n") + "\n" + line_to_add + "\n" + lines.slice(start_index).join("\n");
+  try {
+    await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', content, '');
+  } catch (e) {
+    console.log(e);
+    throw {error: 'Failed to update public banlist'};
+  }
+  console.log('Added /u/' + username + ' to public banlist');
+  return 'Added /u/' + username + ' to public banlist';
 };
-exports.localBanUser = async function(username) {
+exports.localBanUser = async function (username) {
   User.findOne({name: username}).exec(function (err, user) {
     if (!user) {
       console.log('/u/' + username + ' was not locally banned because that user does not exist in the FlairHQ database.');
@@ -104,11 +103,11 @@ exports.localBanUser = async function(username) {
     }
   });
 };
-exports.addUsernote = function(redToken, modname, subreddit, username, banNote) {
+exports.addUsernote = function (redToken, modname, subreddit, username, banNote) {
   return Usernotes.addUsernote(redToken, modname, subreddit, username, 'Banned - ' + banNote, 'ban', '').then(function (response) {
     console.log('Created a usernote on ' + username + ' in /r/' + subreddit);
     return response;
-  }, function (err) {
+  }, function () {
     throw {error: 'Failed to update /u/' + subreddit + 'usernotes.'};
   });
 };

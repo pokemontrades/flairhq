@@ -8,20 +8,20 @@
  * smashing anything that's already there.
  *
  * For usage docs see:
- * 		https://github.com/tomusdrw/grunt-sync
+ *    https://github.com/tomusdrw/grunt-sync
  *
  */
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
-	grunt.config.set('sync', {
-		dev: {
-			files: [{
-				cwd: './assets',
-				src: ['**/*.!(coffee)'],
-				dest: '.tmp/public'
-			}]
-		}
-	});
+  grunt.config.set('sync', {
+    dev: {
+      files: [{
+        cwd: './assets',
+        src: ['**/*.!(coffee)'],
+        dest: '.tmp/public'
+      }]
+    }
+  });
 
-	grunt.loadNpmTasks('grunt-sync');
+  grunt.loadNpmTasks('grunt-sync');
 };

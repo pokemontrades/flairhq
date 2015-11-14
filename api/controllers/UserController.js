@@ -1,4 +1,3 @@
-/* global module, User, Game, Reference, ModNote, Application */
 /**
  * UserController
  *
@@ -6,6 +5,7 @@
  */
 
 var Q = require('q');
+var _ = require('lodash');
 
 module.exports = {
 
@@ -33,8 +33,7 @@ module.exports = {
           var promises = [],
             games = [];
 
-          Game.find()
-            .where({user: user.name}).exec(function (err, games) {
+          Game.find().where({user: user.name}).exec(function (err, games) {
             games.forEach(function (game) {
               var deleteGame = true;
               req.params.games.forEach(function (game2) {
@@ -52,8 +51,7 @@ module.exports = {
             if (game.id && (game.tsv || game.ign)) {
               promises.push(Game.update(
                 {id: game.id},
-                {tsv: parseInt(game.tsv), ign: game.ign})
-                .exec(function (err, game) {
+                {tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
                   if (err) {
                     console.log(err);
                     res.serverError(err);
@@ -61,19 +59,16 @@ module.exports = {
                     games.push(game);
                   }
                 }
-              ));
+                ));
             } else if (!game.id && (game.tsv || game.ign)) {
-              promises.push(Game.create(
-                {user: user.name, tsv: parseInt(game.tsv), ign: game.ign})
-                .exec(function (err, game) {
-                  if (err) {
-                    console.log(err);
-                    res.serverError(err);
-                  } else {
-                    games.push(game);
-                  }
+              promises.push(Game.create({user: user.name, tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
+                if (err) {
+                  console.log(err);
+                  res.serverError(err);
+                } else {
+                  games.push(game);
                 }
-              ));
+              }));
             }
           });
 
@@ -136,7 +131,7 @@ module.exports = {
                       }
                       var publicReferences = references;
                       //Censor confidential/classified info
-                      publicReferences.forEach(function(entry) {
+                      publicReferences.forEach(function (entry) {
                         if (!req.user || req.user.name !== req.params.name) {
                           entry.privatenotes = undefined;
                         }
@@ -163,7 +158,11 @@ module.exports = {
   },
 
   addNote: function (req, res) {
-    ModNote.create({user: req.user.name, refUser: req.allParams().username, note: req.allParams().note}).exec(function (err, note) {
+    ModNote.create({
+      user: req.user.name,
+      refUser: req.allParams().username,
+      note: req.allParams().note
+    }).exec(function (err, note) {
       if (err) {
         return res.serverError(err);
       }
@@ -182,25 +181,25 @@ module.exports = {
 
   ban: function (req, res) {
     /*  Form parameters:
-          req.params.username: The user who is being banned (String)
-          req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
-          req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
-          req.params.banlistEntry: The ban reason to appear on the public banlist (String)
-          req.params.duration: The number of days that the user will be banned for. (Integer)
-          req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
-        Ban process:
-          1. Ban user from /r/pokemontrades
-          2. Ban user from /r/SVExchange
-          3. Add "BANNED USER" to user's flair on /r/pokemontrades
-          4. Add "BANNED USER" to user's flair on /r/SVExchange
-          5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
-          6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
-          7. Add a usernote for the user on /r/pokemontrades
-          8. Add a usernote for the user on /r/SVExchange
-          9. Remove all of the user's TSV threads on /r/SVExchange
-          10. Add user's info to banlist wiki on /r/pokemontrades
-          11. Locally ban user from FlairHQ
-    */
+     req.params.username: The user who is being banned (String)
+     req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
+     req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
+     req.params.banlistEntry: The ban reason to appear on the public banlist (String)
+     req.params.duration: The number of days that the user will be banned for. (Integer)
+     req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
+     Ban process:
+     1. Ban user from /r/pokemontrades
+     2. Ban user from /r/SVExchange
+     3. Add "BANNED USER" to user's flair on /r/pokemontrades
+     4. Add "BANNED USER" to user's flair on /r/SVExchange
+     5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
+     6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
+     7. Add a usernote for the user on /r/pokemontrades
+     8. Add a usernote for the user on /r/SVExchange
+     9. Remove all of the user's TSV threads on /r/SVExchange
+     10. Add user's info to banlist wiki on /r/pokemontrades
+     11. Locally ban user from FlairHQ
+     */
 
     req.params = req.allParams();
 
@@ -252,7 +251,7 @@ module.exports = {
         }
         if (flair2 && flair2.flair_text) {
           if (flair2.flair_css_class) {
-            flair2.flair_css_class+=' banned';
+            flair2.flair_css_class += ' banned';
           }
           else {
             flair2.flair_css_class = 'banned';
@@ -286,9 +285,9 @@ module.exports = {
           promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns));
           promises.push(Ban.localBanUser(req.params.username));
         }
-        Promise.all(promises).then(function(result) {
+        Promise.all(promises).then(function () {
           res.ok();
-        }, function(error) {
+        }, function (error) {
           console.log(error);
           res.status(500).json(error);
         });
@@ -296,7 +295,8 @@ module.exports = {
           user: req.user.name,
           type: "banUser",
           content: "Banned /u/" + req.params.username
-        }).exec(function () {});
+        }).exec(function () {
+        });
       }, function (err) {
         return res.serverError(err);
       });
@@ -315,7 +315,7 @@ module.exports = {
       return res.ok(user[0]);
     });
   },
-  
+
   bannedUsers: function (req, res) {
     User.find({banned: true}).exec(function (err, users) {
       if (err) {
@@ -326,7 +326,7 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function(modStatus) {
+    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (modStatus) {
       if (modStatus) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {
@@ -340,8 +340,8 @@ module.exports = {
           return res.ok("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
         });
       }
-    }, function (err) {
-      console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+    }, function () {
+      console.log('Failed to check whether /u/' + req.allParams().name + ' is a moderator.');
       return res.serverError();
     });
   }

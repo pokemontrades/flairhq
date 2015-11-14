@@ -1,6 +1,6 @@
 module.exports = {
-	attributes: {
-		session: "json",
-		expires: "string"
-	}
+  attributes: {
+    session: "json",
+    expires: "string"
+  }
 };

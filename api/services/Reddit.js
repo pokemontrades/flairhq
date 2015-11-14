@@ -69,7 +69,7 @@ exports.getFlair = async function (refreshToken, user, subreddit) {
   var url = 'https://oauth.reddit.com/r/' + subreddit + '/api/flairselector';
   var data = {name: user};
   //Return a Promise containing `response.current` (the flair itself) instead of `response` (the object which contains the flair).
-  let res = await makeRequest(refreshToken, 'POST', url, data, 20)
+  let res = await makeRequest(refreshToken, 'POST', url, data, 20);
   return res.current;
 };
 

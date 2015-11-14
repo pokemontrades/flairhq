@@ -1,5 +1,4 @@
 var sha1 = require('node-sha1');
-var regex = require('regex');
 var _ = require('lodash');
 var referenceService = require('./References.js');
 
@@ -185,6 +184,9 @@ exports.formattedRequirements = function (flair, flairs) {
 };
 
 exports.flairCheck = function (ptrades, svex) {
+  if (!ptrades || !svex) {
+    throw "Need both flairs.";
+  }
   var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
   var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
 

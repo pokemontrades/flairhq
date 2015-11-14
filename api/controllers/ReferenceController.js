@@ -55,7 +55,7 @@ module.exports = {
       return res.badRequest({err: "Number must be a number"});
     }
 
-    Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.name}, function(err, ref) {
+    Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.name}, function (err, ref) {
       if (err) {
         return res.serverError(err);
       }
@@ -102,29 +102,29 @@ module.exports = {
         approved = false;
       }
       Reference.update(req.params.id,
-          {
-            url: req.params.url,
-            user: req.user.name,
-            user2: req.params.user2,
-            description: req.params.description,
-            type: req.params.type,
-            gave: req.params.gave,
-            got: req.params.got,
-            notes: req.params.notes,
-            privatenotes: req.params.privatenotes,
-            approved: approved,
-            edited: true,
-            number: req.params.number
-          })
-          .exec(function (err, ref) {
-            if (err) {
-              return res.serverError(err);
-            }
-            if (!ref) {
-              return res.notFound();
-            }
-            return res.ok(ref);
-          });
+        {
+          url: req.params.url,
+          user: req.user.name,
+          user2: req.params.user2,
+          description: req.params.description,
+          type: req.params.type,
+          gave: req.params.gave,
+          got: req.params.got,
+          notes: req.params.notes,
+          privatenotes: req.params.privatenotes,
+          approved: approved,
+          edited: true,
+          number: req.params.number
+        })
+        .exec(function (err, ref) {
+          if (err) {
+            return res.serverError(err);
+          }
+          if (!ref) {
+            return res.notFound();
+          }
+          return res.ok(ref);
+        });
     });
   },
 
@@ -145,18 +145,18 @@ module.exports = {
             user2: '/u/' + ref.user
           };
           //If a verified reference is deleted, its compelmentary reference is un-verified.
-          Reference.update(query, {verified: false}, function (err, otherRef) {
+          Reference.update(query, {verified: false}, function (err) {
             if (err) {
               console.log("Error while updating complementary trade.");
             }
           });
         }
         Reference.destroy(id).exec(function (err, refs) {
-            if (err) {
-              return res.serverError(err);
-            }
-            return res.ok(refs);
-          });
+          if (err) {
+            return res.serverError(err);
+          }
+          return res.ok(refs);
+        });
       } else {
         return res.forbidden();
       }
@@ -164,7 +164,11 @@ module.exports = {
   },
 
   comment: function (req, res) {
-    Comment.create({user: req.allParams().refUsername, user2: req.user.name, message: req.allParams().comment}, function (err, com) {
+    Comment.create({
+      user: req.allParams().refUsername,
+      user2: req.user.name,
+      message: req.allParams().comment
+    }, function (err, com) {
       if (err) {
         return res.serverError(err);
       }
@@ -173,7 +177,8 @@ module.exports = {
   },
 
   delComment: function (req, res) {
-    Comment.findOne(req.allParams().id, function (err, comment) {
+    var id = req.allParams().id;
+    Comment.findOne(id, function (err, comment) {
       if (!comment || err) {
         return res.notFound(err);
       }

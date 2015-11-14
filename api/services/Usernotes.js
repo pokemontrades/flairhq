@@ -11,7 +11,7 @@ var compress = function(notesObject) {
   return (new Buffer(deflate.result.toString(), 'binary')).toString('base64');
 };
 exports.addUsernote = async function (redToken, modname, subreddit, user, noteText, type, link_index) {
-  let compressed_notes = await Reddit.getWikiPage(redToken, subreddit, 'usernotes')
+  let compressed_notes = await Reddit.getWikiPage(redToken, subreddit, 'usernotes');
   var parsed = JSON.parse(compressed_notes);
   var mods = parsed.constants.users;
   var warnings = parsed.constants.warnings;
@@ -42,7 +42,7 @@ exports.addUsernote = async function (redToken, modname, subreddit, user, noteTe
   * searching for a note that matches a particular hash. */
   return hash;
 };
-exports.removeUsernote = async function (redToken, username, note_hash) {
+exports.removeUsernote = async function (redToken, username, subreddit, note_hash) {
   let compressed_notes = await Reddit.getWikiPage(redToken, subreddit, 'usernotes');
   var pageObject = JSON.parse(compressed_notes);
   var notes = decompress(pageObject.blob);
@@ -55,6 +55,6 @@ exports.removeUsernote = async function (redToken, username, note_hash) {
   }
   pageObject.blob = compress(notes);
   var reason = 'FlairHQ: Deleted note ' + note_hash.substring(0,7) + ' on ' + username;
-  await Reddit.editWikiPage(redToken, subreddit, 'usernotes', JSON.stringify(pageObject), reason)
+  await Reddit.editWikiPage(redToken, subreddit, 'usernotes', JSON.stringify(pageObject), reason);
   return;
 };

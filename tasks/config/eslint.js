@@ -7,14 +7,14 @@
  * sails project.
  *
  * For usage docs see:
- * 		https://github.com/gruntjs/grunt-contrib-clean
+ *    https://github.com/gruntjs/grunt-contrib-clean
  */
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
-	grunt.config.set('eslint', {
-		target: ['Gruntfile.js', 'app.js', 'api/**/*.js', 'tasks/**/*.js', 'assets/js/*.js', 'assets/common/*.js']
-	});
+  grunt.config.set('eslint', {
+    target: ['Gruntfile.js', 'app.js', 'api/**/*.js', 'tasks/**/*.js', 'assets/js/*.js', 'assets/common/*.js']
+  });
 
-	grunt.loadNpmTasks('grunt-eslint');
+  grunt.loadNpmTasks('grunt-eslint');
 
 };

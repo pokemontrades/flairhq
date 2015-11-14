@@ -272,7 +272,7 @@ module.exports = {
         promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
         promises.push(Ban.localBanUser(req.params.username));
       }
-      Promise.all(promises).then(function(result) {
+      Promise.all(promises).then(function () {
         console.log('Process to ban /u/' + req.params.username + 'was completed successfully.');
         res.ok();
       }, function(error) {

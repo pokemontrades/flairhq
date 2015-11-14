@@ -85,7 +85,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   var current_list = await Reddit.getWikiPage(redToken, 'pokemontrades', 'banlist');
   var lines = current_list.replace(/\r/g, '').split("\n");
   var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
-  var end_index = lines.indexOf('[//]:# (END BANLIST)')
+  var end_index = lines.indexOf('[//]:# (END BANLIST)');
   if (start_index === 2 || end_index === -1) {
     console.log('Error: Could not find parsing marker in public banlist');
     throw {error: 'Error: Could not find parsing marker in public banlist'};
@@ -102,7 +102,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
       blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
       blocks[3] = _.union(blocks[3].split(', '), [igns]).join(', ');
       let new_line = blocks.join(' | ');
-      var updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index, i)).concat(lines.slice(i + 1)).join('\n');
+      updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index, i)).concat(lines.slice(i + 1)).join('\n');
     }
   }
   if (!updated_content) {

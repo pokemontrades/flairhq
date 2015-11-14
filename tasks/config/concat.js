@@ -8,16 +8,16 @@
  * [concat](https://github.com/gruntjs/grunt-contrib-concat)
  *
  * For usage docs see:
- * 		https://github.com/gruntjs/grunt-contrib-concat
+ *    https://github.com/gruntjs/grunt-contrib-concat
  */
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
-	grunt.config.set('concat', {
-		css: {
-			src: require('../pipeline').cssFilesToInject,
-			dest: '.tmp/public/concat/production.css'
-		}
-	});
+  grunt.config.set('concat', {
+    css: {
+      src: require('../pipeline').cssFilesToInject,
+      dest: '.tmp/public/concat/production.css'
+    }
+  });
 
-	grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-concat');
 };

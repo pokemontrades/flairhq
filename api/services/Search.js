@@ -65,15 +65,15 @@ module.exports.refs = function (searchData, cb) {
 
 module.exports.logs = function (searchData, cb) {
   var appData = {
-      "limit": 20,
-      "sort": "createdAt DESC",
-      "skip": searchData.skip || 0,
-      "or": [
-        {"content": {'contains': searchData.keyword}},
-        {"userName": {'contains': searchData.keyword}},
-        {"type": {'contains': searchData.keyword}}
-      ]
-    };
+    "limit": 20,
+    "sort": "createdAt DESC",
+    "skip": searchData.skip || 0,
+    "or": [
+      {"content": {'contains': searchData.keyword}},
+      {"userName": {'contains': searchData.keyword}},
+      {"type": {'contains': searchData.keyword}}
+    ]
+  };
 
   Event.find(appData).exec(function (err, apps) {
     cb(apps);

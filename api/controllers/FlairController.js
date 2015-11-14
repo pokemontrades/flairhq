@@ -88,14 +88,15 @@ module.exports = {
             type: "flairTextChange",
             user: req.user.name,
             content: "Changed " + user.name + "'s flair to " + css_class
-          }).exec(function () {});
+          }).exec(function () {
+          });
 
           console.log("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_class);
           Reddit.sendPrivateMessage(
             refreshToken,
             'FlairHQ Notification',
             'Your application for ' + formatted + ' flair on /r/' + app.sub + ' has been approved.',
-            user.name).then(undefined, function (err) {
+            user.name).then(undefined, function () {
               console.log('Failed to send a confirmation PM to ' + user.name);
             }
           );
@@ -104,7 +105,7 @@ module.exports = {
           } else {
             user.flair.svex.flair_css_class = css_class;
           }
-          user.save(function (err, user) {
+          user.save(function (err) {
             if (err) {
               console.log(err);
             }
@@ -161,7 +162,7 @@ module.exports = {
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
-      User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}, function (err, updated) {
+      User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}, function (err) {
         if (err) {
           console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
           return;
@@ -184,7 +185,8 @@ module.exports = {
           type: "flairTextChange",
           user: req.user.name,
           content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
-        }]).exec(function(){});
+        }]).exec(function () {
+        });
         return res.ok(req.user);
       });
       if (flagged.length) {
@@ -202,14 +204,13 @@ module.exports = {
             message += flagged[i] + "\n\n";
           }
         }
-        Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades").then(function (result) {
-            console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-        }, function (error) {
-            console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+        Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades").then(function () {
+          console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+        }, function () {
+          console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
         });
         var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();
-        Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwatch', '').then(function (result) {
-        }, function (error) {
+        Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwatch', '').catch(function () {
           console.log('Failed to create a usernote on /u/' + req.user.name);
         });
       }

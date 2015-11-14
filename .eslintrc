@@ -1,17 +1,31 @@
 {
   "parser": "babel-eslint",
-  "globals": {
-    "require": false,
-    "module": false,
-    "console": false,
-    "Reddit": false
+  "rules": {
+    "strict": 0
   },
-  "no-empty": true,
-  "no-caller": true,
-  "eqeqeq": true,
-  "no-bitwise": true,
-  "curly": true,
-  "no-undef": true,
-  "no-new": true,
-  "guard-for-in": true
+  "globals": {
+    "module": true,
+    "require": true,
+    "exports": true
+  },
+  "rules": {
+    "no-console": 0,
+    "indent": [
+      2,
+      2
+    ],
+    "linebreak-style": [
+      2,
+      "unix"
+    ],
+    "semi": [
+      2,
+      "always"
+    ]
+  },
+  "env": {
+    "es6": true,
+    "browser": true
+  },
+  "extends": "eslint:recommended"
 }

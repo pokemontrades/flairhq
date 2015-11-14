@@ -1,6 +1,5 @@
 var ng = require('angular');
 var $ = require('jquery');
-var bootstrap = require('bootstrap');
 var marked = require('marked');
 
 var refCtrl = require('./refCtrl');
@@ -45,7 +44,7 @@ fapp.factory('UserFactory', function () {
 
 // Define controllers, and their angular dependencies
 fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
-fapp.controller("indexCtrl", ['$scope', '$filter', indexCtrl]);
+fapp.controller("indexCtrl", ['$scope', indexCtrl]);
 fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', userCtrl]);
 fapp.controller("searchCtrl", ['$scope', '$timeout', 'UserFactory', searchCtrl]);
 fapp.controller("adminCtrl", ['$scope', adminCtrl]);

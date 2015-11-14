@@ -20,7 +20,7 @@ module.exports = function ($scope) {
     gavegot: false
   };
 
-  $scope.banUser = function (user) {
+  $scope.banUser = function () {
     $scope.banError = "";
     $scope.indexOk.ban = false;
     $scope.indexSpin.ban = true;

@@ -68,7 +68,6 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   $scope.onSearchPage = $location.absUrl().indexOf('search') === -1;
   sharedService.addRepeats($scope);
   $scope.applyFlair = function () {
-    var done = 0;
     $scope.errors.flairApp = "";
     $scope.userok.applyFlair = false;
     $scope.userspin.applyFlair = true;

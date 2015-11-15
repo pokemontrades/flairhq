@@ -98,6 +98,11 @@ module.exports = function ($scope) {
       $scope.indexSpin.addRef = false;
       return;
     }
+    if ($scope.addInfo.number && isNaN($scope.addInfo.number)) {
+      $scope.addRefError = "Number must be a number.";
+      $scope.indexSpin.addRef = false;
+      return;
+    }
     var post = {
       "url": $scope.addInfo.refUrl,
       "user2": user2,

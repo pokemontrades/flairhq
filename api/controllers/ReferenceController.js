@@ -90,6 +90,9 @@ module.exports = {
 
   edit: function (req, res) {
     req.params = req.allParams();
+    if (req.params.number && isNaN(req.params.number)) {
+      return res.badRequest({err: "Number must be a number"});
+    }
     Reference.findOne({id: req.params.id, user: req.user.name}).exec(function (err, ref) {
       if (err || !ref) {
         return res.notFound();
@@ -114,7 +117,7 @@ module.exports = {
           privatenotes: req.params.privatenotes,
           approved: approved,
           edited: true,
-          number: req.params.number
+          number: req.params.number || 0
         })
         .exec(function (err, ref) {
           if (err) {

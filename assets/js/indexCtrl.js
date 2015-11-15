@@ -48,58 +48,9 @@ module.exports = function ($scope) {
     $scope.indexOk.addRef = false;
     $scope.indexSpin.addRef = true;
     var url = "/reference/add",
-      user2 = $scope.addInfo.user2,
-      regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
-      regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
-
-    if (!$scope.addInfo.type) {
-      $scope.addRefError = "Please choose a type.";
-      $scope.indexSpin.addRef = false;
-      return;
-    }
-    if ($scope.isNotNormalTrade($scope.addInfo.type)) {
-      if (!$scope.addInfo.descrip) {
-        $scope.addRefError = "Make sure you enter all the information";
-        $scope.indexSpin.addRef = false;
-        return;
-      }
-    } else {
-      if (!$scope.addInfo.got || !$scope.addInfo.gave) {
-        $scope.addRefError = "Make sure you enter all the information";
-        $scope.indexSpin.addRef = false;
-        return;
-      }
-    }
-    if (!$scope.addInfo.refUrl ||
-      (($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc" && $scope.addInfo.type !== "eggcheck") && !$scope.addInfo.user2)) {
-      $scope.addRefError = "Make sure you enter all the information";
-      $scope.indexSpin.addRef = false;
-      return;
-    }
-    if ((($scope.addInfo.type === "giveaway" || $scope.addInfo.type === "eggcheck") && !regexpGive.test($scope.addInfo.refUrl)) ||
-      ($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc" && $scope.addInfo.type !== "eggcheck" && !regexp.test($scope.addInfo.refUrl)) ||
-      ($scope.addInfo.type === "misc" && !regexpMisc.test($scope.addInfo.refUrl))) {
-      $scope.addRefError = "Looks like you didn't input a proper permalink";
-      $scope.indexSpin.addRef = false;
-      return;
-    }
-    if (user2.substring(0,3) === "/u/") {
-      user2 = user2.slice(3);
-    }
-    if (user2 === $scope.user.name) {
-      $scope.addRefError = "Don't put your own username there.";
-      $scope.indexSpin.addRef = false;
-      return;
-    }
-    if (($scope.addInfo.type !== "giveaway" && $scope.addInfo.type !== "misc") && !regexpUser.test(user2)) {
-      $scope.addRefError = "Please put a username on it's own, or in format: /u/username. Not the full url, or anything else.";
-      $scope.indexSpin.addRef = false;
-      return;
-    }
-    if ($scope.addInfo.number && isNaN($scope.addInfo.number)) {
-      $scope.addRefError = "Number must be a number.";
+      user2 = $scope.addInfo.user2;
+    $scope.addRefError = $scope.validateRef($scope.addInfo);
+    if ($scope.addRefError) {
       $scope.indexSpin.addRef = false;
       return;
     }

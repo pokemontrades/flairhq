@@ -7,67 +7,64 @@ module.exports = {
   addRepeats: function ($scope) {
     var current_user = window.location.pathname.substring(0, 3) === '/u/' ? 'refUser' : 'user';
     $scope.editRef = function () {
-      $scope.editRefError = "";
-      $scope.indexOk.editRef = false;
-      var ref = $scope.selectedRef,
-        url = "/reference/edit",
-        regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
-        regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/;
-      if (!ref.type) {
-        $scope.editRefError = "Please choose a type.";
-        return;
-      }
-      if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck" || ref.type === "involvement") {
-        if (!ref.description) {
-          $scope.editRefError = "Make sure you enter all the information";
-          return;
-        }
-      } else if (!ref.got || !ref.gave) {
-        $scope.editRefError = "Make sure you enter all the information";
-        return;
-      }
-      if (!ref.url || ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !ref.user2) {
-        $scope.editRefError = "Make sure you enter all the information";
-        return;
-      }
-      if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(ref.url)) ||
-        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !regexp.test(ref.url)) ||
-        (ref.type === "misc" && !regexpMisc.test(ref.url))) {
-        $scope.editRefError = "Looks like you didn't input a proper permalink";
-        return;
-      }
-      if (ref.user2.substring(0,3) === "/u/") {
-        ref.user2 = ref.user2.slice(3);
-      }
-      if (ref.user2 === ($scope.user.name)) {
-        $scope.editRefError = "Don't put your own username there.";
-        return;
-      }
-      if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
-        $scope.editRefError = "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
-        return;
-      }
-      if (ref.number && isNaN(ref.number)) {
-        $scope.editRefError = "Number must be a number.";
+      var url = "/reference/edit";
+      $scope.editRefError = $scope.validateRef($scope.selectedRef);
+      if ($scope.editRefError) {
         return;
       }
       $scope.indexSpin.editRef = true;
-      io.socket.post(url, ref, function (data, res) {
+      io.socket.post(url, $scope.selectedRef, function (data, res) {
         $scope.indexSpin.editRef = false;
         if (res.statusCode === 200) {
           $scope.indexOk.editRef = true;
           var index = $scope.user.references.findIndex(function (searchRef) {
-            return searchRef.id === ref.id;
+            return searchRef.id === $scope.selectedRef.id;
           });
-          $scope.user.references[index] = ref;
+          $scope.user.references[index] = $scope.selectedRef;
         } else {
           $scope.editRefError = "There was an issue.";
           console.log(res);
         }
         $scope.$apply();
       });
+    };
+    $scope.validateRef = function (ref) {
+      var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
+        regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/,
+        url = ref.url || ref.refUrl;
+      if (!ref.type) {
+        return "Please choose a type.";
+      }
+      if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck" || ref.type === "involvement") {
+        if (!ref.descrip || ref.description) {
+          return "Make sure you enter all the information";
+        }
+      } else if (!ref.got || !ref.gave) {
+        return "Make sure you enter all the information";
+      }
+      if (!url || ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !ref.user2) {
+        return "Make sure you enter all the information";
+      }
+      if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(url)) ||
+        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !regexp.test(url)) ||
+        (ref.type === "misc" && !regexpMisc.test(url))) {
+        return "Looks like you didn't input a proper permalink";
+      }
+      if (ref.user2.substring(0,3) === "/u/") {
+        ref.user2 = ref.user2.slice(3);
+      }
+      if (ref.user2 === ($scope.user.name)) {
+        return "Don't put your own username there.";
+      }
+      if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
+        return "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
+      }
+      if (ref.number && isNaN(ref.number)) {
+        return "Number must be a number.";
+      }
+      return "";
     };
     $scope.setLocalBan = function (username, ban) {
       var url = "/mod/setlocalban";

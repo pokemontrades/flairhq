@@ -42,11 +42,15 @@ module.exports = {
         ref.user2 = ref.user2.slice(3);
       }
       if (ref.user2 === ($scope.user.name)) {
-        $scope.addRefError = "Don't put your own username there.";
+        $scope.editRefError = "Don't put your own username there.";
         return;
       }
       if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
-        $scope.addRefError = "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
+        $scope.editRefError = "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
+        return;
+      }
+      if (ref.number && isNaN(ref.number)) {
+        $scope.editRefError = "Number must be a number.";
         return;
       }
       $scope.indexSpin.editRef = true;

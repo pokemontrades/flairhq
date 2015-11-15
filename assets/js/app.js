@@ -12,7 +12,7 @@ require('angular-spinner');
 require('angular-md');
 require('angular-bootstrap-npm');
 require('angular-mask');
-
+require('bootstrap');
 require('./ngReallyClick');
 require('../common/tooltipModule');
 require('../common/genericTooltipModule');

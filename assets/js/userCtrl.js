@@ -379,14 +379,18 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
       }
     }
 
+    var hasIGN = false;
     for (var j = 0; j < $scope.user.flairGames.length; j++) {
       var game = $scope.user.flairGames[j];
-      if (!game.ign) {
-        return {correct: false, error: "Please fill in all friend codes and IGNs."};
+      if (game.ign) {
+        hasIGN = true;
       }
       if (game.tsv >= 4096) {
         return {correct: false, error: "Invalid TSV, they should be between 0 and 4095."};
       }
+    }
+    if (!hasIGN) {
+      return {correct: false, error: "Please fill in all friend codes and IGNs."};
     }
     return {correct: true};
   };

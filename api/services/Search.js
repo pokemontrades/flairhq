@@ -12,24 +12,23 @@ module.exports.refs = function (searchData, cb) {
     orData = [],
     tempOrData = [],
     keyword = searchData.description,
-    userName = searchData.user,
+    user = searchData.user,
     types = searchData.categories;
 
   if (types) {
     appData.type = types;
   }
-
   tempOrData.push({description: {'contains': keyword}});
   tempOrData.push({gave: {'contains': keyword}});
   tempOrData.push({got: {'contains': keyword}});
 
-  User.find({name: {contains: userName}}).exec(function (err, users) {
-    if (!userName) {
+  User.find({name: {contains: user}}).exec(function (err, users) {
+    if (!user) {
       orData = tempOrData;
       orData.push({user2: {'contains': keyword}});
     } else if (!users || users.length === 0) {
       orData = tempOrData;
-      appData.user2 = {'contains': userName};
+      appData.user2 = {'contains': user};
     } else {
       var usernames = [];
       users.forEach(function (user) {
@@ -39,7 +38,7 @@ module.exports.refs = function (searchData, cb) {
         var elUser2 = _.cloneDeep(elUser1);
         elUser1.user = usernames;
         orData.push(elUser1);
-        elUser2.user2 = {'contains': userName};
+        elUser2.user2 = {'contains': user};
         orData.push(elUser2);
       });
     }
@@ -70,7 +69,7 @@ module.exports.logs = function (searchData, cb) {
     "skip": searchData.skip || 0,
     "or": [
       {"content": {'contains': searchData.keyword}},
-      {"userName": {'contains': searchData.keyword}},
+      {"user": {'contains': searchData.keyword}},
       {"type": {'contains': searchData.keyword}}
     ]
   };

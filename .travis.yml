@@ -45,7 +45,7 @@ before_script:
   
 script:
   - npm install
-  - grunt eslint
+  - grunt test
 
 cache:
   directories:

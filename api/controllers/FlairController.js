@@ -210,7 +210,7 @@ module.exports = {
           console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
         });
         var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();
-        Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwatch', '').catch(function () {
+        Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', '').catch(function () {
           console.log('Failed to create a usernote on /u/' + req.user.name);
         });
       }

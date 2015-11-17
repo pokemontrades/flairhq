@@ -103,8 +103,10 @@ exports.localBanUser = async function (username) {
     }
   });
 };
-exports.addUsernote = function (redToken, modname, subreddit, username, banNote) {
-  return Usernotes.addUsernote(redToken, modname, subreddit, username, 'Banned - ' + banNote, 'ban', '').then(function (response) {
+exports.addUsernote = function (redToken, modname, subreddit, username, banNote, duration) {
+  var type = duration ? 'ban' : 'permban';
+  var note = duration ? 'Tempbanned for ' + duration + ' days - ' + banNote : 'Banned - ' + banNote;
+  return Usernotes.addUsernote(redToken, modname, subreddit, username, note, type, '').then(function (response) {
     console.log('Created a usernote on ' + username + ' in /r/' + subreddit);
     return response;
   }, function () {

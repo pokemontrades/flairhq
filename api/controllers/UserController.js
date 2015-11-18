@@ -42,7 +42,7 @@ module.exports = {
                 }
               });
               if (deleteGame) {
-                promises.push(Game.destroy(game.id));
+                promises.push(Game.destroy(game.id).exec(function () {}));
               }
             });
           });

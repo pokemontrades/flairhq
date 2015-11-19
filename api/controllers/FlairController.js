@@ -83,7 +83,7 @@ module.exports = {
             css_class = app.flair;
           }
         }
-        Reddit.setFlair(req.user.redToken, user.name, css_class, flair, app.sub).then(function () {
+        Reddit.setUserFlair(req.user.redToken, user.name, css_class, flair, app.sub).then(function () {
           Event.create({
             type: "flairTextChange",
             user: req.user.name,
@@ -173,8 +173,8 @@ module.exports = {
       var newsvFlair = _.get(req, "user.flair.svex.flair_css_class", "");
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
-      promises.push(Reddit.setFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
-      promises.push(Reddit.setFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
       Promise.all(promises).then(function () {
         var ipAddress = req.headers['x-forwarded-for'] || req.ip;
         Event.create([{

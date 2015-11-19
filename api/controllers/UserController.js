@@ -268,12 +268,12 @@ module.exports = {
         promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
         promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
         promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
-        promises.push(Ban.removeTSVThreads(req.user.redToken, req.params.username));
+        promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
         promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
         promises.push(Ban.localBanUser(req.params.username));
       }
       Promise.all(promises).then(function () {
-        console.log('Process to ban /u/' + req.params.username + 'was completed successfully.');
+        console.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
         res.ok();
       }, function(error) {
         console.log(error);
@@ -283,7 +283,7 @@ module.exports = {
         user: req.user.name,
         type: "banUser",
         content: "Banned /u/" + req.params.username
-      });
+      }).exec(function () {});
     }, function (err) {
       console.log(err);
       res.status(500).json(err);

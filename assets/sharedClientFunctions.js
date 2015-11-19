@@ -1,7 +1,7 @@
 var socket = require("socket.io-client");
 var io = require("sails.io.js")(socket);
-var referenceService = require('../../api/services/References.js');
-var flairService = require('../../api/services/Flairs.js');
+var referenceService = require('../api/services/References.js');
+var flairService = require('../api/services/Flairs.js');
 
 module.exports = {
   addRepeats: function ($scope) {

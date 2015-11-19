@@ -19,7 +19,7 @@ exports.giveBannedUserFlair = async function (redToken, username, current_css_cl
     } else {
       css_class = current_css_class ? current_css_class + ' banned' : 'banned';
     }
-    await Reddit.setFlair(redToken, username, css_class, flair_text, subreddit);
+    await Reddit.setUserFlair(redToken, username, css_class, flair_text, subreddit);
     console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
     return 'Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit;
   } catch (err) {
@@ -64,15 +64,16 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   console.log(output);
   return output;
 };
-//Remove the user's TSV threads on /r/SVExchange.
-exports.removeTSVThreads = async function (redToken, username) {
-  var response = await Reddit.searchTSVThreads(redToken, username);
-  var removeTSVPromises = [];
-  response.data.children.forEach(function (entry) {
-    removeTSVPromises.push(Reddit.removePost(redToken, entry.data.id, 'false'));
+//Lock and give flair to the user's TSV threads.
+exports.markTSVThreads = async function (redToken, username) {
+  var threads = await Reddit.searchTSVThreads(redToken, username);
+  var tsv_promises = [];
+  threads.forEach(function (entry) {
+    tsv_promises.push(Reddit.lockPost(redToken, entry.data.id));
+    tsv_promises.push(Reddit.setLinkFlair(redToken, entry.data.subreddit, entry.data.id, 'banned', '[Banned User] Trainer Shiny Value'));
   });
-  await Promise.all(removeTSVPromises);
-  var output = 'Removed /u/' + username + '\'s TSV threads (' + response.data.children.length.toString() + ' total)';
+  await Promise.all(tsv_promises);
+  var output = 'Marked and locked /u/' + username + '\'s TSV threads (' + threads.length.toString() + ' total)';
   console.log(output);
   return output;
 };

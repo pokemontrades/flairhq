@@ -16,6 +16,7 @@
     "Game": true,
     "Application": true,
     "ModNote": true,
-    "Modmail": true
+    "Modmail": true,
+    "Modmails": true
   }
 }

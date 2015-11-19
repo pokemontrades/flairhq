@@ -65,7 +65,7 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
     {name: "misc", display: "Miscellaneous"}
   ];
 
-  $scope.onSearchPage = $location.absUrl().indexOf('search') === -1;
+  $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
   sharedService.addRepeats($scope);
   $scope.applyFlair = function () {
     $scope.errors.flairApp = "";

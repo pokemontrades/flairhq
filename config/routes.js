@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Route Mappings
  * (sails.config.routes)
@@ -193,26 +194,21 @@ module.exports.routes = {
   '/version' : {
     controller : 'home',
     action     : 'version'
-  },
-
-  '/search/s/:searchterm' : {
-    controller : 'search',
-    action     : 'refView'
-  },
-
-  '/search/l/:searchterm' : {
-    controller : 'search',
-    action     : 'logView'
-  },
-
-  '/search/ref' : {
-    controller : 'search',
-    action     : 'refs'
-  },
-
-  '/search/log' : {
-    controller : 'search',
-    action     : 'log'
   }
 
 };
+
+var searchTypes = require("../assets/search/types.js");
+
+for (let i = 0; i < searchTypes.length; i++) {
+  // Programatically add the routes for searches
+  let type = searchTypes[i];
+  module.exports.routes['/search/' + type.short] = {
+    controller: 'search',
+    action: type.short
+  };
+  module.exports.routes['/search/' + type.short + "/:searchterm"] = {
+    controller: 'search',
+    action: type.short + "View"
+  };
+}

@@ -1,47 +1,22 @@
-/* global module, Reference, Search, User */
+var searchTypes = require("../../assets/search/types.js");
+var exportObject = {};
 
-module.exports = {
-
-  refView: function(req, res) {
-    return res.view("search/refs", {searchTerm: decodeURIComponent(req.params.searchterm)});
-  },
-
-  logView: function(req, res) {
-    return res.view("search/logs", {searchTerm: decodeURIComponent(req.params.searchterm)});
-  },
-
-  refs: function (req, res) {
-    var params = req.allParams();
-    var searchData = {
-      description: params.keyword
-    };
-
-    if (params.user) {
-      searchData.user = params.user;
-    }
-
-    if (params.categories) {
-      searchData.categories = params.categories.split(",");
-    }
-
-    searchData.skip = params.skip || 0;
-
-    Search.refs(searchData, function (results) {
-      return res.ok(results);
+for (let i = 0; i < searchTypes.length; i++) {
+  // Let's programmatically add the views, because we can.
+  let type = searchTypes[i];
+  exportObject[type.short + "View"] = function (req, res) {
+    return res.view("../search/main", {
+      searchType: type.short,
+      searchTerm: decodeURIComponent(req.params.searchterm)
     });
-  },
+  };
+}
 
-  log: function (req, res) {
-    var params = req.allParams();
-    var searchData = {
-      keyword: params.keyword
-    };
+for (let i = 0; i < searchTypes.length; i++) {
+  // And here we will programmatically add the search functions
+  let type = searchTypes[i];
+  exportObject[type.short] = type.controller;
+}
 
-    searchData.skip = params.skip || 0;
 
-    Search.logs(searchData, function (results) {
-      return res.ok(results);
-    });
-  }
-};
-
+module.exports = exportObject;

@@ -47,7 +47,9 @@
     "jquery-browserify": "^1.8.1",
     "lodash": "^3.10.1",
     "marked": "^0.3.5",
+    "mocha": "^2.3.4",
     "moment": "~2.10.6",
+    "ng-mask": "^3.0.12",
     "node-cache": "^3.0.0",
     "node-sha1": "^1.0.1",
     "pako": "^0.2.8",
@@ -70,7 +72,7 @@
   },
   "browser": {
     "jquery": "jquery-browserify",
-    "angular-mask": "./assets/js/dependencies/mask.min.js",
+    "angular-mask": "./node_modules/ng-mask/dist/ngMask.js",
     "angular-md": "./node_modules/angular-md/dist/angular-md.js",
     "regex": "./assets/common/regexCommon.js"
   }

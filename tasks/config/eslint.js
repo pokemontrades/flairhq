@@ -12,7 +12,7 @@
 module.exports = function (grunt) {
 
   grunt.config.set('eslint', {
-    target: ['Gruntfile.js', 'app.js', 'api/**/*.js', 'tasks/**/*.js', 'assets/js/*.js', 'assets/common/*.js']
+    target: ['Gruntfile.js', 'app.js', 'api/**/*.js', 'tasks/**/*.js', 'assets/**/*.js']
   });
 
   grunt.loadNpmTasks('grunt-eslint');

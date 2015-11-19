@@ -1,0 +1,39 @@
+<div class="container"
+     ng-controller="SearchController as search"
+     ng-init="search.input.search = '<%- searchType %>'">
+  <div class="main container clearfix">
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Advanced Search - <%- searchType %></h2>
+        </div>
+      </div>
+      <div class="row">
+        <form>
+          <%- partial(searchType + '/form.ejs') %>
+        </form>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="list-group search-results-adv">
+            <li class="list-group-item"
+                ng-if="search.inProgress">
+              Searching...
+            </li>
+            <a ng-repeat="result in search.results track by $index"
+               ng-href="/u/{{result.user}}"
+               ng-if="result !== null"
+               class="list-group-item">
+              <%- partial(searchType + '/result.ejs') %>
+            </a>
+            <a class="list-group-item"
+               ng-if="!search.inProgress"
+               ng-click="search.getMore()">
+              More results
+            </a>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

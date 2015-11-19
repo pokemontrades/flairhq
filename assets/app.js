@@ -7,15 +7,15 @@ var indexCtrl = require('./indexCtrl');
 var adminCtrl = require('./adminCtrl');
 var banCtrl = require('./banCtrl');
 var userCtrl = require('./userCtrl');
-var searchCtrl = require('./searchCtrl');
+require('./search/search.module');
 require('angular-spinner');
 require('angular-md');
 require('angular-bootstrap-npm');
 require('angular-mask');
 require('bootstrap');
 require('./ngReallyClick');
-require('../common/tooltipModule');
-require('../common/genericTooltipModule');
+require('./common/tooltipModule');
+require('./common/genericTooltipModule');
 require('./numberPadding');
 //require('spin');
 
@@ -26,7 +26,8 @@ var fapp = ng.module("fapp", [
   'yaru22.md',
   'tooltipModule',
   'genericTooltipModule',
-  'ngMask'
+  'ngMask',
+  'fapp.search'
 ]);
 
 fapp.factory('UserFactory', function () {
@@ -46,15 +47,14 @@ fapp.factory('UserFactory', function () {
 fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
 fapp.controller("indexCtrl", ['$scope', indexCtrl]);
 fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', userCtrl]);
-fapp.controller("searchCtrl", ['$scope', '$timeout', 'UserFactory', searchCtrl]);
 fapp.controller("adminCtrl", ['$scope', adminCtrl]);
 fapp.controller("banCtrl", ['$scope', banCtrl]);
 
 // Bug fix for iOS safari
 $(function () {
   $("[data-toggle='collapse']").click(function () {
-      // For some reason, iOS safari doesn't let collapse work on a div if it
-      // doesn't have a click handler. The click handler doesn't need to do anything.
+    // For some reason, iOS safari doesn't let collapse work on a div if it
+    // doesn't have a click handler. The click handler doesn't need to do anything.
   });
 });
 

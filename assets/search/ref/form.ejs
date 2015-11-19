@@ -1,0 +1,23 @@
+<div class="form-group col-md-3">
+  <label>Search keyword</label>
+  <input type="text" class="form-control" placeholder="Search"
+         ng-change="search.searchMaybe()" ng-model="search.input.keyword"
+         ng-init="search.input.keyword='<%- searchTerm %>'"/>
+  <label>User</label>
+  <input type="text" class="form-control" placeholder="User"
+         ng-change="search.searchMaybe()" ng-model="search.input.user"/>
+</div>
+<div class="form-group col-md-6">
+  <div class="col-md-12">
+    <label>Category</label>
+  </div>
+  <div class="form-group col-md-12">
+    <label ng-repeat="type in types" class="checkbox-inline col-md-4">
+      <input type="checkbox" value="{{type.name}}"
+             ng-checked="search.input.category.indexOf(type.display) > -1"
+             ng-click="search.toggleCategory(type.name)"
+             class="search-check">
+      {{type.display}}
+    </label>
+  </div>
+</div>

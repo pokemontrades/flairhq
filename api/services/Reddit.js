@@ -1,6 +1,7 @@
 var request = require("request-promise"),
   moment = require('moment'),
   NodeCache = require('node-cache'),
+  _ = require('lodash'),
   left = 600,
   resetTime = moment().add(600, "seconds"),
   userAgent = "Webpage:hq.porygon.co/info:v" + sails.config.version;
@@ -34,7 +35,7 @@ exports.refreshToken = async function(refreshToken) {
   }
 };
 
-var makeRequest = async function (refreshToken, requestType, url, data, rateLimitRemainingThreshold) {
+var makeRequest = async function (refreshToken, requestType, url, data, rateLimitRemainingThreshold, silentErrors) {
   if (left < rateLimitRemainingThreshold && moment().before(resetTime)) {
     throw {statusCode: 504, error: "Rate limited"};
   }
@@ -50,9 +51,11 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
     formData: data
   };
   let response = await request(options).catch(function (error) {
-    console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode +
-      ' - ' + error.statusMessage + '\nForm data sent: ' + JSON.stringify(data));
-    throw {statusCode: 502, error: 'Reddit responded with status code ' + error.statusCode};
+    if (!silentErrors) {
+      console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode);
+      console.log('Form data sent: ' + JSON.stringify(data));
+    }
+    throw {statusCode: error.statusCode, error: '(Reddit response)'};
   });
   updateRateLimits(response);
   var bodyJson;
@@ -63,6 +66,18 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
     throw {error: "Error with parsing: " + response.body};
   }
   return bodyJson;
+};
+
+var getEntireListing = async function (refreshToken, endpoint, query, rateThreshold, after, before) {
+  var url = endpoint + query + (query ? '&' : '?') + 'count=102&limit=100' + (after ? '&after=' + after : '') + (before ? '&before=' + before : '');
+  var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after, before);
+  var results = batch.data.children;
+  if ((after || after === undefined) && batch.data.after === null || before && batch.data.before === null) {
+    return results;
+  }
+  after = before ? undefined : batch.data.after;
+  before = before ? batch.data.before : undefined;
+  return _.union(results, await getEntireListing(refreshToken, endpoint, query, rateThreshold, after, before));
 };
 
 exports.getFlair = async function (refreshToken, user, subreddit) {
@@ -79,10 +94,16 @@ exports.getBothFlairs = async function (refreshToken, user) {
   return Promise.all([ptradesFlairPromise, svexFlairPromise]);
 };
 
-exports.setFlair = function (refreshToken, name, cssClass, text, subreddit) {
+exports.setUserFlair = function (refreshToken, name, cssClass, text, subreddit) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : subreddit;
   var url = 'https://oauth.reddit.com/r/' + actual_sub + '/api/flair';
   var data = {api_type: 'json', css_class: cssClass, name: name, text: text};
+  return makeRequest(refreshToken, 'POST', url, data, 5);
+};
+
+exports.setLinkFlair = function (refreshToken, subreddit, link_id, cssClass, text) {
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/api/flair';
+  var data = {api_type: 'json', css_class: cssClass, link: 't3_' + link_id, text: text};
   return makeRequest(refreshToken, 'POST', url, data, 5);
 };
 
@@ -113,14 +134,34 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason)
 
 exports.searchTSVThreads = function (refreshToken, username) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
-  var url = 'https://oauth.reddit.com/r/' + actual_sub + '/search?q=flair%3Ashiny+AND+author%3A' + username + '&restrict_sr=on&sort=new&t=all';
-  return makeRequest(refreshToken, 'GET', url, undefined, 15);
+  var query = '(flair:"Trainer Shiny Value" OR flair:"[Banned User] Trainer Shiny Value") AND author:' + username;
+  return exports.search(refreshToken, actual_sub, query, true, 'new', 'all');
+};
+
+exports.search = function (refreshToken, subreddit, query, restrict_sr, sort, time) {
+  var querystring = '?q=' + encodeURIComponent(query) + (restrict_sr  ? '&restrict_sr=on' : '') +
+    (sort ? '&sort=' + sort : '') + (time ? '&t=' + time : '');
+  var endpoint = 'https://oauth.reddit.com/r/' + subreddit + '/search';
+  return getEntireListing(refreshToken, endpoint, querystring, 10);
 };
 
 exports.removePost = function (refreshToken, id, isSpam) {
   var url = 'https://oauth.reddit.com/api/remove';
   var data = {id: 't3_' + id, spam: isSpam};
   return makeRequest(refreshToken, 'POST', url, data, 5);
+};
+
+exports.lockPost = function (refreshToken, post_id) {
+  var url = 'https://oauth.reddit.com/api/lock';
+  var data = {id: 't3_' + post_id};
+  /* Attempting to lock an archived post results in a 400 response. The request is still considered successful if this happens, so the error is
+   * returned instead of being thrown. */
+  return makeRequest(refreshToken, 'POST', url, data, 5, true).catch(function (error) {
+    if (error.statusCode === 400) {
+      return error;
+    }
+    throw error;
+  });
 };
 
 exports.sendPrivateMessage = function (refreshToken, subject, text, recipient) {
@@ -141,13 +182,9 @@ exports.checkModeratorStatus = async function (refreshToken, username, subreddit
   return res.data.children.length !== 0;
 };
 
-exports.getModmail = async function (refreshToken, subreddit, after, before, limit) {
-  //after/before (mutually exclusive): Fullname of a modmail -- will start retrieving modmail from after/before this point
-  //limit: The limit on the number of modmails to display, max 100
-  limit = limit || 100;
-  var url = 'https://oauth.reddit.com/r/' + subreddit + '/message/moderator?show=all&count=102&limit=' + limit;
-  url += after ? '&after=' + after : before ? '&before=' + before : '';
-  return makeRequest(refreshToken, 'GET', url, undefined, 20);
+exports.getModmail = async function (refreshToken, subreddit, after, before) {
+  var endpoint = 'https://oauth.reddit.com/r/' + subreddit + '/message/moderator';
+  return getEntireListing(refreshToken, endpoint, '', 20, after, before);
 };
 
 var updateRateLimits = function (res) {

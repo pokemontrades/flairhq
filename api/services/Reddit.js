@@ -3,8 +3,7 @@ var request = require("request-promise"),
   NodeCache = require('node-cache'),
   _ = require('lodash'),
   left = 600,
-  resetTime = moment().add(600, "seconds"),
-  userAgent = "Webpage:hq.porygon.co/info:v" + sails.config.version;
+  resetTime = moment().add(600, "seconds");
 var cache = new NodeCache({stdTTL: 3480}); // Cached tokens expire after 58 minutes, leave a bit of breathing room in case stuff is slow
 
 exports.refreshToken = async function(refreshToken) {
@@ -20,7 +19,7 @@ exports.refreshToken = async function(refreshToken) {
     json: true,
     headers: {
       "Authorization": auth,
-      "User-Agent": userAgent,
+      "User-Agent": sails.config.reddit.userAgent,
       "Content-Type": "application/x-www-form-urlencoded",
       "Content-Length": data.length
     }
@@ -35,11 +34,11 @@ exports.refreshToken = async function(refreshToken) {
   }
 };
 
-var makeRequest = async function (refreshToken, requestType, url, data, rateLimitRemainingThreshold, silentErrors) {
+var makeRequest = async function (refreshToken, requestType, url, data, rateLimitRemainingThreshold, silenceErrors) {
   if (left < rateLimitRemainingThreshold && moment().before(resetTime)) {
     throw {statusCode: 504, error: "Rate limited"};
   }
-  var headers = {"User-Agent": userAgent};
+  var headers = {"User-Agent": sails.config.reddit.userAgent};
   if (url.indexOf("oauth.reddit.com") !== -1) {
     headers.Authorization = "bearer " + await exports.refreshToken(refreshToken);
   }
@@ -51,7 +50,7 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
     formData: data
   };
   let response = await request(options).catch(function (error) {
-    if (!silentErrors) {
+    if (!silenceErrors) {
       console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode);
       console.log('Form data sent: ' + JSON.stringify(data));
     }

@@ -72,11 +72,11 @@ var getEntireListing = async function (refreshToken, endpoint, query, rateThresh
   var url = endpoint + query + (query ? '&' : '?') + 'count=102&limit=100' + (after ? '&after=' + after : '') + (before ? '&before=' + before : '');
   var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after, before);
   var results = batch.data.children;
-  if ((after || after === undefined) && batch.data.after === null || before && batch.data.before === null) {
-    return results;
-  }
   after = before ? undefined : batch.data.after;
   before = before ? batch.data.before : undefined;
+  if (!after && !before) {
+    return results;
+  }
   return _.union(results, await getEntireListing(refreshToken, endpoint, query, rateThreshold, after, before));
 };
 

@@ -21,7 +21,7 @@
               Searching...
             </li>
             <a ng-repeat="result in search.results track by $index"
-               ng-href="/u/{{result.user}}"
+               ng-href="{{search.linkAddress(result)}}"
                ng-if="result !== null"
                class="list-group-item">
               <%- partial(searchType + '/result.ejs') %>

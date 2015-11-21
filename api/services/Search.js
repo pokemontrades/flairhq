@@ -78,3 +78,36 @@ module.exports.logs = function (searchData, cb) {
     cb(apps);
   });
 };
+
+module.exports.users = function (searchData, cb) {
+  var data = {
+    "$or": [
+      {
+        "_id": {
+          "$regex": "(?i)" + searchData.keyword
+        }
+      },
+      {
+        "flair.ptrades.flair_text": {
+          "$regex": "(?i)" + searchData.keyword
+        }
+      },
+      {
+        "flair.svex.flair_text": {
+          "$regex": "(?i)" + searchData.keyword
+        }
+      }
+    ]
+  };
+
+  // We can't do deep searching on the flair using waterline, so let's use mongo natively
+  // I guess this means we can't use any other databases in the future anymore. Ach well.
+  User.native(function (err, collection) {
+    collection.find(data)
+      .limit(20)
+      .skip(0)
+      .toArray(function (err, results) {
+        cb(results);
+      });
+  });
+};

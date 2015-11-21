@@ -24,6 +24,7 @@ module.exports = function ($scope, $timeout, UserFactory) {
   vm.getMore = getMore;
   vm.searchesForUser = searchesForUser;
   vm.submit = submit;
+  vm.linkAddress = linkAddress;
 
   ////////////////////////////////
 
@@ -47,6 +48,14 @@ module.exports = function ($scope, $timeout, UserFactory) {
       }
     }
   );
+
+  function linkAddress (result) {
+    if (vm.input.search === 'ref') {
+      return '/u/' + result.user;
+    } else if (vm.input.search === 'user') {
+      return '/u/' + result.name;
+    }
+  }
 
   function searchesForUser() {
     return _.filter(vm.potentialSearches, userAllowedSearch);

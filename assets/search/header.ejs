@@ -27,7 +27,7 @@
         Searching...
       </li>
       <div class="scrolling-search-results">
-        <a ng-href="/u/{{result.user}}"
+        <a ng-href="{{search.linkAddress(result)}}"
            ng-repeat="result in search.results track by $index"
            ng-if="result !== null"
            class="list-group-item">

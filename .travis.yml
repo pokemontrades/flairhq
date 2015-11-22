@@ -41,10 +41,11 @@ before_install:
 
 before_script:
   - npm install -g grunt-cli
+  - npm install -g eslint
   
 script:
   - npm install
-  - grunt jshint
+  - grunt test
 
 cache:
   directories:

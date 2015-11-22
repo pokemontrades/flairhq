@@ -1,6 +1,5 @@
 var ng = require('angular');
 var $ = require('jquery');
-var bootstrap = require('bootstrap');
 var marked = require('marked');
 
 var refCtrl = require('./refCtrl');
@@ -8,11 +7,12 @@ var indexCtrl = require('./indexCtrl');
 var adminCtrl = require('./adminCtrl');
 var banCtrl = require('./banCtrl');
 var userCtrl = require('./userCtrl');
+var searchCtrl = require('./searchCtrl');
 require('angular-spinner');
 require('angular-md');
 require('angular-bootstrap-npm');
 require('angular-mask');
-
+require('bootstrap');
 require('./ngReallyClick');
 require('../common/tooltipModule');
 require('../common/genericTooltipModule');
@@ -29,10 +29,24 @@ var fapp = ng.module("fapp", [
   'ngMask'
 ]);
 
+fapp.factory('UserFactory', function () {
+  var user;
+
+  return {
+    getUser: function () {
+      return user;
+    },
+    setUser: function (newUser) {
+      user = newUser;
+    }
+  };
+});
+
 // Define controllers, and their angular dependencies
 fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
-fapp.controller("indexCtrl", ['$scope', '$filter', indexCtrl]);
-fapp.controller("userCtrl", ['$scope', '$filter', '$location', '$timeout', userCtrl]);
+fapp.controller("indexCtrl", ['$scope', indexCtrl]);
+fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', userCtrl]);
+fapp.controller("searchCtrl", ['$scope', '$timeout', 'UserFactory', searchCtrl]);
 fapp.controller("adminCtrl", ['$scope', adminCtrl]);
 fapp.controller("banCtrl", ['$scope', banCtrl]);
 

@@ -34,7 +34,7 @@
                          mask-restrict="reject" ng-model="user.flairFriendCodes[$index]"
                          placeholder="9999-9999-9999" ng-pattern="regex.fcSingle">
                   <span class="input-group-btn">
-                    <button class="btn btn-default" ng-click="delflairFc($index)">
+                    <button class="btn btn-default" ng-click="delflairFc($index)"  ng-disabled="$index === 0">
                       <span class="glyphicon glyphicon-trash"></span>
                     </button>
                   </span>
@@ -52,7 +52,7 @@
             <div class="form-group col-sm-12" ng-repeat="game in user.flairGames | orderBy:'createdAt' track by $index">
               <label class="col-md-3 control-label">IGN:*</label>
 
-              <div class="col-md-2" ng-class="{'has-error': !game.ign}">
+              <div class="col-md-2">
                 <input type="text" class="form-control" ng-model="game.ign">
               </div>
               <label class="col-md-1 control-label">TSV:</label>
@@ -72,7 +72,7 @@
                     <option value=""></option>
                   </select>
                   <span class="input-group-btn">
-                    <button class="btn btn-default" ng-click="delflairGame($index)">
+                    <button class="btn btn-default" ng-click="delflairGame($index)" ng-disabled="$index === 0">
                       <span class="glyphicon glyphicon-trash"></span>
                     </button>
                   </span>

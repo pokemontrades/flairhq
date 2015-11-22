@@ -1,5 +1,7 @@
 /* global module, Application, User, Reddit */
 var moment = require('moment');
+var refreshToken = sails.config.reddit.adminRefreshToken;
+var _ = require("lodash");
 
 module.exports = {
 
@@ -29,17 +31,16 @@ module.exports = {
   },
 
   denyApp: function (req, res) {
-    Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+    Application.destroy(req.allParams().id).exec(function (err, results) {
       if (err) {
         return res.serverError(err);
       }
-      return res.ok(app);
+      return res.ok(results);
     });
   },
 
   approveApp: function (req, res) {
-    var appId = req.allParams().id;
-    Application.findOne(appId).exec(function (err, app) {
+    Application.findOne(req.allParams().id).exec(function (err, app) {
       if (!app) {
         return res.notFound("Application not found.");
       }
@@ -49,7 +50,7 @@ module.exports = {
         }
         var formatted = Flairs.formattedName(app.flair);
         var flair,
-            css_class;
+          css_class;
         if (app.sub === "pokemontrades" && user.flair.ptrades) {
           flair = user.flair.ptrades.flair_text;
           css_class = user.flair.ptrades.flair_css_class;
@@ -82,70 +83,58 @@ module.exports = {
             css_class = app.flair;
           }
         }
+        Reddit.setFlair(req.user.redToken, user.name, css_class, flair, app.sub).then(function () {
+          Event.create({
+            type: "flairTextChange",
+            user: req.user.name,
+            content: "Changed " + user.name + "'s flair to " + css_class
+          }).exec(function () {
+          });
 
-        Reddit.setFlair(
-          req.user.redToken,
-          user.name,
-          css_class,
-          flair,
-          app.sub, function (err, response) {
-          if (err) {
-            return res.serverError(err);
-          } else {
-            Event.create({
-              type: "flairTextChange",
-              user: req.user.id,
-              userName: req.user.name,
-              content: "Changed " + user.name + "'s flair to " + css_class
-            }).exec(function () {
-
-            });
-            console.log("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_class);
-            Reddit.sendPrivateMessage(
-              sails.config.reddit.adminRefreshToken,
-              'FlairHQ Notification',
-              'Your application for ' + formatted + ' flair on /r/' + app.sub + ' has been approved.',
-              user.name,
-              function (err) {
-                if (err) {
-                  console.log('Failed to send a confirmation PM to ' + user.name);
-                }
-              }
-            );
-            if (app.sub === 'pokemontrades') {
-              user.flair.ptrades.flair_css_class = css_class;
-            } else {
-              user.flair.svex.flair_css_class = css_class;
+          console.log("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_class);
+          Reddit.sendPrivateMessage(
+            refreshToken,
+            'FlairHQ Notification',
+            'Your application for ' + formatted + ' flair on /r/' + app.sub + ' has been approved.',
+            user.name).then(undefined, function () {
+              console.log('Failed to send a confirmation PM to ' + user.name);
             }
-            user.save(function (err, user) {
-              if (err) {
-                console.log(err);
-              }
-            });
-            Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-              if (err) {
-                return res.serverError(err);
-              }
-              return res.ok(app);
-            });
+          );
+          if (app.sub === 'pokemontrades') {
+            user.flair.ptrades.flair_css_class = css_class;
+          } else {
+            user.flair.svex.flair_css_class = css_class;
           }
+          user.save(function (err) {
+            if (err) {
+              console.log(err);
+            }
+          });
+          Application.destroy({id: req.allParams().id}).exec(function (err, app) {
+            if (err) {
+              return res.serverError(err);
+            }
+            return res.ok(app);
+          });
+        }, function (err) {
+          return res.serverError(err);
         });
       });
     });
   },
 
   setText: function (req, res) {
-    var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
-    var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
-
-    if (!req.allParams().ptrades.match(new RegExp(ptradesFlair)) || !req.allParams().svex.match(new RegExp(svExFlair))) {
-      return res.status(400).json({error: "Please don't change the string."});
+    var flairs;
+    try {
+      flairs = Flairs.flairCheck(req.allParams().ptrades, req.allParams().svex);
+    } catch (e) {
+      return res.status(400).json({error: e});
     }
 
     var appData = {
       limit: 1,
       sort: "createdAt DESC",
-      user: req.user.id,
+      user: req.user.name,
       type: "flairTextChange"
     };
 
@@ -162,93 +151,68 @@ module.exports = {
         }
       }
 
-      var flair_FCs = _.union(req.allParams().ptrades.match(/(\d{4}-){2}\d{4}/g), req.allParams().svex.match(/(\d{4}-){2}\d{4}/g));
       var flagged = [];
 
-      for (var i = 0; i < flair_FCs.length; i++) {
-        if (!Flairs.isValid(flair_FCs[i]) && flair_FCs[i] !== req.user.loggedFriendCodes[i]) {
-          flagged.push(flair_FCs[i]);
+      for (var i = 0; i < flairs.fcs.length; i++) {
+        let fc = flairs.fcs[i];
+        if (!Flairs.validFC(fc) && flairs.fcs[i] !== req.user.loggedFriendCodes[i]) {
+          flagged.push(fc);
         }
       }
 
-      var friend_codes = _.union(flair_FCs, req.user.loggedFriendCodes);
+      var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
-      User.update({id: req.user.id}, {loggedFriendCodes: friend_codes}, function (err, updated) {
+      User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}, function (err) {
         if (err) {
           console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
           return;
         }
       });
 
-      var newPFlair = req.user.flair && req.user.flair.ptrades && req.user.flair.ptrades.flair_css_class ? req.user.flair.ptrades.flair_css_class : "default";
-      var newsvFlair = req.user.flair && req.user.flair.svex && req.user.flair.svex.flair_css_class ? req.user.flair.svex.flair_css_class : "";
+      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class", "default");
+      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class", "");
       newsvFlair = newsvFlair.replace(/2/, "");
-      
-      Reddit.setFlair(
-        sails.config.reddit.adminRefreshToken,
-        req.user.name,
-        newPFlair,
-        req.allParams().ptrades,
-        "PokemonTrades", function (err, css_class) {
-          if (err) {
-            return res.serverError(err);
-          } else {
-            Reddit.setFlair(
-              sails.config.reddit.adminRefreshToken,
-              req.user.name,
-              newsvFlair,
-              req.allParams().svex,
-              "SVExchange", function (err, css_class) {
-                if (err) {
-                  return res.status(500).json({error: err});
-                } else {
-                  var ipAddress = req.headers['x-forwarded-for'] || req.ip;
-                  Event.create([{
-                    type: "flairTextChange",
-                    user: req.user.id,
-                    userName: req.user.name,
-                    content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
-                  }, {
-                    type: "flairTextChange",
-                    user: req.user.id,
-                    userName: req.user.name,
-                    content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
-                  }]).exec(function () {
-
-                  });
-                  return res.ok(req.user);
-                }
-              });
-          }
+      var promises = [];
+      promises.push(Reddit.setFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
+      promises.push(Reddit.setFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
+      Promise.all(promises).then(function () {
+        var ipAddress = req.headers['x-forwarded-for'] || req.ip;
+        Event.create([{
+          type: "flairTextChange",
+          user: req.user.name,
+          content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
+        }, {
+          type: "flairTextChange",
+          user: req.user.name,
+          content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
+        }]).exec(function () {
         });
+        return res.ok(req.user);
+      });
       if (flagged.length) {
         var message = "The user /u/" + req.user.name + " set a flair containing " +
-        (flagged.length == 1 ? "an invalid friend code" : flagged.length + " invalid friend codes") + ".\n\n";
+          (flagged.length == 1 ? "an invalid friend code" : flagged.length + " invalid friend codes") + ".\n\n";
         if (req.allParams().ptrades) {
           message += "/u/" + req.user.name + " " + req.allParams().ptrades + " (/r/pokemontrades)\n\n";
         }
         if (req.allParams().svex) {
           message += "/u/" + req.user.name + " " + req.allParams().svex + " (/r/SVExchange)\n\n";
         }
-        if (flair_FCs.length > flagged.length) {
+        if (flairs.fcs.length > flagged.length) {
           message += "The following friend code" + (flagged.length == 1 ? " is" : "s are") + " invalid:\n\n";
           for (i = 0; i < flagged.length; i++) {
             message += flagged[i] + "\n\n";
           }
         }
-        Reddit.sendPrivateMessage(
-          sails.config.reddit.adminRefreshToken,
-          "FlairHQ report: Invalid friend code" + (flagged.length == 1 ? "" : "s"),
-          message,
-          "/r/pokemontrades",
-          function (err) {
-            if (err) {
-              console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-            } else {
-              console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
-            }
-          }
-        );
+        Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades").then(function () {
+          console.log("Sent a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+        }, function () {
+          console.log("Failed to send a modmail reporting /u/" + req.user.name + "'s invalid friend code(s).");
+        });
+        var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.toString();
+        Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', '').catch(function () {
+          console.log('Failed to create a usernote on /u/' + req.user.name);
+        });
       }
     });
   },

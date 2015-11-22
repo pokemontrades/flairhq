@@ -1,0 +1,20 @@
+{
+  "env": {
+    "node": true
+  },
+  "globals": {
+    "Reference": true,
+    "User": true,
+    "Ban": true,
+    "Reddit": true,
+    "Event": true,
+    "sails": true,
+    "Flairs": true,
+    "Usernotes": true,
+    "References": true,
+    "Sessions": true,
+    "Game": true,
+    "Application": true,
+    "ModNote": true
+  }
+}

@@ -35,15 +35,15 @@ ng.module('ngReallyClickModule', ['ui.bootstrap'])
               flair + '</strong> flair?</div>';
 
             switch (switchInfo) {
-              case "deleteRef":
-                modalHtml = deleteHtml;
-                break;
-              case "denyApp":
-                modalHtml = denyHtml;
-                break;
-              default:
-                modalHtml = defaultHtml;
-                break;
+            case "deleteRef":
+              modalHtml = deleteHtml;
+              break;
+            case "denyApp":
+              modalHtml = denyHtml;
+              break;
+            default:
+              modalHtml = defaultHtml;
+              break;
             }
 
             modalHtml += '<div class="modal-footer">' +

@@ -11,7 +11,7 @@ ng.module("tooltipModule", []).directive("ngTooltip", function () {
     },
     templateUrl: '/common/tooltipView.html',
     transclude: true,
-    link: function (scope, element, attrs) {
+    link: function (scope, element) {
       var thisElement = $(element[0]).find('[data-toggle=tooltip]');
       thisElement.tooltip({
         html: true,

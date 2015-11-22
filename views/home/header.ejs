@@ -20,12 +20,19 @@
     </div>
 
     <div class="collapse navbar-collapse pull-right" id="main-navbar">
-      <form class="navbar-form navbar-left dropdown hidden" role="search" ng-class="loaded ? '' : 'hidden'">
+      <form class="navbar-form navbar-left dropdown hidden" role="search"
+            ng-class="loaded ? '' : 'hidden'" ng-controller="searchCtrl"
+            ng-submit="submit()">
+        <input type="submit" style="position: absolute; left: -9999px"/>
         <div class="form-group" ng-if="onSearchPage && user">
           <div class="form-group has-feedback">
+            <div class="input-group">
+              <select class="form-control input-group-addon" ng-model="searchInfo.search"
+                      ng-options="item as item.name for item in searchInfo.searches" ng-if="searchInfo.searches.length > 1"></select>
               <input type="text" class="form-control" ng-change="searchMaybe()"
-                     placeholder="Search" ng-model="searchInfo.keyword" />
-              <i class="glyphicon glyphicon-search form-control-feedback"></i>
+                         placeholder="Search" ng-model="searchInfo.keyword" />
+            </div>
+            <i class="glyphicon glyphicon-search form-control-feedback"></i>
           </div>
             <ul class="dropdown-menu list-group search-results" role="menu"
                     ng-show="searching || searchResults.length > 0">
@@ -35,15 +42,17 @@
                        ng-repeat="result in searchResults track by $index"
                        ng-if="result !== null"
                        class="list-group-item">
-                        <h4 class="list-group-item-heading">
-                            /u/{{result.user}} and {{result.user2}}
-                        </h4>
-                        <p class="list-group-iitem-text">
-                            {{result.description || result.gave + " for " + result.got}}
-                        </p>
+                      <h4 class="list-group-item-heading">
+                        <span ng-if="searchInfo.search.long === 'ref'">/u/{{result.user}} and /u/{{result.user2}}</span>
+                        <span ng-if="searchInfo.search.long === 'log'">/u/{{result.user}}</span>
+                      </h4>
+                      <p class="list-group-item-text">
+                        <span ng-if="searchInfo.search.long === 'ref'">{{result.description || result.gave + " for " + result.got}}</span>
+                        <span ng-if="searchInfo.search.long === 'log'">{{result.content}}</span>
+                      </p>
                     </a>
                 </div>
-                <a ng-href="/search/s/{{searchInfo.uriKeyword()}}" class="list-group-item list-group-item-info">
+                <a ng-href="/search/{{searchInfo.search.short}}/{{searchInfo.uriKeyword()}}" class="list-group-item list-group-item-info">
                     More results and advanced
                 </a>
             </ul>
@@ -63,7 +72,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span ng-class="'flair-' + user.flair.ptrades.flair_css_class"></span>
-            <span ng-class="getFlairTextForUserForSVEx()">
+            <span ng-class="getFlairTextForSVEx()">
                 {{user.name}}
             </span>
             <span class="caret"></span>

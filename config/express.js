@@ -3,28 +3,26 @@ var passport = require('passport'),
 
 var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
   process.nextTick(function() {
-    User.findOne({uid: profile.id}, function(err, user) {
-      Reddit.getBothFlairs(adminToken, profile.name, function (redditerr, flair1, flair2) {
+    User.findOne({id: profile.name}, function(err, user) {
+      Reddit.getBothFlairs(adminToken, profile.name).then(function (flairs) {
         if (user) {
           if (user.banned) {
             return done("You are banned from FAPP", user);
           }
           user.redToken = tokenSecret;
-          user.flair = {ptrades: flair1, svex: flair2};
+          user.flair = {ptrades: flairs[0], svex: flairs[1]};
           user.save(function (err) {
-            if (!err) {
-              return done(null, user);
-            } else {
-              return done(null, user);
+            if (err) {
+              console.log(err);
             }
+            return done(null, user);
           });
         } else {
           var data = {
-            redToken : tokenSecret,
+            redToken: tokenSecret,
             provider: profile.provider,
-            uid: profile.id,
             name: profile.name,
-            flair: {ptrades: flair1, svex: flair2}
+            flair: {ptrades: flairs[0], svex: flairs[1]}
           };
 
           if (profile.emails && profile.emails[0] && profile.emails[0].value) {
@@ -41,17 +39,19 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
             return done(err, user);
           });
         }
+      }, function (error) {
+        return res.serverError(error);
       });
     });
   });
 };
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user.name);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findOne({id: id}, function(err, user) {
+passport.deserializeUser(function(name, done) {
+  User.findOne({id: name}, function(err, user) {
     done(err, user);
   });
 });

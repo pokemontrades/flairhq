@@ -1,4 +1,3 @@
-/* global module, User, Game, Reference, ModNote, Application */
 /**
  * UserController
  *
@@ -6,12 +5,13 @@
  */
 
 var Q = require('q');
+var _ = require('lodash');
 
 module.exports = {
 
   edit: function (req, res) {
     req.params = req.allParams();
-    User.findOne({id: req.params.userid}, function (err, user) {
+    User.findOne(req.params.username, function (err, user) {
       if (!user) {
         return res.notFound("Can't find user");
       } else if (user.name !== req.user.name && !req.user.isMod) {
@@ -25,7 +25,7 @@ module.exports = {
           updatedUser.friendCodes = req.params.fcs;
         }
 
-        User.update({id: user.id}, updatedUser).exec(function (err, up) {
+        User.update(user.name, updatedUser).exec(function (err, up) {
           if (err) {
             res.serverError(err);
           }
@@ -33,8 +33,7 @@ module.exports = {
           var promises = [],
             games = [];
 
-          Game.find()
-            .where({user: user.id}).exec(function (err, games) {
+          Game.find().where({user: user.name}).exec(function (err, games) {
             games.forEach(function (game) {
               var deleteGame = true;
               req.params.games.forEach(function (game2) {
@@ -43,9 +42,7 @@ module.exports = {
                 }
               });
               if (deleteGame) {
-                promises.push(
-                  Game.destroy(game.id).exec(function () {})
-                );
+                promises.push(Game.destroy(game.id).exec(function () {}));
               }
             });
           });
@@ -54,8 +51,7 @@ module.exports = {
             if (game.id && (game.tsv || game.ign)) {
               promises.push(Game.update(
                 {id: game.id},
-                {tsv: parseInt(game.tsv), ign: game.ign})
-                .exec(function (err, game) {
+                {tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
                   if (err) {
                     console.log(err);
                     res.serverError(err);
@@ -63,19 +59,16 @@ module.exports = {
                     games.push(game);
                   }
                 }
-              ));
+                ));
             } else if (!game.id && (game.tsv || game.ign)) {
-              promises.push(Game.create(
-                {user: user.id, tsv: parseInt(game.tsv), ign: game.ign})
-                .exec(function (err, game) {
-                  if (err) {
-                    console.log(err);
-                    res.serverError(err);
-                  } else {
-                    games.push(game);
-                  }
+              promises.push(Game.create({user: user.name, tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
+                if (err) {
+                  console.log(err);
+                  res.serverError(err);
+                } else {
+                  games.push(game);
                 }
-              ));
+              }));
             }
           });
 
@@ -90,7 +83,7 @@ module.exports = {
 
   mine: function (req, res) {
     Game.find()
-      .where({user: req.user.id})
+      .where({user: req.user.name})
       .exec(function (err, games) {
         req.user.games = games;
 
@@ -109,27 +102,27 @@ module.exports = {
   },
 
   get: function (req, res) {
-    User.findOne({name: req.params.name}, function (err, user) {
+    User.findOne(req.params.name, function (err, user) {
       if (!user) {
         return res.notFound();
       }
       Game.find()
-        .where({user: user.id})
+        .where({user: user.name})
         .sort({createdAt: "desc"})
         .exec(function (err, games) {
 
           Reference.find()
-            .where({user: user.id})
+            .where({user: user.name})
             .sort({type: "asc", createdAt: "desc"})
             .exec(function (err, references) {
 
               Comment.find()
-                .where({user: user.id})
+                .where({user: user.name})
                 .sort({createdAt: "desc"})
                 .exec(function (err, comments) {
 
                   ModNote.find()
-                    .where({refUser: user.id})
+                    .where({refUser: user.name})
                     .sort({createdAt: "desc"})
                     .exec(function (err, notes) {
 
@@ -138,8 +131,8 @@ module.exports = {
                       }
                       var publicReferences = references;
                       //Censor confidential/classified info
-                      publicReferences.forEach(function(entry) {
-                        if (!req.user || req.user.id !== entry.user) {
+                      publicReferences.forEach(function (entry) {
+                        if (!req.user || req.user.name !== req.params.name) {
                           entry.privatenotes = undefined;
                         }
                         if (!req.user || !req.user.isMod) {
@@ -165,61 +158,48 @@ module.exports = {
   },
 
   addNote: function (req, res) {
-    req.params = req.allParams();
-    User.findOne({id: req.params.userid}).exec(function (err, user) {
-
-      if (!user) {
-        return res.notFound("Can't find user");
+    ModNote.create({
+      user: req.user.name,
+      refUser: req.allParams().username,
+      note: req.allParams().note
+    }).exec(function (err, note) {
+      if (err) {
+        return res.serverError(err);
       }
-
-      ModNote.create({user: req.user.name, refUser: user.id, note: req.params.note})
-        .exec(function (err, note) {
-          if (err) {
-            res.serverError(err);
-          } else {
-            res.ok(note);
-          }
-        });
+      return res.ok(note);
     });
-
   },
 
   delNote: function (req, res) {
-    req.params = req.allParams();
-    User.findOne({id: req.params.userid}).exec(function (err, user) {
-      if (!user) {
-        return res.notFound("Can't find user");
+    ModNote.destroy(req.allParams().id).exec(function (err, note) {
+      if (err) {
+        return res.serverError(err);
       }
-      ModNote.destroy({id: req.params.id})
-        .exec(function (err, note) {
-          if (err) {
-            res.serverError(err);
-          } else {
-            res.ok(note);
-          }
-        });
+      return res.ok(note);
     });
   },
 
   ban: function (req, res) {
     /*  Form parameters:
-          req.params.username: The user who is being banned (String)
-          req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
-          req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
-          req.params.banlistEntry: The ban reason to appear on the public banlist (String)
-          req.params.duration: The number of days that the user will be banned for. (Integer)
-          req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
-        Ban process:
-          1. Ban user from /r/pokemontrades
-          2. Ban user from /r/SVExchange
-          3. Add "BANNED USER" to user's flair on /r/pokemontrades
-          4. Add "BANNED USER" to user's flair on /r/SVExchange
-          5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
-          6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
-          7. Remove all of the user's TSV threads on /r/SVExchange
-          8. Add user's info to banlist wiki on /r/pokemontrades
-          9. Locally ban user from FlairHQ
-    */
+     req.params.username: The user who is being banned (String)
+     req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
+     req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
+     req.params.banlistEntry: The ban reason to appear on the public banlist (String)
+     req.params.duration: The number of days that the user will be banned for. (Integer)
+     req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
+     Ban process:
+     1. Ban user from /r/pokemontrades
+     2. Ban user from /r/SVExchange
+     3. Add "BANNED USER" to user's flair on /r/pokemontrades
+     4. Add "BANNED USER" to user's flair on /r/SVExchange
+     5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
+     6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
+     7. Add a usernote for the user on /r/pokemontrades
+     8. Add a usernote for the user on /r/SVExchange
+     9. Remove all of the user's TSV threads on /r/SVExchange
+     10. Add user's info to banlist wiki on /r/pokemontrades
+     11. Locally ban user from FlairHQ
+     */
 
     req.params = req.allParams();
 
@@ -255,11 +235,10 @@ module.exports = {
       }
     }
     console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
-    User.findOne({name: req.params.username}, function (finding_user_error, user) {
-      Reddit.getBothFlairs(req.user.redToken, req.params.username, function (err, flair1, flair2) {
-        if (err) {
-          return res.serverError(err);
-        }
+    User.findOne(req.params.username, function (finding_user_error, user) {
+      Reddit.getBothFlairs(req.user.redToken, req.params.username).then(function (flairs) {
+        var flair1 = flairs[0];
+        var flair2 = flairs[1];
         if (flair1 && flair1.flair_css_class && flair1.flair_text) {
           if (flair1.flair_css_class.indexOf(' ') === -1) {
             flair1.flair_css_class += ' banned';
@@ -272,7 +251,7 @@ module.exports = {
         }
         if (flair2 && flair2.flair_text) {
           if (flair2.flair_css_class) {
-            flair2.flair_css_class+=' banned';
+            flair2.flair_css_class += ' banned';
           }
           else {
             flair2.flair_css_class = 'banned';
@@ -292,109 +271,78 @@ module.exports = {
           req.params.additionalFCs
         );
         var igns = flair1.flair_text.substring(flair1.flair_text.indexOf("||") + 3);
-        var ptradesBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration);
-        var svexBan = Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration);
-        var promises;
-        if (req.params.duration) {
-          promises = [ //Tasks for tempbanning
-            ptradesBan, 
-            svexBan
-          ];
-        } else {
-          var ptradesFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades');
-          var svexFlair = Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange');
-          var ptradesAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs);
-          var svexAutomod = Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs);
-          var removeTSV = Ban.removeTSVThreads(req.user.redToken, req.params.username);
-          var updateBanlist = Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns);
-          var localBan = Ban.localBanUser(req.params.username);
-          promises = [ //Tasks for permabanning
-            ptradesBan,
-            svexBan,
-            ptradesFlair,
-            svexFlair,
-            ptradesAutomod,
-            svexAutomod,
-            removeTSV,
-            updateBanlist,
-            localBan
-          ];
+        var promises = [];
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
+        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote, req.params.duration));
+        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote, req.params.duration));
+        if (!req.params.duration) {
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair1.flair_css_class, flair1.flair_text, 'pokemontrades'));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flair2.flair_css_class, flair2.flair_text, 'SVExchange'));
+          promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
+          promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+          promises.push(Ban.removeTSVThreads(req.user.redToken, req.params.username));
+          promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns));
+          promises.push(Ban.localBanUser(req.params.username));
         }
-        Promise.all(promises).then(function(result) {
+        Promise.all(promises).then(function () {
           res.ok();
-        }, function(error) {
+        }, function (error) {
           console.log(error);
           res.status(500).json(error);
         });
         Event.create({
-          user: req.user.id,
-          userName: req.user.name,
+          user: req.user.name,
           type: "banUser",
-          content: "Banned /u/" + req.params.username + "."
-        }).exec(function () {});
+          content: "Banned /u/" + req.params.username
+        }).exec(function () {
+        });
+      }, function (err) {
+        return res.serverError(err);
       });
     });
   },
 
   setLocalBan: function (req, res) {
-    User.findOne(req.allParams().userId).exec(function (err, user) {
-      if (!user) {
-        return res.notFound("Can't find user");
+    User.update(req.allParams().username, {banned: req.allParams().ban}).exec(function (err, user) {
+      if (err) {
+        console.log(err);
+        return res.serverError(err);
       }
-
-      user.banned = req.allParams().ban;
-      user.save(function (err) {
-        if (err) {
-          return res.serverError(err);
-        }
-        res.ok(user);
-      });
+      if (!user) {
+        return res.notFound();
+      }
+      return res.ok(user[0]);
     });
   },
-  
+
   bannedUsers: function (req, res) {
     User.find({banned: true}).exec(function (err, users) {
-      res.ok(users);
+      if (err) {
+        return res.serverError(err);
+      }
+      return res.ok(users);
     });
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(
-      sails.config.reddit.adminRefreshToken,
-      req.user.name,
-      'pokemontrades',
-      function(err, response) {
-        if (err) {
-          console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
-          return res.serverError();
-        }
-        if (response.data.children.length) { //User is a mod, clear session
-          User.findOne({name: req.allParams().name}, function (err, user) {
-            if (err) {
-              return res.serverError(err);
-            }
-            if (!user) {
-              return res.status(404).json("404: That user could not be found.");
-            }
-            if (req.allParams().name === req.user.name) {
-              //Can't return a response after the user's own session is destroyed, so preemptively respond here if user is clearing their own session.
-              res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
-            }
-            Sessions.destroy({session: new RegExp('"user":"' + user.id + '"')}).exec(function (err) {
-            //The session entry is stored as a JSON string instead of an object, preventing easy queries. Instead, regex search for the user's id.
-              if (err) {
-                console.log(err);
-                if (!res.finished) {
-                  return res.serverError(err);
-                }
-              }
-              if (!res.finished) {
-                return res.status(200).json("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
-              }
-            });
-          });
-        }
+    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (modStatus) {
+      if (modStatus) { //User is a mod, clear session
+        Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
+          if (err) {
+            console.log(err);
+            return res.serverError(err);
+          }
+          if (req.allParams().name === req.user.name) {
+            req.session.destroy();
+            return res.redirect('/login');
+          }
+          return res.ok("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
+        });
       }
-    );
+    }, function () {
+      console.log('Failed to check whether /u/' + req.allParams().name + ' is a moderator.');
+      return res.serverError();
+    });
   }
 };

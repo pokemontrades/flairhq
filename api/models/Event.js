@@ -9,7 +9,6 @@ module.exports = {
 
   attributes: {
     user: "string",
-    userName: "string",
     type: {
       type: "string",
       enum: [

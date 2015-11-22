@@ -7,20 +7,20 @@
  */
 
 var passport = require('passport'),
-    crypto = require('crypto');
+  crypto = require('crypto');
 
 module.exports = {
 
-  index: function(req, res) {
+  index: function (req, res) {
     res.view();
   },
 
-  logout: function(req, res) {
+  logout: function (req, res) {
     req.logout();
     res.redirect('/');
   },
 
-  reddit: function(req, res) {
+  reddit: function (req, res) {
     req.session.state = crypto.randomBytes(32).toString('hex');
     if (req.query.url) {
       req.session.redirectUrl = req.query.url;
@@ -33,7 +33,7 @@ module.exports = {
     })(req, res);
   },
 
-  modAuth: function(req, res) {
+  modAuth: function (req, res) {
     req.session.state = crypto.randomBytes(32).toString('hex') + '_modlogin'; //The bit at the end prevents an infinite loop, see below
     if (req.query.url) {
       req.session.redirectUrl = req.query.url;
@@ -41,37 +41,32 @@ module.exports = {
     passport.authenticate('reddit', {
       state: req.session.state,
       duration: 'permanent',
-      failureRedirect: '/login',
+      failureRedirect: '/login'
     })(req, res);
   },
 
-  callback: function(req, res) {
-    passport.authenticate('reddit', {
-      state: req.session.state,
-      duration: 'permanent',
-      failureRedirect: '/login'
-    },
-    function (err, user) {
-      var url = req.session.redirectUrl ? req.session.redirectUrl : '/';
-      req.session.redirectUrl = "";
-      req.logIn(user, function(err) {
-        if (err) {
-          console.log("Failed login: " + err);
-          return res.forbidden();
-        }
+  callback: function (req, res) {
+    if (req.query.state !== req.session.state) {
+      console.log("Warning: A user was redirected to the reddit callback, but did not have a valid session state.");
+      return res.forbidden();
+    }
+    passport.authenticate('reddit',
+      {
+        state: req.session.state,
+        duration: 'permanent',
+        failureRedirect: '/login'
+      },
+      function (err, user) {
+        var url = req.session.redirectUrl ? req.session.redirectUrl : '/';
+        req.session.redirectUrl = "";
+        req.logIn(user, function (err) {
+          if (err) {
+            console.log("Failed login: " + err);
+            return res.forbidden();
+          }
 
-        Reddit.checkModeratorStatus(
-          sails.config.reddit.adminRefreshToken,
-          user.name,
-          'pokemontrades',
-          function(err, response) {
-            if (err) {
-              console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
-              console.log(err);
-              return res.redirect(url);
-            }
-
-            if (response.data.children.length) { //User is a mod, set isMod to true
+          Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades').then(function (modStatus) {
+            if (modStatus) { //User is a mod, set isMod to true
               user.isMod = true;
               user.save(function (err) {
                 if (err) {
@@ -79,10 +74,10 @@ module.exports = {
                   return res.view(500, {error: "You appear to be a mod, but you weren't given moderator status for some reason.\nTry logging in again."});
                 }
                 /* Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so get rid of the _modlogin flag
-                *  instead of redirecting there again. If a mod ends up on a different page while they still have the _modlogin flag, they have not
-                *  successfully authenticated, so they will get redirected to /auth/modauth. */
+                 *  instead of redirecting there again. If a mod ends up on a different page while they still have the _modlogin flag, they have not
+                 *  successfully authenticated, so they will get redirected to /auth/modauth. */
                 if (req.session.state.substr(-9) === '_modlogin') {
-                  req.session.state = req.session.state.slice(0,-9);
+                  req.session.state = req.session.state.slice(0, -9);
                   return res.redirect(url);
                 }
                 return res.redirect('/auth/modauth');
@@ -101,11 +96,14 @@ module.exports = {
             } else { // Regular user
               return res.redirect(url);
             }
-          }
-        );
+          }, function (err) {
+            console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
+            console.log(err);
+            return res.redirect(url);
+          });
 
-      });
-    })(req, res);
+        });
+      })(req, res);
   }
 
 };

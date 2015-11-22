@@ -111,3 +111,29 @@ module.exports.users = function (searchData, cb) {
       });
   });
 };
+
+module.exports.modmails = function (searchData, cb) {
+  var words = searchData.keyword.split(' ');
+  var fields = ['body', 'author', 'subject'];
+  var requirements = [];
+  for (let i = 0; i < words.length; i++) {
+    var current_req = {'$or': []};
+    for (let j = 0; j < fields.length; j++) {
+      let obj = {};
+      obj[fields[j]] = {'contains': words[i]};
+      current_req['$or'].push(obj);
+    }
+    requirements.push(current_req);
+  }
+  //Finds modmails where all of the words in the search query appear somewhere in either the body, subject, or author.
+  var mailData = {
+    limit: 20,
+    skip: searchData.skip ? parseInt(searchData.skip) : 0,
+    sort: 'created_utc DESC',
+    '$and': requirements
+  };
+
+  Modmail.find(mailData).exec(function (err, mail) {
+    cb(mail);
+  });
+};

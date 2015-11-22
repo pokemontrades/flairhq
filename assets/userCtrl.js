@@ -66,6 +66,8 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   ];
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
+  let timezone = -new Date().getTimezoneOffset()/60;
+  $scope.timezoneOffset = 'UTC' + (timezone > 0 ? '+' + timezone : timezone < 0 ? timezone : '');
   sharedService.addRepeats($scope);
   $scope.applyFlair = function () {
     $scope.errors.flairApp = "";

@@ -46,10 +46,6 @@ module.exports = {
   },
 
   callback: function (req, res) {
-    if (req.query.state !== req.session.state) {
-      console.log("Warning: A user was redirected to the reddit callback, but did not have a valid session state.");
-      return res.forbidden();
-    }
     passport.authenticate('reddit',
       {
         state: req.session.state,
@@ -57,6 +53,11 @@ module.exports = {
         failureRedirect: '/login'
       },
       function (err, user) {
+        if (req.query.state !== req.session.state) {
+          console.log("Warning: A user was redirected to the reddit callback, but does not have a valid session state.");
+          console.log("The code in the request belongs to /u/" + user.name + '.');
+          return res.forbidden();
+        }
         var url = req.session.redirectUrl ? req.session.redirectUrl : '/';
         req.session.redirectUrl = "";
         req.logIn(user, function (err) {

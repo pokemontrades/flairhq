@@ -56,9 +56,7 @@ module.exports.policies = {
   SearchController: {
     '*': mod,
     ref: user,
-    refView: user,
-    user: user,
-    userView: user
+    refView: user
   },
 
   UserController: {

@@ -14,8 +14,7 @@ require('angular-bootstrap-npm');
 require('angular-mask');
 require('bootstrap');
 require('./ngReallyClick');
-require('./common/tooltipModule');
-require('./common/genericTooltipModule');
+require('./tooltip/tooltip.module');
 require('./numberPadding');
 //require('spin');
 
@@ -25,7 +24,6 @@ var fapp = ng.module("fapp", [
   'numberPaddingModule',
   'yaru22.md',
   'tooltipModule',
-  'genericTooltipModule',
   'ngMask',
   'fapp.search'
 ]);

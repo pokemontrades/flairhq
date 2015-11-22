@@ -10,8 +10,10 @@
       <div class="input-group">
         <select class="form-control input-group-addon"
                 ng-model="search.input.search"
+                ng-change="search.changeSearchType()"
                 ng-options="item.short as item.name for item in search.searchesForUser()"
-                ng-if="search.searchesForUser().length > 1"></select>
+                ng-if="search.searchesForUser().length > 1">
+        </select>
         <input type="text"
                class="form-control"
                ng-change="search.searchMaybe()"

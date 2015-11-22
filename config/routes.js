@@ -195,7 +195,6 @@ module.exports.routes = {
     controller : 'home',
     action     : 'version'
   }
-
 };
 
 var searchTypes = require("../assets/search/types.js");

@@ -5,7 +5,7 @@
     <div class="content">
       <div class="row">
         <div class="col-md-12">
-          <h2>Advanced Search - <%- searchType %></h2>
+          <h2>Advanced Search - {{search.getSearch().name}}</h2>
         </div>
       </div>
       <div class="row">
@@ -27,10 +27,14 @@
               <%- partial(searchType + '/result.ejs') %>
             </a>
             <a class="list-group-item"
-               ng-if="!search.inProgress"
+               ng-if="!search.inProgress && !search.done"
                ng-click="search.getMore()">
               More results
             </a>
+            <div class="list-group-item"
+               ng-if="search.done">
+              No results past this point
+            </div>
           </ul>
         </div>
       </div>

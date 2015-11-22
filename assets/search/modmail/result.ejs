@@ -1,0 +1,6 @@
+<h4 class="list-group-item-heading">
+    {{result.subject}} <em>by /u/{{result.author}}</em>
+</h4>
+<p class="list-group-iitem-text">
+    <strong>{{result.created_utc * 1000 | date:'yyyy-MM-dd HH:mm:ss'}} {{timezoneOffset}}</strong><br>{{result.body}}
+</p>

@@ -16,15 +16,18 @@ module.exports = function ($scope, $timeout, UserFactory) {
     uriKeyword: uriKeyword
   };
   vm.inProgress = false;
+  vm.done = false;
   vm.results = [];
 
   vm.getSearch = getSearch;
   vm.toggleCategory = toggleCategory;
+  vm.changeSearchType = changeSearchType;
   vm.searchMaybe = searchMaybe;
   vm.getMore = getMore;
   vm.searchesForUser = searchesForUser;
   vm.submit = submit;
   vm.linkAddress = linkAddress;
+  vm.searchedFor = '';
 
   ////////////////////////////////
 
@@ -32,7 +35,7 @@ module.exports = function ($scope, $timeout, UserFactory) {
   var lastSearch;
 
   $timeout(function () {
-    if (vm.input.keyword) {
+    if (vm.input.keyword && vm.input.search) {
       search();
     }
   }, 300);
@@ -42,8 +45,8 @@ module.exports = function ($scope, $timeout, UserFactory) {
     function (newU, oldU) {
       if (newU !== oldU) {
         vm.user = UserFactory.getUser();
-        if (!$scope.onSearchPage) {
-          vm.input.search = "ref";
+        if (!vm.input.search) {
+          vm.input.search = 'ref';
         }
       }
     }
@@ -53,7 +56,9 @@ module.exports = function ($scope, $timeout, UserFactory) {
     if (vm.input.search === 'ref') {
       return '/u/' + result.user;
     } else if (vm.input.search === 'user') {
-      return '/u/' + result.name;
+      return '/u/' + result._id;
+    } else if (vm.input.search === 'modmail') {
+      return 'https://reddit.com/message/messages/' + result.name.substring(3);
     }
   }
 
@@ -63,11 +68,7 @@ module.exports = function ($scope, $timeout, UserFactory) {
 
   function userAllowedSearch(search) {
     // Either all users can access, or only mods
-    if (!search.modOnly) {
-      return true;
-    } else {
-      return vm.user.isMod;
-    }
+    return vm.user.isMod || !search.modOnly;
   }
 
   function getSearch() {
@@ -78,6 +79,14 @@ module.exports = function ($scope, $timeout, UserFactory) {
 
   function uriKeyword() {
     return encodeURIComponent(vm.input.keyword.replace(/\//g, "%2F"));
+  }
+
+  function changeSearchType () {
+    //Clear the existing results since they're no longer relevant
+    vm.results = [];
+    if (vm.input.keyword) {
+      search();
+    }
   }
 
   function toggleCategory(name) {
@@ -123,7 +132,6 @@ module.exports = function ($scope, $timeout, UserFactory) {
   }
 
   function search(skip) {
-    console.log("Searching");
     $('.search-results').show();
     vm.inProgress = true;
     if (!vm.input.keyword) {
@@ -147,15 +155,16 @@ module.exports = function ($scope, $timeout, UserFactory) {
       url += "&user=" + vm.input.user;
     }
     url += "&skip=" + skip;
-
-    var searchedFor = url;
+    vm.done = false;
+    vm.searchedFor = url;
     io.socket.get(url, function (data, res) {
-      if (res.statusCode === 200 && searchedFor === url) {
+      if (res.statusCode === 200 && vm.searchedFor === url) {
         if (skip) {
           vm.results = vm.results.concat(data);
         } else {
           vm.results = data;
         }
+        vm.done = !data.length;
         vm.inProgress = false;
         $scope.$apply();
       } else if (res.statusCode !== 200) {

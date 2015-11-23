@@ -16,7 +16,6 @@
   "dependencies": {
     "angular": "1.3.x",
     "angular-bootstrap-npm": "^0.14.2",
-    "angular-md": "^1.0.0",
     "angular-spinner": "^0.7.0",
     "angular-ui-mask": "~1.4.3",
     "async": "~1.4.2",
@@ -46,7 +45,6 @@
     "include-all": "~0.1.3",
     "jquery-browserify": "^1.8.1",
     "lodash": "^3.10.1",
-    "marked": "^0.3.5",
     "mocha": "^2.3.4",
     "moment": "~2.10.6",
     "ng-mask": "^3.0.12",
@@ -67,6 +65,8 @@
     "sails-mongo": "^0.11.4",
     "sails.io.js": "^0.11.7",
     "sha256": "^0.2.0",
+    "snudown-js": "^1.4.0",
+    "snuownd": "^1.1.0",
     "socket.io-browserify": "^0.9.6",
     "socket.io-client": "^1.3.7"
   },

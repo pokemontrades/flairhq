@@ -169,8 +169,8 @@ module.exports = {
         }
       });
 
-      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class", "default");
-      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class", "");
+      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
+      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
       promises.push(Reddit.setFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));

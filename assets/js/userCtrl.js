@@ -72,7 +72,7 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
     $scope.userok.applyFlair = false;
     $scope.userspin.applyFlair = true;
     var flair = $scope.getFlair($scope.selectedFlair, $scope.flairs);
-    if ($scope.selectedFlair && $scope.canUserApply($scope.user, flair, $scope.flairs)) {
+    if ($scope.selectedFlair && $scope.canUserApply(flair)) {
       io.socket.post("/flair/apply", {flair: $scope.selectedFlair, sub: flair.sub}, function (data, res) {
         if (res.statusCode === 200) {
           $scope.user.apps.push(data);

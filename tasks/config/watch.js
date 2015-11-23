@@ -36,7 +36,12 @@ module.exports = function (grunt) {
         'sails-linker:devStyles',
         'eslint',
         'browserify:dev'
-      ]
+      ],
+
+      options: {
+        livereload: true,
+        livereloadOnError: false
+      }
     }
   });
 

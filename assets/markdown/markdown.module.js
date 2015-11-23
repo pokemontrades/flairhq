@@ -3,7 +3,7 @@
  */
 
 var angular = require("angular");
-var SnuOwnd = require("snuownd");
+var Snudown = require("snudown-js");
 var remapURLs = require("./remapURLs");
 
 module.exports = angular.module("fapp.md", [])
@@ -13,12 +13,12 @@ module.exports = angular.module("fapp.md", [])
       require: "?ngModel",
       link: function ($scope, $elem, $attrs, ngModel) {
         if (!ngModel) {
-          var html = remapURLs(SnuOwnd.getParser().render($elem.text()));
+          var html = remapURLs(Snudown.markdown($elem.text()));
           $elem.html(html);
           return;
         }
         ngModel.$render = function () {
-          var html = remapURLs(SnuOwnd.getParser().render(ngModel.$viewValue || ""));
+          var html = remapURLs(Snudown.markdown(ngModel.$viewValue || ""));
           $elem.html(html);
         };
       }

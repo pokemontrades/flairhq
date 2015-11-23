@@ -1,6 +1,5 @@
 var ng = require('angular');
 var $ = require('jquery');
-var marked = require('marked');
 
 var refCtrl = require('./refCtrl');
 var indexCtrl = require('./indexCtrl');
@@ -8,8 +7,8 @@ var adminCtrl = require('./adminCtrl');
 var banCtrl = require('./banCtrl');
 var userCtrl = require('./userCtrl');
 require('./search/search.module');
+require('./markdown/markdown.module');
 require('angular-spinner');
-require('angular-md');
 require('angular-bootstrap-npm');
 require('angular-mask');
 require('bootstrap');
@@ -22,10 +21,10 @@ var fapp = ng.module("fapp", [
   'angularSpinner',
   'ngReallyClickModule',
   'numberPaddingModule',
-  'yaru22.md',
   'tooltipModule',
   'ngMask',
-  'fapp.search'
+  'fapp.search',
+  'fapp.md'
 ]);
 
 fapp.factory('UserFactory', function () {
@@ -56,5 +55,4 @@ $(function () {
   });
 });
 
-window.marked = marked;
 ng.bootstrap(document, ['fapp']);

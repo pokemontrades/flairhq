@@ -1,16 +1,12 @@
 var assert = require("chai").assert;
 var Flairs = require("../../../api/services/Flairs");
 
-var tradesFlairStd = "1111-1111-1111 || YMK (X)";
-var tradesFlairMultipleFCs = "1111-1111-1111, 2222-2222-2222 || YMK (X)";
-var svexFlairStd = "1111-1111-1111 || YMK (X) || 1234";
-var svexFlairDifferentFC = "2222-2222-2222 || YMK (X) || 1234";
-var incorrectFlair = "not a correct flair";
+var flairTexts = require("../data/flairTexts.json");
 
 describe("Flair checks", function () {
   it("Throws error on incorrect pokemntrades flair", function () {
     try{
-      Flairs.flairCheck(incorrectFlair, svexFlairStd);
+      Flairs.flairCheck(flairTexts.incorrectFlair, flairTexts.svexFlairStd);
     } catch (e) {
       return assert.equal(e, "Error with format.");
     }
@@ -19,7 +15,7 @@ describe("Flair checks", function () {
 
   it("Throws error on incorrect svex flair", function () {
     try{
-      Flairs.flairCheck(tradesFlairStd, incorrectFlair);
+      Flairs.flairCheck(flairTexts.tradesFlairStd, flairTexts.incorrectFlair);
     } catch (e) {
       return assert.equal(e, "Error with format.");
     }
@@ -28,7 +24,7 @@ describe("Flair checks", function () {
 
   it("Throws error on undefined trades flair", function () {
     try{
-      Flairs.flairCheck(tradesFlairStd, undefined);
+      Flairs.flairCheck(flairTexts.tradesFlairStd, undefined);
     } catch (e) {
       return assert.equal(e, "Need both flairs.");
     }
@@ -37,7 +33,7 @@ describe("Flair checks", function () {
 
   it("Throws error on undefined trades flair", function () {
     try{
-      Flairs.flairCheck(undefined, svexFlairStd);
+      Flairs.flairCheck(undefined, flairTexts.svexFlairStd);
     } catch (e) {
       return assert.equal(e, "Need both flairs.");
     }
@@ -46,20 +42,20 @@ describe("Flair checks", function () {
 
   describe("On success", function () {
     it("Returns object containing friend codes", function () {
-      var fcs = Flairs.flairCheck(tradesFlairStd, svexFlairStd).fcs;
+      var fcs = Flairs.flairCheck(flairTexts.tradesFlairStd, flairTexts.svexFlairStd).fcs;
       assert.equal(fcs.length, 1, "Has 1 fc.");
       assert.equal(fcs[0], "1111-1111-1111", "Has 1 fc.");
     });
 
     it("Returns object containing all friend codes", function () {
-      var fcs = Flairs.flairCheck(tradesFlairMultipleFCs, svexFlairStd).fcs;
+      var fcs = Flairs.flairCheck(flairTexts.tradesFlairMultipleFCs, flairTexts.svexFlairStd).fcs;
       assert.equal(fcs.length, 2, "Has 2 fcs.");
       assert.equal(fcs[0], "1111-1111-1111", "Has 1111-1111-1111");
       assert.equal(fcs[1], "2222-2222-2222", "Has 2222-2222-2222");
     });
 
     it("Returns object containing friend codes from both ", function () {
-      var fcs = Flairs.flairCheck(tradesFlairStd, svexFlairDifferentFC).fcs;
+      var fcs = Flairs.flairCheck(flairTexts.tradesFlairStd, flairTexts.svexFlairDifferentFC).fcs;
       assert.equal(fcs.length, 2, "Has 2 fcs.");
       assert.equal(fcs[0], "1111-1111-1111", "Has 1111-1111-1111");
       assert.equal(fcs[1], "2222-2222-2222", "Has 2222-2222-2222");
@@ -69,7 +65,7 @@ describe("Flair checks", function () {
   describe("Incorrect flairs", function () {
     it ("Doesn't allow no IGNs in trades flair", function () {
       try{
-        Flairs.flairCheck("1234-1234-1234 || ", svexFlairStd);
+        Flairs.flairCheck("1234-1234-1234 || ", flairTexts.svexFlairStd);
       } catch (e) {
         return assert.equal(e, "We need at least 1 game.");
       }
@@ -78,7 +74,7 @@ describe("Flair checks", function () {
 
     it ("Doesn't allow no IGNs in svex flair", function () {
       try{
-        Flairs.flairCheck(tradesFlairStd, "1234-1234-1234 || || 1234");
+        Flairs.flairCheck(flairTexts.tradesFlairStd, "1234-1234-1234 || || 1234");
       } catch (e) {
         return assert.equal(e, "We need at least 1 game.");
       }

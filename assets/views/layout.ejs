@@ -23,6 +23,7 @@
       });
 
     </script>
+    <% if(sails.config.environment == 'development' ){ %> <script src="http://localhost:35729/livereload.js"></script> <% } %>
   </head>
 
   <body ng-controller="userCtrl">

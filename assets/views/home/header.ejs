@@ -21,7 +21,9 @@
 
     <div class="collapse navbar-collapse pull-right" id="main-navbar">
       <%- partial('../../search/header.ejs') %>
-      <ul class="nav navbar-nav hidden" ng-show="user" ng-class="loaded ? '' : 'hidden'">
+
+      <% if (user) {%>
+      <ul class="nav navbar-nav">
         <li><a href="/info">Information</a></li>
         <li class="dropdown" ng-if="user.isMod">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Moderation<span class="caret"></span></a>
@@ -36,7 +38,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span ng-class="'flair-' + user.flair.ptrades.flair_css_class"></span>
             <span ng-class="getFlairTextForSVEx()">
-                {{user.name}}
+                <%=user.name%>
             </span>
             <span class="caret"></span>
           </a>
@@ -46,17 +48,20 @@
             <li><a href="#flairText" data-toggle="modal">Set Flair Text</a></li>
             <li class="divider"></li>
             <li><a href="#profileModal" data-toggle="modal">Edit Account</a></li>
-            <li><a ng-href="/u/{{user.name}}">Public Profile</a></li>
+            <li><a ng-href="/u/<%=user.name%>">Public Profile</a></li>
             <li class="divider"></li>
             <li><a href="/logout">Logout</a></li>
           </ul>
         </li>
       </ul>
+      <% }%>
 
-      <ul class="nav navbar-nav hidden" ng-hide="user" ng-class="loaded ? '' : 'hidden'">
+      <% if (!user) {%>
+      <ul class="nav navbar-nav">
         <li><a href="/info">Information</a></li>
         <li><a href="/auth/reddit/">Login with Reddit</a></li>
       </ul>
+      <% }%>
     </div>
 
   </div>

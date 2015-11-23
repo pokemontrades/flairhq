@@ -4,6 +4,7 @@
 
 var angular = require("angular");
 var SnuOwnd = require("snuownd");
+var remapURLs = require("./remapURLs");
 
 module.exports = angular.module("fapp.md", [])
   .directive("md", function () {
@@ -12,12 +13,12 @@ module.exports = angular.module("fapp.md", [])
       require: "?ngModel",
       link: function ($scope, $elem, $attrs, ngModel) {
         if (!ngModel) {
-          var html = SnuOwnd.getParser().render($elem.text());
+          var html = remapURLs(SnuOwnd.getParser().render($elem.text()));
           $elem.html(html);
           return;
         }
         ngModel.$render = function () {
-          var html = SnuOwnd.getParser().render(ngModel.$viewValue || "");
+          var html = remapURLs(SnuOwnd.getParser().render(ngModel.$viewValue || ""));
           $elem.html(html);
         };
       }

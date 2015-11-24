@@ -38,6 +38,8 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
   if (left < rateLimitRemainingThreshold && moment().before(resetTime)) {
     throw {statusCode: 504, error: "Rate limited"};
   }
+  // Prevent Reddit from sanitizing '> < &' to '&gt; &lt; &amp;' in the response
+  url += (url.indexOf('?') === -1 ? '?' : '&') + 'raw_json=1';
   var headers = {"User-Agent": sails.config.reddit.userAgent};
   if (url.indexOf("oauth.reddit.com") !== -1) {
     headers.Authorization = "bearer " + await exports.refreshToken(refreshToken);
@@ -118,7 +120,7 @@ exports.banUser = function (refreshToken, username, ban_message, note, subreddit
 };
 
 exports.getWikiPage = async function (refreshToken, subreddit, page) {
-  var url = 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page + '?raw_json=1';
+  var url = 'https://oauth.reddit.com/r/' + subreddit + '/wiki/' + page;
   //Return a Promise for content of the page instead of all the other data
   let res = await makeRequest(refreshToken, 'GET', url, undefined, 5);
   return res.data.content_md;

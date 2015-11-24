@@ -3,6 +3,6 @@ module.exports = function (grunt) {
     'compileDev',
     'sails-linker:devJs',
     'sails-linker:devStyles',
-    'watch:assets'
+    'focus:dev'
   ]);
 };

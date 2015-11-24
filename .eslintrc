@@ -10,6 +10,10 @@
   },
   "rules": {
     "no-console": 0,
+    "linebreak-style": [
+      2,
+      "unix"
+    ],
     "indent": [
       2,
       2

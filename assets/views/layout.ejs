@@ -37,10 +37,12 @@
                 <noscript>
                     <h2>
                         It appears you don't have JavaScript enabled.
-                        If you don't have JavaScript, FlairHQ will not work for you.
+                        If you don't have JavaScript, some parts of FlairHQ will not work for you.
+
+                        We are currently working hard to improve this so that you won't need JavaScript to use the site.
                     </h2>
                 </noscript>
-                <div class="bigspinner">
+                <div class="hidden" ng-class="loaded ? 'hidden' : 'bigspinner'">
                 </div>
               </div>
             </div>
@@ -62,5 +64,6 @@
     <!--SCRIPTS-->
     <script src="/js/app.js"></script>
     <!--SCRIPTS END-->
+    <% if(sails.config.environment == 'development' ){ %> <script src="http://localhost:35729/livereload.js"></script> <% } %>
   </body>
 </html>

@@ -69,9 +69,8 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
   // Parse the querystring into an object
   // substring is used to get rid of the ? in front of the querystring
-  $scope.query = deparam(location.search.substring(1));
-  let timezone = -new Date().getTimezoneOffset()/60;
-  $scope.timezoneOffset = 'UTC' + (timezone > 0 ? '+' + timezone : timezone < 0 ? timezone : '');
+  $scope.querystring = location.search;
+  $scope.query = deparam($scope.querystring.substring(1));
   sharedService.addRepeats($scope);
   $scope.applyFlair = function () {
     $scope.errors.flairApp = "";

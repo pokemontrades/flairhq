@@ -15,7 +15,7 @@
             <p>Welcome to FlairHQ. You have been sent here to set your Flair on /r/pokemontrades
             or /r/SVExchange.</p>
             <p>To start with, you will need to
-              <a href="/auth/reddit?url=%2F%23%2Fflairtext" class="btn btn-primary btn-sm" role="button">log in</a>
+              <a href="/auth/reddit?redirect=%2F%23%2Fflairtext" class="btn btn-primary btn-sm" role="button">log in</a>
               with your Reddit account, and we can get going.</p>
           </div>
         </div>
@@ -50,7 +50,7 @@
             </div>
 
             <div class="form-group col-sm-12" ng-repeat="game in user.flairGames | orderBy:'createdAt' track by $index">
-              <label class="col-md-3 control-label">IGN:*</label>
+              <label class="col-md-3 control-label" title="In-Game Name (i.e. the name of your character)">IGN:*</label>
 
               <div class="col-md-2">
                 <input type="text" class="form-control" ng-model="game.ign">

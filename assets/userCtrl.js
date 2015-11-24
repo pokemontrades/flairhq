@@ -3,6 +3,7 @@ var io = require("sails.io.js")(socket);
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
+var deparam = require('node-jquery-deparam');
 var sharedService = require("./sharedClientFunctions.js");
 
 module.exports = function ($scope, $filter, $location, UserFactory) {
@@ -66,6 +67,9 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   ];
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
+  // Parse the querystring into an object
+  // substring is used to get rid of the ? in front of the querystring
+  $scope.query = deparam(location.search.substring(1));
   let timezone = -new Date().getTimezoneOffset()/60;
   $scope.timezoneOffset = 'UTC' + (timezone > 0 ? '+' + timezone : timezone < 0 ? timezone : '');
   sharedService.addRepeats($scope);
@@ -475,4 +479,6 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   $scope.deleteFlair = function (index) {
     $scope.flairs.splice(index, 1);
   };
+
+  $scope.getFlairs();
 };

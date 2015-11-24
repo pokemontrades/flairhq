@@ -5,15 +5,15 @@ var sharedService = require('./sharedClientFunctions.js');
 
 module.exports = function ($scope) {
   $scope.addInfo = {
-    refUrl: "",
-    type: "",
-    user2: "",
-    gave: "",
-    got: "",
-    number: "",
-    descrip: "",
-    notes: "",
-    privatenotes: ""
+    refUrl: $scope.query.refUrl || '',
+    type: $scope.query.type || '',
+    user2: $scope.query.user2 || '',
+    gave: $scope.query.gave || '',
+    got: $scope.query.got || '',
+    number: $scope.query.number || '',
+    descrip: $scope.query.descrip || '',
+    notes: $scope.query.notes || '',
+    privatenotes: $scope.query.privatenotes || ''
   };
 
   $scope.selectedRef = {};

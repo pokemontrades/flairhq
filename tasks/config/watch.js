@@ -36,8 +36,7 @@ module.exports = function (grunt) {
       ],
       tasks: [
         'copy:dev',
-        'eslint',
-        'browserify:dev'
+        'eslint'
       ],
       options: {
         livereload: true,

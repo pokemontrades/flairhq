@@ -480,4 +480,16 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   };
 
   $scope.getFlairs();
+
+  // Get a CSRF token from the server.
+  io.socket.get('/csrfToken', function (token) {
+    $scope._csrf = token._csrf;
+  });
+
+  /* Include the csrf token in all POST requests.
+   * (As far as I can tell, there's no better way to do this aside from manually adding the token parameter to each request.)*/
+  io.socket.post = function (url, data, callback) {
+    data._csrf = $scope._csrf;
+    io.socket.request({method: 'post', url: url, params: data}, callback);
+  };
 };

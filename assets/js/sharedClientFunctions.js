@@ -38,7 +38,7 @@ module.exports = {
         return "Please choose a type.";
       }
       if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck" || ref.type === "involvement") {
-        if (!ref.descrip || ref.description) {
+        if (!ref.descrip && !ref.description) {
           return "Make sure you enter all the information";
         }
       } else if (!ref.got || !ref.gave) {

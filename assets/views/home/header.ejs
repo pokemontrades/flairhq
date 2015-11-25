@@ -56,12 +56,10 @@
           </ul>
         </li>
       </ul>
-      <% }%>
-
-      <% if (!user) {%>
+      <% } else {%>
       <ul class="nav navbar-nav">
         <li><a href="/info">Information</a></li>
-        <li><a href="/auth/reddit{{querystring}}">Login with Reddit</a></li>
+        <li><a href="/auth/reddit<%= query.redirect ? '?redirect=' + encodeURIComponent(query.redirect) : '' %>">Login with Reddit</a></li>
       </ul>
       <% }%>
     </div>

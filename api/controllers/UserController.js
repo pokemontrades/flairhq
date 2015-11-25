@@ -254,12 +254,15 @@ module.exports = {
       return res.status(500).json(err);
     }
     var flairs;
-    flairs = await Reddit.getBothFlairs(req.user.redToken, req.params.username).catch(function (err) {
+    try {
+      flairs = await Reddit.getBothFlairs(req.user.redToken, req.params.username);
+    }
+    catch (err) {
       // Reddit will return 403 when looking up the flair of a user with a deleted account.
       if (err.statusCode !== 403) {
-        throw err;
+        return res.status(err.statusCode).json(err);
       }
-    });
+    }
     var logged_fcs = user ? user.loggedFriendCodes : [];
     var unique_fcs = _.union(logged_fcs, req.params.additionalFCs);
     var igns;

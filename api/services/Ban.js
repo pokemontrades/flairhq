@@ -70,6 +70,7 @@ exports.markTSVThreads = async function (redToken, username) {
   var tsv_promises = [];
   threads.forEach(function (entry) {
     tsv_promises.push(Reddit.lockPost(redToken, entry.data.id));
+    tsv_promises.push(Reddit.markNsfw(redToken, entry.data.id));
     tsv_promises.push(Reddit.setLinkFlair(redToken, entry.data.subreddit, entry.data.id, 'banned', '[Banned User] Trainer Shiny Value'));
   });
   await Promise.all(tsv_promises);
@@ -101,7 +102,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
       }
       blocks[0] += ', /u/' + username;
       blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
-      blocks[3] = _.union(blocks[3].split(', '), [igns]).join(', ');
+      blocks[3] = _.compact(_.union(blocks[3].split(', '), [igns])).join(', ');
       let new_line = blocks.join(' | ');
       updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index, i)).concat(lines.slice(i + 1)).join('\n');
     }

@@ -135,13 +135,13 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason)
 
 exports.searchTSVThreads = function (refreshToken, username) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
-  var query = '(flair:"Trainer Shiny Value" OR flair:"[Banned User] Trainer Shiny Value") AND author:' + username;
+  var query = '(flair:"Trainer Shiny Value" OR flair:"[Banned User] Trainer Shiny Value") AND author:"' + username + '"';
   return exports.search(refreshToken, actual_sub, query, true, 'new', 'all');
 };
 
-exports.search = function (refreshToken, subreddit, query, restrict_sr, sort, time) {
+exports.search = function (refreshToken, subreddit, query, restrict_sr, sort, time, syntax) {
   var querystring = '?q=' + encodeURIComponent(query) + (restrict_sr  ? '&restrict_sr=on' : '') +
-    (sort ? '&sort=' + sort : '') + (time ? '&t=' + time : '');
+    (sort ? '&sort=' + sort : '') + (time ? '&t=' + time : '') + '&syntax=' + (syntax ? syntax : 'cloudsearch');
   var endpoint = 'https://oauth.reddit.com/r/' + subreddit + '/search';
   return getEntireListing(refreshToken, endpoint, querystring, 10);
 };
@@ -163,6 +163,12 @@ exports.lockPost = function (refreshToken, post_id) {
     }
     throw error;
   });
+};
+
+exports.markNsfw = function (refreshToken, post_id) {
+  var url = 'https://oauth.reddit.com/api/marknsfw';
+  var data = {id: 't3_' + post_id};
+  return makeRequest(refreshToken, 'POST', url, data, 5);
 };
 
 exports.sendPrivateMessage = function (refreshToken, subject, text, recipient) {

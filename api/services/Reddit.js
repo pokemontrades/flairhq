@@ -135,8 +135,8 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason)
 
 exports.searchTSVThreads = function (refreshToken, username) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
-  var query = '(flair:"Trainer Shiny Value" OR flair:"[Banned User] Trainer Shiny Value") AND author:"' + username + '"';
-  return exports.search(refreshToken, actual_sub, query, true, 'new', 'all');
+  var query = "(and (or (field flair 'banned') (field flair 'sv')) (field author '" + username + "'))";
+  return exports.search(refreshToken, actual_sub, query, true, 'new', 'all', 'cloudsearch');
 };
 
 exports.search = function (refreshToken, subreddit, query, restrict_sr, sort, time, syntax) {

@@ -1,9 +1,7 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
 var $ = require('jquery');
 var sharedService = require('./sharedClientFunctions.js');
 
-module.exports = function ($scope, $filter) {
+module.exports = function ($scope, $filter, io) {
   $scope.newStuff = {
     newComment: ""
   };

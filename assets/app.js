@@ -1,5 +1,6 @@
 var ng = require('angular');
 var $ = require('jquery');
+var _csrf = $('#app').attr('_csrf');
 
 var refCtrl = require('./refCtrl');
 var indexCtrl = require('./indexCtrl');
@@ -40,12 +41,23 @@ fapp.factory('UserFactory', function () {
   };
 });
 
+fapp.service('io', function () {
+  var socket = require('socket.io-client');
+  var io = require('sails.io.js')(socket);
+  io.socket.post = function (url, data, callback) {
+    data._csrf = _csrf;
+    console.log(data.csrf);
+    io.socket.request({method: 'post', url: url, params: data}, callback);
+  };
+  return io;
+});
+
 // Define controllers, and their angular dependencies
-fapp.controller("referenceCtrl", ['$scope', '$filter', refCtrl]);
-fapp.controller("indexCtrl", ['$scope', indexCtrl]);
-fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', userCtrl]);
-fapp.controller("adminCtrl", ['$scope', adminCtrl]);
-fapp.controller("banCtrl", ['$scope', banCtrl]);
+fapp.controller("referenceCtrl", ['$scope', '$filter', 'io', refCtrl]);
+fapp.controller("indexCtrl", ['$scope', 'io', indexCtrl]);
+fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', 'io', userCtrl]);
+fapp.controller("adminCtrl", ['$scope', 'io', adminCtrl]);
+fapp.controller("banCtrl", ['$scope', 'io', banCtrl]);
 
 // Bug fix for iOS safari
 $(function () {

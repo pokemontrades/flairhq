@@ -1,9 +1,7 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
 var $ = require('jquery');
 var sharedService = require('./sharedClientFunctions.js');
 
-module.exports = function ($scope) {
+module.exports = function ($scope, io) {
   $scope.addInfo = {
     refUrl: $scope.query.refUrl || '',
     type: $scope.query.type || '',

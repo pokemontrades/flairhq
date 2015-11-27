@@ -1,7 +1,4 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
-
-module.exports = function ($scope) {
+module.exports = function ($scope, io) {
 
   $scope.banInfo = {
     username: $scope.query.username || '',

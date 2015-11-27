@@ -1,12 +1,10 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
 var deparam = require('node-jquery-deparam');
 var sharedService = require("./sharedClientFunctions.js");
 
-module.exports = function ($scope, $filter, $location, UserFactory) {
+module.exports = function ($scope, $filter, $location, UserFactory, io) {
   $scope.regex = regex;
   $scope.scope = $scope;
   $scope.user = undefined;
@@ -480,16 +478,4 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   };
 
   $scope.getFlairs();
-
-  // Get a CSRF token from the server.
-  io.socket.get('/csrfToken', function (token) {
-    $scope._csrf = token._csrf;
-  });
-
-  /* Include the csrf token in all POST requests.
-   * (As far as I can tell, there's no better way to do this aside from manually adding the token parameter to each request.)*/
-  io.socket.post = function (url, data, callback) {
-    data._csrf = $scope._csrf;
-    io.socket.request({method: 'post', url: url, params: data}, callback);
-  };
 };

@@ -96,6 +96,7 @@ module.exports = {
             return res.serverError(err);
           }
           req.user.apps = app;
+          req.user.redToken = undefined;
           res.ok(req.user);
         });
       });

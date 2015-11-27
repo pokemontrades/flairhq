@@ -372,7 +372,7 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
     }
 
     if (svex.length > 64 || ptrades.length > 64) {
-      return {correct: false, error: "Your flair is too long, maximum is 64 characters, please delete something."};
+      return {correct: false, error: "Your flair is too long; Reddit's maximum is 64 characters. Please delete something."};
     }
 
     for (var i = 0; i < $scope.user.flairFriendCodes.length; i++) {

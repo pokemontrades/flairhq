@@ -253,41 +253,56 @@ module.exports = {
       console.log(err);
       return res.status(500).json(err);
     }
-    Reddit.getBothFlairs(req.user.redToken, req.params.username).then(function (flairs) {
-      var logged_fcs = user ? user.loggedFriendCodes : [];
+    var flairs;
+    try {
+      flairs = await Reddit.getBothFlairs(req.user.redToken, req.params.username);
+    }
+    catch (err) {
+      // Reddit will return 403 when looking up the flair of a user with a deleted account.
+      if (err.statusCode !== 403) {
+        return res.status(err.statusCode).json(err);
+      }
+    }
+    var logged_fcs = user ? user.loggedFriendCodes : [];
+    var unique_fcs = _.union(logged_fcs, req.params.additionalFCs);
+    var igns;
+    if (flairs) {
       var fc_match = /(\d{4}-){2}\d{4}/g;
-      var unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), logged_fcs, req.params.additionalFCs);
-      var igns = flairs[0].flair_text.substring(flairs[0].flair_text.indexOf("||") + 3);
-      var promises = [];
+      unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), unique_fcs);
+      igns = flairs[0].flair_text.substring(flairs[0].flair_text.indexOf('||') + 3);
+    } else if (user) {
+      igns = user.flair.ptrades.flair_text.substring(user.flair.ptrades.flair_text.indexOf('||') + 3);
+    }
+    var promises = [];
+    if (flairs) {
       promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
       promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
-      if (!req.params.duration) {
+    }
+    if (!req.params.duration) {
+      if (flairs) {
         promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
         promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
-        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
-        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
-        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
         promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
-        promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
-        promises.push(Ban.localBanUser(req.params.username));
       }
-      Promise.all(promises).then(function () {
-        console.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
-        res.ok();
-      }, function(error) {
-        console.log(error);
-        res.status(error.statusCode || 500).json(error);
-      });
-      Event.create({
-        user: req.user.name,
-        type: "banUser",
-        content: "Banned /u/" + req.params.username
-      }).exec(function () {});
-    }, function (err) {
-      console.log(err);
-      res.status(500).json(err);
+      promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
+      promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+      promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
+      promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+      promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
+      promises.push(Ban.localBanUser(req.params.username));
+    }
+    Promise.all(promises).then(function () {
+      console.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
+      res.ok();
+    }, function(error) {
+      console.log(error);
+      res.status(error.statusCode || 500).json(error);
     });
+    Event.create({
+      user: req.user.name,
+      type: "banUser",
+      content: "Banned /u/" + req.params.username
+    }).exec(function () {});
   },
 
   setLocalBan: function (req, res) {

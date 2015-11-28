@@ -1,0 +1,8 @@
+{
+  "valid1":"0000-0000-0135",
+  "valid2":"0000-0000-0165",
+  "invalid1":"0000-0000-0000",
+  "invalid2":"3333-3333-3333",
+  "exceedsMaximum":"7777-7777-7777",
+  "badFormat":"This is not a friend code."
+}

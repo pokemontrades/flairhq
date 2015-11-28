@@ -5,29 +5,24 @@ var _ = require("lodash");
 
 module.exports = {
 
-  apply: function (req, res) {
-    var appData = {
-      user: req.user.name,
-      flair: req.allParams().flair,
-      sub: req.allParams().sub
-    };
-
-    Application.find(appData).exec(function (err, app) {
-      if (err) {
-        return res.serverError(err);
-      }
-      if (app.length > 0) {
-        return res.badRequest("Application already exists");
-      }
-      Application.create(appData).exec(function (err, apps) {
-        if (err) {
-          return res.serverError(err);
-        }
-        if (apps) {
-          return res.ok(appData);
-        }
-      });
-    });
+  apply: async function (req, res) {
+    var allFlairs = await Flair.find();
+    var userRefs = await Reference.find({user: req.user.name});
+    var appData = {user: req.user.name, flair: req.allParams().flair, sub: req.allParams().sub};
+    if (await Application.findOne(appData)) {
+      return res.status(400).json({error: 'You have already applied for that flair'});
+    }
+    var flairIndex = allFlairs.map(function (flairObj) {
+      return flairObj.name;
+    }).indexOf(req.allParams().flair);
+    if (flairIndex === -1) {
+      return res.status(400).json({error: 'That flair does not exist'});
+    }
+    var applicationFlair = allFlairs[flairIndex];
+    if (!Flairs.canUserApply(userRefs, applicationFlair, Flairs.getUserFlairs(req.user, allFlairs))) {
+      return res.status(400).json({error: 'You do not qualify for that flair'});
+    }
+    return res.ok(await Application.create(appData));
   },
 
   denyApp: function (req, res) {

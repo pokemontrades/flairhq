@@ -102,59 +102,50 @@ module.exports = {
       });
   },
 
-  get: function (req, res) {
-    User.findOne(req.params.name, function (err, user) {
-      if (!user) {
-        return res.notFound();
-      }
-      Game.find()
-        .where({user: user.name})
-        .sort({createdAt: "desc"})
-        .exec(function (err, games) {
+  get: async function (req, res) {
+    var user = await User.findOne(req.params.name);
+    if (!user) {
+      return res.notFound();
+    }
+    user.loggedFriendCodes = undefined;
+    user.redToken = undefined;
+    var promises = [];
 
-          Reference.find()
-            .where({user: user.name})
-            .sort({type: "asc", createdAt: "desc"})
-            .exec(function (err, references) {
+    promises.push(Game.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
+      user.games = result;
+    }));
 
-              Comment.find()
-                .where({user: user.name})
-                .sort({createdAt: "desc"})
-                .exec(function (err, comments) {
+    promises.push(Comment.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
+      user.comments = result;
+    }));
 
-                  ModNote.find()
-                    .where({refUser: user.name})
-                    .sort({createdAt: "desc"})
-                    .exec(function (err, notes) {
+    if (req.user && req.user.isMod) {
+      promises.push(ModNote.find({refUser: user.name}).sort({createdAt: 'desc'}).then(function (result) {
+        user.modNotes = result;
+      }));
+    }
 
-                      if (req.user && user.name === req.user.name) {
-                        user.isMod = req.user.isMod;
-                      }
-                      var publicReferences = references;
-                      //Censor confidential/classified info
-                      publicReferences.forEach(function (entry) {
-                        if (!req.user || req.user.name !== req.params.name) {
-                          entry.privatenotes = undefined;
-                        }
-                        if (!req.user || !req.user.isMod) {
-                          entry.approved = undefined;
-                          entry.verified = undefined;
-                        }
-                      });
-                      if (req.user && req.user.isMod) {
-                        user.modNotes = notes;
-                      } else {
-                        user.loggedFriendCodes = undefined;
-                      }
-                      user.references = publicReferences;
-                      user.games = games;
-                      user.comments = comments;
-                      user.redToken = undefined;
-                      return res.ok(user);
-                    });
-                });
-            });
-        });
+    if (req.user && req.user.name === user.name) {
+      promises.push(Application.find({user: user.name}).then(function (result) {
+        user.apps = result;
+      }));
+    }
+
+    promises.push(Reference.find({user: user.name}).sort({type: 'asc', createdAt: 'desc'}).then(function (result) {
+      result.forEach(function (ref) {
+        if (!req.user || req.user.name !== user.name) {
+          ref.privatenotes = undefined;
+        }
+        if (!req.user || !req.user.isMod) {
+          ref.approved = undefined;
+          ref.verified = undefined;
+        }
+      });
+      user.references = result;
+    }));
+
+    Promise.all(promises).then(function () {
+      return res.ok(user);
     });
   },
 

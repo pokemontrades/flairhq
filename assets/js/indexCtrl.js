@@ -47,8 +47,7 @@ module.exports = function ($scope) {
     $scope.addRefError = "";
     $scope.indexOk.addRef = false;
     $scope.indexSpin.addRef = true;
-    var url = "/reference/add",
-      user2 = $scope.addInfo.user2;
+    var url = "/reference/add";
     $scope.addRefError = $scope.validateRef($scope.addInfo);
     if ($scope.addRefError) {
       $scope.indexSpin.addRef = false;
@@ -56,7 +55,7 @@ module.exports = function ($scope) {
     }
     var post = {
       "url": $scope.addInfo.refUrl,
-      "user2": user2,
+      "user2": $scope.addInfo.user2,
       "type": $scope.addInfo.type,
       "notes": $scope.addInfo.notes,
       "privatenotes": $scope.addInfo.privatenotes,

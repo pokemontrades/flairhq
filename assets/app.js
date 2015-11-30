@@ -46,7 +46,6 @@ fapp.service('io', function () {
   var io = require('sails.io.js')(socket);
   io.socket.post = function (url, data, callback) {
     data._csrf = _csrf;
-    console.log(data.csrf);
     io.socket.request({method: 'post', url: url, params: data}, callback);
   };
   return io;

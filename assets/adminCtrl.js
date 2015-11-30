@@ -1,8 +1,6 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
 var sharedService = require("./sharedClientFunctions.js");
 
-module.exports = function ($scope) {
+module.exports = function ($scope, io) {
   $scope.users = [];
   $scope.flairApps = [];
   $scope.flairAppError = "";

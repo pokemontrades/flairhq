@@ -21,90 +21,54 @@ module.exports = {
   },
 
   reddit: function (req, res) {
-    req.session.state = crypto.randomBytes(32).toString('hex');
-    if (req.query.url) {
-      req.session.redirectUrl = req.query.url;
+    /* Pass the redirect info as JSON with the OAuth state. This behavior is more intuitive than storing it in the session, because otherwise the user 
+     * might fail to complete the login and then be confused when they get redirected somewhere unexpected the next time they visit the site. */
+    var login_info = {type: req.query.loginType, redirect: req.query.redirect || '/', validation: crypto.randomBytes(32).toString('hex')};
+    req.session.validation = login_info.validation;
+    var auth_data = {state: JSON.stringify(login_info), duration: 'permanent', failureRedirect: '/login'};
+    if (req.query.loginType !== 'mod') {
+      auth_data.scope = 'identity';
     }
-    passport.authenticate('reddit', {
-      state: req.session.state,
-      duration: 'permanent',
-      failureRedirect: '/login',
-      scope: 'identity'
-    })(req, res);
-  },
-
-  modAuth: function (req, res) {
-    req.session.state = crypto.randomBytes(32).toString('hex') + '_modlogin'; //The bit at the end prevents an infinite loop, see below
-    if (req.query.url) {
-      req.session.redirectUrl = req.query.url;
-    }
-    passport.authenticate('reddit', {
-      state: req.session.state,
-      duration: 'permanent',
-      failureRedirect: '/login'
-    })(req, res);
+    passport.authenticate('reddit', auth_data)(req, res);
   },
 
   callback: function (req, res) {
-    passport.authenticate('reddit',
-      {
-        state: req.session.state,
-        duration: 'permanent',
-        failureRedirect: '/login'
-      },
-      function (err, user) {
-        if (req.query.state !== req.session.state) {
-          console.log("Warning: A user was redirected to the reddit callback, but does not have a valid session state.");
-          console.log("The code in the request belongs to /u/" + user.name + '.');
-          return res.forbidden();
-        }
-        var url = req.session.redirectUrl ? req.session.redirectUrl : '/';
-        req.session.redirectUrl = "";
+    passport.authenticate('reddit', {duration: 'permanent', failureRedirect: '/login'}, async function (err, user) {
+      let login_info = JSON.parse(req.query.state);
+      if (login_info.validation !== req.session.validation) {
+        sails.warn("Failed login for /u/" + user.name + ": invalid session state");
+        return res.forbidden();
+      }
+      let finishLogin = function () {
         req.logIn(user, function (err) {
           if (err) {
-            console.log("Failed login: " + err);
-            return res.forbidden();
+            sails.error('Failed login: ' + err);
+            return res.forbidden(err);
           }
-
-          Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades').then(function (modStatus) {
-            if (modStatus) { //User is a mod, set isMod to true
-              user.isMod = true;
-              user.save(function (err) {
-                if (err) {
-                  console.log('Failed to give /u/' + user.name + ' moderator status');
-                  return res.view(500, {error: "You appear to be a mod, but you weren't given moderator status for some reason.\nTry logging in again."});
-                }
-                /* Redirect to the mod authentication page. If the state ends in '_modlogin', the user was just there, so get rid of the _modlogin flag
-                 *  instead of redirecting there again. If a mod ends up on a different page while they still have the _modlogin flag, they have not
-                 *  successfully authenticated, so they will get redirected to /auth/modauth. */
-                if (req.session.state.substr(-9) === '_modlogin') {
-                  req.session.state = req.session.state.slice(0, -9);
-                  return res.redirect(url);
-                }
-                return res.redirect('/auth/modauth');
-              });
-            }
-
-            else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
-              user.isMod = false;
-              user.save(function (err) {
-                if (err) {
-                  console.log('Failed to demote user /u/' + user.name + 'from moderator status');
-                  return res.view(500, {error: err});
-                }
-                return res.redirect(url);
-              });
-            } else { // Regular user
-              return res.redirect(url);
-            }
-          }, function (err) {
-            console.log('Failed to check whether /u/' + user.name + ' is a moderator.');
-            console.log(err);
-            return res.redirect(url);
-          });
-
+          var url = decodeURIComponent(login_info.redirect);
+          // Don't redirect to other callback urls (this may cause infinite loops) or to absolute url paths (which might lead to other sites).
+          if (url.indexOf('/auth/reddit/callback') === 0 || /^(?:[a-z]+:)?\/\//i.test(url)) {
+            url = '/';
+          }
+          req.session.validation = '';
+          return res.redirect(url);
         });
-      })(req, res);
+      };
+      let modStatus = await Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
+      if (modStatus) { //User is a mod, set isMod to true
+        User.update(user.name, {isMod: true}).exec(function () {
+          /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
+          if (login_info.type !== 'mod') {
+            return res.redirect('/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
+          }
+          finishLogin();
+        });
+      }
+      else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
+        User.update(user.name, {isMod: false}).exec(finishLogin);
+      } else { // Regular user
+        finishLogin();
+      }
+    })(req, res);
   }
-
 };

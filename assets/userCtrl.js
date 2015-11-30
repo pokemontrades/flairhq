@@ -1,11 +1,10 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
+var deparam = require('node-jquery-deparam');
 var sharedService = require("./sharedClientFunctions.js");
 
-module.exports = function ($scope, $filter, $location, UserFactory) {
+module.exports = function ($scope, $filter, $location, UserFactory, io) {
   $scope.regex = regex;
   $scope.scope = $scope;
   $scope.user = undefined;
@@ -66,8 +65,10 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   ];
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
-  let timezone = -new Date().getTimezoneOffset()/60;
-  $scope.timezoneOffset = 'UTC' + (timezone > 0 ? '+' + timezone : timezone < 0 ? timezone : '');
+  // Parse the querystring into an object
+  // substring is used to get rid of the ? in front of the querystring
+  $scope.querystring = location.search;
+  $scope.query = deparam($scope.querystring.substring(1));
   sharedService.addRepeats($scope);
   $scope.applyFlair = function () {
     $scope.errors.flairApp = "";
@@ -371,7 +372,7 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
     }
 
     if (svex.length > 64 || ptrades.length > 64) {
-      return {correct: false, error: "Your flair is too long, maximum is 64 characters, please delete something."};
+      return {correct: false, error: "Your flair is too long; Reddit's maximum is 64 characters. Please delete something."};
     }
 
     for (var i = 0; i < $scope.user.flairFriendCodes.length; i++) {
@@ -475,4 +476,6 @@ module.exports = function ($scope, $filter, $location, UserFactory) {
   $scope.deleteFlair = function (index) {
     $scope.flairs.splice(index, 1);
   };
+
+  $scope.getFlairs();
 };

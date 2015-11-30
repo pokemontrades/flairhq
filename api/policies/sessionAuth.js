@@ -21,10 +21,6 @@ module.exports = function(req, res, next) {
   // User is allowed, proceed to the next policy,
   // or if this is the last policy, the controller
   if (req.user || (req.isAuthenticated && req.isAuthenticated())) {
-    //Redirect mods to the modauth page if they only have normal user scope.
-    if (req.user.isMod && req.session.state.substr(-9) === '_modlogin') {
-      return res.redirect('/auth/modauth');
-    }
     return next();
   }
 
@@ -33,5 +29,6 @@ module.exports = function(req, res, next) {
   if (req.isSocket) {
     return res.status(403).json({status: 403, redirectTo: "/login"});
   }
-  return res.redirect('/login');
+
+  return res.redirect('/login' + (req.url !== '/' ? '?redirect=' + encodeURIComponent(req.url) : ''));
 };

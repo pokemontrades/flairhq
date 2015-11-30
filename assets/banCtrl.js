@@ -1,16 +1,13 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
-
-module.exports = function ($scope) {
+module.exports = function ($scope, io) {
 
   $scope.banInfo = {
-    username: "",
-    banNote: "",
-    banMessage: "",
-    banlistEntry: "",
-    duration: "",
-    knownAlt: "",
-    additionalFCs: ""
+    username: $scope.query.username || '',
+    banNote: $scope.query.banNote || '',
+    banMessage: $scope.query.banMessage || '',
+    banlistEntry: $scope.query.banlistEntry || '',
+    duration: $scope.query.duration || '',
+    knownAlt: $scope.query.knownAlt || '',
+    additionalFCs: $scope.query.additionalFCs || ''
   };
 
   $scope.banError = "";

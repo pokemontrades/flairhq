@@ -220,3 +220,36 @@ exports.flairCheck = function (ptrades, svex) {
 
   return response;
 };
+
+// Get the Damerau–Levenshtein distance (edit distance) between two strings.
+exports.edit_distance = function (string1, string2) {
+  var distance_matrix = {};
+  var dist = function (str1, str2) {
+    if (!distance_matrix[[str1.length, str2.length]]) {
+      if (!str1 || !str2) {
+        distance_matrix[[str1.length, str2.length]] = str1.length || str2.length;
+      } else {
+        var vals = [
+          dist(str1.slice(0, -1), str2) + 1,
+          dist(str1, str2.slice(0, -1)) + 1,
+          dist(str1.slice(0, -1), str2.slice(0, -1)) + (str1.slice(-1) === str2.slice(-1) ? 0 : 1)
+        ];
+        if (str1.slice(-2, -1) === str2.slice(-1) && str1.slice(-1) === str2.slice(-2, -1) && str1.slice(-2) !== str2.slice(-2)) {
+          vals.push(dist(str1.slice(0, -2), str1.slice(0, -2)) + 1);
+        }
+        distance_matrix[[str1.length, str2.length]] = _.min(vals);
+      }
+    }
+    return distance_matrix[[str1.length, str2.length]];
+  };
+  return dist(string1, string2);
+};
+
+// Given a friend code, return all banned friend codes that have an edit distance of less than 3 to the given friend code.
+exports.getSimilarBannedFCs = function (fc) {
+  return User.find({banned: true}).then(function (bannedUsers) {
+    return _.flatten(_.map(bannedUsers, 'loggedFriendCodes')).filter(function (banned_fc) {
+      return exports.edit_distance(fc, banned_fc) < 3;
+    });
+  });
+};

@@ -1,5 +1,3 @@
-var sharedService = require("./sharedClientFunctions.js");
-
 module.exports = function ($scope, io) {
   $scope.users = [];
   $scope.flairApps = [];
@@ -10,7 +8,6 @@ module.exports = function ($scope, io) {
   $scope.adminspin = {
     appFlair: {}
   };
-  sharedService.addRepeats($scope);
 
   $scope.getFlairApps = function () {
     io.socket.get("/flair/apps/all", function (data, res) {

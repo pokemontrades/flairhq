@@ -7,6 +7,9 @@ module.exports = function (req, res, next) {
     passport.session()(req, res, function () {
       // Make the user and query available throughout the frontend
       res.locals.user = req.user;
+      if (res.locals.user) {
+        res.locals.user.redToken = undefined;
+      }
       res.locals.query = req.query;
       next();
     });

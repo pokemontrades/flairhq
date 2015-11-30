@@ -103,50 +103,14 @@ module.exports = {
   },
 
   get: async function (req, res) {
-    var user = await User.findOne(req.params.name);
-    if (!user) {
-      return res.notFound();
+    try {
+      return res.ok(await Users.get(req.user, req.params.name));
+    } catch (err) {
+      if (err.statusCode === 404) {
+        return res.notFound();
+      }
+      return res.serverError();
     }
-    user.loggedFriendCodes = undefined;
-    user.redToken = undefined;
-    var promises = [];
-
-    promises.push(Game.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
-      user.games = result;
-    }));
-
-    promises.push(Comment.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
-      user.comments = result;
-    }));
-
-    if (req.user && req.user.isMod) {
-      promises.push(ModNote.find({refUser: user.name}).sort({createdAt: 'desc'}).then(function (result) {
-        user.modNotes = result;
-      }));
-    }
-
-    if (req.user && req.user.name === user.name) {
-      promises.push(Application.find({user: user.name}).then(function (result) {
-        user.apps = result;
-      }));
-    }
-
-    promises.push(Reference.find({user: user.name}).sort({type: 'asc', createdAt: 'desc'}).then(function (result) {
-      result.forEach(function (ref) {
-        if (!req.user || req.user.name !== user.name) {
-          ref.privatenotes = undefined;
-        }
-        if (!req.user || !req.user.isMod) {
-          ref.approved = undefined;
-          ref.verified = undefined;
-        }
-      });
-      user.references = result;
-    }));
-
-    Promise.all(promises).then(function () {
-      return res.ok(user);
-    });
   },
 
   addNote: function (req, res) {

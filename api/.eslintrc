@@ -5,6 +5,7 @@
   "globals": {
     "Reference": true,
     "User": true,
+    "Users": true,
     "Ban": true,
     "Reddit": true,
     "Event": true,

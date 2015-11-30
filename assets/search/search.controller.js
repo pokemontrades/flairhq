@@ -3,10 +3,10 @@ var io = require("sails.io.js")(socket);
 var _ = require("lodash");
 var $ = require("jquery");
 
-module.exports = function ($scope, $timeout, UserFactory) {
+module.exports = function ($scope, $timeout, $location) {
   var vm = this;
 
-  vm.user = {};
+  vm.user = $scope.user;
   vm.potentialSearches = require("./types.js");
   vm.input = {
     keyword: "",
@@ -40,17 +40,9 @@ module.exports = function ($scope, $timeout, UserFactory) {
     }
   }, 300);
 
-  $scope.$watch(
-    UserFactory.getUser,
-    function (newU, oldU) {
-      if (newU !== oldU) {
-        vm.user = UserFactory.getUser();
-        if (!vm.input.search) {
-          vm.input.search = 'ref';
-        }
-      }
-    }
-  );
+  if (!vm.input.search) {
+    vm.input.search = 'ref';
+  }
 
   function linkAddress (result) {
     if (vm.input.search === 'ref') {
@@ -156,9 +148,9 @@ module.exports = function ($scope, $timeout, UserFactory) {
     }
     url += "&skip=" + skip;
     vm.done = false;
-    vm.searchedFor = url;
+    $location = url;
     io.socket.get(url, function (data, res) {
-      if (res.statusCode === 200 && vm.searchedFor === url) {
+      if (res.statusCode === 200 && $location === url) {
         if (skip) {
           vm.results = vm.results.concat(data);
         } else {

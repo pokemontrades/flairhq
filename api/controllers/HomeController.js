@@ -10,7 +10,7 @@ var _ = require("lodash");
 module.exports = {
 
   index: async function (req, res) {
-    res.view();
+    res.view({refUser: await Users.get(req.user, req.user.name)});
     Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name).then(function (flairs) {
       if (flairs[0] || flairs[1]) {
         req.user.flair = {ptrades: flairs[0], svex: flairs[1]};
@@ -31,14 +31,16 @@ module.exports = {
     });
   },
 
-  reference: function(req, res) {
-    User.findOne({name: req.params.user}).exec(function (err, user){
-      if (user) {
-        res.view();
-      } else {
+  reference: async function(req, res) {
+    try {
+      res.view({refUser: await Users.get(req.user, req.params.user)});
+    } catch (err) {
+      if (err.statusCode === 404) {
         res.view('404', {data: {user: req.params.user, error: "User not found"}});
+      } else {
+        res.serverError();
       }
-    });
+    }
   },
 
   banlist: function (req, res) {

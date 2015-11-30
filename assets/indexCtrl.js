@@ -1,7 +1,6 @@
 var $ = require('jquery');
-var sharedService = require('./sharedClientFunctions.js');
 
-module.exports = function ($scope, io) {
+module.exports = function ($scope, user, io) {
   $scope.addInfo = {
     refUrl: $scope.query.refUrl || '',
     type: $scope.query.type || '',
@@ -20,7 +19,6 @@ module.exports = function ($scope, io) {
   $scope.editRefError = "";
   $scope.indexOk = {};
   $scope.indexSpin = {};
-  sharedService.addRepeats($scope);
 
   $scope.focus = {
     gavegot: false
@@ -34,11 +32,6 @@ module.exports = function ($scope, io) {
   $scope.editReference = function (ref) {
     $scope.selectedRef = ref;
     $scope.referenceToRevert = $.extend(true, {}, ref);
-  };
-
-  $scope.revertRef = function () {
-    var index = $scope.user.references.indexOf($scope.selectedRef);
-    $scope.user.references[index] = $.extend(true, {}, $scope.referenceToRevert);
   };
 
   $scope.addReference = function () {

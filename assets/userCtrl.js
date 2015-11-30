@@ -2,20 +2,15 @@ var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
 var deparam = require('node-jquery-deparam');
-var sharedService = require("./sharedClientFunctions.js");
+var referenceService = require('../api/services/References.js');
+var flairService = require('../api/services/Flairs.js');
 
-module.exports = function ($scope, $filter, $location, UserFactory, io) {
+module.exports = function ($scope, $location, io) {
+  $scope.user = $('#app').attr('user') && JSON.parse($('#app').attr('user'));
+  $scope.refUser = $('#app').attr('refUser') && JSON.parse($('#app').attr('refUser'));
   $scope.regex = regex;
-  $scope.scope = $scope;
-  $scope.user = undefined;
-  $scope.$watch('user', function (newU, oldU) {
-    if (newU !== oldU) {
-      UserFactory.setUser(newU);
-    }
-  });
   $scope.flairs = {};
   $scope.selectedFlair = undefined;
-  $scope.loaded = false;
   $scope.userok = {};
   $scope.errors = {};
   $scope.userspin = {};
@@ -69,7 +64,19 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
   // substring is used to get rid of the ? in front of the querystring
   $scope.querystring = location.search;
   $scope.query = deparam($scope.querystring.substring(1));
-  sharedService.addRepeats($scope);
+
+  if (window.location.hash === "#/comments") {
+    $('#tabList li:eq(1) a').tab('show');
+  } else if (window.location.hash === "#/info") {
+    $('#tabList li:eq(2) a').tab('show');
+  } else if (window.location.hash === "#/modEdit") {
+    $('#tabList li:eq(3) a').tab('show');
+  } else if (window.location.hash === "#/privacypolicy") {
+    $('#privacypolicy').modal('show');
+  } else if (window.location.hash === "#/flairtext") {
+    $('#flairText').modal('show');
+  }
+
   $scope.applyFlair = function () {
     $scope.errors.flairApp = "";
     $scope.userok.applyFlair = false;
@@ -78,7 +85,7 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
     if ($scope.selectedFlair && $scope.canUserApply(flair)) {
       io.socket.post("/flair/apply", {flair: $scope.selectedFlair, sub: flair.sub}, function (data, res) {
         if (res.statusCode === 200) {
-          $scope.user.apps.push(data);
+          $scope.refUser.apps.push(data);
           $scope.selectedFlair = undefined;
           $scope.userok.applyFlair = true;
           $scope.userspin.applyFlair = false;
@@ -99,109 +106,6 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
   $scope.setselectedFlair = function (id, bool) {
     if (bool) {
       $scope.selectedFlair = id;
-    }
-  };
-
-  io.socket.get("/user/mine", function (data, res) {
-    if (res.statusCode === 200) {
-      $scope.user = data;
-      if (!$scope.user.friendCodes) {
-        $scope.user.friendCodes = [""];
-      }
-      if (!$scope.user.games.length) {
-        $scope.user.games = [{tsv: "", ign: ""}];
-      }
-
-      $scope.getReferences();
-      $scope.$apply();
-    } else {
-      $scope.loaded = true;
-      $scope.$apply();
-      if (window.location.hash === "#/comments") {
-        $('#tabList').find('li:eq(1) a').tab('show');
-      } else if (window.location.hash === "#/info") {
-        $('#tabList').find('li:eq(2) a').tab('show');
-      } else if (window.location.hash === "#/modEdit") {
-        $('#tabList').find('li:eq(3) a').tab('show');
-      } else if (window.location.hash === "#/privacypolicy") {
-        $('#privacypolicy').modal('show');
-      } else if (window.location.hash === "#/flairtext") {
-        $('#flairText').modal('show');
-      }
-    }
-  });
-
-  $scope.getReferences = function () {
-    if ($scope.user) {
-      io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
-        if (res.statusCode === 200) {
-          _.merge($scope.user, data);
-          if ($scope.user.flair && $scope.user.flair.ptrades) {
-            $scope.user.flairFriendCodes = [];
-            $scope.user.flairGames = [{tsv: "", ign: ""}];
-            var trades = $scope.user.flair.ptrades.flair_text || "";
-            var sv = $scope.user.flair.svex.flair_text || "";
-
-            if (trades && sv) {
-
-
-              var fcs = _.merge(trades.match(regex.fc) || [], sv.match(regex.fc) || []);
-              var games = _.merge(trades.match(regex.game) || [], sv.match(regex.game) || []);
-              var igns = _.merge(trades.match(regex.ign) || [], sv.match(regex.ign) || []);
-              var tsvs = sv.match(regex.tsv) || [];
-
-
-              for (var k = 0; k < fcs.length; k++) {
-                $scope.user.flairFriendCodes.push(fcs[k]);
-              }
-
-              $scope.user.flairGames = [];
-              for (var j = 0; j < games.length || j < igns.length || j < tsvs.length; j++) {
-                $scope.user.flairGames.push({
-                  game: j < games.length ? games[j].replace(/\(/g, "")
-                    .replace(/\)/g, "")
-                    .replace(/,/g, "") : "",
-                  ign: j < igns.length ? igns[j].replace(/\d \|\| /g, "")
-                    .replace(/ \(/g, "")
-                    .replace(/ \|/g, "")
-                    .replace(/\), /g, "")
-                    .replace(/,/g, "") : "",
-                  tsv: j < tsvs.length ? tsvs[j].replace(/\|\| /g, "")
-                    .replace(/, /g, "") : ""
-                });
-              }
-            }
-          }
-          if (!$scope.user.flairFriendCodes || !$scope.user.flairFriendCodes.length) {
-            $scope.user.flairFriendCodes = [""];
-          }
-          if (!$scope.user.flairGames || !$scope.user.flairGames.length) {
-            $scope.user.flairGames = [{tsv: "", ign: "", game: ""}];
-          }
-          if (!$scope.user.friendCodes || !$scope.user.friendCodes.length) {
-            $scope.user.friendCodes = [""];
-          }
-          if (!$scope.user.games || !$scope.user.games.length) {
-            $scope.user.games = [{tsv: "", ign: ""}];
-          }
-        }
-        $scope.$apply();
-        $scope.loaded = true;
-        $scope.$apply();
-        if (window.location.hash === "#/comments") {
-          $('#tabList li:eq(1) a').tab('show');
-        } else if (window.location.hash === "#/info") {
-          $('#tabList li:eq(2) a').tab('show');
-        } else if (window.location.hash === "#/modEdit") {
-          $('#tabList li:eq(3) a').tab('show');
-        } else if (window.location.hash === "#/privacypolicy") {
-          $('#privacypolicy').modal('show');
-        } else if (window.location.hash === "#/flairtext") {
-          $('#flairText').modal('show');
-        }
-      });
-    } else {
-      window.setTimeout($scope.getReferences, 1000);
     }
   };
 
@@ -477,5 +381,155 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
     $scope.flairs.splice(index, 1);
   };
 
+  var pathToRefs = 'refUser.references',
+    pathToApps = 'refUser.apps';
+  $scope.editRef = function () {
+    var url = "/reference/edit";
+    $scope.editRefError = $scope.validateRef($scope.selectedRef);
+    if ($scope.editRefError) {
+      return;
+    }
+    $scope.indexSpin.editRef = true;
+    io.socket.post(url, $scope.selectedRef, function (data, res) {
+      $scope.indexSpin.editRef = false;
+      if (res.statusCode === 200) {
+        $scope.indexOk.editRef = true;
+        var index = $scope.user.references.findIndex(function (searchRef) {
+          return searchRef.id === $scope.selectedRef.id;
+        });
+        $scope.user.references[index] = $scope.selectedRef;
+      } else {
+        $scope.editRefError = "There was an issue.";
+        console.log(res);
+      }
+      $scope.$apply();
+    });
+  };
+  $scope.validateRef = function (ref) {
+    var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+      regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+      regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
+      regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/,
+      url = ref.url || ref.refUrl;
+    if (!ref.type) {
+      return "Please choose a type.";
+    }
+    if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck" || ref.type === "involvement") {
+      if (!ref.descrip && !ref.description) {
+        return "Make sure you enter all the information";
+      }
+    } else if (!ref.got || !ref.gave) {
+      return "Make sure you enter all the information";
+    }
+    if (!url || ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !ref.user2) {
+      return "Make sure you enter all the information";
+    }
+    if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(url)) ||
+      (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !regexp.test(url)) ||
+      (ref.type === "misc" && !regexpMisc.test(url))) {
+      return "Looks like you didn't input a proper permalink";
+    }
+    if (ref.user2.substring(0,3) === "/u/") {
+      ref.user2 = ref.user2.slice(3);
+    }
+    if (ref.user2 === ($scope.user.name)) {
+      return "Don't put your own username there.";
+    }
+    if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
+      return "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
+    }
+    if (ref.number && isNaN(ref.number)) {
+      return "Number must be a number.";
+    }
+    return "";
+  };
+  $scope.setLocalBan = function (username, ban) {
+    var url = "/mod/setlocalban";
+    io.socket.post(url, {username: username, ban: ban}, function (data, res) {
+      if (res.statusCode === 200) {
+        if ($scope.refUser) {
+          $scope.refUser.banned = data.banned;
+        } else {
+          $scope.getBannedUsers();
+        }
+        $scope.$apply();
+      } else {
+        console.log("Error banning " + username + ": " + res.statusCode);
+      }
+    });
+  };
+  $scope.deleteRef = function (id) {
+    var url = "/reference/delete";
+    io.socket.post(url, {refId: id}, function (data, res) {
+      if (res.statusCode === 200) {
+        $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
+          return ref.id !== id;
+        });
+        $scope.$apply();
+      } else {
+        console.log(res.statusCode + ": " + data);
+      }
+    });
+  };
+  $scope.isNotNormalTrade = referenceService.isNotNormalTrade;
+  $scope.hasNumber = referenceService.hasNumber;
+  $scope.isEvent = referenceService.isEvent;
+  $scope.isShiny = referenceService.isShiny;
+  $scope.isCasual = referenceService.isCasual;
+  $scope.isEggCheck = referenceService.isEggCheck;
+  $scope.isTrade = referenceService.isTrade;
+  $scope.isInvolvement = referenceService.isInvolvement;
+  $scope.isEgg = referenceService.isEgg;
+  $scope.isBank = referenceService.isBank;
+  $scope.isGiveaway = referenceService.isGiveaway;
+  $scope.isEggCheck = referenceService.isEggCheck;
+  $scope.isMisc = referenceService.isMisc;
+  $scope.isApproved = referenceService.isApproved;
+  $scope.getRedditUser = referenceService.getRedditUser;
+  $scope.formattedName = flairService.formattedName;
+  $scope.inPokemonTradesTrader = flairService.inPokemonTradesTrader;
+  $scope.inPokemonTradesHelper = flairService.inPokemonTradesHelper;
+  $scope.inSVExchangeHatcher = flairService.inSVExchangeHatcher;
+  $scope.inSVExchangeGiver = flairService.inSVExchangeGiver;
+  $scope.getFlair = flairService.getFlair;
+  $scope.userHasFlair = function (flair) {
+    return flairService.userHasFlair($scope.user, flair);
+  };
+  $scope.numberOfTrades = function () {
+    return referenceService.numberOfTrades(_.get($scope, pathToRefs));
+  };
+  $scope.numberOfPokemonGivenAway = function () {
+    return referenceService.numberOfPokemonGivenAway(_.get($scope, pathToRefs));
+  };
+  $scope.numberOfEggsGivenAway = function () {
+    return referenceService.numberOfEggsGivenAway(_.get($scope, pathToRefs));
+  };
+  $scope.numberOfEggChecks = function () {
+    return referenceService.numberOfEggChecks(_.get($scope, pathToRefs));
+  };
+  $scope.numberOfApprovedEggChecks = function () {
+    return referenceService.numberOfApprovedEggChecks(_.get($scope, pathToRefs));
+  };
+  $scope.getFlairTextForSVEx = function () {
+    return flairService.getFlairTextForSVEx(_.get($scope, pathToRefs));
+  };
+  $scope.applied = function (flair) {
+    return flairService.applied(_.get($scope, pathToApps), flair);
+  };
+  $scope.canUserApply = function (applicationFlair) {
+    if (!$scope.refUser || !$scope.user || $scope.user.name !== $scope.refUser.name) {
+      return false;
+    }
+    return flairService.canUserApply(
+      $scope.refUser.references,
+      applicationFlair || $scope.selectedFlair,
+      flairService.getUserFlairs($scope.user, $scope.flairs)
+    ) && !$scope.applied(applicationFlair, $scope.flairs);
+  };
+  $scope.formattedRequirements = function (flair) {
+    return flairService.formattedRequirements(flair, $scope.flairs);
+  };
+
   $scope.getFlairs();
+  $scope.loaded = true;
 };

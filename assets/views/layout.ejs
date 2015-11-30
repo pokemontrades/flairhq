@@ -25,7 +25,7 @@
     </script>
   </head>
 
-  <body ng-controller="userCtrl">
+  <body ng-controller="userCtrl" ng-cloak>
     <div id="wrapper">
       <%- partial ('home/header.ejs') %>
       <div id="splash" ng-hide="loaded">
@@ -42,7 +42,7 @@
                         We are currently working hard to improve this so that you won't need JavaScript to use the site.
                     </h2>
                 </noscript>
-                <div class="hidden" ng-class="loaded ? 'hidden' : 'bigspinner'">
+                <div ng-class="loaded ? 'hidden' : 'bigspinner'" ng-cloak>
                 </div>
               </div>
             </div>
@@ -50,7 +50,7 @@
         </div>
         </div>
       </div>
-      <div class="hidden" ng-class="loaded ? '' : 'hidden'">
+      <div ng-class="{hidden: !loaded}">
         <%- body %>
       </div>
     </div>
@@ -62,7 +62,15 @@
     </div>
 
     <!--SCRIPTS-->
-    <script id="app" src="/js/app.js" _csrf="<%= _csrf %>"></script>
+    <script id="app" src="/js/app.js"
+      <% if (typeof user !== 'undefined') { %>
+        user="<%= JSON.stringify(user) %>"
+      <% } if (typeof refUser !== 'undefined') { %>
+        refUser="<%= JSON.stringify(refUser) %>"
+      <% } if (typeof _csrf !== 'undefined') { %>
+        _csrf="<%= _csrf %>"
+      <% } %>
+    ></script>
     <!--SCRIPTS END-->
     <% if(sails.config.environment == 'development' ){ %> <script src="http://localhost:35729/livereload.js"></script> <% } %>
   </body>

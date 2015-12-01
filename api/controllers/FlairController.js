@@ -157,7 +157,6 @@ module.exports = {
     });
     // Get friend codes that are similar (have a low edit distance) to banned friend codes
     var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
-    console.log(similar_banned_fcs);
     // Get friend codes that are identical to banned users' friend codes
     var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
 
@@ -180,16 +179,15 @@ module.exports = {
       var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
       if (identical_banned_fcs.length) {
         message += 'This flair contains a banned friend code: ' + identical_banned_fcs + '\n\n';
-      } else if (flagged && similar_banned_fcs) {
+      } else if (flagged.length && similar_banned_fcs.length) {
         message += 'This flair contains a friend code similar to the following banned friend code'  + (similar_banned_fcs.length > 1 ? 's: ' : ': ') +
-          similar_banned_fcs.join(', ');
+          similar_banned_fcs.join(', ') + '\n\n';
       }
       if (banned_alts.length) {
         message += 'This user may be an alt of the banned user' + (banned_alts.length === 1 ? '' : 's') + ' /u/' + banned_alts.join(', /u/') + '\n\n';
       }
       if (flagged.length) {
-        message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged + ' are') + ' invalid.\n\n';
-        promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
+        message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged.join(', ') + ' are') + ' invalid.\n\n';
         var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.join(', ');
         promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
       }

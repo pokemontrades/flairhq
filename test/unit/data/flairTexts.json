@@ -1,0 +1,7 @@
+{
+  "tradesFlairStd": "1111-1111-1111 || YMK (X)",
+  "tradesFlairMultipleFCs": "1111-1111-1111, 2222-2222-2222 || YMK (X)",
+  "svexFlairStd": "1111-1111-1111 || YMK (X) || 1234",
+  "svexFlairDifferentFC": "2222-2222-2222 || YMK (X) || 1234",
+  "incorrectFlair": "not a correct flair"
+}

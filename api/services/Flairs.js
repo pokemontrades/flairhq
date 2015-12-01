@@ -56,11 +56,11 @@ exports.getFlair = function (name, flairs) {
     return flair.name === name;
   });
 };
-exports.applied = function (user, flair) {
-  if (!user || !user.apps) {
+exports.applied = function (apps, flair) {
+  if (!apps || !flair) {
     return false;
   }
-  return _.find(user.apps, function (app) {
+  return _.find(apps, function (app) {
     return app.flair === flair.name && app.sub === flair.sub;
   });
 };
@@ -116,26 +116,24 @@ exports.getFlairTextForSVEx = function (user) {
   }
   return flairText;
 };
-exports.canUserApply = function (user, applicationFlair, allflairs) {
-  if (typeof applicationFlair === 'string') {
-    applicationFlair = exports.getFlair(applicationFlair, allflairs);
-  }
-  if (!user || !user.references || !applicationFlair || exports.userHasFlair(user, applicationFlair) || exports.applied(user, applicationFlair)) {
+exports.canUserApply = function (refs, applicationFlair, currentFlairs) {
+  if (!applicationFlair) {
     return false;
   }
-  if (user.flair.ptrades.flair_css_class === "default" && applicationFlair.name === "involvement") {
+  var userHasDefaultFlair = currentFlairs.filter(function (flair) {
+    return flair.sub === 'pokemontrades';
+  }).length === 0;
+  if (userHasDefaultFlair && applicationFlair.name === 'involvement') {
     return false;
   }
-  var refs = user.references,
-    trades = applicationFlair.trades || 0,
+  var trades = applicationFlair.trades || 0,
     involvement = applicationFlair.involvement || 0,
     eggs = applicationFlair.eggs || 0,
     giveaways = applicationFlair.giveaways || 0,
-    userTrades = _.filter(refs, referenceService.isTrade).length,
+    userTrades = referenceService.numberOfTrades(refs),
     userInvolvement = _.filter(refs, referenceService.isInvolvement).length,
     userEgg = _.filter(refs, referenceService.isEgg).length,
-    userGiveaway = referenceService.numberOfEggChecks(user) + referenceService.numberOfEggsGivenAway(user),
-    currentFlairs = exports.getUserFlairs(user, allflairs);
+    userGiveaway = referenceService.numberOfEggChecks(refs) + referenceService.numberOfEggsGivenAway(refs);
   if (applicationFlair.sub === "pokemontrades") {
     userGiveaway = _.filter(refs, function (e) {
       return referenceService.isGiveaway(e) && e.url.indexOf("pokemontrades") > -1;

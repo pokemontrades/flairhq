@@ -84,7 +84,7 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
           $scope.userspin.applyFlair = false;
           $scope.$apply();
         } else {
-          $scope.errors.flairApp = "Something unexpected happened.";
+          $scope.errors.flairApp = res.body.error || "Something unexpected happened.";
           $scope.userspin.applyFlair = false;
           $scope.$apply();
         }

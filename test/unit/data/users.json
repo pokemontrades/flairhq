@@ -1,0 +1,94 @@
+{
+  "regular_moderator": {
+    "name": "not_an_aardvark",
+    "friendCodes": [
+      "0000-0000-0135",
+      "0000-0000-0165"
+    ],
+    "updatedAt": "2015-11-22T20:32:22.767Z",
+    "redToken": "Secret-Base64-String",
+    "isMod": true,
+    "intro": "Not_an_aardvark's interesting intro with lots of special characters (;\"'<<[",
+    "loggedFriendCodes": [
+      "0000-0000-0135",
+      "0000-0000-0165"
+    ],
+    "provider": "reddit",
+    "createdAt": "2015-10-31T03:51:43.117Z",
+    "flair": {
+      "ptrades": {
+        "flair_css_class": "naa",
+        "flair_template_id": null,
+        "flair_text": "0000-0000-0135, 0000-0000-0165 || Naa (ΩR, X)",
+        "flair_position": "right"
+      },
+      "svex": {
+        "flair_css_class": "wobbuffet",
+        "flair_template_id": null,
+        "flair_text": "0000-0000-0135, 0000-0000-0165 || Naa (ΩR, X) || 2325, 4015",
+        "flair_position": "right"
+      }
+    }
+  },
+
+  "greatball_user": {
+    "name": "actually_an_aardvark",
+    "friendCodes": [
+      "1111-1111-1111"
+    ],
+    "updatedAt": "2015-11-22T20:39:49.965Z",
+    "redToken": "Secret-Base64-String",
+    "intro": "Actually_an_aardvark's intro!",
+    "loggedFriendCodes": [
+      "0000-0000-0135",
+      "0000-0000-0000"
+    ],
+    "provider": "reddit",
+    "createdAt": "2015-10-31T03:52:34.214Z",
+    "flair": {
+      "ptrades": {
+        "flair_css_class": "greatball",
+        "flair_template_id": null,
+        "flair_text": "0000-0000-0135 || naa test (X)",
+        "flair_position": "right"
+      },
+      "svex": {
+        "flair_css_class": "lucky cuteribbon",
+        "flair_template_id": null,
+        "flair_text": "0000-0000-0135 || naa test (X) || XXXX",
+        "flair_position": "right"
+      }
+    },
+    "banned": false
+  },
+
+  "default_flair_user": {
+    "name": "mr_default_flair",
+    "friendCodes": [
+      "1111-1111-1111"
+    ],
+    "updatedAt": "2015-11-22T20:39:49.965Z",
+    "redToken": "Secret-Base64-String",
+    "intro": "My intro",
+    "loggedFriendCodes": [
+      "1111-1111-1111"
+    ],
+    "provider": "reddit",
+    "createdAt": "2015-10-31T03:52:34.214Z",
+    "flair": {
+      "ptrades": {
+        "flair_css_class": "default",
+        "flair_template_id": null,
+        "flair_text": "1111-1111-1111 || mr-default (ΩR)",
+        "flair_position": "right"
+      },
+      "svex": {
+        "flair_css_class": "",
+        "flair_template_id": null,
+        "flair_text": "1111-1111-1111 || mr-default (ΩR) || 1234",
+        "flair_position": "right"
+      }
+    },
+    "banned": false
+  }
+}

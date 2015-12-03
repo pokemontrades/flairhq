@@ -34,17 +34,13 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/' : {
-    controller : 'home'
+    controller : 'home',
+    action: 'index'
   },
 
   '/u/:user' : {
     controller: 'home',
     action: 'reference'
-  },
-
-  '/user/mine' : {
-    controller : 'user',
-    action     : 'mine'
   },
 
   '/user/get/:name' : {
@@ -72,6 +68,11 @@ module.exports.routes = {
     action     : 'logout'
   },
 
+  '/auth/reddit': {
+    controller: 'auth',
+    action: 'reddit'
+  },
+
   '/auth/reddit/callback' : {
     controller : 'auth',
     action     : 'callback'
@@ -90,11 +91,6 @@ module.exports.routes = {
   '/reference/approve' : {
     controller : 'reference',
     action     : 'approve'
-  },
-
-  '/reference/all' : {
-    controller : 'reference',
-    action     : 'all'
   },
 
   '/reference/approve/all' : {
@@ -147,6 +143,11 @@ module.exports.routes = {
     action     : 'denyApp'
   },
 
+  '/flair/setText': {
+    controller: 'flair',
+    action: 'setText'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'
@@ -184,6 +185,11 @@ module.exports.routes = {
   '/mod/banlist' : {
     controller : 'home',
     action     : 'banlist'
+  },
+
+  '/event/get': {
+    controller: 'event',
+    action: 'get'
   },
 
   '/info' : {

@@ -1,16 +1,13 @@
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
-var deparam = require('node-jquery-deparam');
 var referenceService = require('../api/services/References.js');
 var flairService = require('../api/services/Flairs.js');
 
 module.exports = function ($scope, $location, io) {
-  $scope.user = $('#app').attr('user') && JSON.parse($('#app').attr('user'));
-  $scope.refUser = $('#app').attr('refUser') && JSON.parse($('#app').attr('refUser'));
   $scope.regex = regex;
-  $scope.flairs = {};
   $scope.selectedFlair = undefined;
+  $scope.loaded = false;
   $scope.userok = {};
   $scope.errors = {};
   $scope.userspin = {};
@@ -60,10 +57,7 @@ module.exports = function ($scope, $location, io) {
   ];
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
-  // Parse the querystring into an object
-  // substring is used to get rid of the ? in front of the querystring
-  $scope.querystring = location.search;
-  $scope.query = deparam($scope.querystring.substring(1));
+  $scope.onIndexPage = location.pathname === '/';
 
   if (window.location.hash === "#/comments") {
     $('#tabList li:eq(1) a').tab('show');
@@ -330,25 +324,6 @@ module.exports = function ($scope, $location, io) {
 
   };
 
-  $scope.getFlairs = function () {
-    var url = "/flair/all";
-
-    io.socket.get(url, function (data, res) {
-      if (res.statusCode === 200) {
-        $scope.flairs = data;
-        if (data.length === 0) {
-          $scope.flairs[0] = {
-            name: "",
-            trades: "",
-            shinyevents: "",
-            eggs: "",
-            sub: ""
-          };
-        }
-      }
-    });
-  };
-
   $scope.addFlair = function () {
     $scope.flairs.push({});
   };
@@ -394,10 +369,10 @@ module.exports = function ($scope, $location, io) {
       $scope.indexSpin.editRef = false;
       if (res.statusCode === 200) {
         $scope.indexOk.editRef = true;
-        var index = $scope.user.references.findIndex(function (searchRef) {
+        var index = $scope.refUser.references.findIndex(function (searchRef) {
           return searchRef.id === $scope.selectedRef.id;
         });
-        $scope.user.references[index] = $scope.selectedRef;
+        $scope.refUser.references[index] = $scope.selectedRef;
       } else {
         $scope.editRefError = "There was an issue.";
         console.log(res);
@@ -484,6 +459,7 @@ module.exports = function ($scope, $location, io) {
   $scope.isGiveaway = referenceService.isGiveaway;
   $scope.isEggCheck = referenceService.isEggCheck;
   $scope.isMisc = referenceService.isMisc;
+  $scope.isApprovable = referenceService.isApprovable;
   $scope.isApproved = referenceService.isApproved;
   $scope.getRedditUser = referenceService.getRedditUser;
   $scope.formattedName = flairService.formattedName;
@@ -529,7 +505,10 @@ module.exports = function ($scope, $location, io) {
   $scope.formattedRequirements = function (flair) {
     return flairService.formattedRequirements(flair, $scope.flairs);
   };
-
-  $scope.getFlairs();
-  $scope.loaded = true;
+  $scope.init = function (params) {
+    $scope = _.assign($scope, params);
+  };
+  $(document).ready(function () {
+    $scope.loaded = true;
+  });
 };

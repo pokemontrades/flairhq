@@ -1,30 +1,11 @@
 module.exports = function ($scope, io) {
   $scope.users = [];
-  $scope.flairApps = [];
   $scope.flairAppError = "";
   $scope.adminok = {
     appFlair: {}
   };
   $scope.adminspin = {
     appFlair: {}
-  };
-
-  $scope.getFlairApps = function () {
-    io.socket.get("/flair/apps/all", function (data, res) {
-      if (res.statusCode === 200) {
-        $scope.flairApps = data;
-        $scope.$apply();
-      }
-    });
-  };
-
-  $scope.getBannedUsers = function () {
-    io.socket.get("/user/banned", function (data, res) {
-      if (res.statusCode === 200) {
-        $scope.users = data;
-        $scope.$apply();
-      }
-    });
   };
 
   $scope.denyApp = function (id, $index) {
@@ -61,7 +42,4 @@ module.exports = function ($scope, io) {
       $scope.$apply();
     });
   };
-
-  $scope.getBannedUsers();
-  $scope.getFlairApps();
 };

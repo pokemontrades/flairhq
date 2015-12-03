@@ -3,7 +3,7 @@ var io = require("sails.io.js")(socket);
 var _ = require("lodash");
 var $ = require("jquery");
 
-module.exports = function ($scope, $timeout, $location) {
+module.exports = function ($scope, $timeout) {
   var vm = this;
 
   vm.user = $scope.user;
@@ -148,9 +148,9 @@ module.exports = function ($scope, $timeout, $location) {
     }
     url += "&skip=" + skip;
     vm.done = false;
-    $location = url;
+    vm.searchedFor = url;
     io.socket.get(url, function (data, res) {
-      if (res.statusCode === 200 && $location === url) {
+      if (res.statusCode === 200 && vm.searchedFor === url) {
         if (skip) {
           vm.results = vm.results.concat(data);
         } else {

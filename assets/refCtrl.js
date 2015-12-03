@@ -16,7 +16,6 @@ module.exports = function ($scope, io) {
   $scope.referenceToRevert = {};
   $scope.indexOk = {};
   $scope.indexSpin = {};
-  $scope.loaded = true;
 
   $scope.editReference = function (ref) {
     $scope.selectedRef = ref;

@@ -174,7 +174,7 @@ module.exports = {
       var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
       if (identical_banned_fcs.length) {
         message += 'This flair contains a banned friend code: ' + identical_banned_fcs + '\n\n';
-      } else if (flagged && similar_banned_fcs.length) {
+      } else if (flagged.length && similar_banned_fcs.length) {
         message += 'This flair contains a friend code similar to the following banned friend code'  + (similar_banned_fcs.length > 1 ? 's: ' : ': ') +
           similar_banned_fcs.join(', ') + '\n\n';
       }
@@ -203,10 +203,12 @@ module.exports = {
     });
   },
 
-  getApps: function (req, res) {
-    Application.find().exec(function (err, apps) {
-      return res.ok(apps);
-    });
+  getApps: async function (req, res) {
+    try {
+      return res.ok(await Flairs.getApps());
+    } catch (err) {
+      return res.serverError(err);
+    }
   }
 };
 

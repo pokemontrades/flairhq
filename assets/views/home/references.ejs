@@ -3,7 +3,7 @@
     <tr>
       <td class="firstHeading" colspan="2"><h3>Trades ({{numberOfTrades()}})</h3></td>
       <td><h3 class="text-center"><small></small></h3></td>
-      <td><h3 ng-if="user.isMod && refUser"><small>Approved</small></h3></td>
+      <td><h3 ng-if="user.isMod && !onIndexPage"><small>Approved</small></h3></td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
 
@@ -11,7 +11,7 @@
       <td colspan="2">[+] Events ({{<%= theUser %>.references.filter(isEvent).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
-                ng-if="user.isMod && refUser"
+                ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('event')"
                 ng-class="[ok.approveAll.event ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.event ? 'active' : '']">
@@ -19,39 +19,13 @@
           {{ok.approveAll.event ? "" : "Approve all"}}
         </button>
       <td>
-        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && !onIndexPage">{{<%= theUser %>.references.filter(isEvent).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseevents" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEvent | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td class="hidden-sm hidden-xs">
-        <a ng-href="{{getRedditUser(reference.user2)}}">
-          {{getRedditUser(reference.user2)}}
-        </a>
-      </td>
-        <td>
-            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
-        </td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#" ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 
@@ -59,7 +33,7 @@
       <td colspan="2">[+] Shinies ({{<%= theUser %>.references.filter(isShiny).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
-                ng-if="user.isMod && refUser"
+                ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('shiny')"
                 ng-class="[ok.approveAll.shiny ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.shiny ? 'active' : '']">
@@ -68,39 +42,13 @@
         </button>
       </td>
       <td>
-        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && !onIndexPage">{{<%= theUser %>.references.filter(isShiny).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseshinies" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isShiny | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td class="hidden-sm hidden-xs">
-        <a ng-href="{{getRedditUser(reference.user2)}}">
-          {{getRedditUser(reference.user2)}}
-        </a>
-      </td>
-        <td>
-            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
-        </td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 
@@ -108,7 +56,7 @@
       <td colspan="2">[+] Competitive / Casual ({{<%= theUser %>.references.filter(isCasual).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
-                ng-if="user.isMod && refUser"
+                ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('casual')"
                 ng-class="[ok.approveAll.casual ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.casual ? 'active' : '']">
@@ -117,39 +65,13 @@
         </button>
       </td>
       <td>
-        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && !onIndexPage">{{<%= theUser %>.references.filter(isCasual).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapsecasuals" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isCasual | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td class="hidden-sm hidden-xs">
-        <a ng-href="{{getRedditUser(reference.user2)}}">
-          {{getRedditUser(reference.user2)}}
-        </a>
-      </td>
-        <td>
-            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-            <span ng-if="user.isMod && refUser && reference.verified"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
-        </td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 
@@ -160,28 +82,7 @@
     </tr>
     <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isBank | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.gave}} for {{reference.got}}</a></td>
-      <td class="hidden-sm hidden-xs">
-        <a ng-href="{{getRedditUser(reference.user2)}}">
-          {{getRedditUser(reference.user2)}}
-        </a>
-      </td>
-      <td></td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 
@@ -189,7 +90,7 @@
       <td colspan="2">[+] <h3>Egg Hatches ({{<%= theUser %>.references.filter(isEgg).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
-                ng-if="user.isMod && refUser"
+                ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('egg')"
                 ng-class="[ok.approveAll.egg ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.egg ? 'active' : '']">
@@ -198,38 +99,13 @@
         </button>
       </td>
       <td>
-        <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
+        <span ng-if="user.isMod && !onIndexPage">{{<%= theUser %>.references.filter(isEgg).filter(isApproved).length}}</span>
       </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
     <tbody id="collapseeggs" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isEgg | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td class="hidden-sm hidden-xs">
-        <a ng-href="{{getRedditUser(reference.user2)}}">
-          {{getRedditUser(reference.user2)}}
-        </a>
-      </td>
-        <td>
-            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-        </td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 
@@ -237,7 +113,7 @@
       <td colspan="2">[+] <h3>Giveaways/Contests ({{numberOfPokemonGivenAway(<%= theUser %>)}} Pokémon given, {{numberOfEggsGivenAway(<%= theUser %>)}} eggs given)</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
-                ng-if="user.isMod && refUser"
+                ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('giveaway')"
                 ng-class="[ok.approveAll.giveaway ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.giveaway ? 'active' : '']">
@@ -251,35 +127,7 @@
     </tr>
     <tbody id="collapsegiveaways" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isGiveaway | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2" class="hidden-sm hidden-xs"><a ng-href="{{reference.url}}">
-          {{reference.description || reference.descrip}}
-          (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
-        </a>
-      </td>
-      <td class="hidden-md hidden-lg"><a ng-href="{{reference.url}}">
-              {{reference.description || reference.descrip}}
-              (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
-          </a></td>
-        <td>
-            <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                   ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-            <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-        </td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 
@@ -287,7 +135,7 @@
           <td colspan="2">[+] <h3>Egg/TSV Checks ({{<%= theUser %>.references.filter(isEggCheck).length}} threads, {{numberOfEggChecks(<%= theUser %>)}} given)</h3></td>
           <td>
               <button class="btn btn-xs pull-right has-spinner"
-                      ng-if="user.isMod && refUser"
+                      ng-if="user.isMod && !onIndexPage"
                       ng-click="approveAll('eggcheck')"
                       ng-class="[ok.approveAll.eggcheck ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.eggcheck ? 'active' : '']">
@@ -296,43 +144,13 @@
               </button>
           </td>
           <td>
-            <span ng-if="user.isMod && refUser">{{numberOfApprovedEggChecks(<%= theUser %>)}}</span>
+            <span ng-if="user.isMod && !onIndexPage">{{numberOfApprovedEggChecks(<%= theUser %>)}}</span>
           </td>
           <td class="hidden-sm hidden-xs"></td>
       </tr>
       <tbody id="collapseeggchecks" class="collapse">
       <tr ng-repeat="reference in <%= theUser %>.references | filter: isEggCheck | orderBy: 'createdAt'">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td colspan="2" class="hidden-sm hidden-xs">
-              <a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}
-                  {{reference.number ? "(" + reference.number + " checked)" : ""}}
-              </a>
-          </td>
-          <td class="hidden-md hidden-lg">
-              <a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}
-                  {{reference.number ? "(" + reference.number + " checked)" : ""}}</a>
-          </td>
-          <td>
-              <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                     ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-              <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-          </td>
-
-
-          <td>
-              <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-                  <span class="glyphicon glyphicon-info-sign"></span>
-              </a>
-              <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-                 ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-                  <span class="glyphicon glyphicon-edit"></span>
-              </a>
-              <a href="#"  ng-really-switch="deleteRef" class="icon"
-                 ng-really-click="deleteRef(reference.id)"
-                 ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-                  <span class="glyphicon glyphicon-trash"></span>
-              </a>
-          </td>
+        <%- partial('row.ejs') %>
       </tr>
       </tbody>
 
@@ -340,7 +158,7 @@
           <td colspan="2">[+] <h3>Free Tradeback/Free Redemption ({{<%= theUser %>.references.filter(isInvolvement).length}})</h3></td>
           <td>
               <button class="btn btn-xs pull-right has-spinner"
-                      ng-if="user.isMod && refUser"
+                      ng-if="user.isMod && !onIndexPage"
                       ng-click="approveAll('involvement')"
                       ng-class="[ok.approveAll.involvement ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.involvement ? 'active' : '']">
@@ -349,40 +167,13 @@
               </button>
           </td>
           <td>
-              <span ng-if="user.isMod && refUser">{{<%= theUser %>.references.filter(isInvolvement).filter(isApproved).length}}</span>
+              <span ng-if="user.isMod && !onIndexPage">{{<%= theUser %>.references.filter(isInvolvement).filter(isApproved).length}}</span>
           </td>
           <td class="hidden-sm hidden-xs"></td>
       </tr>
       <tbody id="collapseinvolvement" class="collapse">
       <tr ng-repeat="reference in <%= theUser %>.references | filter: isInvolvement | orderBy: 'createdAt'">
-          <td><strong>{{$index + 1}}.</strong></td>
-          <td><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-          <td class="hidden-sm hidden-xs">
-              <a ng-href="{{getRedditUser(reference.user2)}}">
-                  {{getRedditUser(reference.user2)}}
-              </a>
-          </td>
-          <td>
-              <input type="checkbox" ng-change="approve(reference.id, reference.approved)"
-                     ng-model="reference.approved" ng-if="user.isMod && refUser"/>
-              <span ng-if="user.isMod && refUser && reference.edited"><font class="editstar" title="This reference was edited at some point.">*</font></span>
-          </td>
-
-
-          <td>
-              <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-                  <span class="glyphicon glyphicon-info-sign"></span>
-              </a>
-              <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-                 ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-                  <span class="glyphicon glyphicon-edit"></span>
-              </a>
-              <a href="#"  ng-really-switch="deleteRef" class="icon"
-                 ng-really-click="deleteRef(reference.id)"
-                 ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-                  <span class="glyphicon glyphicon-trash"></span>
-              </a>
-          </td>
+        <%- partial('row.ejs') %>
       </tr>
       </tbody>
 
@@ -390,7 +181,7 @@
       <td colspan="2">[+] <h3>Misc ({{<%= theUser %>.references.filter(isMisc).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
-                ng-if="user.isMod && refUser"
+                ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('misc')"
                 ng-class="[ok.approveAll.misc ? 'glyphicon glyphicon-ok' : '',
                   spin.approveAll.misc ? 'active' : '']">
@@ -405,23 +196,7 @@
     </tr>
     <tbody id="collapseMisc" class="collapse">
     <tr ng-repeat="reference in <%= theUser %>.references | filter: isMisc | orderBy: 'createdAt'">
-      <td><strong>{{$index + 1}}.</strong></td>
-      <td colspan="2"><a ng-href="{{reference.url}}">{{reference.description || reference.descrip}}</a></td>
-      <td class="hidden-sm hidden-xs"></td>
-      <td>
-        <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-          <span class="glyphicon glyphicon-info-sign"></span>
-        </a>
-        <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-           ng-if="(!refUser || (user.name === refUser.name))" class="icon">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
-        <a href="#"  ng-really-switch="deleteRef" class="icon"
-           ng-really-click="deleteRef(reference.id)"
-           ng-if="(!refUser || (user.name === refUser.name) || user.isMod)">
-          <span class="glyphicon glyphicon-trash"></span>
-        </a>
-      </td>
+      <%- partial('row.ejs') %>
     </tr>
     </tbody>
 

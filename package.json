@@ -50,7 +50,6 @@
     "moment": "~2.10.6",
     "ng-mask": "^3.0.12",
     "node-cache": "^3.0.0",
-    "node-jquery-deparam": "0.0.3",
     "node-sha1": "^1.0.1",
     "pako": "^0.2.8",
     "passport": "^0.3.0",

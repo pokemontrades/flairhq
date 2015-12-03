@@ -1,6 +1,6 @@
 var $ = require('jquery');
 
-module.exports = function ($scope, user, io) {
+module.exports = function ($scope, io) {
   $scope.addInfo = {
     refUrl: $scope.query.refUrl || '',
     type: $scope.query.type || '',
@@ -69,7 +69,7 @@ module.exports = function ($scope, user, io) {
         $scope.addInfo.notes = "";
         $scope.addInfo.privatenotes = "";
         $scope.addInfo.number = "";
-        $scope.user.references.push(data);
+        $scope.refUser.references.push(data);
 
         if (data.type === "redemption") {
           $('#collapseevents').prev().children().animate({
@@ -107,7 +107,7 @@ module.exports = function ($scope, user, io) {
         if (data && data.err) {
           $scope.addRefError = data.err;
         } else {
-          $scope.addRefError = "Already added that URL.";
+          $scope.addRefError = "There was an error.";
         }
         $scope.$apply();
       }

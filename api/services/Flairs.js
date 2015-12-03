@@ -251,3 +251,14 @@ exports.getSimilarBannedFCs = function (fc) {
     });
   });
 };
+
+// Returns a promise of all flair apps for a particular username. If username is undefined, returns flair apps for all users.
+exports.getApps = function (username) {
+  var query = username ? {user: username} : {};
+  return Application.find(query);
+};
+
+// Returns a promise for all flairs
+exports.getFlairs = function () {
+  return Flair.find({});
+};

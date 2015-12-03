@@ -33,18 +33,21 @@ module.exports = {
 
   reference: async function(req, res) {
     try {
-      res.view({refUser: await Users.get(req.user, req.params.user)});
+      return res.view({refUser: await Users.get(req.user, req.params.user)});
     } catch (err) {
       if (err.statusCode === 404) {
-        res.view('404', {data: {user: req.params.user, error: "User not found"}});
-      } else {
-        res.serverError();
+        return res.view('404', {data: {user: req.params.user, error: "User not found"}});
       }
+      return res.serverError(err);
     }
   },
 
-  banlist: function (req, res) {
-    res.view();
+  banlist: async function (req, res) {
+    try {
+      return res.view({bannedUsers: await Users.getBannedUsers()});
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
   banuser: function (req, res) {

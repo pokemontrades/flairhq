@@ -81,27 +81,6 @@ module.exports = {
     });
   },
 
-  mine: function (req, res) {
-    Game.find()
-      .where({user: req.user.name})
-      .exec(function (err, games) {
-        req.user.games = games;
-
-        var appData = {
-          user: req.user.name
-        };
-
-        Application.find(appData).exec(function (err, app) {
-          if (err) {
-            return res.serverError(err);
-          }
-          req.user.apps = app;
-          req.user.redToken = undefined;
-          res.ok(req.user);
-        });
-      });
-  },
-
   get: async function (req, res) {
     try {
       return res.ok(await Users.get(req.user, req.params.name));
@@ -109,7 +88,7 @@ module.exports = {
       if (err.statusCode === 404) {
         return res.notFound();
       }
-      return res.serverError();
+      return res.serverError(err);
     }
   },
 
@@ -274,13 +253,12 @@ module.exports = {
     });
   },
 
-  bannedUsers: function (req, res) {
-    User.find({banned: true}).exec(function (err, users) {
-      if (err) {
-        return res.serverError(err);
-      }
-      return res.ok(users);
-    });
+  bannedUsers: async function (req, res) {
+    try {
+      return res.ok(await Users.getBannedUsers());
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
   clearSession: function (req, res) {

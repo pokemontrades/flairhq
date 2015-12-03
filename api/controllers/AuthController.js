@@ -25,61 +25,67 @@ module.exports = {
      * might fail to complete the login and then be confused when they get redirected somewhere unexpected the next time they visit the site. */
     var login_info = {type: req.query.loginType, redirect: req.query.redirect || '/', validation: crypto.randomBytes(32).toString('hex')};
     req.session.validation = login_info.validation;
-    var auth_data = {state: JSON.stringify(login_info), duration: 'permanent', failureRedirect: '/login'};
-    if (req.query.loginType !== 'mod') {
-      auth_data.scope = 'identity';
+    var auth_data = {state: JSON.stringify(login_info)};
+    if (req.query.loginType === 'mod') {
+      auth_data.duration = 'permanent'; //Mods have a permanent access token. Scope is not specified here, so the scope from config/express.js is used.
+    } else {
+      auth_data.scope = 'identity'; //Regular users only need a temporary access token with reduced scope.
     }
     passport.authenticate('reddit', auth_data)(req, res);
   },
 
   callback: function (req, res) {
     passport.authenticate('reddit', {duration: 'permanent', failureRedirect: '/login'}, async function (err, user) {
-      if (err) {
-        if (err === 'banned') {
-          return res.view(403, {error: 'You have been banned from FlairHQ'});
-        }
-        return res.view(403, {error: 'Sorry, something went wrong. Try logging in again.'});
-      }
-      var login_info;
       try {
-        login_info = JSON.parse(req.query.state);
-      } catch (err) {
-        console.log('Error with parsing /u/' + user.name + '\'s session state');
-        return res.serverError(err);
-      }
-      if (login_info.validation !== req.session.validation) {
-        console.log("Failed login for /u/" + user.name + ": invalid session state");
-        return res.view(403, {error: 'You have an invalid session state. (Try logging in again.)'});
-      }
-      let finishLogin = function () {
-        req.logIn(user, function (err) {
-          if (err) {
-            sails.error('Failed login: ' + err);
-            return res.forbidden(err);
+        if (err) {
+          if (err === 'banned') {
+            return res.view(403, {error: 'You have been banned from FlairHQ'});
           }
-          var url = decodeURIComponent(login_info.redirect);
-          // Don't redirect to other callback urls (this may cause infinite loops) or to absolute url paths (which might lead to other sites).
-          if (url.indexOf('/auth/reddit/callback') === 0 || /^(?:[a-z]+:)?\/\//i.test(url)) {
-            url = '/';
-          }
-          req.session.validation = '';
-          return res.redirect(url);
-        });
-      };
-      let modStatus = await Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
-      if (modStatus) { //User is a mod, set isMod to true
-        User.update(user.name, {isMod: true}).exec(function () {
-          /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
-          if (login_info.type !== 'mod') {
-            return res.redirect('/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
-          }
+          return res.view(403, {error: 'Sorry, something went wrong. Try logging in again.'});
+        }
+        var login_info;
+        try {
+          login_info = JSON.parse(req.query.state);
+        } catch (err) {
+          console.log('Error with parsing /u/' + user.name + '\'s session state');
+          return res.serverError(err);
+        }
+        if (login_info.validation !== req.session.validation) {
+          console.log("Failed login for /u/" + user.name + ": invalid session state");
+          return res.view(403, {error: 'You have an invalid session state. (Try logging in again.)'});
+        }
+        let finishLogin = function () {
+          req.logIn(user, function (err) {
+            if (err) {
+              sails.error('Failed login: ' + err);
+              return res.forbidden(err);
+            }
+            var url = decodeURIComponent(login_info.redirect);
+            // Don't redirect to other callback urls (this may cause infinite loops) or to absolute url paths (which might lead to other sites).
+            if (url.indexOf('/auth/reddit/callback') === 0 || /^(?:[a-z]+:)?\/\//i.test(url)) {
+              url = '/';
+            }
+            req.session.validation = '';
+            return res.redirect(url);
+          });
+        };
+        let modStatus = await Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
+        if (modStatus) { //User is a mod, set isMod to true
+          User.update(user.name, {isMod: true}).exec(function () {
+            /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
+            if (login_info.type !== 'mod') {
+              return res.redirect('/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
+            }
+            return finishLogin();
+          });
+        }
+        else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
+          User.update(user.name, {isMod: false}).exec(finishLogin);
+        } else { // Regular user
           return finishLogin();
-        });
-      }
-      else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
-        User.update(user.name, {isMod: false}).exec(finishLogin);
-      } else { // Regular user
-        return finishLogin();
+        }
+      } catch (err) {
+        return res.serverError(err);
       }
     })(req, res);
   }

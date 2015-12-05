@@ -205,6 +205,11 @@ module.exports.routes = {
   '/version' : {
     controller : 'home',
     action     : 'version'
+  },
+
+  '/mod/downloadModmail': {
+    controller: 'user',
+    action: 'downloadModmail'
   }
 };
 

@@ -3,6 +3,7 @@ var assert = require("chai").assert;
 var Flairs = require("../../../api/services/Flairs");
 
 var flairTexts = require("../data/flairTexts.json");
+var flairCssClasses = require("../data/flairCssClasses.json");
 var stdFlairInfo = require("../data/standardFlairInfo.json");
 var fcs = require("../data/friendCodes.json");
 var users = require("../data/users.json");
@@ -151,5 +152,19 @@ describe("Applying for Flair", function () {
     var userFlairs = Flairs.getUserFlairs(users.default_flair_user, stdFlairInfo.flairs);
     var refs = refFactory.getRefs(10, {type: 'bank'});
     assert(!Flairs.canUserApply(refs, stdFlairInfo.flairs.pokeball, userFlairs), 'Error: Bank trades are counted for flair');
+  });
+});
+
+describe("Upgrading/combining flairs", function () {
+  ['pokemontrades', 'SVExchange'].forEach(function (sub) {
+    describe(sub + ' flairs', function () {
+      _.keysIn(flairCssClasses[sub]).forEach(function (test_case) {
+        var previous = test_case.split(',')[0];
+        var added = test_case.split(',')[1];
+        it((previous || '(no flair)') + ' + ' + added + ' → ' + flairCssClasses[sub][test_case], function () {
+          assert.strictEqual(Flairs.makeNewCSSClass(previous, added, sub), flairCssClasses[sub][test_case]);
+        });
+      });
+    });
   });
 });

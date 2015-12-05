@@ -143,6 +143,11 @@ module.exports.routes = {
     action     : 'denyApp'
   },
 
+  '/flair/app/refreshClaim': {
+    controller: 'flair',
+    action: 'refreshClaim'
+  },
+
   '/flair/setText': {
     controller: 'flair',
     action: 'setText'

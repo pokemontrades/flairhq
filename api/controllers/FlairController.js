@@ -29,97 +29,41 @@ module.exports = {
     }
   },
 
-  denyApp: function (req, res) {
-    Application.destroy(req.allParams().id).exec(function (err, results) {
-      if (err) {
-        return res.serverError(err);
+  denyApp: async function (req, res) {
+    try {
+      var matching_apps = await Application.destroy(req.allParams().id);
+      var apps = await Flairs.getApps();
+      if (!matching_apps.length) {
+        return res.status(404).json(apps);
       }
-      return res.ok(results);
-    });
+      return res.ok(apps);
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
-  approveApp: function (req, res) {
-    Application.findOne(req.allParams().id).exec(function (err, app) {
+  approveApp: async function (req, res) {
+    try {
+      var app = await Application.findOne(req.allParams().id);
       if (!app) {
-        return res.notFound("Application not found.");
+        return res.status(404).json(await Flairs.getApps());
       }
-      User.findOne({name: app.user}).exec(function (err, user) {
-        if (err) {
-          return res.serverError(err);
-        }
-        var formatted = Flairs.formattedName(app.flair);
-        var flair,
-          css_class;
-        if (app.sub === "pokemontrades" && user.flair.ptrades) {
-          flair = user.flair.ptrades.flair_text;
-          css_class = user.flair.ptrades.flair_css_class;
-        } else if (app.sub === "svexchange" && user.flair.svex) {
-          flair = user.flair.svex.flair_text;
-          css_class = user.flair.svex.flair_css_class;
-        }
-        if (app.flair === "involvement" && css_class && css_class.indexOf("1") === -1) {
-          app.flair = user.flair.ptrades.flair_css_class + "1";
-        } else if (app.flair === "involvement") {
-          app.flair = user.flair.ptrades.flair_css_class;
-        } else if (css_class && css_class.indexOf("1") > -1) {
-          app.flair += "1";
-        }
-        if (css_class && css_class.slice(-1) === "2") {
-          app.flair += "2";
-        }
-        if (css_class && css_class.indexOf(' ') > -1) {
-          if (app.flair.indexOf('ribbon') > -1) {
-            css_class = css_class.substr(0, css_class.indexOf(' ')) + " " + app.flair;
-          } else {
-            css_class = app.flair + " " + css_class.substr(css_class.indexOf(' ') + 1);
-          }
-        } else {
-          if (app.flair.indexOf('ribbon') > -1 && css_class && css_class.indexOf('ribbon') === -1) {
-            css_class = css_class + " " + app.flair;
-          } else if (app.flair.indexOf('ribbon') === -1 && css_class && css_class.indexOf('ribbon') > -1) {
-            css_class = app.flair + " " + css_class;
-          } else {
-            css_class = app.flair;
-          }
-        }
-        Reddit.setUserFlair(req.user.redToken, user.name, css_class, flair, app.sub).then(function () {
-          Event.create({
-            type: "flairTextChange",
-            user: req.user.name,
-            content: "Changed " + user.name + "'s flair to " + css_class
-          }).exec(function () {
-          });
-
-          console.log("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_class);
-          Reddit.sendPrivateMessage(
-            refreshToken,
-            'FlairHQ Notification',
-            'Your application for ' + formatted + ' flair on /r/' + app.sub + ' has been approved.',
-            user.name).then(undefined, function () {
-              console.log('Failed to send a confirmation PM to ' + user.name);
-            }
-          );
-          if (app.sub === 'pokemontrades') {
-            user.flair.ptrades.flair_css_class = css_class;
-          } else {
-            user.flair.svex.flair_css_class = css_class;
-          }
-          user.save(function (err) {
-            if (err) {
-              console.log(err);
-            }
-          });
-          Application.destroy({id: req.allParams().id}).exec(function (err, app) {
-            if (err) {
-              return res.serverError(err);
-            }
-            return res.ok(app);
-          });
-        }, function (err) {
-          return res.serverError(err);
-        });
-      });
-    });
+      var user = await User.findOne(app.user),
+        shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
+      var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
+      user.flair[shortened].flair_css_class = relevant_flair;
+      await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
+      var promises = [];
+      promises.push(user.save());
+      promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + relevant_flair}));
+      var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
+      promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
+      promises.push(Application.destroy({id: req.allParams().id}));
+      await* promises;
+      return res.ok(await Flairs.getApps());
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
   setText: async function (req, res) {
@@ -213,6 +157,15 @@ module.exports = {
   getApps: async function (req, res) {
     try {
       return res.ok(await Flairs.getApps());
+    } catch (err) {
+      return res.serverError(err);
+    }
+  },
+
+  refreshClaim: async function (req, res) {
+    try {
+      await Flairs.refreshAppClaim(req.allParams(), req.user.name);
+      return res.ok();
     } catch (err) {
       return res.serverError(err);
     }

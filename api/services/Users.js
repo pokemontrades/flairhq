@@ -1,6 +1,11 @@
 var removeSecretInformation = function (user) {
   user.redToken = undefined;
   user.loggedFriendCodes = undefined;
+  if (user.apps) {
+    user.apps.forEach(function (app) {
+      app.claimedBy = undefined;
+    });
+  }
   return user;
 };
 
@@ -26,7 +31,7 @@ exports.get = async function (requester, username) {
   }
 
   if (requester && requester.name === user.name) {
-    promises.push(Application.find({user: user.name}).then(function (result) {
+    promises.push(Flairs.getApps(user.name).then(function (result) {
       user.apps = result;
     }));
   }

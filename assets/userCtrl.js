@@ -97,7 +97,7 @@ module.exports = function ($scope, $location, io) {
     }
   };
 
-  $scope.setselectedFlair = function (id, bool) {
+  $scope.setSelectedFlair = function (id, bool) {
     if (bool) {
       $scope.selectedFlair = id;
     }
@@ -498,13 +498,24 @@ module.exports = function ($scope, $location, io) {
     }
     return flairService.canUserApply(
       $scope.refUser.references,
-      applicationFlair || $scope.selectedFlair,
+      applicationFlair,
       flairService.getUserFlairs($scope.user, $scope.flairs)
     ) && !$scope.applied(applicationFlair, $scope.flairs);
   };
   $scope.formattedRequirements = function (flair) {
     return flairService.formattedRequirements(flair, $scope.flairs);
   };
+
+  $scope.clickRefLink = function (ref) {
+    if ($scope.user.isMod) {
+      io.socket.post('/flair/app/refreshClaim', ref, function (data, res) {
+        if (res.statusCode !== 200) {
+          console.log('Error ' + res.statusCode + ': Could not send link data to server.');
+        }
+      });
+    }
+  };
+
   $scope.init = function (params) {
     $scope = _.assign($scope, params);
   };

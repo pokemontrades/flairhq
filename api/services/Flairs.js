@@ -1,6 +1,8 @@
 var sha1 = require('node-sha1');
 var _ = require('lodash');
 var referenceService = require('./References.js');
+var NodeCache = require('node-cache');
+var app_claim_cache = new NodeCache({stdTTL: 300});
 
 exports.formattedName = function(name) {
   if (!name) {
@@ -219,6 +221,31 @@ exports.flairCheck = function (ptrades, svex) {
   return response;
 };
 
+exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
+  if (!previous_flair) {
+    return new_addition;
+  }
+  if (new_addition === 'banned') {
+    if (subreddit === 'pokemontrades') {
+      return previous_flair.replace(/^banned$/, '').replace(/([^ ]+)( .*)?$/, '$1 ') + 'banned';
+    }
+    return previous_flair.replace(/ ?banned/, '').replace(/(.)$/, '$1 ') + 'banned';
+  }
+  if (new_addition === 'involvement') {
+    return previous_flair.replace(/( |$)/, '1$1');
+  }
+  if (subreddit === 'pokemontrades' || !/ribbon/.test(previous_flair + new_addition)) {
+    return previous_flair.replace(/[^ 1]*/, new_addition);
+  }
+  if (/ribbon/.test(previous_flair)) {
+    if (/ribbon/.test(new_addition)) {
+      return previous_flair.replace(/(([^ ]* )*)[^ ]*ribbon(.*)/, '$1' + new_addition + '$3');
+    }
+    return previous_flair.replace(/^.*?([^ ]*ribbon.*)/, new_addition + ' $1');
+  }
+  return previous_flair.replace(/([^ ]*)(.*)/, '$1 ' + new_addition + '$2');
+};
+
 // Get the Damerau–Levenshtein distance (edit distance) between two strings.
 exports.edit_distance = function (string1, string2) {
   var distance_matrix = {};
@@ -253,12 +280,41 @@ exports.getSimilarBannedFCs = function (fc) {
 };
 
 // Returns a promise of all flair apps for a particular username. If username is undefined, returns flair apps for all users.
+// Note: This will include the claimedBy property, which we probably don't want the user to see.
 exports.getApps = function (username) {
   var query = username ? {user: username} : {};
-  return Application.find(query);
+  return Application.find(query).then(function (apps) {
+    apps.forEach(function (app) {
+      app.claimedBy = app_claim_cache.get(app.id) || app_claim_cache.get(app.user);
+    });
+    return apps;
+  });
 };
 
 // Returns a promise for all flairs
 exports.getFlairs = function () {
   return Flair.find({});
+};
+
+exports.refreshAppClaim = function (ref, mod_username) {
+  // Guess what app a mod is working on based on the links they click
+  var query = {};
+  if (References.isTrade(ref)) {
+    query = {sub: 'pokemontrades', flair: {not: 'involvement'}};
+  } else if (References.isInvolvement(ref) || References.isGiveaway(ref) && /reddit\.com\/r\/pokemontrades/.test(ref.url)) {
+    query = {sub: 'pokemontrades', flair: 'involvement'};
+  } else if (References.isEgg(ref)) {
+    query = {sub: 'svexchange', flair: {not: {endsWith: 'ribbon'}}};
+  } else if (References.isEggCheck(ref) || References.isGiveaway(ref) && /reddit\.com\/r\/SVExchange/.test(ref.url)) {
+    query = {sub: 'svexchange', flair: {endsWith: 'ribbon'}};
+  } else {
+    return [];
+  }
+  query.user = ref.user;
+  return Application.find(query).then(function (apps) {
+    apps.forEach(function (app) {
+      app_claim_cache.set(app.id, mod_username);
+    });
+    return apps;
+  });
 };

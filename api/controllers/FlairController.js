@@ -48,8 +48,8 @@ module.exports = {
       if (!app) {
         return res.status(404).json(await Flairs.getApps());
       }
-      var user = await User.findOne(app.user),
-        shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
+      var user = await User.findOne(app.user);
+      var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
       var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
       user.flair[shortened].flair_css_class = relevant_flair;
       await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);

@@ -66,6 +66,11 @@ describe("Flair text", function () {
       assert.strictEqual(fcs[0], "1111-1111-1111", "Has 1111-1111-1111");
       assert.strictEqual(fcs[1], "2222-2222-2222", "Has 2222-2222-2222");
     });
+
+    it("Correctly splits flairs into FCs, IGNs, games, and TSVs", function () {
+      var obj = Flairs.flairCheck(flairTexts.lotsOfGames.ptrades, flairTexts.lotsOfGames.svex);
+      assert.deepEqual(obj, flairTexts.lotsOfGames);
+    });
   });
   describe("Incorrect flairs", function () {
     it ("Doesn't allow no IGNs in trades flair", function () {
@@ -79,7 +84,7 @@ describe("Flair text", function () {
 
     it ("Doesn't allow no IGNs in svex flair", function () {
       try{
-        Flairs.flairCheck(flairTexts.tradesFlairStd, "1234-1234-1234 || || 1234");
+        Flairs.flairCheck(flairTexts.tradesFlairStd, "1234-1234-1234 ||  || 1234");
       } catch (e) {
         return assert.strictEqual(e, "We need at least 1 game.");
       }

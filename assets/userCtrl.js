@@ -518,6 +518,19 @@ module.exports = function ($scope, $location, io) {
 
   $scope.init = function (params) {
     $scope = _.assign($scope, params);
+    try {
+      var parsed = flairService.flairCheck($scope.user.flair.ptrades.flair_text, $scope.user.flair.svex.flair_text);
+      $scope.user.flairFriendCodes = parsed.fcs;
+      $scope.user.flairGames = parsed.games;
+      for (var i = 0; i < parsed.games.length; i++) {
+        $scope.user.flairGames[i].tsv = parsed.tsvs[i];
+      }
+    } catch (err) {
+      $scope.user.flairFriendCodes = [""];
+      $scope.user.flairGames = [{tsv: "", ign: "", game: ""}];
+      $scope.user.friendCodes = [""];
+      $scope.user.games = [{tsv: "", ign: ""}];
+    }
   };
   $(document).ready(function () {
     $scope.loaded = true;

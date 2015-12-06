@@ -187,36 +187,49 @@ exports.flairCheck = function (ptrades, svex) {
   if (!ptrades || !svex) {
     throw "Need both flairs.";
   }
-  var ptradesFlair = "(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?)(, ([^,|(]*( \\((X|Y|ΩR|αS)(, (X|Y|ΩR|αS))*\\))?))*";
-  var svExFlair = ptradesFlair + " \\|\\| ([0-9]{4}|XXXX)(, (([0-9]{4})|XXXX))*";
-  var tradesParts = ptrades.split("||");
-  var svexParts = svex.split("||");
+  if (ptrades.length > 64 || svex.length > 64) {
+    throw "Flairs too long";
+  }
+  const gameOptions = ['X', 'Y', 'ΩR', 'αS'].join('|');
+  const legalIgn = '[^()|,]{1,12}';
+  const friendCodeGroup = /((?:\d{4}-){2}\d{4}(?:, (?:\d{4}-){2}\d{4})*)/;
+  const gameGroup = '^(' + legalIgn + '(?: \\((?:' + gameOptions + ')(?:, (?:' + gameOptions + '))*\\))?(?:, ' + legalIgn + '(?: \\((?:' +
+    gameOptions + ')(?:, (?:' + gameOptions + '))*\\))?)*)$';
+  var tradesParts = ptrades.split(' || ');
+  var svexParts = svex.split(' || ');
   if (tradesParts.length !== 2 || svexParts.length !== 3) {
     throw "Error with format.";
   }
-  var tradesFCs = tradesParts[0];
-  var tradesGames = tradesParts[1];
-  var svexFCs = svexParts[0];
-  var svexGames = svexParts[1];
-
-  if (!tradesFCs.trim().match(new RegExp("(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))*")) ||
-    !svexFCs.trim().match(new RegExp("(([0-9]{4}-){2}[0-9]{4})(, (([0-9]{4}-){2}[0-9]{4}))*"))) {
+  if (!tradesParts[0].match(friendCodeGroup) || !svexParts[0].match(friendCodeGroup)) {
     throw "Error with FCs";
   }
-  if (tradesGames.trim() === "" || svexGames.trim() === "") {
+  if (!tradesParts[1].match(RegExp(gameGroup)) || !svexParts[1].match(RegExp(gameGroup))) {
     throw "We need at least 1 game.";
   }
-  if (!ptrades.match(new RegExp(ptradesFlair)) || !svex.match(new RegExp(svExFlair))) {
-    throw "Error with format.";
-  }
-
+  var games = [];
+  var ignBlocks = _.union(tradesParts[1].split(/(?!\([^)]*), (?![^(]*\))/), svexParts[1].split(/(?!\([^)]*), (?![^(]*\))/));
+  // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]
+  // The regex is more complicated than necessary at the moment, but this should make it easier if we decide to allow special characters in the future.
+  ignBlocks.forEach(function (block) {
+    var parts = RegExp('^(' + legalIgn + ')(?: \\(((?:' + gameOptions + ')(?:, (?:' + gameOptions + '))*)\\))?$').exec(block);
+    if (parts[2]) {
+      parts[2].split(', ').forEach(function (game) {
+        if (_.findIndex(games, {ign: parts[1], game: game}) === -1) {
+          games.push({ign: parts[1], game: game});
+        }
+      });
+    }
+    else if (!_.includes(_.map(games, 'ign'), parts[1])) {
+      games.push({ign: parts[1], game: ''});
+    }
+  });
   var response = {
     ptrades: ptrades,
     svex: svex,
-    fcs: []
+    games: games,
+    tsvs: svexParts[2].split(', '),
+    fcs: _.union(tradesParts[0].split(', '), svexParts[0].split(', '))
   };
-
-  response.fcs = _.union(ptrades.match(/(\d{4}-){2}\d{4}/g), svex.match(/(\d{4}-){2}\d{4}/g));
 
   return response;
 };

@@ -35,7 +35,7 @@ module.exports = {
   },
 
   callback: function (req, res) {
-    passport.authenticate('reddit', {duration: 'permanent', failureRedirect: '/login'}, async function (err, user) {
+    passport.authenticate('reddit', async function (err, user) {
       try {
         if (err) {
           if (err === 'banned') {
@@ -57,7 +57,7 @@ module.exports = {
         let finishLogin = function () {
           req.logIn(user, function (err) {
             if (err) {
-              sails.error('Failed login: ' + err);
+              sails.log.error('Failed login: ' + err);
               return res.forbidden(err);
             }
             var url = decodeURIComponent(login_info.redirect);

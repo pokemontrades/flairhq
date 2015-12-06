@@ -2,46 +2,33 @@ var passport = require('passport'),
   RedditStrategy = require('passport-reddit').Strategy;
 
 var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
-  process.nextTick(function() {
-    User.findOne({id: profile.name}, function(err, user) {
-      Reddit.getBothFlairs(adminToken, profile.name).then(function (flairs) {
-        if (user) {
-          if (user.banned) {
-            return done("banned", user);
-          }
-          user.redToken = tokenSecret;
-          user.flair = {ptrades: flairs[0], svex: flairs[1]};
-          user.save(function (err) {
-            if (err) {
-              console.log(err);
-            }
-            return done(null, user);
-          });
-        } else {
-          var data = {
-            redToken: tokenSecret,
-            provider: profile.provider,
-            name: profile.name,
-            flair: {ptrades: flairs[0], svex: flairs[1]}
-          };
-
-          if (profile.emails && profile.emails[0] && profile.emails[0].value) {
-            data.email = profile.emails[0].value;
-          }
-          if (profile.name && profile.name.givenName) {
-            data.firstname = profile.name.givenName;
-          }
-          if (profile.name && profile.name.familyName) {
-            data.lastname = profile.name.familyName;
-          }
-
-          User.create(data, function(err, user) {
-            return done(err, user);
-          });
+  User.findOne({id: profile.name}, function(err, user) {
+    Reddit.getBothFlairs(adminToken, profile.name).then(function (flairs) {
+      if (user) {
+        if (user.banned) {
+          return done("banned", user);
         }
-      }, function (error) {
-        return res.serverError(error);
-      });
+        user.redToken = tokenSecret;
+        user.flair = {ptrades: flairs[0], svex: flairs[1]};
+        user.save(function (err) {
+          if (err) {
+            console.log(err);
+          }
+          return done(null, user);
+        });
+      } else {
+        var data = {
+          redToken: tokenSecret,
+          name: profile.name,
+          flair: {ptrades: flairs[0], svex: flairs[1]}
+        };
+
+        User.create(data, function(err, user) {
+          return done(err, user);
+        });
+      }
+    }, function (error) {
+      return res.serverError(error);
     });
   });
 };

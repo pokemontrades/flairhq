@@ -1,33 +1,51 @@
-<td><strong>{{$index + 1}}.</strong></td>
+<td>
+  <strong>
+    {{$index + 1}}.
+  </strong>
+</td>
+
 <td ng-if="isTrade(reference) || isBank(reference)">
   <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
     {{reference.gave}} for {{reference.got}}
   </a>
 </td>
+
 <td class="hidden-sm hidden-xs" ng-if="isEgg(reference) || isInvolvement(reference)">
-  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">{{reference.description || reference.descrip}}</a>
-</td>
-<td ng-if="isEggCheck(reference)">
-  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">{{reference.description || reference.descrip}}
-      {{reference.number ? "(" + reference.number + " checked)" : ""}}</a>
-</td>
-<td class="hidden-sm hidden-xs" ng-if="isGiveaway(reference)">
   <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
-  {{reference.description || reference.descrip}}
-    (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
+    {{reference.description || reference.descrip}}
   </a>
 </td>
+
+<td ng-if="isEggCheck(reference)">
+  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">{{reference.description || reference.descrip}}
+    {{reference.number ? "(" + reference.number + " checked)" : ""}}
+  </a>
+</td>
+
+<td class="hidden-sm hidden-xs" ng-if="isGiveaway(reference)">
+  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
+    {{reference.description || reference.descrip}} (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
+  </a>
+</td>
+
 <td class="hidden-sm hidden-xs" ng-if="isTrade(reference) || isBank(reference) || isEgg(reference) || isInvolvement(reference)">
   <a ng-href="{{getRedditUser(reference.user2)}}">
     {{getRedditUser(reference.user2)}}
   </a>
 </td>
+
 <td ng-if="isGiveaway(reference) || isInvolvement(reference) || isEggCheck(reference)"></td>
+
 <td>
   <input  ng-if="user.isMod && !onIndexPage && isApprovable(reference)" type="checkbox" ng-change="approve(reference.id, reference.approved)" ng-model="reference.approved"/>
-  <span ng-if="user.isMod && !onIndexPage && reference.edited" && isApprovable(reference)><font class="editstar" title="This reference was edited at some point.">*</font></span>
-  <span ng-if="user.isMod && !onIndexPage && reference.verified && isApprovable(reference)"><sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup></span>
+  <span ng-if="user.isMod && !onIndexPage && reference.edited" && isApprovable(reference)>
+    <font class="editstar" title="This reference was edited at some point.">*</font>
+  </span>
+  <span ng-if="user.isMod && !onIndexPage && reference.verified && isApprovable(reference)">
+    <sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup>
+  </span>
 </td>
+
 <td>
   <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
     <span class="glyphicon glyphicon-info-sign"></span>

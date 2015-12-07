@@ -1,6 +1,8 @@
 var $ = require('jquery');
+var shared = require('./sharedClientFunctions.js');
 
 module.exports = function ($scope, io) {
+  shared.addRepeats($scope, io);
   $scope.addInfo = {
     refUrl: $scope.query.refUrl || '',
     type: $scope.query.type || '',

@@ -1,4 +1,6 @@
+var shared = require('./sharedClientFunctions.js');
 module.exports = function ($scope, io) {
+  shared.addRepeats($scope, io);
   $scope.users = [];
   $scope.flairAppError = "";
   $scope.adminok = {

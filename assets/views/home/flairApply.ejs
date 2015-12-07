@@ -17,7 +17,7 @@
                     <a ng-repeat="flair in flairs | filter:inPokemonTradesTrader | orderBy: 'trades' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setselectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
+                       href="#" ng-click="setSelectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small><small ng-show="userHasFlair(flair)" class="greencheck" title="You already have this flair."> ✓</small>
                     </a>
                 </div>
@@ -26,7 +26,7 @@
                     <a ng-repeat="flair in flairs | filter:inPokemonTradesHelper | orderBy: 'involvement' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setselectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
+                       href="#" ng-click="setSelectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small><small ng-show="userHasFlair(flair)" class="greencheck" title="You already have this flair."> ✓</small>
                     </a>
                 </div>
@@ -38,7 +38,7 @@
                     <a ng-repeat="flair in flairs | filter:inSVExchangeHatcher | orderBy: 'eggs' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setselectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
+                       href="#" ng-click="setSelectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small><small ng-show="userHasFlair(flair)" class="greencheck" title="You already have this flair."> ✓</small>
                     </a>
                 </div>
@@ -47,7 +47,7 @@
                     <a ng-repeat="flair in flairs | filter:inSVExchangeGiver | orderBy: 'giveaways' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedFlair === flair.name) ? 'active' : '']"
-                       href="#" ng-click="setselectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
+                       href="#" ng-click="setSelectedFlair(flair.name, canUserApply(flair))" title={{formattedRequirements(flair.name)}}>
                         <span ng-class="'flair2-' + flair.name">{{formattedName(flair.name)}}</span><small ng-show="applied(flair)"> (Pending)</small><small ng-show="userHasFlair(flair)" class="greencheck" title="You already have this flair."> ✓</small>
                     </a>
                 </div>
@@ -62,9 +62,12 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary has-spinner" ng-click="applyFlair()"
-                ng-class="[userok.applyFlair ? 'glyphicon glyphicon-ok' : '',
-                userspin.applyFlair ? 'active' : '',
-                canUserApply() ? '' : 'disabled']">
+            ng-class="{
+              glyphicon: userok.applyFlair,
+              'glyphicon-ok': userok.applyFlair,
+              active: userspin.applyFlair,
+              disabled: !canUserApply(getFlair(selectedFlair, flairs))
+            }">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
           {{userok.applyFlair ? "" : "Apply"}}
         </button>

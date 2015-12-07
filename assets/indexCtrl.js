@@ -1,7 +1,8 @@
 var $ = require('jquery');
-var sharedService = require('./sharedClientFunctions.js');
+var shared = require('./sharedClientFunctions.js');
 
 module.exports = function ($scope, io) {
+  shared.addRepeats($scope, io);
   $scope.addInfo = {
     refUrl: $scope.query.refUrl || '',
     type: $scope.query.type || '',
@@ -20,7 +21,6 @@ module.exports = function ($scope, io) {
   $scope.editRefError = "";
   $scope.indexOk = {};
   $scope.indexSpin = {};
-  sharedService.addRepeats($scope);
 
   $scope.focus = {
     gavegot: false
@@ -34,11 +34,6 @@ module.exports = function ($scope, io) {
   $scope.editReference = function (ref) {
     $scope.selectedRef = ref;
     $scope.referenceToRevert = $.extend(true, {}, ref);
-  };
-
-  $scope.revertRef = function () {
-    var index = $scope.user.references.indexOf($scope.selectedRef);
-    $scope.user.references[index] = $.extend(true, {}, $scope.referenceToRevert);
   };
 
   $scope.addReference = function () {
@@ -76,7 +71,7 @@ module.exports = function ($scope, io) {
         $scope.addInfo.notes = "";
         $scope.addInfo.privatenotes = "";
         $scope.addInfo.number = "";
-        $scope.user.references.push(data);
+        $scope.refUser.references.push(data);
 
         if (data.type === "redemption") {
           $('#collapseevents').prev().children().animate({
@@ -114,7 +109,7 @@ module.exports = function ($scope, io) {
         if (data && data.err) {
           $scope.addRefError = data.err;
         } else {
-          $scope.addRefError = "Already added that URL.";
+          $scope.addRefError = "There was an error.";
         }
         $scope.$apply();
       }

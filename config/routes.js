@@ -34,17 +34,13 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/' : {
-    controller : 'home'
+    controller : 'home',
+    action: 'index'
   },
 
   '/u/:user' : {
     controller: 'home',
     action: 'reference'
-  },
-
-  '/user/mine' : {
-    controller : 'user',
-    action     : 'mine'
   },
 
   '/user/get/:name' : {
@@ -72,6 +68,11 @@ module.exports.routes = {
     action     : 'logout'
   },
 
+  '/auth/reddit': {
+    controller: 'auth',
+    action: 'reddit'
+  },
+
   '/auth/reddit/callback' : {
     controller : 'auth',
     action     : 'callback'
@@ -90,11 +91,6 @@ module.exports.routes = {
   '/reference/approve' : {
     controller : 'reference',
     action     : 'approve'
-  },
-
-  '/reference/all' : {
-    controller : 'reference',
-    action     : 'all'
   },
 
   '/reference/approve/all' : {
@@ -147,6 +143,16 @@ module.exports.routes = {
     action     : 'denyApp'
   },
 
+  '/flair/app/refreshClaim': {
+    controller: 'flair',
+    action: 'refreshClaim'
+  },
+
+  '/flair/setText': {
+    controller: 'flair',
+    action: 'setText'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'
@@ -186,6 +192,11 @@ module.exports.routes = {
     action     : 'banlist'
   },
 
+  '/event/get': {
+    controller: 'event',
+    action: 'get'
+  },
+
   '/info' : {
     controller : 'home',
     action     : 'info'
@@ -194,6 +205,11 @@ module.exports.routes = {
   '/version' : {
     controller : 'home',
     action     : 'version'
+  },
+
+  '/mod/downloadModmail': {
+    controller: 'user',
+    action: 'downloadModmail'
   }
 };
 

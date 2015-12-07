@@ -1,0 +1,24 @@
+{
+  "tradesFlairStd": "1111-1111-1111 || YMK (X)",
+  "tradesFlairMultipleFCs": "1111-1111-1111, 2222-2222-2222 || YMK (X)",
+  "svexFlairStd": "1111-1111-1111 || YMK (X) || 1234",
+  "svexFlairDifferentFC": "2222-2222-2222 || YMK (X) || 1234",
+  "incorrectFlair": "not a correct flair",
+  "lotsOfGames": {
+    "ptrades": "1111-1111-1111 || NAA (X, Y, ΩR), AAA (Y, ΩR), Othername",
+    "svex": "1111-9999-1111 || AAA (Y, X), Another Name (αS, Y) || 0000, 1111",
+    "fcs": ["1111-1111-1111", "1111-9999-1111"],
+    "games": [
+      {"ign": "NAA", "game": "X"},
+      {"ign": "NAA", "game": "Y"},
+      {"ign": "NAA", "game": "ΩR"},
+      {"ign": "AAA", "game": "Y"},
+      {"ign": "AAA", "game": "ΩR"},
+      {"ign": "Othername", "game": ""},
+      {"ign": "AAA", "game": "X"},
+      {"ign": "Another Name", "game": "αS"},
+      {"ign": "Another Name", "game": "Y"}
+    ],
+    "tsvs": ["0000", "1111"]
+  }
+}

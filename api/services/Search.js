@@ -120,20 +120,20 @@ module.exports.modmails = function (searchData, cb) {
     var current_req = {'$or': []};
     for (let j = 0; j < fields.length; j++) {
       let obj = {};
-      obj[fields[j]] = {'contains': words[i]};
+      obj[fields[j]] = {'$regex': words[i], '$options': 'i'};
       current_req['$or'].push(obj);
     }
     requirements.push(current_req);
   }
   //Finds modmails where all of the words in the search query appear somewhere in either the body, subject, or author.
-  var mailData = {
-    limit: 20,
-    skip: searchData.skip ? parseInt(searchData.skip) : 0,
-    sort: 'created_utc DESC',
-    '$and': requirements
-  };
-
-  Modmail.find(mailData).exec(function (err, mail) {
-    cb(mail);
+  var mailData = {'$and': requirements};
+  Modmail.native(function (err, collection) {
+    collection.find(mailData).sort({created_utc: -1}).skip(searchData.skip ? parseInt(searchData.skip) : 0).limit(20).toArray().then(function (mail) {
+      mail.forEach(function (message) {
+        message.name = message._id;
+        delete message._id;
+      });
+      cb(mail);
+    });
   });
 };

@@ -6,6 +6,7 @@
 
 var Q = require('q');
 var _ = require('lodash');
+var moment = require('moment');
 
 module.exports = {
 
@@ -81,72 +82,15 @@ module.exports = {
     });
   },
 
-  mine: function (req, res) {
-    Game.find()
-      .where({user: req.user.name})
-      .exec(function (err, games) {
-        req.user.games = games;
-
-        var appData = {
-          user: req.user.name
-        };
-
-        Application.find(appData).exec(function (err, app) {
-          if (err) {
-            return res.serverError(err);
-          }
-          req.user.apps = app;
-          req.user.redToken = undefined;
-          res.ok(req.user);
-        });
-      });
-  },
-
   get: async function (req, res) {
-    var user = await User.findOne(req.params.name);
-    if (!user) {
-      return res.notFound();
+    try {
+      return res.ok(await Users.get(req.user, req.params.name));
+    } catch (err) {
+      if (err.statusCode === 404) {
+        return res.notFound();
+      }
+      return res.serverError(err);
     }
-    user.loggedFriendCodes = undefined;
-    user.redToken = undefined;
-    var promises = [];
-
-    promises.push(Game.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
-      user.games = result;
-    }));
-
-    promises.push(Comment.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
-      user.comments = result;
-    }));
-
-    if (req.user && req.user.isMod) {
-      promises.push(ModNote.find({refUser: user.name}).sort({createdAt: 'desc'}).then(function (result) {
-        user.modNotes = result;
-      }));
-    }
-
-    if (req.user && req.user.name === user.name) {
-      promises.push(Application.find({user: user.name}).then(function (result) {
-        user.apps = result;
-      }));
-    }
-
-    promises.push(Reference.find({user: user.name}).sort({type: 'asc', createdAt: 'desc'}).then(function (result) {
-      result.forEach(function (ref) {
-        if (!req.user || req.user.name !== user.name) {
-          ref.privatenotes = undefined;
-        }
-        if (!req.user || !req.user.isMod) {
-          ref.approved = undefined;
-          ref.verified = undefined;
-        }
-      });
-      user.references = result;
-    }));
-
-    Promise.all(promises).then(function () {
-      return res.ok(user);
-    });
   },
 
   addNote: function (req, res) {
@@ -194,107 +138,111 @@ module.exports = {
           11. Locally ban user from FlairHQ
     */
 
-    req.params = req.allParams();
+    try {
+      req.params = req.allParams();
 
-    if (typeof req.params.username !== 'string' || !req.params.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
-      return res.status(400).json({error: "Invalid username"});
-    }
+      if (typeof req.params.username !== 'string' || !req.params.username.match(/^[A-Za-z0-9_-]{1,20}$/)) {
+        return res.status(400).json({error: "Invalid username"});
+      }
 
-    if (typeof req.params.banNote !== 'string') {
-      return res.status(400).json({error: "Invalid ban note"});
-    }
-    if (req.params.banNote.length > 300) {
-      return res.status(400).json({error: "Ban note too long"});
-    }
+      if (typeof req.params.banNote !== 'string') {
+        return res.status(400).json({error: "Invalid ban note"});
+      }
+      if (req.params.banNote.length > 300) {
+        return res.status(400).json({error: "Ban note too long"});
+      }
 
-    if (typeof req.params.banMessage !== 'string') {
-      return res.status(400).json({error: "Invalid ban message"});
-    }
+      if (typeof req.params.banMessage !== 'string') {
+        return res.status(400).json({error: "Invalid ban message"});
+      }
 
-    if (typeof req.params.banlistEntry !== 'string') {
-      return res.status(400).json({error: "Invalid banlist entry"});
-    }
+      if (typeof req.params.banlistEntry !== 'string') {
+        return res.status(400).json({error: "Invalid banlist entry"});
+      }
 
-    if (req.params.duration && (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0)) {
-      return res.status(400).json({error: "Invalid duration"});
-    }
+      if (req.params.duration && (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0)) {
+        return res.status(400).json({error: "Invalid duration"});
+      }
 
-    if (req.params.knownAlt && (typeof req.params.knownAlt !== 'string' || !req.params.knownAlt.match(/^[A-Za-z0-9_-]{1,20}$/))) {
-      return res.status(400).json({error: "Invalid username of alt"});
-    }
+      if (req.params.knownAlt && (typeof req.params.knownAlt !== 'string' || !req.params.knownAlt.match(/^[A-Za-z0-9_-]{1,20}$/))) {
+        return res.status(400).json({error: "Invalid username of alt"});
+      }
 
-    if (!(req.params.additionalFCs instanceof Array)) {
-      return res.status(400).json({error: "Invalid friendcode list"});
-    }
-    for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
-      if (typeof req.params.additionalFCs[FC] !== 'string' || !req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
+      if (!(req.params.additionalFCs instanceof Array)) {
         return res.status(400).json({error: "Invalid friendcode list"});
       }
-    }
-    console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
-    var user;
-    try {
-      user = await User.findOne(req.params.username);
-      if (!user) {
-        if (await Reddit.checkUsernameAvailable(req.params.username)) {
-          console.log("Ban aborted (user does not exist)");
-          return res.status(404).json({error: "That user does not exist."});
+      for (var FC = 0; FC < req.params.additionalFCs.length; FC++) {
+        if (typeof req.params.additionalFCs[FC] !== 'string' || !req.params.additionalFCs[FC].match(/^(\d{4}-){2}\d{4}$/g)) {
+          return res.status(400).json({error: "Invalid friendcode list"});
         }
       }
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json(err);
-    }
-    var flairs;
-    try {
-      flairs = await Reddit.getBothFlairs(req.user.redToken, req.params.username);
-    }
-    catch (err) {
-      // Reddit will return 403 when looking up the flair of a user with a deleted account.
-      if (err.statusCode !== 403) {
-        return res.status(err.statusCode).json(err);
+      console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
+      var user;
+      try {
+        user = await User.findOne(req.params.username);
+        if (!user) {
+          if (await Reddit.checkUsernameAvailable(req.params.username)) {
+            console.log("Ban aborted (user does not exist)");
+            return res.status(404).json({error: "That user does not exist."});
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        return res.status(500).json(err);
       }
-    }
-    var logged_fcs = user ? user.loggedFriendCodes : [];
-    var unique_fcs = _.union(logged_fcs, req.params.additionalFCs);
-    var igns;
-    if (flairs) {
-      var fc_match = /(\d{4}-){2}\d{4}/g;
-      unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), unique_fcs);
-      igns = flairs[0].flair_text.substring(flairs[0].flair_text.indexOf('||') + 3);
-    } else if (user) {
-      igns = user.flair.ptrades.flair_text.substring(user.flair.ptrades.flair_text.indexOf('||') + 3);
-    }
-    var promises = [];
-    if (flairs) {
-      promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
-      promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
-    }
-    if (!req.params.duration) {
+      var flairs;
+      try {
+        flairs = await Reddit.getBothFlairs(req.user.redToken, req.params.username);
+      }
+      catch (err) {
+        // Reddit will return 403 when looking up the flair of a user with a deleted account.
+        if (err.statusCode !== 403) {
+          return res.status(err.statusCode).json(err);
+        }
+      }
+      var logged_fcs = user ? user.loggedFriendCodes : [];
+      var unique_fcs = _.union(logged_fcs, req.params.additionalFCs);
+      var igns;
       if (flairs) {
-        promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
-        promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
-        promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
+        var fc_match = /(\d{4}-){2}\d{4}/g;
+        unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), unique_fcs);
+        igns = flairs[0].flair_text.substring(flairs[0].flair_text.indexOf('||') + 3);
+      } else if (user) {
+        igns = user.flair.ptrades.flair_text.substring(user.flair.ptrades.flair_text.indexOf('||') + 3);
       }
-      promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
-      promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
-      promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-      promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
-      promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
-      promises.push(Ban.localBanUser(req.params.username));
+      var promises = [];
+      if (flairs) {
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
+      }
+      if (!req.params.duration) {
+        if (flairs) {
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
+          promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
+        }
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
+        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+        promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
+        promises.push(Ban.localBanUser(req.params.username));
+      }
+      Promise.all(promises).then(function () {
+        console.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
+        res.ok();
+      }, function(error) {
+        console.log(error);
+        res.status(error.statusCode || 500).json(error);
+      });
+      Event.create({
+        user: req.user.name,
+        type: "banUser",
+        content: "Banned /u/" + req.params.username
+      }).exec(function () {});
+    } catch (err) {
+      return res.serverError(err);
     }
-    Promise.all(promises).then(function () {
-      console.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
-      res.ok();
-    }, function(error) {
-      console.log(error);
-      res.status(error.statusCode || 500).json(error);
-    });
-    Event.create({
-      user: req.user.name,
-      type: "banUser",
-      content: "Banned /u/" + req.params.username
-    }).exec(function () {});
   },
 
   setLocalBan: function (req, res) {
@@ -310,13 +258,12 @@ module.exports = {
     });
   },
 
-  bannedUsers: function (req, res) {
-    User.find({banned: true}).exec(function (err, users) {
-      if (err) {
-        return res.serverError(err);
-      }
-      return res.ok(users);
-    });
+  bannedUsers: async function (req, res) {
+    try {
+      return res.ok(await Users.getBannedUsers());
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
   clearSession: function (req, res) {
@@ -337,6 +284,23 @@ module.exports = {
     }, function () {
       console.log('Failed to check whether /u/' + req.allParams().name + ' is a moderator.');
       return res.serverError();
+    });
+  },
+
+  downloadModmail: function (req, res) {
+    Modmail.find().sort('created_utc DESC').then(function (modmails) {
+      var formatted_modmails = [];
+      modmails.forEach(function (modmail) {
+        formatted_modmails.push({
+          id: modmail.name.slice(3),
+          subject: modmail.subject,
+          author: modmail.author,
+          body: modmail.body,
+          subreddit: modmail.subreddit,
+          created: moment(modmail.created_utc*1000).format('YYYY-MM-DD HH:mm:ss') + ' UTC'
+        });
+      });
+      return res.ok(formatted_modmails);
     });
   }
 };

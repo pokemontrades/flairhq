@@ -5,10 +5,12 @@
   "globals": {
     "Reference": true,
     "User": true,
+    "Users": true,
     "Ban": true,
     "Reddit": true,
     "Event": true,
     "sails": true,
+    "Flair": true,
     "Flairs": true,
     "Usernotes": true,
     "References": true,

@@ -25,7 +25,13 @@
     </script>
   </head>
 
-  <body ng-controller="userCtrl">
+  <body ng-controller="userCtrl" ng-cloak ng-init="init({<%=
+    (typeof user !== 'undefined' ? 'user:' + JSON.stringify(user) + ',' : '') +
+    (typeof refUser !== 'undefined' ? 'refUser:' + JSON.stringify(refUser) + ',' : '') +
+    (typeof flairs !== 'undefined' ? 'flairs:' + JSON.stringify(flairs) + ',' : '') +
+    (typeof flairApps !== 'undefined' ? 'flairApps:' + JSON.stringify(flairApps) + ',' : '') +
+    (typeof query !== 'undefined' ? 'query:' + JSON.stringify(query) + ',' : '')
+  %>})">
     <div id="wrapper">
       <%- partial ('home/header.ejs') %>
       <div id="splash" ng-hide="loaded">
@@ -42,15 +48,14 @@
                         We are currently working hard to improve this so that you won't need JavaScript to use the site.
                     </h2>
                 </noscript>
-                <div class="hidden" ng-class="loaded ? 'hidden' : 'bigspinner'">
-                </div>
+                <div ng-class="loaded ? 'hidden' : 'bigspinner'"></div>
               </div>
             </div>
           </div>
         </div>
         </div>
       </div>
-      <div class="hidden" ng-class="loaded ? '' : 'hidden'">
+      <div ng-class="{hidden: !loaded}">
         <%- body %>
       </div>
     </div>

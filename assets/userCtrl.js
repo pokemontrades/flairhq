@@ -1,19 +1,11 @@
 var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
-var deparam = require('node-jquery-deparam');
-var sharedService = require("./sharedClientFunctions.js");
+var shared = require('./sharedClientFunctions.js');
 
-module.exports = function ($scope, $filter, $location, UserFactory, io) {
+module.exports = function ($scope, $location, io) {
+  shared.addRepeats($scope, io);
   $scope.regex = regex;
-  $scope.scope = $scope;
-  $scope.user = undefined;
-  $scope.$watch('user', function (newU, oldU) {
-    if (newU !== oldU) {
-      UserFactory.setUser(newU);
-    }
-  });
-  $scope.flairs = {};
   $scope.selectedFlair = undefined;
   $scope.loaded = false;
   $scope.userok = {};
@@ -65,11 +57,20 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
   ];
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
-  // Parse the querystring into an object
-  // substring is used to get rid of the ? in front of the querystring
-  $scope.querystring = location.search;
-  $scope.query = deparam($scope.querystring.substring(1));
-  sharedService.addRepeats($scope);
+  $scope.onIndexPage = location.pathname === '/';
+
+  if (window.location.hash === "#/comments") {
+    $('#tabList li:eq(1) a').tab('show');
+  } else if (window.location.hash === "#/info") {
+    $('#tabList li:eq(2) a').tab('show');
+  } else if (window.location.hash === "#/modEdit") {
+    $('#tabList li:eq(3) a').tab('show');
+  } else if (window.location.hash === "#/privacypolicy") {
+    $('#privacypolicy').modal('show');
+  } else if (window.location.hash === "#/flairtext") {
+    $('#flairText').modal('show');
+  }
+
   $scope.applyFlair = function () {
     $scope.errors.flairApp = "";
     $scope.userok.applyFlair = false;
@@ -78,13 +79,13 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
     if ($scope.selectedFlair && $scope.canUserApply(flair)) {
       io.socket.post("/flair/apply", {flair: $scope.selectedFlair, sub: flair.sub}, function (data, res) {
         if (res.statusCode === 200) {
-          $scope.user.apps.push(data);
+          $scope.refUser.apps.push(data);
           $scope.selectedFlair = undefined;
           $scope.userok.applyFlair = true;
           $scope.userspin.applyFlair = false;
           $scope.$apply();
         } else {
-          $scope.errors.flairApp = "Something unexpected happened.";
+          $scope.errors.flairApp = res.body.error || "Something unexpected happened.";
           $scope.userspin.applyFlair = false;
           $scope.$apply();
         }
@@ -96,112 +97,9 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
     }
   };
 
-  $scope.setselectedFlair = function (id, bool) {
+  $scope.setSelectedFlair = function (id, bool) {
     if (bool) {
       $scope.selectedFlair = id;
-    }
-  };
-
-  io.socket.get("/user/mine", function (data, res) {
-    if (res.statusCode === 200) {
-      $scope.user = data;
-      if (!$scope.user.friendCodes) {
-        $scope.user.friendCodes = [""];
-      }
-      if (!$scope.user.games.length) {
-        $scope.user.games = [{tsv: "", ign: ""}];
-      }
-
-      $scope.getReferences();
-      $scope.$apply();
-    } else {
-      $scope.loaded = true;
-      $scope.$apply();
-      if (window.location.hash === "#/comments") {
-        $('#tabList').find('li:eq(1) a').tab('show');
-      } else if (window.location.hash === "#/info") {
-        $('#tabList').find('li:eq(2) a').tab('show');
-      } else if (window.location.hash === "#/modEdit") {
-        $('#tabList').find('li:eq(3) a').tab('show');
-      } else if (window.location.hash === "#/privacypolicy") {
-        $('#privacypolicy').modal('show');
-      } else if (window.location.hash === "#/flairtext") {
-        $('#flairText').modal('show');
-      }
-    }
-  });
-
-  $scope.getReferences = function () {
-    if ($scope.user) {
-      io.socket.get("/user/get/" + $scope.user.name, function (data, res) {
-        if (res.statusCode === 200) {
-          _.merge($scope.user, data);
-          if ($scope.user.flair && $scope.user.flair.ptrades) {
-            $scope.user.flairFriendCodes = [];
-            $scope.user.flairGames = [{tsv: "", ign: ""}];
-            var trades = $scope.user.flair.ptrades.flair_text || "";
-            var sv = $scope.user.flair.svex.flair_text || "";
-
-            if (trades && sv) {
-
-
-              var fcs = _.merge(trades.match(regex.fc) || [], sv.match(regex.fc) || []);
-              var games = _.merge(trades.match(regex.game) || [], sv.match(regex.game) || []);
-              var igns = _.merge(trades.match(regex.ign) || [], sv.match(regex.ign) || []);
-              var tsvs = sv.match(regex.tsv) || [];
-
-
-              for (var k = 0; k < fcs.length; k++) {
-                $scope.user.flairFriendCodes.push(fcs[k]);
-              }
-
-              $scope.user.flairGames = [];
-              for (var j = 0; j < games.length || j < igns.length || j < tsvs.length; j++) {
-                $scope.user.flairGames.push({
-                  game: j < games.length ? games[j].replace(/\(/g, "")
-                    .replace(/\)/g, "")
-                    .replace(/,/g, "") : "",
-                  ign: j < igns.length ? igns[j].replace(/\d \|\| /g, "")
-                    .replace(/ \(/g, "")
-                    .replace(/ \|/g, "")
-                    .replace(/\), /g, "")
-                    .replace(/,/g, "") : "",
-                  tsv: j < tsvs.length ? tsvs[j].replace(/\|\| /g, "")
-                    .replace(/, /g, "") : ""
-                });
-              }
-            }
-          }
-          if (!$scope.user.flairFriendCodes || !$scope.user.flairFriendCodes.length) {
-            $scope.user.flairFriendCodes = [""];
-          }
-          if (!$scope.user.flairGames || !$scope.user.flairGames.length) {
-            $scope.user.flairGames = [{tsv: "", ign: "", game: ""}];
-          }
-          if (!$scope.user.friendCodes || !$scope.user.friendCodes.length) {
-            $scope.user.friendCodes = [""];
-          }
-          if (!$scope.user.games || !$scope.user.games.length) {
-            $scope.user.games = [{tsv: "", ign: ""}];
-          }
-        }
-        $scope.$apply();
-        $scope.loaded = true;
-        $scope.$apply();
-        if (window.location.hash === "#/comments") {
-          $('#tabList li:eq(1) a').tab('show');
-        } else if (window.location.hash === "#/info") {
-          $('#tabList li:eq(2) a').tab('show');
-        } else if (window.location.hash === "#/modEdit") {
-          $('#tabList li:eq(3) a').tab('show');
-        } else if (window.location.hash === "#/privacypolicy") {
-          $('#privacypolicy').modal('show');
-        } else if (window.location.hash === "#/flairtext") {
-          $('#flairText').modal('show');
-        }
-      });
-    } else {
-      window.setTimeout($scope.getReferences, 1000);
     }
   };
 
@@ -426,25 +324,6 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
 
   };
 
-  $scope.getFlairs = function () {
-    var url = "/flair/all";
-
-    io.socket.get(url, function (data, res) {
-      if (res.statusCode === 200) {
-        $scope.flairs = data;
-        if (data.length === 0) {
-          $scope.flairs[0] = {
-            name: "",
-            trades: "",
-            shinyevents: "",
-            eggs: "",
-            sub: ""
-          };
-        }
-      }
-    });
-  };
-
   $scope.addFlair = function () {
     $scope.flairs.push({});
   };
@@ -477,5 +356,23 @@ module.exports = function ($scope, $filter, $location, UserFactory, io) {
     $scope.flairs.splice(index, 1);
   };
 
-  $scope.getFlairs();
+  $scope.init = function (params) {
+    $scope = _.assign($scope, params);
+    try {
+      var parsed = $scope.flairCheck($scope.user.flair.ptrades.flair_text, $scope.user.flair.svex.flair_text);
+      $scope.user.flairFriendCodes = parsed.fcs;
+      $scope.user.flairGames = parsed.games;
+      for (var i = 0; i < parsed.games.length; i++) {
+        $scope.user.flairGames[i].tsv = parsed.tsvs[i];
+      }
+    } catch (err) {
+      $scope.user.flairFriendCodes = [""];
+      $scope.user.flairGames = [{tsv: "", ign: "", game: ""}];
+      $scope.user.friendCodes = [""];
+      $scope.user.games = [{tsv: "", ign: ""}];
+    }
+  };
+  $(document).ready(function () {
+    $scope.loaded = true;
+  });
 };

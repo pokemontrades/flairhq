@@ -13,12 +13,7 @@ exports.banFromSub = async function (redToken, username, banMessage, banNote, su
 exports.giveBannedUserFlair = async function (redToken, username, current_css_class, current_flair_text, subreddit) {
   try {
     var flair_text = current_flair_text || '';
-    var css_class;
-    if (subreddit === 'pokemontrades') {
-      css_class = current_css_class ? current_css_class.replace(/ [^ ]*/, '') + ' banned' : 'default banned';
-    } else {
-      css_class = current_css_class ? current_css_class + ' banned' : 'banned';
-    }
+    var css_class = Flairs.makeNewCSSClass(current_css_class, 'banned', subreddit);
     await Reddit.setUserFlair(redToken, username, css_class, flair_text, subreddit);
     console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
     return 'Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit;

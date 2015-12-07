@@ -1,7 +1,8 @@
 var $ = require('jquery');
-var sharedService = require('./sharedClientFunctions.js');
+var shared = require('./sharedClientFunctions.js');
 
-module.exports = function ($scope, $filter, io) {
+module.exports = function ($scope, io) {
+  shared.addRepeats($scope, io);
   $scope.newStuff = {
     newComment: ""
   };
@@ -13,14 +14,10 @@ module.exports = function ($scope, $filter, io) {
     approveAll: {}
   };
   $scope.saving = {};
-  $scope.refUser = {
-    name: window.location.pathname.substring(3)
-  };
   $scope.selectedRef = {};
   $scope.referenceToRevert = {};
   $scope.indexOk = {};
   $scope.indexSpin = {};
-
 
   $scope.editReference = function (ref) {
     $scope.selectedRef = ref;
@@ -28,25 +25,9 @@ module.exports = function ($scope, $filter, io) {
   };
 
   $scope.revertRef = function () {
-    var index = $scope.user.references.indexOf($scope.selectedRef);
-    $scope.user.references[index] = $.extend(true, {}, $scope.referenceToRevert);
+    var index = $scope.refUser.references.indexOf($scope.selectedRef);
+    $scope.refUser.references[index] = $.extend(true, {}, $scope.referenceToRevert);
   };
-
-  sharedService.addRepeats($scope);
-
-  io.socket.get("/user/get/" + $scope.refUser.name, function (data, res) {
-    if (res.statusCode === 200) {
-      $scope.refUser = data;
-      if (!$scope.refUser.friendCodes || $scope.refUser.friendCodes.length === 0) {
-        $scope.refUser.friendCodes = [""];
-      }
-      if ($scope.refUser.games.length === 0) {
-        $scope.refUser.games = [{tsv: "", ign: ""}];
-      }
-      window.document.title = data.name + "'s reference";
-      $scope.$apply();
-    }
-  });
 
   $scope.addComment = function () {
     var comment = $scope.newStuff.newComment,
@@ -87,9 +68,6 @@ module.exports = function ($scope, $filter, io) {
   $scope.modSaveProfile = function () {
     $scope.ok.modSaveProfile = false;
     $scope.spin.modSaveProfile = true;
-    if (!$scope.user.isMod) {
-      return;
-    }
     var intro = $scope.refUser.intro,
       fcs = $scope.refUser.friendCodes.slice(0),
       games = $scope.refUser.games,
@@ -202,9 +180,13 @@ module.exports = function ($scope, $filter, io) {
       } else {
         $scope.ok.approveAll[type] = true;
         if (type === "event") {
-          $scope.refUser.references = $filter("filter")($scope.refUser.references, {type: "!redemption"});
+          $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
+            return ref.type !== 'redemption';
+          });
         }
-        $scope.refUser.references = $filter("filter")($scope.refUser.references, {type: "!" + type});
+        $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
+          return ref.type !== type;
+        });
         $scope.refUser.references = $scope.refUser.references.concat(data);
       }
       $scope.spin.approveAll[type] = false;

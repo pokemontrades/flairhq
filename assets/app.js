@@ -28,19 +28,6 @@ var fapp = ng.module("fapp", [
   'fapp.md'
 ]);
 
-fapp.factory('UserFactory', function () {
-  var user;
-
-  return {
-    getUser: function () {
-      return user;
-    },
-    setUser: function (newUser) {
-      user = newUser;
-    }
-  };
-});
-
 fapp.service('io', function () {
   var socket = require('socket.io-client');
   var io = require('sails.io.js')(socket);
@@ -52,9 +39,9 @@ fapp.service('io', function () {
 });
 
 // Define controllers, and their angular dependencies
-fapp.controller("referenceCtrl", ['$scope', '$filter', 'io', refCtrl]);
+fapp.controller("referenceCtrl", ['$scope', 'io', refCtrl]);
 fapp.controller("indexCtrl", ['$scope', 'io', indexCtrl]);
-fapp.controller("userCtrl", ['$scope', '$filter', '$location', 'UserFactory', 'io', userCtrl]);
+fapp.controller("userCtrl", ['$scope', '$location', 'io', userCtrl]);
 fapp.controller("adminCtrl", ['$scope', 'io', adminCtrl]);
 fapp.controller("banCtrl", ['$scope', 'io', banCtrl]);
 

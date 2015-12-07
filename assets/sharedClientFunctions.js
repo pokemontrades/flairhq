@@ -1,11 +1,10 @@
-var socket = require("socket.io-client");
-var io = require("sails.io.js")(socket);
 var referenceService = require('../api/services/References.js');
 var flairService = require('../api/services/Flairs.js');
-
+var _ = require('lodash');
 module.exports = {
-  addRepeats: function ($scope) {
-    var current_user = window.location.pathname.substring(0, 3) === '/u/' ? 'refUser' : 'user';
+  addRepeats: function ($scope, io) {
+    var pathToRefs = 'refUser.references',
+      pathToApps = 'refUser.apps';
     $scope.editRef = function () {
       var url = "/reference/edit";
       $scope.editRefError = $scope.validateRef($scope.selectedRef);
@@ -17,10 +16,10 @@ module.exports = {
         $scope.indexSpin.editRef = false;
         if (res.statusCode === 200) {
           $scope.indexOk.editRef = true;
-          var index = $scope.user.references.findIndex(function (searchRef) {
+          var index = $scope.refUser.references.findIndex(function (searchRef) {
             return searchRef.id === $scope.selectedRef.id;
           });
-          $scope.user.references[index] = $scope.selectedRef;
+          $scope.refUser.references[index] = $scope.selectedRef;
         } else {
           $scope.editRefError = "There was an issue.";
           console.log(res);
@@ -85,7 +84,7 @@ module.exports = {
       var url = "/reference/delete";
       io.socket.post(url, {refId: id}, function (data, res) {
         if (res.statusCode === 200) {
-          $scope[current_user].references = $scope[current_user].references.filter(function (ref) {
+          $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
             return ref.id !== id;
           });
           $scope.$apply();
@@ -107,6 +106,7 @@ module.exports = {
     $scope.isGiveaway = referenceService.isGiveaway;
     $scope.isEggCheck = referenceService.isEggCheck;
     $scope.isMisc = referenceService.isMisc;
+    $scope.isApprovable = referenceService.isApprovable;
     $scope.isApproved = referenceService.isApproved;
     $scope.getRedditUser = referenceService.getRedditUser;
     $scope.formattedName = flairService.formattedName;
@@ -115,35 +115,52 @@ module.exports = {
     $scope.inSVExchangeHatcher = flairService.inSVExchangeHatcher;
     $scope.inSVExchangeGiver = flairService.inSVExchangeGiver;
     $scope.getFlair = flairService.getFlair;
+    $scope.flairCheck = flairService.flairCheck;
     $scope.userHasFlair = function (flair) {
       return flairService.userHasFlair($scope.user, flair);
     };
     $scope.numberOfTrades = function () {
-      return referenceService.numberOfTrades($scope[current_user]);
+      return referenceService.numberOfTrades(_.get($scope, pathToRefs));
     };
     $scope.numberOfPokemonGivenAway = function () {
-      return referenceService.numberOfPokemonGivenAway($scope[current_user]);
+      return referenceService.numberOfPokemonGivenAway(_.get($scope, pathToRefs));
     };
     $scope.numberOfEggsGivenAway = function () {
-      return referenceService.numberOfEggsGivenAway($scope[current_user]);
+      return referenceService.numberOfEggsGivenAway(_.get($scope, pathToRefs));
     };
     $scope.numberOfEggChecks = function () {
-      return referenceService.numberOfEggChecks($scope[current_user]);
+      return referenceService.numberOfEggChecks(_.get($scope, pathToRefs));
     };
     $scope.numberOfApprovedEggChecks = function () {
-      return referenceService.numberOfApprovedEggChecks($scope[current_user]);
+      return referenceService.numberOfApprovedEggChecks(_.get($scope, pathToRefs));
     };
     $scope.getFlairTextForSVEx = function () {
-      return flairService.getFlairTextForSVEx($scope[current_user]);
+      return flairService.getFlairTextForSVEx(_.get($scope, pathToRefs));
     };
     $scope.applied = function (flair) {
-      return flairService.applied($scope.user, flair);
+      return flairService.applied(_.get($scope, pathToApps), flair);
     };
     $scope.canUserApply = function (applicationFlair) {
-      return flairService.canUserApply($scope.user, applicationFlair || $scope.selectedFlair, $scope.flairs);
+      if (!$scope.refUser || !$scope.user || $scope.user.name !== $scope.refUser.name) {
+        return false;
+      }
+      return flairService.canUserApply(
+        $scope.refUser.references,
+        applicationFlair,
+        flairService.getUserFlairs($scope.user, $scope.flairs)
+      ) && !$scope.applied(applicationFlair, $scope.flairs);
     };
     $scope.formattedRequirements = function (flair) {
       return flairService.formattedRequirements(flair, $scope.flairs);
+    };
+    $scope.clickRefLink = function (ref) {
+      if ($scope.user.isMod) {
+        io.socket.post('/flair/app/refreshClaim', ref, function (data, res) {
+          if (res.statusCode !== 200) {
+            console.log('Error ' + res.statusCode + ': Could not send link data to server.');
+          }
+        });
+      }
     };
   }
 };

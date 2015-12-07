@@ -1,5 +1,6 @@
+var shared = require('./sharedClientFunctions.js');
 module.exports = function ($scope, io) {
-
+  shared.addRepeats($scope, io);
   $scope.banInfo = {
     username: $scope.query.username || '',
     banNote: $scope.query.banNote || '',

@@ -39,7 +39,8 @@ module.exports.policies = {
     index: user,
     reference: anyone,
     search: user,
-    info: anyone
+    info: anyone,
+    tools: anyone
   },
 
   ReferenceController: {

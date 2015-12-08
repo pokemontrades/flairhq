@@ -62,6 +62,10 @@ module.exports = {
     res.view();
   },
 
+  tools: function (req, res) {
+    res.view("../tools/tools.ejs");
+  },
+
   version: function(req, res) {
     res.ok(sails.config.version);
   }

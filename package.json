@@ -1,6 +1,6 @@
 {
   "name": "FlairHQ",
-  "version": "2.3.3",
+  "version": "2.4.0",
   "description": "A project to allow easy adding of flair applications for subreddits (focusing initially on /r/pokemontrades) and easy moderation for moderators.",
   "scripts": {
     "start": "node ./node_modules/sails/bin/sails.js lift"
@@ -11,7 +11,7 @@
     "url": "git://github.com/yamanickill/flairhq.git"
   },
   "author": "YaManicKill",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [],
   "dependencies": {
     "angular": "1.3.x",

@@ -49,6 +49,7 @@
     }
   }
 
+  require("babel/register")({/* babel options */});
 
   // Start server
   sails.lift(rc('sails'));

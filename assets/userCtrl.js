@@ -192,6 +192,10 @@ module.exports = function ($scope, $location, io) {
     var mergedGames = {},
       text = "";
     for (var j = 0; j < games.length; j++) {
+      // Allow IGNs without games, and games without IGNs (e.g. if IGN was deleted for the character limit), but ignore empty-string IGNs without games
+      if (!games[j].ign && !games[j].game) {
+        continue;
+      }
       if (games[j] && mergedGames[games[j].ign]) {
         mergedGames[games[j].ign].push(games[j].game);
       } else if (games[j]) {
@@ -275,8 +279,8 @@ module.exports = function ($scope, $location, io) {
 
     for (var i = 0; i < $scope.user.flairFriendCodes.length; i++) {
       var fc = $scope.user.flairFriendCodes[i];
-      if (!fc || fc === "" || !fc.match(regex.fcSingle)) {
-        return {correct: false, error: "Please fill in all friend codes and IGNs."};
+      if (!fc || !fc.match(regex.fcSingle)) {
+        return {correct: false, error: "Please fill in all friend codes and in-game names."};
       }
     }
 
@@ -285,13 +289,20 @@ module.exports = function ($scope, $location, io) {
       var game = $scope.user.flairGames[j];
       if (game.ign) {
         hasIGN = true;
+        if (game.ign.length > 12) {
+          return {correct: false, error: 'In-game names have a maximum length of 12 characters.'};
+        }
+        var illegal_match = game.ign.match(/\(|\)|\||,/);
+        if (illegal_match) {
+          return {correct: false, error: 'Your in-game name contains an illegal character: ' + illegal_match};
+        }
       }
       if (game.tsv >= 4096) {
         return {correct: false, error: "Invalid TSV, they should be between 0 and 4095."};
       }
     }
     if (!hasIGN) {
-      return {correct: false, error: "Please fill in all friend codes and IGNs."};
+      return {correct: false, error: "Please fill in all friend codes and in-game names."};
     }
     return {correct: true};
   };

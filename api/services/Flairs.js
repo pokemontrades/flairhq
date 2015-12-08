@@ -193,7 +193,7 @@ exports.flairCheck = function (ptrades, svex) {
   const gameOptions = ['X', 'Y', 'ΩR', 'αS'].join('|');
   const legalIgn = '[^()|,]{1,12}';
   const friendCodeGroup = /((?:\d{4}-){2}\d{4}(?:, (?:\d{4}-){2}\d{4})*)/;
-  const gameGroup = '^(' + legalIgn + '(?: \\((?:' + gameOptions + ')(?:, (?:' + gameOptions + '))*\\))?(?:, ' + legalIgn + '(?: \\((?:' +
+  const gameGroup = '^(' + legalIgn + '(?: \\((?:' + gameOptions + ')(?:, (?:' + gameOptions + '))*\\))(?:, (?:' + legalIgn + ')?(?: \\((?:' +
     gameOptions + ')(?:, (?:' + gameOptions + '))*\\))?)*)$';
   var tradesParts = ptrades.split(' || ');
   var svexParts = svex.split(' || ');

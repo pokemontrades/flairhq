@@ -60,6 +60,7 @@ module.exports = {
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
       promises.push(Application.destroy({id: req.allParams().id}));
       await* promises;
+      sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + relevant_flair);
       return res.ok(await Flairs.getApps());
     } catch (err) {
       return res.serverError(err);

@@ -144,7 +144,7 @@ module.exports = {
           var query = {
             user: ref.user2,
             url: new RegExp(ref.url.substring(ref.url.indexOf("/r/"))),
-            user2: '/u/' + ref.user
+            user2: ref.user
           };
           //If a verified reference is deleted, its compelmentary reference is un-verified.
           Reference.update(query, {verified: false}, function (err) {
@@ -200,7 +200,7 @@ module.exports = {
       if (!References.isApprovable(ref)) {
         return res.badRequest();
       }
-      return await References.approve(ref, req.allParams().approve);
+      return res.ok(await References.approve(ref, req.allParams().approve));
     } catch (err) {
       return res.serverError(err);
     }

@@ -53,8 +53,8 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
   };
   let response = await request(options).catch(function (error) {
     if (!silenceErrors) {
-      console.log('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode);
-      console.log('Form data sent: ' + JSON.stringify(data));
+      sails.log.error('Reddit error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode);
+      sails.log.error('Form data sent: ' + JSON.stringify(data));
     }
     throw {statusCode: error.statusCode, error: '(Reddit response)'};
   });
@@ -63,7 +63,7 @@ var makeRequest = async function (refreshToken, requestType, url, data, rateLimi
   try {
     bodyJson = JSON.parse(response.body);
   } catch (error) {
-    console.log("Error with parsing: " + response.body);
+    sails.log.error("Error with parsing: " + response.body);
     throw {error: "Error with parsing: " + response.body};
   }
   return bodyJson;

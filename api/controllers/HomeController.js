@@ -24,7 +24,7 @@ module.exports = {
         req.user.loggedFriendCodes = _.union(ptrades_fcs, svex_fcs, req.user.loggedFriendCodes);
         req.user.save(function (err) {
           if (err) {
-            console.log(err);
+            sails.log.error(err);
           }
         });
       }

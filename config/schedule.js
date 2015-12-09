@@ -4,12 +4,12 @@ module.exports.schedule = {
     updateModmail: {
       cron : "0 8 * * *",
       task : function (context, sails) {
-        console.log('[Daily task]: Updating modmail archives...');
+        sails.log.info('[Daily task]: Updating modmail archives...');
         Promise.all([Modmails.updateArchive('pokemontrades'), Modmails.updateArchive('SVExchange')]).then(function (results) {
-          console.log('[Daily task]: Finished updating modmail archives.');
+          sails.log.info('[Daily task]: Finished updating modmail archives.');
         }, function (error) {
-          console.log('There was an issue updating the modmail archives.');
-          console.log(error);
+          sails.log.error('There was an issue updating the modmail archives.');
+          sails.log.error(error);
         });
       },
       context : {}

@@ -196,7 +196,7 @@ module.exports = {
   approve: async function (req, res) {
     try {
       var ref = await Reference.findOne(req.allParams().id);
-      if (!References.isApprovable(ref)) {
+      if (!References.isApprovable(ref.type)) {
         return res.badRequest();
       }
       return res.ok(await References.approve(ref, req.allParams().approve));
@@ -207,7 +207,7 @@ module.exports = {
 
   approveAll: function (req, res) {
     var promises = [];
-    Reference.find({user: req.allParams().username, type: req.allParams().type}, function (err, refs) {
+    Reference.find({user: req.allParams().username, type: req.allParams().type, sort: {createdAt: 'desc'}}, function (err, refs) {
       if (!refs.length || err) {
         return res.notFound(err);
       }

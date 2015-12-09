@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var shared = require('./sharedClientFunctions.js');
+var _ = require('lodash');
 
 module.exports = function ($scope, io) {
   shared.addRepeats($scope, io);
@@ -153,6 +154,7 @@ module.exports = function ($scope, io) {
 
   $scope.approve = function (id, approve) {
     var url = "/reference/approve";
+    $scope.refUser.references[_.findIndex($scope.refUser.references, {id: id})].approved = approve;
     io.socket.post(url, {id: id, approve: approve}, function (data, res) {
       if (res.statusCode === 200) {
         var index = $scope.refUser.references.findIndex(function (ref) {
@@ -179,15 +181,11 @@ module.exports = function ($scope, io) {
         console.log(res.statusCode + ": " + data);
       } else {
         $scope.ok.approveAll[type] = true;
-        if (type === "event") {
-          $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
-            return ref.type !== 'redemption';
-          });
+        for (var i = 0; i < $scope.refUser.references.length; i++) {
+          if ($scope.refUser.references[i].type === type) {
+            $scope.refUser.references[i].approved = true;
+          }
         }
-        $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
-          return ref.type !== type;
-        });
-        $scope.refUser.references = $scope.refUser.references.concat(data);
       }
       $scope.spin.approveAll[type] = false;
       $scope.$apply();

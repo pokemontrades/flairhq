@@ -60,8 +60,13 @@ module.exports.views = {
   layout: 'layout',
 
   locals: {
+    refTypes: {
+      short: ['event', 'shiny', 'casual', 'bank', 'egg', 'giveaway', 'eggcheck', 'involvement', 'misc'],
+      long: ['Events', 'Shinies', 'Competitive / Casual', 'Bank trades', 'Egg Hatches', 'Giveaways/Contests', 'Egg/TSV Checks', 'Free Tradback/Free Redemption', 'Misc']
+    },
     allTypes: require('../assets/search/types.js'),
-    flairService: require('../api/services/Flairs.js')
+    flairService: require('../api/services/Flairs.js'),
+    refService: require('../api/services/References.js')
   }
 
   /****************************************************************************

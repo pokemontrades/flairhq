@@ -1,62 +1,87 @@
-<td>
-  <strong>
-    {{$index + 1}}.
-  </strong>
-</td>
+<tr>
+  <td>
+    <strong>
+      <%= index + 1 %>.
+    </strong>
+  </td>
 
-<td ng-if="isTrade(reference) || isBank(reference)">
-  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
-    {{reference.gave}} for {{reference.got}}
-  </a>
-</td>
+  <% if (refService.isTrade(reference) || refService.isBank(reference)) { %>
+    <td>
+      <a ng-href="<%= reference.url %>" target="_blank" ng-mousedown="clickRefLink(<%= JSON.stringify(reference) %>)">
+        <%= reference.gave %> for <%= reference.got %>
+      </a>
+    </td>
+  <% } %>
 
-<td class="hidden-sm hidden-xs" ng-if="isEgg(reference) || isInvolvement(reference)">
-  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
-    {{reference.description || reference.descrip}}
-  </a>
-</td>
+  <% if (refService.isEgg(reference) || refService.isInvolvement(reference)) { %>
+    <td class="hidden-sm hidden-xs">
+      <a ng-href="<%= reference.url %>" target="_blank" ng-mousedown="clickRefLink(<%= JSON.stringify(reference) %>)">
+        <%= reference.description || reference.descrip %>
+      </a>
+    </td>
+  <% } %>
 
-<td ng-if="isEggCheck(reference)">
-  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">{{reference.description || reference.descrip}}
-    {{reference.number ? "(" + reference.number + " checked)" : ""}}
-  </a>
-</td>
+  <% if (refService.isEggCheck(reference)) { %>
+    <td>
+      <a ng-href="<%= reference.url %>" target="_blank" ng-mousedown="clickRefLink(<%= JSON.stringify(reference) %>)">
+        <%= reference.description || reference.descrip %>
+        <%= reference.number ? "(" + reference.number + " checked)" : "" %>
+      </a>
+    </td>
+  <% } %>
 
-<td class="hidden-sm hidden-xs" ng-if="isGiveaway(reference)">
-  <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
-    {{reference.description || reference.descrip}} (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
-  </a>
-</td>
+  <% if (refService.isGiveaway(reference)) { %>
+    <td class="hidden-sm hidden-xs">
+      <a ng-href="<%= reference.url %>" target="_blank" ng-mousedown="clickRefLink(<%= JSON.stringify(reference) %>)">
+        <%= reference.description || reference.descrip %>
+        (Sub: <%= reference.url.split("/")[4] + reference.number ? ", " + reference.number + " given" : "" %>)
+      </a>
+    </td>
+  <% } %>
 
-<td class="hidden-sm hidden-xs" ng-if="isTrade(reference) || isBank(reference) || isEgg(reference) || isInvolvement(reference)">
-  <a ng-href="{{getRedditUser(reference.user2)}}">
-    {{getRedditUser(reference.user2)}}
-  </a>
-</td>
+  <% if (refService.isTrade(reference) || refService.isBank(reference) || refService.isEgg(reference) || refService.isInvolvement(reference)) { %>
+    <td class="hidden-sm hidden-xs">
+      <a ng-href="/u/<%= reference.user2 %>">
+        <span>/u/<%= reference.user2.replace('-', '&#8209;') %></span> <!-- replace hyphens with non-breaking hyphens to prevent linebreaks -->
+      </a>
+    </td>
+  <% } %>
+  
+  <% if (refService.isGiveaway(reference) || refService.isInvolvement(reference) || refService.isEggCheck(reference)) { %>
+    <td></td>
+  <% } %>
+  
+  <td>
+    <% if (user.isMod && refPage && refService.isApprovable(reference.type)) { %>
+      <% var global_index = _.findIndex(refUser.references, {id: reference.id}); %>
+      <input type="checkbox"
+          ng-change="approve('<%= reference.id %>', refUser.references[<%= global_index %>].approved)"
+          ng-model="refUser.references[<%= global_index %>].approved" />
+      <% if (reference.edited) { %>
+        <span>
+          <font class="editstar" title="This reference was edited at some point.">*</font>
+        </span>
+      <% } if (reference.verified) { %>
+        <span>
+          <sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup>
+        </span>
+      <% } %>
+    <% } %>
+  </td>
 
-<td ng-if="isGiveaway(reference) || isInvolvement(reference) || isEggCheck(reference)"></td>
-
-<td>
-  <input  ng-if="user.isMod && !onIndexPage && isApprovable(reference)" type="checkbox" ng-change="approve(reference.id, reference.approved)" ng-model="reference.approved"/>
-  <span ng-if="user.isMod && !onIndexPage && reference.edited" && isApprovable(reference)>
-    <font class="editstar" title="This reference was edited at some point.">*</font>
-  </span>
-  <span ng-if="user.isMod && !onIndexPage && reference.verified && isApprovable(reference)">
-    <sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup>
-  </span>
-</td>
-
-<td>
-  <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(reference)" class="icon">
-    <span class="glyphicon glyphicon-info-sign"></span>
-  </a>
-  <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(reference)"
-     ng-if="user.name === refUser.name" class="icon">
-    <span class="glyphicon glyphicon-edit"></span>
-  </a>
-  <a href="#" ng-really-switch="deleteRef" class="icon"
-     ng-really-click="deleteRef(reference.id)"
-     ng-if="user.name === refUser.name || user.isMod">
-    <span class="glyphicon glyphicon-trash"></span>
-  </a>
-</td>
+  <td>
+    <a href="#viewReferenceModal" data-toggle="modal" ng-click="editReference(<%= JSON.stringify(reference) %>)" class="icon">
+      <span class="glyphicon glyphicon-info-sign"></span>
+    </a>
+    <% if (user.name === refUser.name) { %>
+      <a href="#editReferenceModal" data-toggle="modal" ng-click="editReference(<%= JSON.stringify(reference) %>)" class="icon">
+        <span class="glyphicon glyphicon-edit"></span>
+      </a>
+    <% } %>
+    <% if (user.name === refUser.name || user.isMod) { %>
+      <a href="#" ng-really-switch="deleteRef" class="icon" ng-really-click="deleteRef(reference.id)">
+        <span class="glyphicon glyphicon-trash"></span>
+      </a>
+    <% } %>
+  </td>
+</tr>

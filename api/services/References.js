@@ -72,8 +72,8 @@ exports.isEggCheck = function (el) {
 exports.isMisc = function (el) {
   return el.type === "misc";
 };
-exports.isApprovable = function (el) {
-  return ['event', 'shiny', 'casual', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(el.type) !== -1;
+exports.isApprovable = function (type) {
+  return ['event', 'shiny', 'casual', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(type) !== -1;
 };
 exports.isNotNormalTrade = function (type) {
   return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';

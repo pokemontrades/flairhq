@@ -36,7 +36,7 @@ exports.get = async function (requester, username) {
     }));
   }
 
-  promises.push(Reference.find({user: user.name}).sort({type: 'asc', createdAt: 'desc'}).then(function (result) {
+  promises.push(Reference.find({user: user.name}).sort({createdAt: 'desc', type: 'asc'}).then(function (result) {
     result.forEach(function (ref) {
       if (!requester || requester.name !== user.name) {
         ref.privatenotes = undefined;

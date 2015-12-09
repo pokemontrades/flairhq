@@ -33,7 +33,7 @@ module.exports = function ($scope, io) {
     var comment = $scope.newStuff.newComment,
       url = "/reference/comment/add";
 
-    if (!comment || comment === "") {
+    if (!comment.trim()) {
       return;
     }
 
@@ -115,7 +115,7 @@ module.exports = function ($scope, io) {
     var newNote = $scope.newStuff.newNote,
       url = "/user/addNote";
 
-    if (newNote) {
+    if (newNote.trim()) {
       io.socket.post(url, {
         "username": $scope.refUser.name,
         "note": newNote

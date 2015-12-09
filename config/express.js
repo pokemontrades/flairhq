@@ -12,7 +12,7 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
         user.flair = {ptrades: flairs[0], svex: flairs[1]};
         user.save(function (err) {
           if (err) {
-            console.log(err);
+            return done(err, user);
           }
           return done(null, user);
         });

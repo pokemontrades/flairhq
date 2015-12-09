@@ -6,7 +6,6 @@
 
 var Q = require('q');
 var _ = require('lodash');
-var moment = require('moment');
 
 module.exports = {
 
@@ -284,23 +283,6 @@ module.exports = {
     }, function () {
       console.log('Failed to check whether /u/' + req.allParams().name + ' is a moderator.');
       return res.serverError();
-    });
-  },
-
-  downloadModmail: function (req, res) {
-    Modmail.find().sort('created_utc DESC').then(function (modmails) {
-      var formatted_modmails = [];
-      modmails.forEach(function (modmail) {
-        formatted_modmails.push({
-          id: modmail.name.slice(3),
-          subject: modmail.subject,
-          author: modmail.author,
-          body: modmail.body,
-          subreddit: modmail.subreddit,
-          created: moment(modmail.created_utc*1000).format('YYYY-MM-DD HH:mm:ss') + ' UTC'
-        });
-      });
-      return res.ok(formatted_modmails);
     });
   }
 };

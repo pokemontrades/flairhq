@@ -28,14 +28,14 @@
             </div>
           </div>
           <div class="form-group">
-            <textarea class="form-control" ng-model="newStuff.newNote"
+            <textarea class="form-control" ng-model="newStuff.newNote" ng-trim="false"
                       placeholder="Add Note with markdown"></textarea>
             <div class="panel panel-default">
               <div class="panel-heading">Preview</div>
               <div class="panel-body" ><md ng-model="newStuff.newNote"></md></div>
             </div>
             <button type="button" class="btn btn-primary"
-                    ng-disabled="!newStuff.newNote" ng-click="addNote()">Add note</button>
+                    ng-disabled="!newStuff.newNote.trim()" ng-click="addNote()">Add note</button>
           </div>
         </div>
       </div>

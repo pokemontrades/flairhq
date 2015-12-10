@@ -7,6 +7,9 @@ module.exports = function (req, res, next) {
     passport.session()(req, res, async function () {
       try {
         res.locals.user = req.user;
+        if (req.user) {
+          res.locals.user.games = await Game.find({user: req.user.name});
+        }
         res.locals.query = req.query;
         res.locals.flairs = await Flairs.getFlairs();
         if (req.user && req.user.isMod) {

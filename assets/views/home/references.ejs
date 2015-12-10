@@ -8,7 +8,7 @@
     </tr>
 
     <tr data-toggle="collapse" href="#collapseevents">
-      <td colspan="2">[+] Events ({{refUser.references.filter(isEvent).length}})</td>
+      <td colspan="2">[<span class="plus-minus">+</span>] Events ({{refUser.references.filter(isEvent).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
@@ -30,7 +30,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseshinies">
-      <td colspan="2">[+] Shinies ({{refUser.references.filter(isShiny).length}})</td>
+      <td colspan="2">[<span class="plus-minus">+</span>] Shinies ({{refUser.references.filter(isShiny).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
@@ -53,7 +53,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsecasuals">
-      <td colspan="2">[+] Competitive / Casual ({{refUser.references.filter(isCasual).length}})</td>
+      <td colspan="2">[<span class="plus-minus">+</span>] Competitive / Casual ({{refUser.references.filter(isCasual).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
@@ -76,7 +76,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsebanks">
-      <td colspan="2">[+] <h3>Bank trades ({{refUser.references.filter(isBank).length}})</h3></td>
+      <td colspan="2">[<span class="plus-minus">+</span>] <h3>Bank trades ({{refUser.references.filter(isBank).length}})</h3></td>
       <td colspan="2" class="hidden-sm hidden-xs"></td>
       <td></td>
     </tr>
@@ -87,7 +87,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapseeggs">
-      <td colspan="2">[+] <h3>Egg Hatches ({{refUser.references.filter(isEgg).length}})</h3></td>
+      <td colspan="2">[<span class="plus-minus">+</span>] <h3>Egg Hatches ({{refUser.references.filter(isEgg).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
@@ -110,7 +110,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsegiveaways">
-      <td colspan="2">[+] <h3>Giveaways/Contests ({{numberOfPokemonGivenAway(refUser)}} Pokémon given, {{numberOfEggsGivenAway(refUser)}} eggs given)</h3></td>
+      <td colspan="2">[<span class="plus-minus">+</span>] <h3>Giveaways/Contests ({{numberOfPokemonGivenAway(refUser)}} Pokémon given, {{numberOfEggsGivenAway(refUser)}} eggs given)</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
@@ -132,7 +132,7 @@
     </tbody>
 
       <tr data-toggle="collapse" href="#collapseeggchecks">
-          <td colspan="2">[+] <h3>Egg/TSV Checks ({{refUser.references.filter(isEggCheck).length}} threads, {{numberOfEggChecks(refUser)}} given)</h3></td>
+          <td colspan="2">[<span class="plus-minus">+</span>] <h3>Egg/TSV Checks ({{refUser.references.filter(isEggCheck).length}} threads, {{numberOfEggChecks(refUser)}} given)</h3></td>
           <td>
               <button class="btn btn-xs pull-right has-spinner"
                       ng-if="user.isMod && !onIndexPage"
@@ -155,7 +155,7 @@
       </tbody>
 
       <tr data-toggle="collapse" href="#collapseinvolvement">
-          <td colspan="2">[+] <h3>Free Tradeback/Free Redemption ({{refUser.references.filter(isInvolvement).length}})</h3></td>
+          <td colspan="2">[<span class="plus-minus">+</span>] <h3>Free Tradeback/Free Redemption ({{refUser.references.filter(isInvolvement).length}})</h3></td>
           <td>
               <button class="btn btn-xs pull-right has-spinner"
                       ng-if="user.isMod && !onIndexPage"
@@ -178,7 +178,7 @@
       </tbody>
 
     <tr data-toggle="collapse" href="#collapseMisc">
-      <td colspan="2">[+] <h3>Misc ({{refUser.references.filter(isMisc).length}})</h3></td>
+      <td colspan="2">[<span class="plus-minus">+</span>] <h3>Misc ({{refUser.references.filter(isMisc).length}})</h3></td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"

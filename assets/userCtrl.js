@@ -385,5 +385,9 @@ module.exports = function ($scope, $location, io) {
   };
   $(document).ready(function () {
     $scope.loaded = true;
+    $('.plus-minus').parent().parent().on('click', function () {
+      var plusminus = $(this).find('.plus-minus');
+      plusminus.text(plusminus.text() === '+' ? '-' : '+');
+    });
   });
 };

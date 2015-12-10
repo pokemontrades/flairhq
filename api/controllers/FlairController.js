@@ -107,12 +107,6 @@ module.exports = {
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
   
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
-      User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}, function (err) {
-        if (err) {
-          console.log("Failed to update /u/" + req.user.name + "'s logged friend codes, for some reason");
-          return;
-        }
-      });
 
       var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
       var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
@@ -120,6 +114,7 @@ module.exports = {
       var promises = [];
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
+      promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (identical_banned_fcs.length || banned_alts.length || flagged.length)) {
         var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
@@ -150,7 +145,7 @@ module.exports = {
           user: req.user.name,
           content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
         }]).exec(function () {});
-        return res.ok(req.user);
+        return res.ok();
       });
     } catch (err) {
       return res.serverError(err);

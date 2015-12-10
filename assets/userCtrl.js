@@ -369,18 +369,24 @@ module.exports = function ($scope, $location, io) {
 
   $scope.init = function (params) {
     $scope = _.assign($scope, params);
-    try {
-      var parsed = $scope.flairCheck($scope.user.flair.ptrades.flair_text, $scope.user.flair.svex.flair_text);
-      $scope.user.flairFriendCodes = parsed.fcs;
-      $scope.user.flairGames = parsed.games;
-      for (var i = 0; i < parsed.games.length; i++) {
-        $scope.user.flairGames[i].tsv = parsed.tsvs[i];
+    if ($scope.user) {
+      try {
+        var parsed = $scope.flairCheck($scope.user.flair.ptrades.flair_text, $scope.user.flair.svex.flair_text);
+        $scope.user.flairFriendCodes = parsed.fcs;
+        $scope.user.flairGames = parsed.games;
+        for (var i = 0; i < parsed.games.length; i++) {
+          $scope.user.flairGames[i].tsv = parsed.tsvs[i];
+        }
+        $scope.user.friendCodes = $scope.user.flairFriendCodes;
+        if (!$scope.user.games.length) {
+          $scope.user.games = $scope.user.flairGames;
+        }
+      } catch (err) {
+        $scope.user.flairFriendCodes = [""];
+        $scope.user.flairGames = [{tsv: "", ign: "", game: ""}];
+        $scope.user.games = $scope.user.flairGames;
+        $scope.user.friendCodes = [""];
       }
-    } catch (err) {
-      $scope.user.flairFriendCodes = [""];
-      $scope.user.flairGames = [{tsv: "", ign: "", game: ""}];
-      $scope.user.friendCodes = [""];
-      $scope.user.games = [{tsv: "", ign: ""}];
     }
   };
   $(document).ready(function () {

@@ -317,7 +317,7 @@ exports.refreshAppClaim = function (ref, mod_username) {
   } else if (References.isInvolvement(ref) || References.isGiveaway(ref) && /reddit\.com\/r\/pokemontrades/.test(ref.url)) {
     query = {sub: 'pokemontrades', flair: 'involvement'};
   } else if (References.isEgg(ref)) {
-    query = {sub: 'svexchange', flair: {not: {endsWith: 'ribbon'}}};
+    query = {sub: 'svexchange', flair: {$not: /ribbon$/}};
   } else if (References.isEggCheck(ref) || References.isGiveaway(ref) && /reddit\.com\/r\/SVExchange/.test(ref.url)) {
     query = {sub: 'svexchange', flair: {endsWith: 'ribbon'}};
   } else {

@@ -286,9 +286,9 @@ exports.edit_distance = function (string1, string2) {
 // Given a friend code, return all banned friend codes that have an edit distance of less than 3 to the given friend code.
 exports.getSimilarBannedFCs = function (fc) {
   return User.find({banned: true}).then(function (bannedUsers) {
-    return _.flatten(_.map(bannedUsers, 'loggedFriendCodes')).filter(function (banned_fc) {
+    return _(bannedUsers).map('loggedFriendCodes').flatten().compact().filter(function (banned_fc) {
       return exports.edit_distance(fc, banned_fc) < 3;
-    });
+    }).value();
   });
 };
 

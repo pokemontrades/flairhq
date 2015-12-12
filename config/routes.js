@@ -202,6 +202,11 @@ module.exports.routes = {
     action     : 'info'
   },
 
+  '/tools' : {
+    controller : 'home',
+    action     : 'tools'
+  },
+
   '/version' : {
     controller : 'home',
     action     : 'version'

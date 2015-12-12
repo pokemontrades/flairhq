@@ -76,16 +76,16 @@ module.exports = {
     }
     try {
       var appData = {
-        limit: 2,
+        limit: 1,
         sort: "createdAt DESC",
         user: req.user.name,
         type: "flairTextChange"
       };
       var events = await Event.find(appData);
       var now = moment();
-      if (events.length > 1) {
+      if (events.length) {
         var then = moment(events[0].createdAt);
-        then.add(4, 'minutes');
+        then.add(2, 'minutes');
         if (then.isAfter(now)) {
           return res.status(400).json({error: "You set your flair too recently, please try again in a few minutes."});
         }

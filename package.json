@@ -19,6 +19,7 @@
     "angular-spinner": "^0.7.0",
     "angular-ui-mask": "~1.4.3",
     "async": "~1.4.2",
+    "babel-core": "^6.3.17",
     "babel-eslint": "^4.1.4",
     "babelify": "6.3.0",
     "bootstrap": "^3.3.5",

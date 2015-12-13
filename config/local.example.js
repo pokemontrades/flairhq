@@ -27,10 +27,5 @@ module.exports = {
     port: 27017,
     db: 'fapp',
     collection: 'sessions'
-  },
-
-  // This should only be used for development
-  log: {
-    level: "verbose"
   }
 };

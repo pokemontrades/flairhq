@@ -39,7 +39,8 @@ module.exports.policies = {
     index: user,
     reference: anyone,
     search: user,
-    info: anyone
+    info: anyone,
+    tools: anyone
   },
 
   ReferenceController: {
@@ -55,8 +56,10 @@ module.exports.policies = {
 
   SearchController: {
     '*': mod,
-    refs: user,
-    refView: user
+    ref: user,
+    refView: user,
+    user: user,
+    userView: user
   },
 
   UserController: {

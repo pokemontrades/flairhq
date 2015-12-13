@@ -44,7 +44,6 @@ module.exports = {
           return res.ok(results);
         });
       });
-
   },
 
   add: function (req, res) {
@@ -60,7 +59,7 @@ module.exports = {
         return res.serverError(err);
       }
       if (ref && (ref.type !== "egg" || req.params.type !== "egg")) {
-        return res.badRequest();
+        return res.status(400).json({err: 'Already added that URL.'});
       }
       Reference.create(
         {
@@ -145,7 +144,7 @@ module.exports = {
           var query = {
             user: ref.user2,
             url: new RegExp(ref.url.substring(ref.url.indexOf("/r/"))),
-            user2: '/u/' + ref.user
+            user2: ref.user
           };
           //If a verified reference is deleted, its compelmentary reference is un-verified.
           Reference.update(query, {verified: false}, function (err) {
@@ -195,18 +194,16 @@ module.exports = {
     });
   },
 
-  approve: function (req, res) {
-    Reference.findOne(req.allParams().id, function (err, ref) {
-      if (!ref || err) {
-        return res.notFound(err);
+  approve: async function (req, res) {
+    try {
+      var ref = await Reference.findOne(req.allParams().id);
+      if (!References.isApprovable(ref)) {
+        return res.badRequest();
       }
-      References.approve(ref, req.allParams().approve).then(function (result) {
-        return res.ok(result);
-      }, function (error) {
-        console.log(error);
-        return res.serverError(error);
-      });
-    });
+      return res.ok(await References.approve(ref, req.allParams().approve));
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
   approveAll: function (req, res) {
@@ -249,13 +246,12 @@ module.exports = {
     });
   },
 
-  getFlairs: function (req, res) {
-    Flair.find().exec(function (err, flairs) {
-      if (err) {
-        return res.serverError(err);
-      }
-      return res.ok(flairs);
-    });
+  getFlairs: async function (req, res) {
+    try {
+      return res.ok(await Flairs.getFlairs());
+    } catch (err) {
+      return res.serverError(err);
+    }
   }
 };
 

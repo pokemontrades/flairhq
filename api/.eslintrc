@@ -5,16 +5,20 @@
   "globals": {
     "Reference": true,
     "User": true,
+    "Users": true,
     "Ban": true,
     "Reddit": true,
     "Event": true,
     "sails": true,
+    "Flair": true,
     "Flairs": true,
     "Usernotes": true,
     "References": true,
     "Sessions": true,
     "Game": true,
     "Application": true,
-    "ModNote": true
+    "ModNote": true,
+    "Modmail": true,
+    "Modmails": true
   }
 }

@@ -1,0 +1,48 @@
+<form class="navbar-form navbar-left dropdown"
+      role="search"
+      ng-controller="SearchController as search"
+      ng-submit="search.submit()">
+  <input type="submit" style="position: absolute; left: -9999px"/>
+
+  <div class="form-group" ng-if="!onSearchPage && user">
+    <div class="form-group has-feedback">
+      <div class="input-group">
+        <select class="form-control input-group-addon"
+                ng-model="search.input.search"
+                ng-change="search.changeSearchType()"
+                ng-options="item.short as item.name for item in search.searchesForUser()"
+                ng-if="search.searchesForUser().length > 1">
+        </select>
+        <input type="text"
+               class="form-control"
+               ng-change="search.searchMaybe()"
+               placeholder="Search"
+               ng-model="search.input.keyword" />
+      </div>
+      <i class="glyphicon glyphicon-search form-control-feedback"></i>
+    </div>
+    <ul class="dropdown-menu list-group search-results" role="menu"
+        ng-show="search.inProgress || search.results.length > 0">
+      <li class="list-group-item"
+          ng-if="search.inProgress">
+        Searching...
+      </li>
+      <div class="scrolling-search-results">
+        <a ng-href="{{search.linkAddress(result)}}"
+           ng-repeat="result in search.results track by $index"
+           ng-if="result !== null"
+           class="list-group-item">
+          <% allTypes.forEach(function (el, index) { %>
+          <div ng-if="search.input.search === '<%- el.short %>'">
+            <%- partial(el.short + '/result.ejs') %>
+          </div>
+          <% });%>
+        </a>
+      </div>
+      <a ng-href="/search/{{search.input.search}}/{{search.input.uriKeyword()}}"
+         class="list-group-item list-group-item-info">
+        More results and advanced
+      </a>
+    </ul>
+  </div>
+</form>

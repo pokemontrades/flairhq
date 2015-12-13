@@ -57,7 +57,12 @@ module.exports.views = {
   *                                                                           *
   ****************************************************************************/
 
-  layout: 'layout'
+  layout: 'layout',
+
+  locals: {
+    allTypes: require('../assets/search/types.js'),
+    flairService: require('../api/services/Flairs.js')
+  }
 
   /****************************************************************************
   *                                                                           *

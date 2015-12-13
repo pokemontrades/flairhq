@@ -1,0 +1,40 @@
+{
+  "pokemontrades": {
+    "pokeball,premierball": "premierball",
+    "greatball hok,ultraball": "ultraball hok",
+    "ovalcharm1,shinycharm": "shinycharm1",
+    "greatball,involvement": "greatball1",
+    "ovalcharm,involvement": "ovalcharm1",
+    "premierball hok,involvement": "premierball1 hok",
+    ",banned": "banned",
+    "pokeball,banned": "pokeball banned",
+    "pokeball1,banned": "pokeball1 banned",
+    "ovalcharm hok,banned": "ovalcharm banned",
+    "ovalcharm1 hok,banned": "ovalcharm1 banned",
+    "masterball1 hok something-else,banned": "masterball1 banned",
+    "dreamball banned,banned": "dreamball banned",
+    "banned,banned": "banned"
+  },
+
+  "SVExchange": {
+    ",lucky": "lucky",
+    "lucky,egg": "egg",
+    "eevee,togepi": "togepi",
+    "togepi smartribbon,torchic": "torchic smartribbon",
+    ",cuteribbon": "cuteribbon",
+    "cuteribbon,coolribbon": "coolribbon",
+    "manaphy smartribbon,toughribbon": "manaphy toughribbon",
+    "eggcup,beautyribbon": "eggcup beautyribbon",
+    "beautyribbon,eggcup": "eggcup beautyribbon",
+    ",banned": "banned",
+    "lucky,banned": "lucky banned",
+    "lucky cuteribbon,banned": "lucky cuteribbon banned",
+    "toughribbon,banned": "toughribbon banned",
+    "banned,banned": "banned",
+    "lucky banned,banned": "lucky banned",
+    "lucky cuteribbon banned,banned":"lucky cuteribbon banned",
+    "toughribbon banned,banned": "toughribbon banned",
+    "pichu banned,toughribbon": "pichu toughribbon banned",
+    "coolribbon banned,togepi": "togepi coolribbon banned"
+  }
+}

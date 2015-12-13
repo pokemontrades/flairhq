@@ -10,13 +10,13 @@
   },
   "rules": {
     "no-console": 0,
-    "indent": [
-      2,
-      2
-    ],
     "linebreak-style": [
       2,
       "unix"
+    ],
+    "indent": [
+      2,
+      2
     ],
     "semi": [
       2,

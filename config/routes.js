@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Route Mappings
  * (sails.config.routes)
@@ -33,17 +34,13 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/' : {
-    controller : 'home'
+    controller : 'home',
+    action: 'index'
   },
 
   '/u/:user' : {
     controller: 'home',
     action: 'reference'
-  },
-
-  '/user/mine' : {
-    controller : 'user',
-    action     : 'mine'
   },
 
   '/user/get/:name' : {
@@ -71,6 +68,11 @@ module.exports.routes = {
     action     : 'logout'
   },
 
+  '/auth/reddit': {
+    controller: 'auth',
+    action: 'reddit'
+  },
+
   '/auth/reddit/callback' : {
     controller : 'auth',
     action     : 'callback'
@@ -89,11 +91,6 @@ module.exports.routes = {
   '/reference/approve' : {
     controller : 'reference',
     action     : 'approve'
-  },
-
-  '/reference/all' : {
-    controller : 'reference',
-    action     : 'all'
   },
 
   '/reference/approve/all' : {
@@ -146,6 +143,16 @@ module.exports.routes = {
     action     : 'denyApp'
   },
 
+  '/flair/app/refreshClaim': {
+    controller: 'flair',
+    action: 'refreshClaim'
+  },
+
+  '/flair/setText': {
+    controller: 'flair',
+    action: 'setText'
+  },
+
   '/user/edit' : {
     controller : 'user',
     action     : 'edit'
@@ -185,34 +192,38 @@ module.exports.routes = {
     action     : 'banlist'
   },
 
+  '/event/get': {
+    controller: 'event',
+    action: 'get'
+  },
+
   '/info' : {
     controller : 'home',
     action     : 'info'
   },
 
+  '/tools' : {
+    controller : 'home',
+    action     : 'tools'
+  },
+
   '/version' : {
     controller : 'home',
     action     : 'version'
-  },
-
-  '/search/s/:searchterm' : {
-    controller : 'search',
-    action     : 'refView'
-  },
-
-  '/search/l/:searchterm' : {
-    controller : 'search',
-    action     : 'logView'
-  },
-
-  '/search/ref' : {
-    controller : 'search',
-    action     : 'refs'
-  },
-
-  '/search/log' : {
-    controller : 'search',
-    action     : 'log'
   }
-
 };
+
+var searchTypes = require("../assets/search/types.js");
+
+for (let i = 0; i < searchTypes.length; i++) {
+  // Programatically add the routes for searches
+  let type = searchTypes[i];
+  module.exports.routes['/search/' + type.short] = {
+    controller: 'search',
+    action: type.short
+  };
+  module.exports.routes['/search/' + type.short + "/:searchterm"] = {
+    controller: 'search',
+    action: type.short + "View"
+  };
+}

@@ -72,6 +72,9 @@ exports.isEggCheck = function (el) {
 exports.isMisc = function (el) {
   return el.type === "misc";
 };
+exports.isApprovable = function (el) {
+  return ['event', 'shiny', 'casual', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(el.type) !== -1;
+};
 exports.isNotNormalTrade = function (type) {
   return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';
 };
@@ -85,59 +88,57 @@ exports.getRedditUser = function (username) {
     return username;
   }
 };
-exports.numberOfPokemonGivenAway = function (user) {
+exports.numberOfPokemonGivenAway = function (refs) {
   var givenAway = 0;
-  if (!user || !user.references) {
-    return;
+  if (!refs) {
+    return 0;
   }
-  user.references.filter(function (item) {
+  refs.filter(function (item) {
     return exports.isGiveaway(item) && item.url.indexOf("pokemontrades") !== -1;
   }).forEach(function (ref) {
     givenAway += (ref.number || 0);
   });
   return givenAway;
 };
-exports.numberOfEggsGivenAway = function (user) {
+exports.numberOfEggsGivenAway = function (refs) {
   var givenAway = 0;
-  if (!user || !user.references) {
-    return;
+  if (!refs) {
+    return 0;
   }
-  user.references.filter(function (item) {
+  refs.filter(function (item) {
     return exports.isGiveaway(item) && item.url.indexOf("SVExchange") > -1;
   }).forEach(function (ref) {
     givenAway += (ref.number || 0);
   });
   return givenAway;
 };
-exports.numberOfEggChecks = function (user) {
+exports.numberOfEggChecks = function (refs) {
   var givenAway = 0;
-  if (!user || !user.references) {
-    return;
+  if (!refs) {
+    return 0;
   }
-  user.references.filter(function (item) {
+  refs.filter(function (item) {
     return exports.isEggCheck(item);
   }).forEach(function (ref) {
-    if (ref.url.indexOf("SVExchange") > -1) {
-      givenAway += (ref.number || 0);
-    }
+    givenAway += (ref.number || 0);
   });
   return givenAway;
 };
-exports.numberOfApprovedEggChecks = function (user) {
+exports.numberOfApprovedEggChecks = function (refs) {
   var num = 0;
-  if (!user || !user.references) {
-    return;
+  if (!refs) {
+    return 0;
   }
-  user.references.filter(function (item) {
+  refs.filter(function (item) {
     return exports.isEggCheck(item) && exports.isApproved(item);
   }).forEach(function (ref) {
     num += ref.number || 0;
   });
   return num;
 };
-exports.numberOfTrades = function (user) {
-  if (!user || !user.references) {
+exports.numberOfTrades = function (refs) {
+  if (!refs) {
     return 0;
   }
-  return user.references.filter(exports.isTrade).length;
+  return refs.filter(exports.isTrade).length;
 };

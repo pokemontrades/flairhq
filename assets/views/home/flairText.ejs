@@ -1,0 +1,126 @@
+<div class="modal fade" id="flairText" tabindex="-1" role="dialog"
+     aria-labelledby="flairText" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title">Set Flair Text</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="row" ng-if="!user">
+          <div class="col-md-12">
+            <p>Welcome to FlairHQ. You have been sent here to set your Flair on /r/pokemontrades
+            or /r/SVExchange.</p>
+            <p>To start with, you will need to
+              <a href="/auth/reddit?redirect=%2F%23%2Fflairtext" class="btn btn-primary btn-sm" role="button">log in</a>
+              with your Reddit account, and we can get going.</p>
+          </div>
+        </div>
+
+
+
+        <div class="row" ng-if="user">
+          <form class="form-horizontal">
+            <div class="form-group col-md-12" ng-repeat="fc in user.flairFriendCodes track by $index">
+              <label for="friendcode1" class="col-md-3 control-label">Friend Code:*</label>
+
+              <div class="col-md-9">
+                <div class="input-group"
+                     ng-class="{'has-error': !user.flairFriendCodes[$index]}">
+                  <input type="text" class="form-control" mask="9999-9999-9999"
+                         mask-restrict="reject" ng-model="user.flairFriendCodes[$index]"
+                         placeholder="9999-9999-9999" ng-pattern="regex.fcSingle">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="delflairFc($index)"  ng-disabled="$index === 0">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-12">
+              <div class="col-md-8 col-md-offset-3">
+                <button class="btn btn-default btn-xs" ng-click="addflairFc()">
+                  <span class="glyphicon glyphicon-plus-sign"></span> Add Friend Code
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group col-sm-12" ng-repeat="game in user.flairGames | orderBy:'createdAt' track by $index">
+              <label class="col-md-3 control-label" title="In-Game Name (i.e. the name of your character)">IGN:*</label>
+
+              <div class="col-md-2">
+                <input type="text" class="form-control" ng-model="game.ign">
+              </div>
+              <label class="col-md-1 control-label">TSV:</label>
+
+              <div class="col-md-3 has-feedback">
+                <ng-tooltip unlabeled="true" class="col-md-12" title="Only for SVExchange. Leave blank if you don't know.">
+                  <input type="text" class="form-control" ng-model="game.tsv"
+                         mask="9999" mask-restrict="reject"
+                         placeholder="XXXX">
+                </ng-tooltip>
+              </div>
+              <label class="col-sm-1 control-label">Game:</label>
+
+              <div class="col-md-2">
+                <div class="input-group">
+                  <select class="form-control" ng-model="game.game" ng-options="gameName for gameName in possibleGames">
+                    <option value=""></option>
+                  </select>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="delflairGame($index)" ng-disabled="$index === 0">
+                      <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group col-md-12">
+              <div class="col-md-8 col-md-offset-3">
+                <button class="btn btn-default btn-xs" ng-click="addflairGame()">
+                  <span class="glyphicon glyphicon-plus-sign"></span> Add Game
+                </button>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="alert">
+                  <div>
+                    <strong>/r/pokemontrades: </strong>
+                    {{ptradesCreatedFlair()}}
+                  </div>
+                  <div>
+                    <strong>/r/SVExchange: </strong>
+                    {{svexCreatedFlair()}}
+                  </div>
+                </div>
+                <div id="setTextError" class="alert alert-danger" role="alert" hidden></div>
+                <div class="alert alert-danger col-md-10 col-md-offset-1" role="alert" ng-hide="isCorrectFlairText() ? isCorrectFlairText().correct : true">
+                  {{isCorrectFlairText() ? isCorrectFlairText().error : "This shouldn't be showing."}}
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer" ng-if="user">
+        <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+        <button type="button" class="btn btn-primary has-spinner" ng-click="setFlairText()"
+                ng-disabled="!isCorrectFlairText().correct"
+                ng-class="[userok.setFlairText ? 'glyphicon glyphicon-ok' : '',
+                userspin.setFlairText ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{userok.setFlairText ? "" : "Set flair"}}
+        </button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div><!-- /.modal -->

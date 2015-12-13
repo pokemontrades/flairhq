@@ -78,3 +78,62 @@ module.exports.logs = function (searchData, cb) {
     cb(apps);
   });
 };
+
+module.exports.users = function (searchData, cb) {
+  var data = {
+    "$or": [
+      {
+        "_id": {
+          "$regex": "(?i)" + searchData.keyword
+        }
+      },
+      {
+        "flair.ptrades.flair_text": {
+          "$regex": "(?i)" + searchData.keyword
+        }
+      },
+      {
+        "flair.svex.flair_text": {
+          "$regex": "(?i)" + searchData.keyword
+        }
+      }
+    ]
+  };
+
+  // We can't do deep searching on the flair using waterline, so let's use mongo natively
+  // I guess this means we can't use any other databases in the future anymore. Ach well.
+  User.native(function (err, collection) {
+    collection.find(data)
+      .limit(20)
+      .skip(0)
+      .toArray(function (err, results) {
+        cb(results);
+      });
+  });
+};
+
+module.exports.modmails = function (searchData, cb) {
+  var words = searchData.keyword.split(' ');
+  var fields = ['body', 'author', 'subject'];
+  var requirements = [];
+  for (let i = 0; i < words.length; i++) {
+    var current_req = {'$or': []};
+    for (let j = 0; j < fields.length; j++) {
+      let obj = {};
+      obj[fields[j]] = {'$regex': words[i], '$options': 'i'};
+      current_req['$or'].push(obj);
+    }
+    requirements.push(current_req);
+  }
+  //Finds modmails where all of the words in the search query appear somewhere in either the body, subject, or author.
+  var mailData = {'$and': requirements};
+  Modmail.native(function (err, collection) {
+    collection.find(mailData).sort({created_utc: -1}).skip(searchData.skip ? parseInt(searchData.skip) : 0).limit(20).toArray().then(function (mail) {
+      mail.forEach(function (message) {
+        message.name = message._id;
+        delete message._id;
+      });
+      cb(mail);
+    });
+  });
+};

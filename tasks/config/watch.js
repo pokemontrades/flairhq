@@ -16,29 +16,41 @@ module.exports = function (grunt) {
 
   grunt.config.set('watch', {
     api: {
-
-      // API files to watch:
       files: ['api/**/*']
     },
-    assets: {
-
-      // Assets to watch:
+    less: {
       files: [
-        'assets/**/*',
-        'tasks/pipeline.js'
+        'assets/styles/**/*'
       ],
-
-      // When assets are changed:
       tasks: [
-        'less:dev',
+        'less:dev'
+      ],
+      options: {
+        livereload: true,
+        livereloadOnError: false
+      }
+    },
+    js: {
+      files: [
+        'assets/**/*.js'
+      ],
+      tasks: [
         'copy:dev',
-        'sails-linker:devJs',
-        'sails-linker:devStyles',
-        'eslint',
-        'browserify:dev'
-      ]
+        'eslint'
+      ],
+      options: {
+        livereload: true,
+        livereloadOnError: false
+      }
     }
   });
 
+  grunt.config.set('focus', {
+    dev: {
+      include: ['less', 'js']
+    }
+  });
+
+  grunt.loadNpmTasks('grunt-focus');
   grunt.loadNpmTasks('grunt-contrib-watch');
 };

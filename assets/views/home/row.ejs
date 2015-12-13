@@ -10,7 +10,7 @@
   </a>
 </td>
 
-<td class="hidden-sm hidden-xs" ng-if="isEgg(reference) || isInvolvement(reference)">
+<td ng-if="isEgg(reference) || isInvolvement(reference)">
   <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
     {{reference.description || reference.descrip}}
   </a>
@@ -22,19 +22,19 @@
   </a>
 </td>
 
-<td class="hidden-sm hidden-xs" ng-if="isGiveaway(reference)">
+<td ng-if="isGiveaway(reference)">
   <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
     {{reference.description || reference.descrip}} (Sub: {{reference.url.split("/")[4]}}{{reference.number ? ", " + reference.number + " given" : ""}})
   </a>
 </td>
 
-<td class="hidden-sm hidden-xs" ng-if="isTrade(reference) || isBank(reference) || isEgg(reference) || isInvolvement(reference)">
+<td ng-if="isTrade(reference) || isBank(reference) || isEgg(reference) || isInvolvement(reference)">
   <a ng-href="{{getRedditUser(reference.user2)}}">
     {{getRedditUser(reference.user2)}}
   </a>
 </td>
 
-<td ng-if="isGiveaway(reference) || isInvolvement(reference) || isEggCheck(reference)"></td>
+<td ng-if="isGiveaway(reference) || isEggCheck(reference)"></td>
 
 <td>
   <input  ng-if="user.isMod && !onIndexPage && isApprovable(reference)" type="checkbox" ng-change="approve(reference.id, reference.approved)" ng-model="reference.approved"/>

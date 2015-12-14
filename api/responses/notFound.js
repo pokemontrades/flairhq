@@ -24,6 +24,8 @@ module.exports = function notFound (data, options) {
   var res = this.res;
   var sails = req._sails;
 
+  res.locals.user = req.user;
+
   // Set status code
   res.status(404);
 

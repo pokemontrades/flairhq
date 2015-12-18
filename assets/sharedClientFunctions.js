@@ -135,7 +135,7 @@ module.exports = {
       return referenceService.numberOfApprovedEggChecks(_.get($scope, pathToRefs));
     };
     $scope.getFlairTextForSVEx = function () {
-      return flairService.getFlairTextForSVEx(_.get($scope, pathToRefs));
+      return flairService.getFlairTextForSVEx($scope.refUser);
     };
     $scope.applied = function (flair) {
       return flairService.applied(_.get($scope, pathToApps), flair);

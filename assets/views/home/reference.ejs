@@ -28,9 +28,13 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist" id="tabList">
         <li class="active"><a href="#references" role="tab" data-toggle="tab">References</a></li>
-        <li><a href="#comments" role="tab" data-toggle="tab">Comments</a></li>
+        <li>
+          <a href="#comments" role="tab" data-toggle="tab">Comments (<%= refUser.comments.length %>)</a>
+        </li>
         <li><a href="#info" role="tab" data-toggle="tab">Information</a></li>
-        <li ng-if="user.isMod"><a href="#modEdit" role="tab" data-toggle="tab">Moderation</a></li>
+        <li ng-if="user.isMod">
+          <a href="#modEdit" role="tab" data-toggle="tab">Moderation (<%= refUser.modNotes.length %>)</a>
+        </li>
       </ul>
 
       <div class="tab-content">

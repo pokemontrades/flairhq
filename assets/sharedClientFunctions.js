@@ -7,8 +7,10 @@ module.exports = {
       pathToApps = 'refUser.apps';
     $scope.editRef = function () {
       var url = "/reference/edit";
-      $scope.editRefError = $scope.validateRef($scope.selectedRef);
-      if ($scope.editRefError) {
+      try {
+        $scope.validateRef($scope.selectedRef);
+      } catch (err) {
+        $scope.editRefError = err;
         return;
       }
       $scope.indexSpin.editRef = true;
@@ -27,44 +29,6 @@ module.exports = {
         $scope.$apply();
       });
     };
-    $scope.validateRef = function (ref) {
-      var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
-        regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/,
-        url = ref.url || ref.refUrl;
-      if (!ref.type) {
-        return "Please choose a type.";
-      }
-      if (ref.type === "egg" || ref.type === "giveaway" || ref.type === "misc" || ref.type === "eggcheck" || ref.type === "involvement") {
-        if (!ref.descrip && !ref.description) {
-          return "Make sure you enter all the information";
-        }
-      } else if (!ref.got || !ref.gave) {
-        return "Make sure you enter all the information";
-      }
-      if (!url || ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !ref.user2) {
-        return "Make sure you enter all the information";
-      }
-      if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(url)) ||
-        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !regexp.test(url)) ||
-        (ref.type === "misc" && !regexpMisc.test(url))) {
-        return "Looks like you didn't input a proper permalink";
-      }
-      if (ref.user2.substring(0,3) === "/u/") {
-        ref.user2 = ref.user2.slice(3);
-      }
-      if (ref.user2 === ($scope.user.name)) {
-        return "Don't put your own username there.";
-      }
-      if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
-        return "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
-      }
-      if (ref.number && isNaN(ref.number)) {
-        return "Number must be a number.";
-      }
-      return "";
-    };
     $scope.setLocalBan = function (username, ban) {
       var url = "/mod/setlocalban";
       io.socket.post(url, {username: username, ban: ban}, function (data, res) {
@@ -82,7 +46,7 @@ module.exports = {
     };
     $scope.deleteRef = function (id) {
       var url = "/reference/delete";
-      io.socket.post(url, {refId: id}, function (data, res) {
+      io.socket.post(url, {id: id}, function (data, res) {
         if (res.statusCode === 200) {
           $scope.refUser.references = $scope.refUser.references.filter(function (ref) {
             return ref.id !== id;
@@ -116,6 +80,7 @@ module.exports = {
     $scope.inSVExchangeGiver = flairService.inSVExchangeGiver;
     $scope.getFlair = flairService.getFlair;
     $scope.flairCheck = flairService.flairCheck;
+    $scope.validateRef = referenceService.validateRef;
     $scope.userHasFlair = function (flair) {
       return flairService.userHasFlair($scope.user, flair);
     };

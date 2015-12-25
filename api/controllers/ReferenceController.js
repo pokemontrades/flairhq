@@ -6,162 +6,70 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-var Q = require('q'),
-  async = require('async');
-
 module.exports = {
-  all: function (req, res) {
-    var dateQuery, query;
-    dateQuery = {};
-    if (req.query.before !== undefined) {
-      dateQuery["<"] = new Date(req.query.before);
-    }
-    if (req.query.after !== undefined) {
-      dateQuery[">"] = new Date(req.query.after);
-    }
-    query = {
-      type: ["event", "casual", "shiny", "redemption", "bank"]
-    };
-    if (Object.keys(dateQuery).length > 0) {
-      query.createdAt = dateQuery;
-    }
-
-    Reference.find(query)
-      .sort({createdAt: "asc"})
-      .exec(function (err, refs) {
-        if (err) {
-          return res.serverError(err);
-        }
-        async.map(refs, function (ref, callback) {
-          User.findOne({name: ref.user}).exec(function (err, refUser) {
-            ref.user = refUser;
-            callback(null, ref);
-          });
-        }, function (err, results) {
-          if (err) {
-            return res.serverError(err);
-          }
-          return res.ok(results);
-        });
-      });
-  },
-
-  add: function (req, res) {
-    req.params = req.allParams();
-    var protomatch = /^(https?):\/\/(www|[a-z0-9]*\.)?reddit\.com/;
-    var endOfUrl = req.params.url.replace(protomatch, '');
-    if (req.params.number && isNaN(req.params.number)) {
-      return res.badRequest({err: "Number must be a number"});
-    }
-
-    Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.name}, function (err, ref) {
-      if (err) {
-        return res.serverError(err);
+  add: async function (req, res) {
+    try {
+      var submittedRef = References.validateRef(req.allParams());
+      submittedRef.user = req.user.name;
+      submittedRef.edited = false;
+      var endOfUrl = submittedRef.url.replace(/^(https?):\/\/([a-z0-9]*\.)?reddit\.com/, '');
+      if (submittedRef.user2 === req.user.name) {
+        return res.status(400).json({err: "Don't put your own username there"});
       }
-      if (ref && (ref.type !== "egg" || req.params.type !== "egg")) {
+      if (await Reference.findOne({url: {endsWith: endOfUrl}, type: {not: 'egg'}, user: req.user.name})) {
         return res.status(400).json({err: 'Already added that URL.'});
       }
-      Reference.create(
-        {
-          url: req.params.url,
-          user: req.user.name,
-          user2: req.params.user2,
-          description: req.params.descrip,
-          type: req.params.type,
-          gave: req.params.gave,
-          got: req.params.got,
-          notes: req.params.notes,
-          privatenotes: req.params.privatenotes,
-          edited: false,
-          number: req.params.number || 0
-        },
-        function (err, ref) {
-          if (err) {
-            return res.serverError();
-          } else {
-            return res.ok(ref);
-          }
-        }
-      );
-    });
-  },
-
-  edit: function (req, res) {
-    req.params = req.allParams();
-    if (req.params.number && isNaN(req.params.number)) {
-      return res.badRequest({err: "Number must be a number"});
+      var complement = await References.getComplement(submittedRef);
+      var createdRef = await Reference.create(submittedRef);
+      if (complement && complement.approved) {
+        await References.approve(createdRef, true);
+      }
+      return res.ok(submittedRef);
+    } catch (err) {
+      if (typeof err === 'string') {
+        return res.status(400).json({err: err});
+      }
+      return res.serverError(err);
     }
-    Reference.findOne({id: req.params.id, user: req.user.name}).exec(function (err, ref) {
-      if (err || !ref) {
-        return res.notFound();
-      }
-      if (req.user.name !== ref.user) {
-        return res.forbidden();
-      }
-      var approved = ref.approved;
-      if (ref.url !== req.params.url || ref.type !== req.params.type || ref.number !== req.params.number) {
-        approved = false;
-      }
-      Reference.update(req.params.id,
-        {
-          url: req.params.url,
-          user: req.user.name,
-          user2: req.params.user2,
-          description: req.params.description,
-          type: req.params.type,
-          gave: req.params.gave,
-          got: req.params.got,
-          notes: req.params.notes,
-          privatenotes: req.params.privatenotes,
-          approved: approved,
-          edited: true,
-          number: req.params.number || 0
-        })
-        .exec(function (err, ref) {
-          if (err) {
-            return res.serverError(err);
-          }
-          if (!ref) {
-            return res.notFound();
-          }
-          return res.ok(ref);
-        });
-    });
   },
 
-  deleteRef: function (req, res) {
-    var id = req.allParams().refId;
-    Reference.findOne(id).exec(function (err, ref) {
-      if (!ref) {
-        return res.notFound();
+  edit: async function (req, res) {
+    try {
+      var submittedRef = References.validateRef(req.allParams());
+      if (submittedRef.user2 === req.user.name) {
+        return res.status(400).json({err: "Don't put your own username there"});
       }
-      if (err) {
-        return res.serverError(err);
+      submittedRef.user = req.user.name;
+      submittedRef.edited = true;
+      submittedRef.approved = false;
+      var updatedRef = await Reference.update(req.allParams().id, submittedRef);
+      if (!updatedRef) {
+        return res.notFound(submittedRef);
       }
-      if (ref.user === req.user.name || req.user.isMod) {
-        if (ref.verified) {
-          var query = {
-            user: ref.user2,
-            url: new RegExp(ref.url.substring(ref.url.indexOf("/r/"))),
-            user2: ref.user
-          };
-          //If a verified reference is deleted, its compelmentary reference is un-verified.
-          Reference.update(query, {verified: false}, function (err) {
-            if (err) {
-              sails.log.error("Error while updating complementary trade.");
-            }
-          });
-        }
-        Reference.destroy(id).exec(function (err, refs) {
-          if (err) {
-            return res.serverError(err);
-          }
-          return res.ok(refs);
-        });
-      } else {
-        return res.forbidden();
+      return res.ok(submittedRef);
+    } catch (err) {
+      if (typeof err === 'string') {
+        return res.status(400).json({err: err});
       }
-    });
+      return res.serverError(err);
+    }
+  },
+
+  deleteRef: async function (req, res) {
+    var ref = await Reference.findOne(req.allParams().id);
+    if (!ref) {
+      return res.notFound();
+    }
+    if (ref.user !== req.user.name && !req.user.isMod) {
+      return res.forbidden();
+    }
+    if (ref.verified) {
+      var complement = await References.getComplement(ref);
+      if (complement) {
+        await Reference.update(complement.id, {verified: false});
+      }
+    }
+    return res.ok(await Reference.destroy(ref.id));
   },
 
   comment: function (req, res) {
@@ -205,21 +113,15 @@ module.exports = {
     }
   },
 
-  approveAll: function (req, res) {
-    var promises = [];
-    Reference.find({user: req.allParams().username, type: req.allParams().type}, function (err, refs) {
-      if (!refs.length || err) {
-        return res.notFound(err);
-      }
-      for (var i = 0; i < refs.length; i++) {
-        promises.push(References.approve(refs[i], true));
-      }
-      Promise.all(promises).then(function (results) {
-        return res.ok(results);
-      }, function (error) {
-        return res.serverError(error);
-      });
-    });
+  approveAll: async function (req, res) {
+    try {
+      var refs = await Reference.find({user: req.allParams().username, type: req.allParams().type});
+      return res.ok(await* refs.map(function (ref) {
+        return References.approve(ref, true);
+      }));
+    } catch (err) {
+      return res.serverError(err);
+    }
   },
 
   saveFlairs: function (req, res) {
@@ -238,7 +140,7 @@ module.exports = {
             })
         );
       });
-      Q.all(promises).then(function () {
+      Promise.all(promises).then(function () {
         res.ok(added);
       });
     });

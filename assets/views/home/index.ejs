@@ -25,8 +25,8 @@
         <div id="addNewReference">
           <ng-tooltip data-label="Permalink"
               title="The Permalink URL to the first comment that discusses it. Must be unique (except for egg hatches).">
-            <input type="url" class="form-control" ng-model="addInfo.refUrl"  value="<%= query.refUrl || ''%>" />
-            <span>{{thingamy.refUrl}}{{thingamy.type}}</span>
+            <input type="url" class="form-control" ng-model="addInfo.url"  value="<%= query.url || ''%>" />
+            <span>{{thingamy.url}}{{thingamy.type}}</span>
           </ng-tooltip>
 
           <ng-tooltip data-label="Type"
@@ -53,7 +53,7 @@
 
           <ng-tooltip data-label="Description" ng-show="isNotNormalTrade(addInfo.type)"
                       title="Short description about the trade.">
-            <input type="text" class="form-control" ng-model="addInfo.descrip" value="<%= query.descrip || ''%>">
+            <input type="text" class="form-control" ng-model="addInfo.description" value="<%= query.description || ''%>">
           </ng-tooltip>
 
           <ng-tooltip data-label="Number given" ng-show="hasNumber(addInfo.type)"

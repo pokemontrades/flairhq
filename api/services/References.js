@@ -1,43 +1,75 @@
+var _ = require('lodash');
+exports.getComplement = function (ref) {
+  if (exports.isTrade(ref)) {
+    var query = {user: ref.user2, url: {endsWith: ref.url.substring(ref.url.indexOf('/r/'))}, user2: ref.user, type: ['casual', 'shiny', 'event']};
+    return Reference.findOne(query).then(function (ref) {
+      return ref;
+    });
+  }
+};
 exports.approve = function (ref, approve) {
-  return new Promise(function (resolve, reject) {
-    ref.approved = approve;
-    var query = {
-      user: ref.user2,
-      url: {endsWith: ref.url.substring(ref.url.indexOf("/r/"))},
-      user2: ref.user,
-      or: [
-        {type: 'casual'},
-        {type: 'shiny'},
-        {type: 'event'}
-      ]
-    };
-    Reference.findOne(query, function (searcherr, otherRef) {
-      if (searcherr) {
-        sails.log.error(searcherr);
-        return reject(searcherr);
-      }
-      if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event')) {
-        otherRef.approved = approve;
-        ref.verified = approve;
-        otherRef.verified = approve;
-        ref.save(function (err1, newRef) {
-          otherRef.save(function (err2) {
-            if (err1 || err2) {
-              return reject(err1 || err2);
-            }
-            resolve(newRef);
-          });
-        });
-      } else {
-        ref.save(function (err, newRef) {
-          if (err) {
-            return reject(err);
-          }
-          resolve(newRef);
-        });
-      }
+  if (!exports.isApprovable(ref)) {
+    throw 'Unapprovable ref';
+  }
+  ref.approved = approve;
+  return exports.getComplement(ref).then(function (complement) {
+    var promises = [];
+    if (complement) {
+      complement.approved = approve;
+      ref.verified = approve;
+      complement.verified = approve;
+      promises.push(complement.save());
+    }
+    promises.unshift(ref.save());
+    return Promise.all(promises).then(function (results) {
+      return results[0];
     });
   });
+};
+exports.expectedFields = function (ref) {
+  var optionalTypes = ['notes', 'privatenotes'];
+  var requiredTypes = ['url', 'type'];
+  if (exports.isTrade(ref) || exports.isBank(ref)) {
+    requiredTypes = requiredTypes.concat(['user2', 'gave', 'got']);
+  } else {
+    requiredTypes.push('description');
+  }
+  if (exports.isGiveaway(ref) || exports.isEggCheck(ref)) {
+    optionalTypes.push('number');
+  }
+  return {optional: optionalTypes, required: requiredTypes};
+};
+exports.validateRef = function (ref) {
+  var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+    regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+    regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
+    regexpUser = /^[A-Za-z0-9_-]{1,20}$/;
+  if (!ref.type) {
+    throw 'Please choose a type.';
+  }
+  var expected = exports.expectedFields(ref);
+  for (var i = 0; i < expected.required.length; i++) {
+    if (!ref[expected.required[i]]) {
+      throw 'Make sure you enter all the information';
+    }
+  }
+  ref = _.pick(ref, expected.required.concat(expected.optional));
+  if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(ref.url)) ||
+    (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !regexp.test(ref.url)) ||
+    (ref.type === "misc" && !regexpMisc.test(ref.url))) {
+    throw "Looks like you didn't input a proper permalink";
+  }
+  ref.user2 = ref.user2.replace(/^\/?u\//, '');
+  if (expected.optional.indexOf('number') !== -1 && !ref.number) {
+    ref.number = 0;
+  }
+  if (ref.number && isNaN(ref.number)) {
+    throw 'Number must be a number.';
+  }
+  if (ref.user2 && !regexpUser.test(ref.user2)) {
+    throw 'Please put a username on its own, or in format: /u/username. Not the full url, or anything else.';
+  }
+  return ref;
 };
 exports.isApproved = function (el) {
   return el.approved;

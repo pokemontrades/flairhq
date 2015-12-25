@@ -4,13 +4,13 @@ var shared = require('./sharedClientFunctions.js');
 module.exports = function ($scope, io) {
   shared.addRepeats($scope, io);
   $scope.addInfo = {
-    refUrl: $scope.query.refUrl || '',
+    url: $scope.query.url || '',
     type: $scope.query.type || '',
     user2: $scope.query.user2 || '',
     gave: $scope.query.gave || '',
     got: $scope.query.got || '',
     number: $scope.query.number || '',
-    descrip: $scope.query.descrip || '',
+    description: $scope.query.description || '',
     notes: $scope.query.notes || '',
     privatenotes: $scope.query.privatenotes || ''
   };
@@ -41,30 +41,19 @@ module.exports = function ($scope, io) {
     $scope.indexOk.addRef = false;
     $scope.indexSpin.addRef = true;
     var url = "/reference/add";
-    $scope.addRefError = $scope.validateRef($scope.addInfo);
-    if ($scope.addRefError) {
+    var ref;
+    try {
+      ref = $scope.validateRef($scope.addInfo);
+    } catch (err) {
+      $scope.addRefError = err;
       $scope.indexSpin.addRef = false;
       return;
     }
-    var post = {
-      "url": $scope.addInfo.refUrl,
-      "user2": $scope.addInfo.user2,
-      "type": $scope.addInfo.type,
-      "notes": $scope.addInfo.notes,
-      "privatenotes": $scope.addInfo.privatenotes,
-      "number": $scope.addInfo.number
-    };
-    if ($scope.isNotNormalTrade($scope.addInfo.type)) {
-      post.descrip = $scope.addInfo.descrip;
-    } else {
-      post.got = $scope.addInfo.got;
-      post.gave = $scope.addInfo.gave;
-    }
-    io.socket.post(url, post, function (data, res) {
+    io.socket.post(url, ref, function (data, res) {
       $scope.indexSpin.addRef = false;
       if (res.statusCode === 200) {
-        $scope.addInfo.refUrl = "";
-        $scope.addInfo.descrip = "";
+        $scope.addInfo.url = "";
+        $scope.addInfo.description = "";
         $scope.addInfo.got = "";
         $scope.addInfo.gave = "";
         $scope.addInfo.user2 = "";

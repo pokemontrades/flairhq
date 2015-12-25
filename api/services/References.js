@@ -8,7 +8,8 @@ exports.approve = function (ref, approve) {
       or: [
         {type: 'casual'},
         {type: 'shiny'},
-        {type: 'event'}
+        {type: 'event'},
+        {type: 'bank'}
       ]
     };
     Reference.findOne(query, function (searcherr, otherRef) {
@@ -16,7 +17,7 @@ exports.approve = function (ref, approve) {
         console.log(searcherr);
         return reject(searcherr);
       }
-      if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event')) {
+      if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event' || ref.type === 'bank')) {
         otherRef.approved = approve;
         ref.verified = approve;
         otherRef.verified = approve;
@@ -43,7 +44,7 @@ exports.isApproved = function (el) {
   return el.approved;
 };
 exports.isTrade = function (el) {
-  return exports.isEvent(el) || exports.isShiny(el) || exports.isCasual(el);
+  return exports.isEvent(el) || exports.isShiny(el) || exports.isCasual(el) || exports.isBank(el);
 };
 exports.isInvolvement = function (el) {
   return el.type === "involvement";
@@ -73,7 +74,7 @@ exports.isMisc = function (el) {
   return el.type === "misc";
 };
 exports.isApprovable = function (el) {
-  return ['event', 'shiny', 'casual', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(el.type) !== -1;
+  return ['event', 'shiny', 'casual', 'bank', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(el.type) !== -1;
 };
 exports.isNotNormalTrade = function (type) {
   return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';

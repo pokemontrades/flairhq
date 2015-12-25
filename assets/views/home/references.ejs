@@ -76,9 +76,18 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsebanks">
-      <td colspan="2">[<span class="plus-minus">+</span>] <h3>Bank trades ({{refUser.references.filter(isBank).length}})</h3></td>
-      <td colspan="2" class="hidden-sm hidden-xs"></td>
-      <td></td>
+      <td colspan="2">[<span class="plus-minus">+</span>] Bank trades ({{refUser.references.filter(isBank).length}})</td>
+      <td><button class="btn btn-xs pull-right has-spinner"
+                ng-if="user.isMod && !onIndexPage"
+                ng-click="approveAll('bank')"
+                ng-class="[ok.approveAll.bank ? 'glyphicon glyphicon-ok' : '',
+                  spin.approveAll.bank ? 'active' : '']">
+          <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+          {{ok.approveAll.bank ? "" : "Approve all"}}
+      </td>
+      <td>
+        <span ng-if="user.isMod && !onIndexPage">{{refUser.references.filter(isBank).filter(isApproved).length}}</span>
+      </td>
     </tr>
     <tbody id="collapsebanks" class="collapse">
     <tr ng-repeat="reference in refUser.references | filter: isBank | orderBy: 'createdAt'">

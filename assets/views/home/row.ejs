@@ -4,7 +4,7 @@
   </strong>
 </td>
 
-<td ng-if="isTrade(reference) || isBank(reference)">
+<td ng-if="isTrade(reference)">
   <a ng-href="{{reference.url}}" target="_blank" ng-mousedown="clickRefLink(reference)">
     {{reference.gave}} for {{reference.got}}
   </a>
@@ -29,7 +29,7 @@
 </td>
 
 <td>
-  <a ng-if="isTrade(reference) || isBank(reference) || isEgg(reference) || isInvolvement(reference)" ng-href="{{getRedditUser(reference.user2)}}">
+  <a ng-if="isTrade(reference) || isEgg(reference) || isInvolvement(reference)" ng-href="{{getRedditUser(reference.user2)}}">
     {{getRedditUser(reference.user2)}}
   </a>
 </td>

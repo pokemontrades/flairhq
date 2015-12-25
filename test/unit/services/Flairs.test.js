@@ -152,12 +152,6 @@ describe("Applying for Flair", function () {
     var refs = refFactory.getRefs(60, {type: 'event'});
     assert(!Flairs.canUserApply(refs, stdFlairInfo.flairs.pokeball, userFlairs), 'Error: Can apply for lower flair');
   });
-
-  it("Bank trades do not count for flair", function () {
-    var userFlairs = Flairs.getUserFlairs(users.default_flair_user, stdFlairInfo.flairs);
-    var refs = refFactory.getRefs(10, {type: 'bank'});
-    assert(!Flairs.canUserApply(refs, stdFlairInfo.flairs.pokeball, userFlairs), 'Error: Bank trades are counted for flair');
-  });
 });
 
 describe("Upgrading/combining flairs", function () {

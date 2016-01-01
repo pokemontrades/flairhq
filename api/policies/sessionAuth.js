@@ -10,7 +10,7 @@
 module.exports = function(req, res, next) {
   if (req.user) {
     if (req.user.banned) {
-      req.logout();
+      req.session.destroy();
       return res.view(403, {error: "You have been banned from FlairHQ"});
     }
     return next();

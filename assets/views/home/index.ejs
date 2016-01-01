@@ -58,7 +58,7 @@
 
           <ng-tooltip data-label="Number given" ng-show="hasNumber(addInfo.type)"
                       title="How many you gave away. This can be updated.">
-              <input type="text" class="form-control" ng-model="addInfo.number" value="<%= query.number || ''%>">
+              <input type="number" class="form-control" ng-model="addInfo.number" value="<%= query.number || ''%>">
           </ng-tooltip>
 
           <ng-tooltip data-label="Gave" ng-hide="isNotNormalTrade(addInfo.type)"

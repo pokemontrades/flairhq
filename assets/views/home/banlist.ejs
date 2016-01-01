@@ -6,11 +6,15 @@
       <h2>Ban list</h2>
 
       <ul class="list-group col-md-6">
-        <li ng-repeat="user in <%= JSON.stringify(bannedUsers) %>" class="list-group-item row">
-          <div class="col-md-9">
-            <h4>{{user.name}}</h4>
-          </div>
-        </li>
+        <% for (var i = 0; i < bannedUsers.length; i++) { %>
+          <a href="/u/<%= bannedUsers[i].name %>" style="color:inherit;">
+            <li class="list-group-item row">
+              <div class="col-md-9">
+                <h4><%= bannedUsers[i].name %></h4>
+              </div>
+            </li>
+          </a>
+        <% } %>
       </ul>
     </div>
   </div>

@@ -2,6 +2,7 @@ var regex = require("regex");
 var _ = require("lodash");
 var $ = require("jquery");
 var shared = require('./sharedClientFunctions.js');
+var flairService = require('../api/services/Flairs.js');
 
 module.exports = function ($scope, $location, io) {
   shared.addRepeats($scope, io);
@@ -188,40 +189,6 @@ module.exports = function ($scope, $location, io) {
       $scope.$apply();
     });
   };
-  var gameText = function (games) {
-    var mergedGames = {},
-      text = "";
-    for (var j = 0; j < games.length; j++) {
-      // Allow IGNs without games, and games without IGNs (e.g. if IGN was deleted for the character limit), but ignore empty-string IGNs without games
-      if (!games[j].ign && !games[j].game) {
-        continue;
-      }
-      if (games[j] && mergedGames[games[j].ign]) {
-        mergedGames[games[j].ign].push(games[j].game);
-      } else if (games[j]) {
-        mergedGames[games[j].ign] = [games[j].game];
-      }
-    }
-    for (var ign in mergedGames) {
-      if (mergedGames.hasOwnProperty(ign)) {
-        var ignsGames = mergedGames[ign];
-        if (text) {
-          text += ", ";
-        }
-        text += ign;
-        ignsGames = _.without(ignsGames, "", undefined, null);
-        text += ignsGames.length > 0 ? " (" : "";
-        for (var k = 0; k < ignsGames.length; k++) {
-          text += ignsGames[k];
-          if (k + 1 !== ignsGames.length) {
-            text += ", ";
-          }
-        }
-        text += ignsGames.length > 0 ? ")" : "";
-      }
-    }
-    return text;
-  };
   $scope.ptradesCreatedFlair = function () {
     if (!$scope.user || !$scope.user.flairFriendCodes) {
       return "";
@@ -234,7 +201,7 @@ module.exports = function ($scope, $location, io) {
         text += ", ";
       }
     }
-    return text + " || " + (gameText($scope.user.flairGames) || "");
+    return text + " || " + (flairService.formatGames($scope.user.flairGames) || "");
   };
 
   $scope.svexCreatedFlair = function () {
@@ -251,7 +218,7 @@ module.exports = function ($scope, $location, io) {
         fcText += ", ";
       }
     }
-    text += fcText + " || " + gameText($scope.user.flairGames) + " || ";
+    text += fcText + " || " + flairService.formatGames($scope.user.flairGames) + " || ";
     var tsvText = "";
     for (var k = 0; k < games.length; k++) {
       var tsv = "";

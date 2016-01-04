@@ -179,7 +179,9 @@ module.exports = {
       var user;
       try {
         user = await User.findOne(req.params.username);
-        if (!user) {
+        if (user) {
+          req.params.username = user.name;
+        } else {
           if (await Reddit.checkUsernameAvailable(req.params.username)) {
             console.log("Ban aborted (user does not exist)");
             return res.status(404).json({error: "That user does not exist."});
@@ -187,7 +189,7 @@ module.exports = {
         }
       } catch (err) {
         console.log(err);
-        return res.status(500).json(err);
+        return res.serverError(err);
       }
       var flairs;
       try {
@@ -201,14 +203,11 @@ module.exports = {
       }
       var logged_fcs = user ? user.loggedFriendCodes : [];
       var unique_fcs = _.union(logged_fcs, req.params.additionalFCs);
-      var igns;
       if (flairs) {
         var fc_match = /(\d{4}-){2}\d{4}/g;
         unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), unique_fcs);
-        igns = flairs[0].flair_text.substring(flairs[0].flair_text.indexOf('||') + 3);
-      } else if (user) {
-        igns = user.flair.ptrades.flair_text.substring(user.flair.ptrades.flair_text.indexOf('||') + 3);
       }
+      let igns = (flairs ? flairs : [user.flair.ptrades, user.flair.svex]).map(flair => flair.flair_text.split(' || ')[1]).join(', ');
       var promises = [];
       if (flairs) {
         promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
@@ -218,12 +217,12 @@ module.exports = {
         if (flairs) {
           promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
           promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
-          promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
         }
+        promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
         promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
         promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
-        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-        promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
         promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
         promises.push(Ban.localBanUser(req.params.username));
       }

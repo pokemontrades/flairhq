@@ -1,4 +1,5 @@
-var ng = require("angular");
+var ng = require("angular"),
+  _ = require('lodash');
 
 ng.module('ngReallyClickModule', ['ui.bootstrap'])
   .controller('ngReallyClickCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
@@ -31,8 +32,8 @@ ng.module('ngReallyClickModule', ['ui.bootstrap'])
               'Are you sure you wish to deny this application?' +
               '</div>';
             var defaultHtml = '<div class="modal-body">Are you sure you want ' +
-              'to give <strong>' + user + '</strong> the <strong>' +
-              flair + '</strong> flair?</div>';
+              'to give <strong>' + _.escape(user) + '</strong> the <strong>' +
+              _.escape(flair) + '</strong> flair?</div>';
 
             switch (switchInfo) {
             case "deleteRef":

@@ -1,3 +1,4 @@
+'use strict';
 var _ = require("lodash");
 var assert = require("chai").assert;
 var Flairs = require("../../../api/services/Flairs");
@@ -68,8 +69,11 @@ describe("Flair text", function () {
     });
 
     it("Correctly splits flairs into FCs, IGNs, games, and TSVs", function () {
-      var obj = Flairs.flairCheck(flairTexts.lotsOfGames.ptrades, flairTexts.lotsOfGames.svex);
-      assert.deepEqual(obj, flairTexts.lotsOfGames);
+      assert.deepEqual(Flairs.flairCheck(flairTexts.lotsOfGames.ptrades, flairTexts.lotsOfGames.svex), flairTexts.lotsOfGames);
+    });
+
+    it('Correctly formats game objects into flair texts', function () {
+      assert.strictEqual(Flairs.formatGames(flairTexts.lotsOfGames.games), flairTexts.lotsOfGames.ptrades.split(' || ')[1]);
     });
   });
   describe("Incorrect flairs", function () {
@@ -155,13 +159,14 @@ describe("Applying for Flair", function () {
 });
 
 describe("Upgrading/combining flairs", function () {
-  ['pokemontrades', 'SVExchange'].forEach(function (sub) {
-    describe(sub + ' flairs', function () {
-      _.keysIn(flairCssClasses[sub]).forEach(function (test_case) {
-        var previous = test_case.split(',')[0];
-        var added = test_case.split(',')[1];
-        it((previous || '(no flair)') + ' + ' + added + ' → ' + flairCssClasses[sub][test_case], function () {
-          assert.strictEqual(Flairs.makeNewCSSClass(previous, added, sub), flairCssClasses[sub][test_case]);
+  it('Combines flairs correctly', function () {
+    ['pokemontrades', 'SVExchange'].forEach(function (sub) {
+      describe(sub + ' flairs', function () {
+        _.keysIn(flairCssClasses[sub]).forEach(function (test_case) {
+          let previous = test_case.split(',')[0];
+          let added = test_case.split(',')[1];
+          assert.strictEqual(Flairs.makeNewCSSClass(previous, added, sub), flairCssClasses[sub][test_case],
+            'Error combining ' + previous || '(no flair)' + ' + ' + added + ' into ' + flairCssClasses[sub][test_case]);
         });
       });
     });

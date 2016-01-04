@@ -31,7 +31,6 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   var lines = current_config.replace(/\r/g, '').split("\n");
   var fclist_indices = [lines.indexOf('#FCList1') + 1, lines.indexOf('#FCList2') + 1];
   if (fclist_indices.indexOf(0) != -1) {
-    console.log(lines);
     console.log('Error: Could not find #FCList tags in /r/' + subreddit + ' AutoModerator config');
     throw {error: 'Error parsing /r/' + subreddit + ' AutoModerator config'};
   }
@@ -54,7 +53,9 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
     throw {error: 'Error parsing /r/' + subreddit + ' AutoModerator config'};
   }
   var content = lines.join("\n");
-  await Reddit.editWikiPage(redToken, subreddit, 'config/automoderator', content, 'FlairHQ: Updated banned friend codes');
+  if (content !== current_config) {
+    await Reddit.editWikiPage(redToken, subreddit, 'config/automoderator', content, 'FlairHQ: Updated banned friend codes');
+  }
   var output = 'Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist';
   console.log(output);
   return output;
@@ -87,19 +88,25 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     console.log('Error: Could not find parsing marker in public banlist');
     throw {error: 'Error: Could not find parsing marker in public banlist'};
   }
-  var updated_content = '';
+  let updated_content;
   for (let i = start_index; i < end_index; i++) {
-    if (knownAlt && lines[i].match(new RegExp('/u/' + knownAlt)) || _.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
+    if (knownAlt && lines[i].includes('/u/' + knownAlt) || lines[i].includes('/u/' + username)
+        ||_.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
       // User was an alt account, modify the existing line instead of creating a new one
       let blocks = lines[i].split(' | ');
       if (blocks.length !== 4) {
         break;
       }
-      blocks[0] += ', /u/' + username;
+      blocks[0] = _.union(blocks[0].match(/\/?u\/[\w-]{1,20}/g), ['/u/' + username]).join(', ');
       blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
-      blocks[3] = _.compact(_.union(blocks[3].split(', '), [igns])).join(', ');
+      try {
+        blocks[3] = Flairs.formatGames(Flairs.combineGames(Flairs.parseGames(blocks[3]), Flairs.parseGames(igns)));
+      } catch (err) {
+        blocks[3] += igns;
+      }
       let new_line = blocks.join(' | ');
       updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index, i)).concat(lines.slice(i + 1)).join('\n');
+      break;
     }
   }
   if (!updated_content) {
@@ -107,11 +114,12 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, igns].join(' | ');
     updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
   }
-  try {
-    await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', updated_content, '');
-  } catch (e) {
-    console.log(e);
-    throw {error: 'Failed to update public banlist'};
+  if (updated_content !== current_list) {
+    try {
+      await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', updated_content, '');
+    } catch (e) {
+      throw {error: 'Failed to update public banlist'};
+    }
   }
   console.log('Added /u/' + username + ' to public banlist');
   return 'Added /u/' + username + ' to public banlist';
@@ -128,7 +136,7 @@ exports.localBanUser = async function(username) {
 };
 exports.addUsernote = function (redToken, modname, subreddit, username, banNote, duration) {
   var type = duration ? 'ban' : 'permban';
-  var note = duration ? 'Tempbanned for ' + duration + ' days - ' + banNote : 'Banned - ' + banNote;
+  var note = duration ? 'Tempbanned for ' + duration + ' days - ' + banNote : 'Banned' + (banNote ? ' - ' + banNote : '');
   return Usernotes.addUsernote(redToken, modname, subreddit, username, note, type, '').then(function (response) {
     console.log('Created a usernote on ' + username + ' in /r/' + subreddit);
     return response;

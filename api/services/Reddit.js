@@ -35,7 +35,7 @@ exports.refreshToken = async function(refreshToken) {
 };
 
 var makeRequest = async function (refreshToken, requestType, url, data, rateLimitRemainingThreshold, silenceErrors) {
-  if (left < rateLimitRemainingThreshold && moment().before(resetTime)) {
+  if (left < rateLimitRemainingThreshold && moment().isBefore(resetTime)) {
     throw {statusCode: 504, error: "Rate limited"};
   }
   // Prevent Reddit from sanitizing '> < &' to '&gt; &lt; &amp;' in the response

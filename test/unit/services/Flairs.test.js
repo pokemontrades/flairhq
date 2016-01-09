@@ -1,3 +1,4 @@
+'use strict';
 var _ = require("lodash");
 var assert = require("chai").assert;
 var Flairs = require("../../../api/services/Flairs");
@@ -68,8 +69,11 @@ describe("Flair text", function () {
     });
 
     it("Correctly splits flairs into FCs, IGNs, games, and TSVs", function () {
-      var obj = Flairs.flairCheck(flairTexts.lotsOfGames.ptrades, flairTexts.lotsOfGames.svex);
-      assert.deepEqual(obj, flairTexts.lotsOfGames);
+      assert.deepEqual(Flairs.flairCheck(flairTexts.lotsOfGames.ptrades, flairTexts.lotsOfGames.svex), flairTexts.lotsOfGames);
+    });
+
+    it('Correctly formats game objects into flair texts', function () {
+      assert.strictEqual(Flairs.formatGames(flairTexts.lotsOfGames.games), flairTexts.lotsOfGames.ptrades.split(' || ')[1]);
     });
   });
   describe("Incorrect flairs", function () {
@@ -152,22 +156,17 @@ describe("Applying for Flair", function () {
     var refs = refFactory.getRefs(60, {type: 'event'});
     assert(!Flairs.canUserApply(refs, stdFlairInfo.flairs.pokeball, userFlairs), 'Error: Can apply for lower flair');
   });
-
-  it("Bank trades do not count for flair", function () {
-    var userFlairs = Flairs.getUserFlairs(users.default_flair_user, stdFlairInfo.flairs);
-    var refs = refFactory.getRefs(10, {type: 'bank'});
-    assert(!Flairs.canUserApply(refs, stdFlairInfo.flairs.pokeball, userFlairs), 'Error: Bank trades are counted for flair');
-  });
 });
 
 describe("Upgrading/combining flairs", function () {
-  ['pokemontrades', 'SVExchange'].forEach(function (sub) {
-    describe(sub + ' flairs', function () {
-      _.keysIn(flairCssClasses[sub]).forEach(function (test_case) {
-        var previous = test_case.split(',')[0];
-        var added = test_case.split(',')[1];
-        it((previous || '(no flair)') + ' + ' + added + ' → ' + flairCssClasses[sub][test_case], function () {
-          assert.strictEqual(Flairs.makeNewCSSClass(previous, added, sub), flairCssClasses[sub][test_case]);
+  it('Combines flairs correctly', function () {
+    ['pokemontrades', 'SVExchange'].forEach(function (sub) {
+      describe(sub + ' flairs', function () {
+        _.keysIn(flairCssClasses[sub]).forEach(function (test_case) {
+          let previous = test_case.split(',')[0];
+          let added = test_case.split(',')[1];
+          assert.strictEqual(Flairs.makeNewCSSClass(previous, added, sub), flairCssClasses[sub][test_case],
+            'Error combining ' + previous || '(no flair)' + ' + ' + added + ' into ' + flairCssClasses[sub][test_case]);
         });
       });
     });

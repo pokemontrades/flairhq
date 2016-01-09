@@ -1,5 +1,6 @@
 var pako = require('pako'),
-  sha256 = require('sha256');
+  sha256 = require('sha256'),
+  moment = require('moment');
 var decompress = function(blob) {
   var inflate = new pako.Inflate({to: 'string'});
   inflate.push(new Buffer(blob, 'base64').toString('binary'));
@@ -16,7 +17,7 @@ exports.addUsernote = async function (redToken, modname, subreddit, user, noteTe
   var mods = parsed.constants.users;
   var warnings = parsed.constants.warnings;
   var notes = decompress(parsed.blob);
-  if (!notes.user) {
+  if (!notes[user]) {
     notes[user] = {ns: []};
   }
   if (mods.indexOf(modname) == -1) {
@@ -27,12 +28,12 @@ exports.addUsernote = async function (redToken, modname, subreddit, user, noteTe
   }
   var newNote = {
     n: noteText,
-    t: Math.round(new Date().getTime()/1000),
+    t: moment().unix(),
     m: mods.indexOf(modname),
     l: link_index,
     w: warnings.indexOf(type)
   };
-  notes[user].ns.push(newNote);
+  notes[user].ns.unshift(newNote);
   parsed.blob = compress(notes);
   await Reddit.editWikiPage(redToken, subreddit, 'usernotes', JSON.stringify(parsed), 'FlairHQ: Created note on /u/' + user);
   var hash = sha256(user + newNote.n + newNote.t + newNote.m + newNote.l + newNote.w);

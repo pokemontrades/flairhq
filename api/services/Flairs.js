@@ -34,24 +34,14 @@ exports.formattedName = function(name) {
   }
   return formatted;
 };
-
-exports.validFC = function(code) {
-  code = code.replace(/-/g,'');
-  if (!code.match(/^\d{12}$/) || code > 549755813887) {
-    return 0;
+exports.validFC = function (fc) {
+  fc = fc.replace(/-/g, '');
+  if (!fc.match(/^\d{12}$/) || fc >= Math.pow(2, 39)) {
+    return false;
   }
-  var checksum = Math.floor(code/4294967296);
-  var byte_seq = (code % 4294967296).toString(16);
-  while (byte_seq.length < 8) {
-    byte_seq = "0" + byte_seq;
-  }
-  var byte_arr = byte_seq.match(/../g).reverse();
-  var hash_seq = "";
-  for (var i = 0; i < 4; i++) {
-    hash_seq += String.fromCharCode(parseInt(byte_arr[i], 16));
-  }
-  var new_chk = (parseInt(sha1(hash_seq).substring(0, 2), 16) >> 1);
-  return (new_chk == checksum) ? 1 : 0;
+  var bytes = new Buffer(4);
+  bytes.writeUInt32LE(fc % Math.pow(2, 32));
+  return parseInt(sha1(bytes).slice(0, 2), 16) >> 1 === Math.floor(fc / Math.pow(2, 32));
 };
 exports.getFlair = function (name, flairs) {
   return _.find(flairs, function (flair) {
@@ -183,6 +173,43 @@ exports.formattedRequirements = function (flair, flairs) {
   return formatted;
 };
 
+exports.gameOptions = ['X', 'Y', 'ΩR', 'αS'].join('|');
+exports.legalIgn = '[^()|,]{0,11}[^()|,\\s]';
+
+// Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]
+exports.parseGames = function (formatted_games) {
+  var games = [];
+  var ignBlocks = formatted_games.split(/(?!\([^)]*), (?![^(]*\))/);
+  ignBlocks.forEach(function (block) {
+    var parts = RegExp('^(' + exports.legalIgn + ')? ?(?:\\(((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*)\\))?$').exec(block);
+    if (!parts) {
+      throw 'Invalid format';
+    }
+    if (parts[2]) {
+      parts[2].split(', ').forEach(function (game) {
+        if (_.findIndex(games, {ign: parts[1], game: game}) === -1) {
+          games.push({ign: parts[1] || '', game: game});
+        }
+      });
+    }
+    else if (!_.includes(_.map(games, 'ign'), parts[1])) {
+      games.push({ign: parts[1], game: ''});
+    }
+  });
+  return games;
+};
+
+exports.combineGames = function (gameObjects1, gameObjects2) {
+  return _(gameObjects1).concat(gameObjects2).filter((obj, index, self) => (_.findIndex(self, obj) === index)).value();
+};
+
+// Formats an object containing IGNs/games into a flair text string
+// formatGames( [ {ign: 'John', game: 'X'}, {ign: 'Steve', game: 'X'}, {ign: 'Bob', game: 'ΩR'}, {ign: 'John', game: 'αS'} ] )
+// --> 'John (X, αS), Steve (X), Bob (ΩR)'
+exports.formatGames = function (parsed) {
+  return _(parsed).groupBy('ign').map((games, ign) => (ign + _(games).map('game').compact().join(', ').replace(/^(.+)$/, ' ($1)'))).map(_.trim).compact().join(', ');
+};
+
 exports.flairCheck = function (ptrades, svex) {
   if (!ptrades || !svex) {
     throw "Need both flairs.";
@@ -190,11 +217,10 @@ exports.flairCheck = function (ptrades, svex) {
   if (ptrades.length > 64 || svex.length > 64) {
     throw "Flairs too long";
   }
-  const gameOptions = ['X', 'Y', 'ΩR', 'αS'].join('|');
-  const legalIgn = '[^()|,]{1,12}';
+
   const friendCodeGroup = /((?:\d{4}-){2}\d{4}(?:, (?:\d{4}-){2}\d{4})*)/;
-  const gameGroup = '^(' + legalIgn + '(?: \\((?:' + gameOptions + ')(?:, (?:' + gameOptions + '))*\\))(?:, (?:' + legalIgn + ')?(?: \\((?:' +
-    gameOptions + ')(?:, (?:' + gameOptions + '))*\\))?)*)$';
+  const gameGroup = '^(' + exports.legalIgn + '(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))(?:,(?: ' +
+    exports.legalIgn + ')?(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))?)*)$';
   var tradesParts = ptrades.split(' || ');
   var svexParts = svex.split(' || ');
   if (tradesParts.length !== 2 || svexParts.length !== 3) {
@@ -206,31 +232,13 @@ exports.flairCheck = function (ptrades, svex) {
   if (!tradesParts[1].match(RegExp(gameGroup)) || !svexParts[1].match(RegExp(gameGroup))) {
     throw "We need at least 1 game.";
   }
-  var games = [];
-  var ignBlocks = _.union(tradesParts[1].split(/(?!\([^)]*), (?![^(]*\))/), svexParts[1].split(/(?!\([^)]*), (?![^(]*\))/));
-  // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]
-  // The regex is more complicated than necessary at the moment, but this should make it easier if we decide to allow special characters in the future.
-  ignBlocks.forEach(function (block) {
-    var parts = RegExp('^(' + legalIgn + ')(?: \\(((?:' + gameOptions + ')(?:, (?:' + gameOptions + '))*)\\))?$').exec(block);
-    if (parts[2]) {
-      parts[2].split(', ').forEach(function (game) {
-        if (_.findIndex(games, {ign: parts[1], game: game}) === -1) {
-          games.push({ign: parts[1], game: game});
-        }
-      });
-    }
-    else if (!_.includes(_.map(games, 'ign'), parts[1])) {
-      games.push({ign: parts[1], game: ''});
-    }
-  });
   var response = {
     ptrades: ptrades,
     svex: svex,
-    games: games,
+    games: exports.combineGames(exports.parseGames(tradesParts[1]), exports.parseGames(svexParts[1])),
     tsvs: svexParts[2].split(', '),
     fcs: _.union(tradesParts[0].split(', '), svexParts[0].split(', '))
   };
-
   return response;
 };
 

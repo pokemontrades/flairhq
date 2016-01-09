@@ -28,7 +28,7 @@ module.exports = {
           }
         });
       }
-    });
+    }, sails.log.error);
   },
 
   reference: async function(req, res) {

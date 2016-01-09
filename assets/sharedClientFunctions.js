@@ -162,5 +162,11 @@ module.exports = {
         });
       }
     };
+    // Temporary convenience button to move formerly-bank trades to the shiny section, since people will probably need to do that a lot.
+    $scope.moveRefToShinySection = function (ref) {
+      ref.type = 'shiny';
+      $scope.selectedRef = ref;
+      $scope.editRef();
+    };
   }
 };

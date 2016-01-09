@@ -8,7 +8,7 @@
     </tr>
 
     <tr data-toggle="collapse" href="#collapseevents">
-      <td colspan="2">[<span class="plus-minus">+</span>] Events ({{refUser.references.filter(isEvent).length}})</td>
+      <td colspan="2">[<span class="plus-minus">+</span>] Gen-6 Events ({{refUser.references.filter(isEvent).length}})</td>
       <td>
         <button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
@@ -76,7 +76,7 @@
     </tbody>
 
     <tr data-toggle="collapse" href="#collapsebanks">
-      <td colspan="2">[<span class="plus-minus">+</span>] Bank trades ({{refUser.references.filter(isBank).length}})</td>
+      <td colspan="2">[<span class="plus-minus">+</span>] Past-Gen Events ({{refUser.references.filter(isBank).length}})</td>
       <td><button class="btn btn-xs pull-right has-spinner"
                 ng-if="user.isMod && !onIndexPage"
                 ng-click="approveAll('bank')"

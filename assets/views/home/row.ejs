@@ -2,6 +2,7 @@
   <strong>
     {{$index + 1}}.
   </strong>
+  <button ng-if="isBank(reference) && reference.user === user.name" class="btn btn-xs has-spinner" ng-click="moveRefToShinySection(reference)"><div title="This section used to include shinies and events from past generations, but now it only includes events. If this trade was here because it involved past-gen shinies, click here to move it up to the Shiny section instead. (This button is probably a temporary feature, since we know people will be moving a lot of things in the near future.)">Move to Shiny section</div></button>
 </td>
 
 <td ng-if="isTrade(reference)">

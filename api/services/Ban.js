@@ -111,7 +111,13 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   }
   if (!updated_content) {
     // User was probably not an alt, create a new line
-    let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, igns].join(' | ');
+    let formatted_igns;
+    try {
+      formatted_igns = Flairs.formatGames(Flairs.parseGames(igns));
+    } catch (err) {
+      formatted_igns = igns;
+    }
+    let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, formatted_igns].join(' | ');
     updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
   }
   if (updated_content !== current_list) {

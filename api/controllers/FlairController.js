@@ -119,13 +119,13 @@ module.exports = {
       if (!blockReport && (identical_banned_fcs.length || banned_alts.length || flagged.length)) {
         var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
         if (identical_banned_fcs.length) {
-          message += 'This flair contains a banned friend code: ' + identical_banned_fcs + '\n\n';
+          message += '**This flair contains a banned friend code: ' + identical_banned_fcs + '**\n\n';
         } else if (flagged.length && similar_banned_fcs.length) {
-          message += 'This flair contains a friend code similar to the following banned friend code'  + (similar_banned_fcs.length > 1 ? 's: ' : ': ') +
-            similar_banned_fcs.join(', ') + '\n\n';
+          message += '**This flair contains a friend code similar to the following banned friend code'  + (similar_banned_fcs.length > 1 ? 's: ' : ': ') +
+            similar_banned_fcs.join(', ') + '**\n\n';
         }
         if (banned_alts.length) {
-          message += 'This user may be an alt of the banned user' + (banned_alts.length === 1 ? '' : 's') + ' /u/' + banned_alts.join(', /u/') + '.\n\n';
+          message += '**This user may be an alt of the banned user' + (banned_alts.length === 1 ? '' : 's') + ' /u/' + banned_alts.join(', /u/') + '.**\n\n';
         }
         if (flagged.length) {
           message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged.join(', ') + ' are') + ' invalid.\n\n';

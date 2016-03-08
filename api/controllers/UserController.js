@@ -207,7 +207,8 @@ module.exports = {
         var fc_match = /(\d{4}-){2}\d{4}/g;
         unique_fcs = _.union(flairs[0].flair_text.match(fc_match), flairs[1].flair_text.match(fc_match), unique_fcs);
       }
-      let igns = (flairs ? flairs : [user.flair.ptrades, user.flair.svex]).map(flair => flair.flair_text.split(' || ')[1]).join(', ');
+      let flair_texts = flairs ? _.map(flairs, 'flair_text') : [user.flair.ptrades.flair_text, user.flair.svex.flair_text];
+      let igns = _.compact(flair_texts).map(text => text.split(' || ')[1]).join(', ');
       var promises = [];
       if (flairs) {
         promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));

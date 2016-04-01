@@ -47,6 +47,15 @@ describe("Flair text", function () {
     assert.fail(null, null, "Shouldn't reach this point.");
   });
 
+  it("Throws error in invalid TSVs", function () {
+    try {
+      Flairs.flairCheck(flairTexts.tradesFlairStd, flairTexts.svexFlairBadTSV);
+    } catch (e) {
+      return assert.strictEqual(e, "Error with TSVs");
+    }
+    assert.fail(null, null, "Shouldn't reach this point.");
+  });
+
   describe("On success", function () {
     it("Returns object containing friend codes", function () {
       var fcs = Flairs.flairCheck(flairTexts.tradesFlairStd, flairTexts.svexFlairStd).fcs;

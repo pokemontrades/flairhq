@@ -3,6 +3,7 @@
   "tradesFlairMultipleFCs": "1111-1111-1111, 2222-2222-2222 || YMK (X)",
   "svexFlairStd": "1111-1111-1111 || YMK (X) || 1234",
   "svexFlairDifferentFC": "2222-2222-2222 || YMK (X) || 1234",
+  "svexFlairBadTSV": "1111-2222-3333 || NAA (Y) || COOKIES",
   "incorrectFlair": "not a correct flair",
   "lotsOfGames": {
     "ptrades": "1111-1111-1111 || AAA (Y, ΩR), Joe, Bob (X), (αS)",

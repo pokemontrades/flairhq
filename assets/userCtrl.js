@@ -223,7 +223,9 @@ module.exports = function ($scope, $location, io) {
     for (var k = 0; k < games.length; k++) {
       var tsv = "";
       if (games[k].tsv && games[k].tsv < 4096) {
-        tsv = games[k].tsv;
+        // The server will reject any TSV that isn't 4 characters long, so pad it with zeros.
+        // something something npm install left-pad
+        tsv = ('0000' + games[k].tsv).slice(-4);
       }
       if (tsv && tsvText) {
         tsvText += ", ";

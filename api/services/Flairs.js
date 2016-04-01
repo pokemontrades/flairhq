@@ -232,6 +232,9 @@ exports.flairCheck = function (ptrades, svex) {
   if (!tradesParts[1].match(RegExp(gameGroup)) || !svexParts[1].match(RegExp(gameGroup))) {
     throw "We need at least 1 game.";
   }
+  if (!/\d{4}(, \d{4})*|XXXX/.test(svexParts[2])) {
+    throw "Error with TSVs";
+  }
   var response = {
     ptrades: ptrades,
     svex: svex,

@@ -5,17 +5,17 @@
       <div class="row">
         <div class="col-md-12">
           <h1 class="usernameHeader">
-            <%= refUser.name %>
+            {{refUser.name}}
           </h1>
           <div class="flairs">
             <h5 class="flairTop">
               <span ng-class="'flair-' + refUser.flair.ptrades.flair_css_class">
-                <%= refUser.flair.ptrades.flair_text || '' %>
+                {{refUser.flair.ptrades.flair_text || ''}}
               </span>
             </h5>
             <h5 class="flairBottom">
               <span ng-class="getFlairTextForSVEx()">
-                <%= refUser.flair.svex.flair_text || '' %>
+                {{refUser.flair.svex.flair_text || ''}}
               </span>
             </h5>
           </div>

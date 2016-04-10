@@ -364,5 +364,6 @@ module.exports = function ($scope, $location, io) {
       var plusminus = $(this).find('.plus-minus');
       plusminus.text(plusminus.text() === '+' ? '-' : '+');
     });
+    $('.bigspinner').hide();
   });
 };

@@ -25,7 +25,7 @@
         <div id="addNewReference">
           <ng-tooltip data-label="Permalink"
               title="The Permalink URL to the first comment that discusses it. Must be unique (except for egg hatches).">
-            <input type="url" class="form-control" ng-model="addInfo.refUrl"  value="<%= query.refUrl || ''%>" />
+            <input type="url" class="form-control" ng-model="addInfo.refUrl" />
             <span>{{thingamy.refUrl}}{{thingamy.type}}</span>
           </ng-tooltip>
 
@@ -53,37 +53,37 @@
 
           <ng-tooltip data-label="Description" ng-show="isNotNormalTrade(addInfo.type)"
                       title="Short description about the trade.">
-            <input type="text" class="form-control" ng-model="addInfo.descrip" value="<%= query.descrip || ''%>">
+            <input type="text" class="form-control" ng-model="addInfo.descrip">
           </ng-tooltip>
 
           <ng-tooltip data-label="Number given" ng-show="hasNumber(addInfo.type)"
                       title="How many you gave away. This can be updated.">
-              <input type="number" class="form-control" ng-model="addInfo.number" value="<%= query.number || ''%>">
+              <input type="number" class="form-control" ng-model="addInfo.number">
           </ng-tooltip>
 
           <ng-tooltip data-label="Gave" ng-hide="isNotNormalTrade(addInfo.type)"
                       title="What you gave to the other user.">
-            <input type="text" class="form-control" ng-model="addInfo.gave" value="<%= query.gave || ''%>">
+            <input type="text" class="form-control" ng-model="addInfo.gave">
           </ng-tooltip>
 
           <ng-tooltip data-label="Got" ng-hide="isNotNormalTrade(addInfo.type)"
                       title="What you received from the other user.">
-            <input type="text" class="form-control" ng-model="addInfo.got" value="<%= query.got || ''%>">
+            <input type="text" class="form-control" ng-model="addInfo.got">
           </ng-tooltip>
 
           <ng-tooltip data-label="User" ng-hide="hasNumber(addInfo.type)"
                       title="The user that you traded with.">
-            <input type="text" class="form-control" ng-model="addInfo.user2" value="<%= query.user2 || ''%>">
+            <input type="text" class="form-control" ng-model="addInfo.user2">
           </ng-tooltip>
 
           <ng-tooltip data-label="Public Notes"
                       title="Just an area for your own notes about the trade.">
-            <textarea class="form-control" ng-model="addInfo.notes"><%= query.notes || ''%></textarea>
+            <textarea class="form-control" ng-model="addInfo.notes"></textarea>
           </ng-tooltip>
 
           <ng-tooltip data-label="Private Notes"
                       title="An area for private notes about the trade. Nobody else will be able to see these.">
-            <textarea class="form-control" ng-model="addInfo.privatenotes"><%= query.privatenotes || ''%></textarea>
+            <textarea class="form-control" ng-model="addInfo.privatenotes"></textarea>
           </ng-tooltip>
 
           <div class="form-group">

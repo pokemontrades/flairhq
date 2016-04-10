@@ -29,8 +29,7 @@
     (typeof user !== 'undefined' ? 'user:' + JSON.stringify(user) + ',' : '') +
     (typeof refUser !== 'undefined' ? 'refUser:' + JSON.stringify(refUser) + ',' : '') +
     (typeof flairs !== 'undefined' ? 'flairs:' + JSON.stringify(flairs) + ',' : '') +
-    (typeof flairApps !== 'undefined' ? 'flairApps:' + JSON.stringify(flairApps) + ',' : '') +
-    (typeof query !== 'undefined' ? 'query:' + JSON.stringify(query) + ',' : '')
+    (typeof flairApps !== 'undefined' ? 'flairApps:' + JSON.stringify(flairApps) + ',' : '')
   %>})">
     <div id="wrapper">
       <%- partial ('home/header.ejs') %>
@@ -67,7 +66,7 @@
     </div>
 
     <!--SCRIPTS-->
-    <script id="app" src="/js/app.js" _csrf="<%= _csrf %>"></script>
+    <script id="app" src="/js/app.js" <% if (typeof _csrf !== 'undefined') { %> _csrf="<%= _csrf %>" <% } %>></script>
     <!--SCRIPTS END-->
     <% if(sails.config.environment == 'development' ){ %> <script src="http://localhost:35729/livereload.js"></script> <% } %>
   </body>

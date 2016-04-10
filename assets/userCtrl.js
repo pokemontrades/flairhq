@@ -59,6 +59,7 @@ module.exports = function ($scope, $location, io) {
 
   $scope.onSearchPage = $location.absUrl().indexOf('search') !== -1;
   $scope.onIndexPage = location.pathname === '/';
+  $scope.query = require('querystring').parse(location.search.slice(1));
 
   if (window.location.hash === "#/comments") {
     $('#tabList li:eq(1) a').tab('show');
@@ -335,6 +336,9 @@ module.exports = function ($scope, $location, io) {
   $scope.deleteFlair = function (index) {
     $scope.flairs.splice(index, 1);
   };
+
+  // Since window functions can't be directly used in embedded expressions, use this in embedded expressions instead.
+  $scope.$encodeURIComponent = encodeURIComponent;
 
   $scope.init = function (params) {
     $scope = _.assign($scope, params);

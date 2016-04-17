@@ -31,8 +31,10 @@ module.exports = {
    * Set the log level in production environment to "silent"                 *
    ***************************************************************************/
 
-  // log: {
-  //   level: "silent"
-  // }
+  log: {
+    level: 'info',
+    timestamp: true,
+    timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
+  }
 
 };

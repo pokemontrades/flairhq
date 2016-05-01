@@ -245,7 +245,10 @@ module.exports = {
   },
 
   setLocalBan: function (req, res) {
-    User.update(req.allParams().username, {banned: req.allParams().ban}).exec(function (err, users) {
+    if (!_.isString(req.allParams().username)) {
+      return res.badRequest('Missing username');
+    }
+    User.update({name: req.allParams().username}, {banned: req.allParams().ban}).exec(function (err, users) {
       if (err) {
         console.log(err);
         return res.serverError(err);

@@ -33,181 +33,181 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/' : {
+  'get /' : {
     controller : 'home',
     action: 'index'
   },
 
-  '/u/:user' : {
+  'get /u/:user' : {
     controller: 'home',
     action: 'reference'
   },
 
-  '/user/get/:name' : {
+  'get /user/get/:name' : {
     controller : 'user',
     action     : 'get'
   },
 
-  '/user/addNote' : {
+  'post /user/addNote' : {
     controller : 'user',
     action     : 'addNote'
   },
 
-  '/user/delNote' : {
+  'post /user/delNote' : {
     controller : 'user',
     action     : 'delNote'
   },
 
-  '/login' : {
+  'get /login' : {
     controller : 'auth',
     action     : 'index'
   },
 
-  '/logout' : {
+  'get /logout' : {
     controller : 'auth',
     action     : 'logout'
   },
 
-  '/auth/reddit': {
+  'get /auth/reddit': {
     controller: 'auth',
     action: 'reddit'
   },
 
-  '/auth/reddit/callback' : {
+  'get /auth/reddit/callback' : {
     controller : 'auth',
     action     : 'callback'
   },
 
-  '/reference/add' : {
+  'post /reference/add' : {
     controller : 'reference',
     action     : 'add'
   },
 
-  '/reference/edit' : {
+  'post /reference/edit' : {
     controller : 'reference',
     action     : 'edit'
   },
 
-  '/reference/approve' : {
+  'post /reference/approve' : {
     controller : 'reference',
     action     : 'approve'
   },
 
-  '/reference/approve/all' : {
+  'post /reference/approve/all' : {
     controller : 'reference',
     action     : 'approveAll'
   },
 
-  '/reference/delete' : {
+  'post /reference/delete' : {
     controller : 'reference',
     action     : 'deleteRef'
   },
 
-  '/reference/comment/add' : {
+  'post /reference/comment/add' : {
     controller : 'reference',
     action     : 'comment'
   },
 
-  '/reference/comment/del' : {
+  'post /reference/comment/del' : {
     controller : 'reference',
     action     : 'delComment'
   },
 
-  '/flair/all' : {
+  'get /flair/all' : {
     controller : 'reference',
     action     : 'getFlairs'
   },
 
-  '/flair/save' : {
+  'post /flair/save' : {
     controller : 'reference',
     action     : 'saveFlairs'
   },
 
-  '/flair/apply' : {
+  'post /flair/apply' : {
     controller : 'flair',
     action     : 'apply'
   },
 
-  '/flair/apps/all' : {
+  'get /flair/apps/all' : {
     controller : 'flair',
     action     : 'getApps'
   },
 
-  '/flair/app/approve' :{
+  'post /flair/app/approve' :{
     controller : 'flair',
     action     : 'approveApp'
   },
 
-  '/flair/app/deny' :{
+  'post /flair/app/deny' :{
     controller : 'flair',
     action     : 'denyApp'
   },
 
-  '/flair/app/refreshClaim': {
+  'post /flair/app/refreshClaim': {
     controller: 'flair',
     action: 'refreshClaim'
   },
 
-  '/flair/setText': {
+  'post /flair/setText': {
     controller: 'flair',
     action: 'setText'
   },
 
-  '/user/edit' : {
+  'post /user/edit' : {
     controller : 'user',
     action     : 'edit'
   },
 
-  '/user/ban' : {
+  'post /user/ban' : {
     controller : 'user',
     action     : 'ban'
   },
 
-  '/mod/setlocalban' : {
+  'post /mod/setlocalban' : {
     controller : 'user',
     action     : 'setLocalBan'
   },
 
-  '/mod/banuser' : {
+  'get /mod/banuser' : {
     controller  : 'home',
     action      : 'banuser'
   },
-  '/user/banned' : {
+  'get /user/banned' : {
     controller : 'user',
     action     : 'bannedUsers'
   },
 
-  '/clearsession/:name' : {
+  'post /clearsession/:name' : {
     controller : 'user',
     action     : 'clearSession'
   },
 
-  '/mod/applist' : {
+  'get /mod/applist' : {
     controller : 'home',
     action     : 'applist'
   },
 
-  '/mod/banlist' : {
+  'get /mod/banlist' : {
     controller : 'home',
     action     : 'banlist'
   },
 
-  '/event/get': {
+  'get /event/get': {
     controller: 'event',
     action: 'get'
   },
 
-  '/info' : {
+  'get /info' : {
     controller : 'home',
     action     : 'info'
   },
 
-  '/tools' : {
+  'get /tools' : {
     controller : 'home',
     action     : 'tools'
   },
 
-  '/version' : {
+  'get /version' : {
     controller : 'home',
     action     : 'version'
   }
@@ -218,11 +218,11 @@ var searchTypes = require("../assets/search/types.js");
 for (let i = 0; i < searchTypes.length; i++) {
   // Programatically add the routes for searches
   let type = searchTypes[i];
-  module.exports.routes['/search/' + type.short] = {
+  module.exports.routes['get /search/' + type.short] = {
     controller: 'search',
     action: type.short
   };
-  module.exports.routes['/search/' + type.short + "/:searchterm"] = {
+  module.exports.routes['get /search/' + type.short + "/:searchterm"] = {
     controller: 'search',
     action: type.short + "View"
   };

@@ -53,7 +53,7 @@ module.exports = {
                 {id: game.id},
                 {tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
                   if (err) {
-                    console.log(err);
+                    sails.log.error(err);
                     res.serverError(err);
                   } else {
                     games.push(game);
@@ -63,7 +63,7 @@ module.exports = {
             } else if (!game.id && (game.tsv || game.ign)) {
               promises.push(Game.create({user: user.name, tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
                 if (err) {
-                  console.log(err);
+                  sails.log.error(err);
                   res.serverError(err);
                 } else {
                   games.push(game);
@@ -175,21 +175,13 @@ module.exports = {
           return res.status(400).json({error: "Invalid friendcode list"});
         }
       }
-      console.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
-      var user;
-      try {
-        user = await User.findOne(req.params.username);
-        if (user) {
-          req.params.username = user.name;
-        } else {
-          if (await Reddit.checkUsernameAvailable(req.params.username)) {
-            console.log("Ban aborted (user does not exist)");
-            return res.status(404).json({error: "That user does not exist."});
-          }
+      sails.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
+      var user = await User.findOne(req.params.username);
+      if (!user) {
+        if (await Reddit.checkUsernameAvailable(req.params.username)) {
+          sails.log.warn("Ban aborted (user does not exist)");
+          return res.status(404).json({error: "That user does not exist."});
         }
-      } catch (err) {
-        console.log(err);
-        return res.serverError(err);
       }
       var flairs;
       try {
@@ -228,10 +220,9 @@ module.exports = {
         promises.push(Ban.localBanUser(req.params.username));
       }
       Promise.all(promises).then(function () {
-        console.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
+        sails.log('Process to ban /u/' + req.params.username + ' was completed successfully.');
         res.ok();
       }, function(error) {
-        console.log(error);
         res.status(error.statusCode || 500).json(error);
       });
       Event.create({
@@ -250,7 +241,7 @@ module.exports = {
     }
     User.update({name: req.allParams().username}, {banned: req.allParams().ban}).exec(function (err, users) {
       if (err) {
-        console.log(err);
+        sails.log.error(err);
         return res.serverError(err);
       }
       if (!users.length) {
@@ -273,7 +264,6 @@ module.exports = {
       if (modStatus) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {
-            console.log(err);
             return res.serverError(err);
           }
           if (req.allParams().name === req.user.name) {
@@ -284,7 +274,7 @@ module.exports = {
         });
       }
     }, function () {
-      console.log('Failed to check whether /u/' + req.allParams().name + ' is a moderator.');
+      sails.log.error('Failed to check whether /u/' + req.allParams().name + ' is a moderator.');
       return res.serverError();
     });
   }

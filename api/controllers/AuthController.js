@@ -47,11 +47,11 @@ module.exports = {
         try {
           login_info = JSON.parse(req.query.state);
         } catch (err) {
-          console.log('Error with parsing /u/' + user.name + '\'s session state');
-          return res.serverError(err);
+          sails.log.warn('/u/' + user.name + '\'s session state was in an invalid format.');
+          return res.badRequest(err);
         }
         if (login_info.validation !== req.session.validation) {
-          console.log("Failed login for /u/" + user.name + ": invalid session state");
+          sails.log.warn("Failed login for /u/" + user.name + ": invalid session state");
           return res.view(403, {error: 'You have an invalid session state. (Try logging in again.)'});
         }
         let finishLogin = function () {

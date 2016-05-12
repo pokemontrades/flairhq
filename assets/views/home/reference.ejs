@@ -28,9 +28,9 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist" id="tabList">
         <li class="active"><a href="#references" role="tab" data-toggle="tab">References</a></li>
-        <li><a href="#comments" role="tab" data-toggle="tab">Comments</a></li>
+        <li><a href="#comments" role="tab" data-toggle="tab">Comments ({{refUser.comments.length}})</a></li>
         <li><a href="#info" role="tab" data-toggle="tab">Information</a></li>
-        <li ng-if="user.isMod"><a href="#modEdit" role="tab" data-toggle="tab">Moderation</a></li>
+        <li ng-if="user.isMod"><a href="#modEdit" role="tab" data-toggle="tab">Moderation ({{refUser.modNotes.length}})</a></li>
       </ul>
 
       <div class="tab-content">
@@ -43,14 +43,14 @@
             <form role="form" ng-submit="addComment()">
               <h2>Leave a comment below</h2>
               <p>Leave feedback on this user by typing your comment below. reddit markdown is supported.</p>
-              <textarea class="form-control" id="newComment"
+              <textarea class="form-control" id="newComment" ng-trim="false"
                         placeholder="Type comment here in markdown."
                         ng-model="newStuff.newComment"></textarea>
               <div class="panel panel-default">
                 <div class="panel-heading">Preview</div>
                 <div class="panel-body" ><md ng-model="newStuff.newComment"></md></div>
               </div>
-              <button type="submit" ng-disabled="!newStuff.newComment"
+              <button type="submit" ng-disabled="!newStuff.newComment.trim()"
                       class="btn btn-primary">Comment</button>
             </form>
           </div>

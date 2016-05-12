@@ -77,7 +77,6 @@ module.exports = {
         },
         function (err, ref) {
           if (err) {
-            console.log(err);
             return res.serverError();
           } else {
             return res.ok(ref);
@@ -149,7 +148,7 @@ module.exports = {
           //If a verified reference is deleted, its compelmentary reference is un-verified.
           Reference.update(query, {verified: false}, function (err) {
             if (err) {
-              console.log("Error while updating complementary trade.");
+              sails.log.error("Error while updating complementary trade.");
             }
           });
         }
@@ -218,7 +217,6 @@ module.exports = {
       Promise.all(promises).then(function (results) {
         return res.ok(results);
       }, function (error) {
-        console.log(error);
         return res.serverError(error);
       });
     });

@@ -14,7 +14,7 @@ exports.approve = function (ref, approve) {
     };
     Reference.findOne(query, function (searcherr, otherRef) {
       if (searcherr) {
-        console.log(searcherr);
+        sails.log.error(searcherr);
         return reject(searcherr);
       }
       if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event' || ref.type === 'bank')) {

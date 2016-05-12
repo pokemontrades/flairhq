@@ -2,7 +2,7 @@ var _ = require('lodash');
 exports.banFromSub = async function (redToken, username, banMessage, banNote, subreddit, duration) {
   try {
     await Reddit.banUser(redToken, username, banMessage, banNote, subreddit, duration);
-    console.log('Banned ' + username + ' from /r/' + subreddit);
+    sails.log('Banned ' + username + ' from /r/' + subreddit);
     return 'Banned ' + username + ' from /r/' + subreddit;
   } catch (err) {
     throw {error: 'Failed to ban user from /r/' + subreddit};
@@ -15,7 +15,7 @@ exports.giveBannedUserFlair = async function (redToken, username, current_css_cl
     var flair_text = current_flair_text || '';
     var css_class = Flairs.makeNewCSSClass(current_css_class, 'banned', subreddit);
     await Reddit.setUserFlair(redToken, username, css_class, flair_text, subreddit);
-    console.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
+    sails.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
     return 'Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit;
   } catch (err) {
     throw {error: 'Failed to give banned user flair'};
@@ -31,7 +31,7 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
   var lines = current_config.replace(/\r/g, '').split("\n");
   var fclist_indices = [lines.indexOf('#FCList1') + 1, lines.indexOf('#FCList2') + 1];
   if (fclist_indices.indexOf(0) != -1) {
-    console.log('Error: Could not find #FCList tags in /r/' + subreddit + ' AutoModerator config');
+    sails.log.error('Error: Could not find #FCList tags in /r/' + subreddit + ' AutoModerator config');
     throw {error: 'Error parsing /r/' + subreddit + ' AutoModerator config'};
   }
   try {
@@ -49,7 +49,7 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
     }
   }
   catch (automodparseerr) {
-    console.log('Error parsing /r/' + subreddit + ' AutoModerator config');
+    sails.log.error('Error parsing /r/' + subreddit + ' AutoModerator config');
     throw {error: 'Error parsing /r/' + subreddit + ' AutoModerator config'};
   }
   var content = lines.join("\n");
@@ -57,7 +57,7 @@ exports.updateAutomod = async function (redToken, username, subreddit, friend_co
     await Reddit.editWikiPage(redToken, subreddit, 'config/automoderator', content, 'FlairHQ: Updated banned friend codes');
   }
   var output = 'Added /u/' + username + '\'s friend codes to /r/' + subreddit + ' AutoModerator blacklist';
-  console.log(output);
+  sails.log(output);
   return output;
 };
 //Lock and give flair to the user's TSV threads.
@@ -71,7 +71,7 @@ exports.markTSVThreads = async function (redToken, username) {
   });
   await Promise.all(tsv_promises);
   var output = 'Marked and locked /u/' + username + '\'s TSV threads (' + threads.length.toString() + ' total)';
-  console.log(output);
+  sails.log(output);
   return output;
 };
 //Update the public banlist with the user's information
@@ -85,7 +85,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
   var end_index = lines.indexOf('[//]:# (END BANLIST)');
   if (start_index === 2 || end_index === -1) {
-    console.log('Error: Could not find parsing marker in public banlist');
+    sails.log.error('Error: Could not find parsing marker in public banlist');
     throw {error: 'Error: Could not find parsing marker in public banlist'};
   }
   let updated_content;
@@ -120,23 +120,22 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, formatted_igns].join(' | ');
     updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
   }
-  if (updated_content !== current_list) {
-    try {
-      await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', updated_content, '');
-    } catch (e) {
-      throw {error: 'Failed to update public banlist'};
-    }
+  try {
+    await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', updated_content, '');
+  } catch (e) {
+    sails.log.error(e);
+    throw {error: 'Failed to update public banlist'};
   }
-  console.log('Added /u/' + username + ' to public banlist');
+  sails.log('Added /u/' + username + ' to public banlist');
   return 'Added /u/' + username + ' to public banlist';
 };
 exports.localBanUser = async function(username) {
   try {
     let update = await User.update(username, {banned: true});
-    console.log('Updated local banlist');
+    sails.log('Updated local banlist');
     return update;
   } catch (err) {
-    console.log(err);
+    sails.log.error(err);
     throw {error: 'Failed to locally ban /u/' + username};
   }
 };
@@ -144,7 +143,7 @@ exports.addUsernote = function (redToken, modname, subreddit, username, banNote,
   var type = duration ? 'ban' : 'permban';
   var note = duration ? 'Tempbanned for ' + duration + ' days - ' + banNote : 'Banned' + (banNote ? ' - ' + banNote : '');
   return Usernotes.addUsernote(redToken, modname, subreddit, username, note, type, '').then(function (response) {
-    console.log('Created a usernote on ' + username + ' in /r/' + subreddit);
+    sails.log('Created a usernote on ' + username + ' in /r/' + subreddit);
     return response;
   }, function () {
     throw {error: 'Failed to update /u/' + subreddit + 'usernotes.'};

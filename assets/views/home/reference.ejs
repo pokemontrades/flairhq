@@ -19,9 +19,11 @@
               </span>
             </h5>
           </div>
-          <h4 ng-if="refUser.banned" class="alert alert-danger pull-right">
-            <strong>WARNING:</strong> This user is banned.
-          </h4>
+          <% if (refUser.banned) { %>
+            <h4 class="alert alert-danger pull-right">
+              <strong>WARNING:</strong> This user is banned.
+            </h4>
+          <% } %>
         </div>
       </div>
 

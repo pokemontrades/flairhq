@@ -1,43 +1,22 @@
 exports.approve = function (ref, approve) {
-  return new Promise(function (resolve, reject) {
-    ref.approved = approve;
-    var query = {
-      user: ref.user2,
-      url: {endsWith: ref.url.substring(ref.url.indexOf("/r/"))},
-      user2: ref.user,
-      or: [
-        {type: 'casual'},
-        {type: 'shiny'},
-        {type: 'event'},
-        {type: 'bank'}
-      ]
-    };
-    Reference.findOne(query, function (searcherr, otherRef) {
-      if (searcherr) {
-        sails.log.error(searcherr);
-        return reject(searcherr);
-      }
-      if (otherRef && (ref.type === 'casual' || ref.type === 'shiny' || ref.type === 'event' || ref.type === 'bank')) {
-        otherRef.approved = approve;
-        ref.verified = approve;
-        otherRef.verified = approve;
-        ref.save(function (err1, newRef) {
-          otherRef.save(function (err2) {
-            if (err1 || err2) {
-              return reject(err1 || err2);
-            }
-            resolve(newRef);
-          });
-        });
-      } else {
-        ref.save(function (err, newRef) {
-          if (err) {
-            return reject(err);
-          }
-          resolve(newRef);
-        });
-      }
-    });
+  ref.approved = approve;
+  if (!exports.isVerifiable(ref)) {
+    return ref.save();
+  }
+  return Reference.findOne({
+    user: ref.user2,
+    user2: ref.user,
+    url: {endsWith: ref.url.slice(ref.url.indexOf('/r/'))},
+    or: [{type: 'casual'}, {type: 'shiny'}, {type: 'event'}, {type: 'bank'}]
+  }).then(otherRef => {
+    var refsToSave = [ref];
+    if (otherRef) {
+      otherRef.approved = approve;
+      otherRef.verified = approve;
+      refsToSave.push(otherRef);
+      ref.verified = approve;
+    }
+    return Promise.all(refsToSave.map(el => el.save())).then(refs => refs[0]);
   });
 };
 exports.isApproved = function (el) {
@@ -75,6 +54,9 @@ exports.isMisc = function (el) {
 };
 exports.isApprovable = function (el) {
   return ['event', 'shiny', 'casual', 'bank', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(el.type) !== -1;
+};
+exports.isVerifiable = function (el) {
+  return ['casual', 'shiny', 'event', 'bank'].indexOf(el.type) !== -1;
 };
 exports.isNotNormalTrade = function (type) {
   return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';

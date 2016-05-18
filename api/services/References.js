@@ -7,7 +7,7 @@ exports.approve = function (ref, approve) {
     user: ref.user2,
     user2: ref.user,
     url: {endsWith: ref.url.slice(ref.url.indexOf('/r/'))},
-    or: [{type: 'casual'}, {type: 'shiny'}, {type: 'event'}, {type: 'bank'}]
+    or: exports.verifiableTypes.map(refType => ({type: refType}))
   }).then(otherRef => {
     var refsToSave = [ref];
     if (otherRef) {
@@ -18,6 +18,30 @@ exports.approve = function (ref, approve) {
     }
     return Promise.all(refsToSave.map(el => el.save())).then(refs => refs[0]);
   });
+};
+exports.verifyIfNeeded = function (ref) {
+  if (!exports.isVerifiable(ref)) {
+    return Promise.resolve(ref);
+  }
+  return Reference.findOne({
+    user: ref.user2,
+    user2: ref.user,
+    url: {endsWith: ref.url.slice(ref.url.indexOf('/r/'))},
+    or: exports.verifiableTypes.map(refType => ({type: refType})),
+    approved: true
+  }).then(otherRef => {
+    var refsToSave = [ref];
+    if (otherRef) {
+      ref.approved = true;
+      ref.verified = true;
+      otherRef.verified = true;
+      refsToSave.push(otherRef);
+    }
+    return Promise.all(refsToSave.map(el => el.save())).then(refs => refs[0]);
+  });
+};
+exports.omitModOnlyProperties = function (ref) {
+  return _.omit(ref, ['approved', 'verified', 'edited']);
 };
 exports.isApproved = function (el) {
   return el.approved;
@@ -55,8 +79,9 @@ exports.isMisc = function (el) {
 exports.isApprovable = function (el) {
   return ['event', 'shiny', 'casual', 'bank', 'egg', 'giveaway', 'involvement', 'eggcheck'].indexOf(el.type) !== -1;
 };
+exports.verifiableTypes = ['casual', 'shiny', 'event', 'bank'];
 exports.isVerifiable = function (el) {
-  return ['casual', 'shiny', 'event', 'bank'].indexOf(el.type) !== -1;
+  return exports.verifiableTypes.indexOf(el.type) !== -1;
 };
 exports.isNotNormalTrade = function (type) {
   return type === 'egg' || type === 'giveaway' || type === 'misc' || type === 'eggcheck' || type === 'involvement';

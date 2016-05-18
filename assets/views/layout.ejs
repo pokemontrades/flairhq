@@ -12,15 +12,13 @@
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css">
 
     <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      !function(f,l,a,i,r,h,q){f.GoogleAnalyticsObject=a;f[a]||(f[a]=function(){
+      (f[a].q=f[a].q||[]).push(arguments)});f[a].l=+new Date;h=l.createElement(i);
+      q=l.getElementsByTagName(i)[0];h.src=r;q.parentNode.insertBefore(h,q)}
+      (window,document,'ga','script','//www.google-analytics.com/analytics.js');
 
       ga('create', 'UA-23534541-2', 'auto');
-      ga('send', 'pageview', {
-        'page': location.pathname + location.search  + location.hash
-      });
+      ga('send', 'pageview', {page: location.pathname + location.search  + location.hash});
 
     </script>
   </head>

@@ -13,6 +13,7 @@ module.exports = function ($scope, $location, io) {
   $scope.errors = {};
   $scope.userspin = {};
   $scope.flairNames = [
+    {name: "gen2"},
     {name: "pokeball"},
     {name: "greatball"},
     {name: "ultraball"},

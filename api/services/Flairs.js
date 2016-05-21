@@ -14,6 +14,9 @@ exports.formattedName = function(name) {
   if (name.indexOf("ball") > -1) {
     suffix = "Ball";
     numberToSliceTill = -4;
+  } else if (name === "gen2") {
+    suffix = "II Ball";
+    numberToSliceTill = -1;
   } else if (name.indexOf("charm") > -1) {
     suffix = "Charm";
     numberToSliceTill = -5;

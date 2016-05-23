@@ -46,7 +46,7 @@ module.exports = function ($scope, $timeout) {
 
   function linkAddress (result) {
     if (vm.input.search === 'ref') {
-      return '/u/' + result.user;
+      return result.url;
     } else if (vm.input.search === 'user') {
       return '/u/' + result._id;
     } else if (vm.input.search === 'modmail') {

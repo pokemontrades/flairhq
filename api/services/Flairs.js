@@ -182,7 +182,7 @@ exports.legalIgn = '[^()|,]{0,11}[^()|,\\s]';
 // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]
 exports.parseGames = function (formatted_games) {
   var games = [];
-  var ignBlocks = formatted_games.split(/(?!\([^)]*), (?![^(]*\))/);
+  var ignBlocks = _.compact(formatted_games.split(/(?!\([^)]*), (?![^(]*\))/));
   ignBlocks.forEach(function (block) {
     var parts = RegExp('^(' + exports.legalIgn + ')? ?(?:\\(((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*)\\))?$').exec(block);
     if (!parts) {

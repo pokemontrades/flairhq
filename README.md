@@ -9,7 +9,7 @@
 1. Copy config/local.example.js to config/local.js
 1. Create a reddit app on [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps)
 1. Copy the id and secret to config/local.js
-1. Use something like https://github.com/xoru/easy-oauth to get a refresh token for a moderator on the subs
+1. Use something like [this](https://github.com/not-an-aardvark/reddit-oauth-helper) to get a refresh token for a moderator on the subs
 1. Start your MongoDB
 1. Start sails with `npm start`
 1. Open `http://localhost:1337` in your browser

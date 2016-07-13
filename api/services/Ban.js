@@ -67,7 +67,7 @@ exports.markTSVThreads = async function (redToken, username) {
   threads.forEach(function (entry) {
     tsv_promises.push(Reddit.lockPost(redToken, entry.data.id));
     tsv_promises.push(Reddit.markNsfw(redToken, entry.data.id));
-    tsv_promises.push(Reddit.setLinkFlair(redToken, entry.data.subreddit, entry.data.id, 'banned', '[Banned User] Trainer Shiny Value'));
+    tsv_promises.push(Reddit.setLinkFlair(redToken, entry.data.subreddit, entry.data.id, 'banned', 'TSV (Banned)'));
   });
   await Promise.all(tsv_promises);
   var output = 'Marked and locked /u/' + username + '\'s TSV threads (' + threads.length.toString() + ' total)';

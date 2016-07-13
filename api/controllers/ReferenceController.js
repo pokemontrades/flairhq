@@ -53,37 +53,23 @@ module.exports = {
     if (req.params.number && isNaN(req.params.number)) {
       return res.badRequest({err: "Number must be a number"});
     }
-
-    Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.name}, function (err, ref) {
-      if (err) {
-        return res.serverError(err);
-      }
-      if (ref && (ref.type !== "egg" || req.params.type !== "egg")) {
+    return Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.name}).then(ref => {
+      if (ref && !(ref.type === 'egg' && req.params.type === 'egg')) {
         return res.status(400).json({err: 'Already added that URL.'});
       }
-      Reference.create(
-        {
-          url: req.params.url,
-          user: req.user.name,
-          user2: req.params.user2,
-          description: req.params.descrip,
-          type: req.params.type,
-          gave: req.params.gave,
-          got: req.params.got,
-          notes: req.params.notes,
-          privatenotes: req.params.privatenotes,
-          edited: false,
-          number: req.params.number || 0
-        },
-        function (err, ref) {
-          if (err) {
-            return res.serverError();
-          } else {
-            return res.ok(ref);
-          }
-        }
-      );
-    });
+      return Reference.create({
+        url: req.params.url,
+        user: req.user.name,
+        user2: req.params.user2,
+        description: req.params.descrip,
+        type: req.params.type,
+        gave: req.params.gave,
+        got: req.params.got,
+        privatenotes: req.params.privatenotes,
+        edited: false,
+        number: req.params.number || 0
+      }).then(References.verifyIfNeeded).then(References.omitModOnlyProperties).then(res.ok);
+    }).catch(res.serverError);
   },
 
   edit: function (req, res) {
@@ -252,4 +238,3 @@ module.exports = {
     }
   }
 };
-

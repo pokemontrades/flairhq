@@ -19,6 +19,7 @@
     "Application": true,
     "ModNote": true,
     "Modmail": true,
-    "Modmails": true
+    "Modmails": true,
+    "_": true
   }
 }

@@ -65,6 +65,7 @@ module.exports = {
         type: req.params.type,
         gave: req.params.gave,
         got: req.params.got,
+        notes: req.params.notes,
         privatenotes: req.params.privatenotes,
         edited: false,
         number: req.params.number || 0

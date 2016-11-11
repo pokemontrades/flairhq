@@ -6,8 +6,11 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
-var passport = require('passport'),
-  crypto = require('crypto');
+'use strict';
+
+const passport = require('passport');
+const crypto = require('crypto');
+const _ = require('lodash');
 
 module.exports = {
 
@@ -21,7 +24,7 @@ module.exports = {
   },
 
   reddit: function (req, res) {
-    /* Pass the redirect info as JSON with the OAuth state. This behavior is more intuitive than storing it in the session, because otherwise the user 
+    /* Pass the redirect info as JSON with the OAuth state. This behavior is more intuitive than storing it in the session, because otherwise the user
      * might fail to complete the login and then be confused when they get redirected somewhere unexpected the next time they visit the site. */
     var login_info = {type: req.query.loginType, redirect: req.query.redirect || '/', validation: crypto.randomBytes(32).toString('hex')};
     req.session.validation = login_info.validation;
@@ -69,18 +72,18 @@ module.exports = {
             return res.redirect(url);
           });
         };
-        let modStatus = await Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
-        if (modStatus) { //User is a mod, set isMod to true
-          User.update(user.name, {isMod: true}).exec(function () {
+        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
+        if (modPermissions) { //User is a mod, set isMod to true
+          User.update(user.name, {isMod: true, modPermissions}).exec(function () {
             /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
-            if (login_info.type !== 'mod') {
+            if (login_info.type !== 'mod' && ['all', 'access', 'mail', 'flair', 'wiki'].some(permission => _.includes(modPermissions, permission))) {
               return res.redirect('/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
             }
             return finishLogin();
           });
         }
-        else if (user.isMod) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
-          User.update(user.name, {isMod: false}).exec(finishLogin);
+        else if (user.isMod || user.modPermissions) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
+          User.update(user.name, {isMod: false, modPermissions: null}).exec(finishLogin);
         } else { // Regular user
           return finishLogin();
         }

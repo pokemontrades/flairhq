@@ -183,10 +183,10 @@ exports.sendReply = function (refreshToken, text, parent_id) {
   return makeRequest(refreshToken, 'POST', url, data, 30);
 };
 
-exports.checkModeratorStatus = async function (refreshToken, username, subreddit) {
+exports.getModeratorPermissions = async function (refreshToken, username, subreddit) {
   var url = 'https://oauth.reddit.com/r/' + subreddit + '/about/moderators?user=' + username;
   let res = await makeRequest(refreshToken, 'GET', url, undefined, 5);
-  return res.data.children.length !== 0;
+  return res.data.children.length ? res.data.children.find(child => child.name === username).mod_permissions : null;
 };
 
 exports.getModmail = async function (refreshToken, subreddit, after, before) {

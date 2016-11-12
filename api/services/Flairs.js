@@ -135,7 +135,7 @@ exports.canUserApply = function (refs, applicationFlair, currentFlairs) {
     }).length;
   }
   for (var i = 0; i < currentFlairs.length; i++) {
-    var flair = currentFlairs[i]; 
+    var flair = currentFlairs[i];
     if (flair.trades >= trades && flair.involvement >= involvement && flair.eggs >= eggs && flair.giveaways >= giveaways) {
       return false;
     }
@@ -176,7 +176,7 @@ exports.formattedRequirements = function (flair, flairs) {
   return formatted;
 };
 
-exports.gameOptions = ['X', 'Y', 'ΩR', 'αS'].join('|');
+exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M'].join('|');
 exports.legalIgn = '[^()|,]{0,11}[^()|,\\s]';
 
 // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]

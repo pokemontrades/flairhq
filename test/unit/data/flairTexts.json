@@ -5,6 +5,8 @@
   "svexFlairDifferentFC": "2222-2222-2222 || YMK (X) || 1234",
   "svexFlairBadTSV": "1111-2222-3333 || NAA (Y) || COOKIES",
   "incorrectFlair": "not a correct flair",
+  "SMFlair": "1111-1111-1111 || YMK (S) || Nothing",
+  "SMFlair2": "1111-1111-1111 || YMK (S, M), YaManicKill (X, Y) || Nothing",
   "lotsOfGames": {
     "ptrades": "1111-1111-1111 || AAA (Y, ΩR), Joe, Bob (X), (αS)",
     "svex": "1111-9999-1111 || AAA (Y, ΩR), Joe, Bob (X), (αS) || 0000, 1111",

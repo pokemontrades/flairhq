@@ -1,14 +1,12 @@
 {
   "parser": "babel-eslint",
-  "rules": {
-    "strict": 0
-  },
   "globals": {
     "module": true,
     "require": true,
     "exports": true
   },
   "rules": {
+    "strict": 0,
     "no-console": 0,
     "linebreak-style": [
       2,

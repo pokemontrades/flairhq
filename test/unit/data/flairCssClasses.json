@@ -13,7 +13,15 @@
     "ovalcharm1 hok,banned": "ovalcharm1 banned",
     "masterball1 hok something-else,banned": "masterball1 banned",
     "dreamball banned,banned": "dreamball banned",
-    "banned,banned": "banned"
+    "banned,banned": "banned",
+    "greatball popplio,pokeball": "pokeball popplio",
+    "greatball,popplio": "greatball popplio",
+    "greatball,rowlet": "greatball rowlet",
+    "greatball,litten": "greatball litten",
+    "greatball hok,popplio": "greatball hok popplio",
+    "greatball1,popplio": "greatball1 popplio",
+    "greatball1 popplio,rowlet": "greatball1 rowlet",
+    "greatball popplio,banned": "greatball banned"
   },
 
   "SVExchange": {
@@ -26,6 +34,10 @@
     "manaphy smartribbon,toughribbon": "manaphy toughribbon",
     "eggcup,beautyribbon": "eggcup beautyribbon",
     "beautyribbon,eggcup": "eggcup beautyribbon",
+    "beautyribbon,popplio": "beautyribbon popplio",
+    "beautyribbon popplio,rowlet": "beautyribbon rowlet",
+    "togepi,popplio": "togepi popplio",
+    "togepi popplio,rowlet": "togepi rowlet",
     ",banned": "banned",
     "lucky,banned": "lucky banned",
     "lucky cuteribbon,banned": "lucky cuteribbon banned",

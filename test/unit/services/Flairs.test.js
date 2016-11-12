@@ -1,7 +1,6 @@
 'use strict';
 var _ = require("lodash");
 var assert = require("chai").assert;
-var Flairs = require("../../../api/services/Flairs");
 
 var flairTexts = require("../data/flairTexts.json");
 var flairCssClasses = require("../data/flairCssClasses.json");
@@ -9,6 +8,13 @@ var stdFlairInfo = require("../data/standardFlairInfo.json");
 var fcs = require("../data/friendCodes.json");
 var users = require("../data/users.json");
 var refFactory = require("../data/referenceFactory.js");
+
+global.sails = {
+  config: {
+    extraFlair: ['rowlet', 'litten', 'popplio']
+  }
+};
+var Flairs = require("../../../api/services/Flairs");
 
 describe("Flair text", function () {
   it("Throws error on incorrect pokemontrades flair", function () {
@@ -118,7 +124,7 @@ describe("Flair template formatting", function () {
 describe("Friend Code Validity", function () {
   it("Correctly identifies valid friend codes", function () {
     assert(Flairs.validFC(fcs.valid1), 'Incorrectly claims that "' + fcs.valid1 + '" is invalid');
-    assert(Flairs.validFC(fcs.valid2), 'Incorrectly claims that "' + fcs.valid2 + '" is invalid');      
+    assert(Flairs.validFC(fcs.valid2), 'Incorrectly claims that "' + fcs.valid2 + '" is invalid');
   });
 
   it("Correctly identifies invalid friend codes", function () {

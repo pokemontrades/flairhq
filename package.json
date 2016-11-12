@@ -3,7 +3,8 @@
   "version": "2.6.0",
   "description": "A project to allow easy adding of flair applications for subreddits (focusing initially on /r/pokemontrades) and easy moderation for moderators.",
   "scripts": {
-    "start": "node ./node_modules/sails/bin/sails.js lift"
+    "start": "node ./node_modules/sails/bin/sails.js lift",
+    "test": "grunt test"
   },
   "main": "app.js",
   "repository": {
@@ -78,5 +79,9 @@
     "angular-mask": "./node_modules/ng-mask/dist/ngMask.js",
     "angular-md": "./node_modules/angular-md/dist/angular-md.js",
     "regex": "./assets/common/regexCommon.js"
+  },
+  "devDependencies": {
+    "proxyquire": "^1.7.10",
+    "rewire": "^2.5.2"
   }
 }

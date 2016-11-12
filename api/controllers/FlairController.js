@@ -2,6 +2,7 @@
 var moment = require('moment');
 var refreshToken = sails.config.reddit.adminRefreshToken;
 var _ = require("lodash");
+var possibleExtraFlair = sails.config.extraFlair;
 
 module.exports = {
 
@@ -105,13 +106,19 @@ module.exports = {
       var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
       // Get friend codes that are identical to banned users' friend codes
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
-  
+
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
       var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
       var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
+      var extraFlair = req.allParams().extraFlair;
+      if (extraFlair && _.includes(possibleExtraFlair, extraFlair)) {
+        newPFlair = Flairs.makeNewCSSClass(newPFlair, extraFlair, "PokemonTrades");
+      } else if (extraFlair) {
+        return res.status(400).json({error: "Unexpected extra flair."});
+      }
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
@@ -169,4 +176,3 @@ module.exports = {
     }
   }
 };
-

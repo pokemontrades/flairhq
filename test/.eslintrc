@@ -1,6 +1,8 @@
 {
+  "env": {
+      "mocha": true
+  },
   "globals": {
-    "it": true,
-    "describe": true
-  }
+    "global": true
+  },
 }

@@ -3,7 +3,7 @@ var _ = require('lodash');
 var referenceService = require('./References.js');
 var NodeCache = require('node-cache');
 var app_claim_cache = new NodeCache({stdTTL: 300});
-var extraFlair = sails.config.extraFlair;
+var extraFlair = ['rowlet', 'litten', 'popplio'];
 var extraFlairRegExp = new RegExp("(" + extraFlair.join("|") + ")");
 
 exports.formattedName = function(name) {

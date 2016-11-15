@@ -9,11 +9,6 @@ var fcs = require("../data/friendCodes.json");
 var users = require("../data/users.json");
 var refFactory = require("../data/referenceFactory.js");
 
-global.sails = {
-  config: {
-    extraFlair: ['rowlet', 'litten', 'popplio']
-  }
-};
 var Flairs = require("../../../api/services/Flairs");
 
 describe("Flair text", function () {

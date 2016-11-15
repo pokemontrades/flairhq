@@ -79,9 +79,5 @@
     "angular-mask": "./node_modules/ng-mask/dist/ngMask.js",
     "angular-md": "./node_modules/angular-md/dist/angular-md.js",
     "regex": "./assets/common/regexCommon.js"
-  },
-  "devDependencies": {
-    "proxyquire": "^1.7.10",
-    "rewire": "^2.5.2"
   }
 }

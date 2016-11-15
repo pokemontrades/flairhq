@@ -27,7 +27,5 @@ module.exports = {
     port: 27017,
     db: 'fapp',
     collection: 'sessions'
-  },
-  // List of strings to use for possible extra flairs
-  extraFlair: []
+  }
 };

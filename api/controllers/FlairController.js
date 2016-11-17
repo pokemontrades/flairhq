@@ -2,7 +2,6 @@
 var moment = require('moment');
 var refreshToken = sails.config.reddit.adminRefreshToken;
 var _ = require("lodash");
-var possibleExtraFlair = sails.config.extraFlair;
 
 module.exports = {
 
@@ -114,7 +113,7 @@ module.exports = {
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
       var extraFlair = req.allParams().extraFlair;
-      if (extraFlair && _.includes(possibleExtraFlair, extraFlair)) {
+      if (extraFlair && _.includes(Flairs.extraFlair, extraFlair)) {
         newPFlair = Flairs.makeNewCSSClass(newPFlair, extraFlair, "PokemonTrades");
       } else if (extraFlair) {
         return res.status(400).json({error: "Unexpected extra flair."});

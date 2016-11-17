@@ -6,6 +6,7 @@ var app_claim_cache = new NodeCache({stdTTL: 300});
 var extraFlair = ['rowlet', 'litten', 'popplio'];
 var extraFlairRegExp = new RegExp("(" + extraFlair.join("|") + ")");
 
+exports.extraFlair = extraFlair;
 exports.formattedName = function(name) {
   if (!name) {
     return "";

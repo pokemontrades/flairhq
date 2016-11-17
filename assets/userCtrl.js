@@ -47,7 +47,7 @@ module.exports = function ($scope, $location, io) {
     {name: "svexchange", view: "SV Exchange"}
   ];
   $scope.types = [
-    {name: "event", display: "Gen 6 Event"},
+    {name: "event", display: "Event"},
     {name: "redemption", display: "Redemption"},
     {name: "shiny", display: "Shiny"},
     {name: "casual", display: "Competitive/Casual"},

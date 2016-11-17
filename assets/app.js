@@ -53,4 +53,4 @@ $(function () {
   });
 });
 
-ng.bootstrap(document, ['fapp']);
+ng.bootstrap(document, ['fapp'], {strictDi: true});

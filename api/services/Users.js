@@ -1,3 +1,7 @@
+'use strict';
+
+const _ = require('lodash');
+
 var removeSecretInformation = function (user) {
   user.redToken = undefined;
   user.loggedFriendCodes = undefined;
@@ -24,7 +28,7 @@ exports.get = async function (requester, username) {
     user.comments = result;
   }));
 
-  if (requester && requester.isMod) {
+  if (Users.hasModPermission(requester, 'access')) {
     promises.push(ModNote.find({refUser: user.name}).sort({createdAt: 'desc'}).then(function (result) {
       user.modNotes = result;
     }));
@@ -41,7 +45,7 @@ exports.get = async function (requester, username) {
       if (!requester || requester.name !== user.name) {
         ref.privatenotes = undefined;
       }
-      if (!requester || !requester.isMod) {
+      if (!Users.hasModPermission(requester, 'flair')) {
         ref.approved = undefined;
         ref.verified = undefined;
       }
@@ -57,4 +61,8 @@ exports.getBannedUsers = function () {
   return User.find({banned: true}).then(function (results) {
     return results.map(removeSecretInformation);
   });
+};
+
+exports.hasModPermission = (user, modPermission) => {
+  return user && user.isMod && user.modPermissions && (_.includes(user.modPermissions, 'all') || _.includes(user.modPermissions, modPermission));
 };

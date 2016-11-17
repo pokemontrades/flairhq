@@ -32,7 +32,7 @@
         <li class="active"><a href="#references" role="tab" data-toggle="tab">References</a></li>
         <li><a href="#comments" role="tab" data-toggle="tab">Comments ({{refUser.comments.length}})</a></li>
         <li><a href="#info" role="tab" data-toggle="tab">Information</a></li>
-        <li ng-if="user.isMod"><a href="#modEdit" role="tab" data-toggle="tab">Moderation ({{refUser.modNotes.length}})</a></li>
+        <li ng-if="user.isMod && user.modPermissions && user.modPermissions.includes('all')"><a href="#modEdit" role="tab" data-toggle="tab">Moderation ({{refUser.modNotes.length}})</a></li>
       </ul>
 
       <div class="tab-content">
@@ -62,7 +62,7 @@
               <div class="panel-heading">
                 <a ng-href="/u/{{comment.user2}}">{{comment.user2}}</a>
                 <a href="#" ng-click="deleteComment(comment.id, $index)" class="pull-right"
-                   ng-if="(comment.user2 === user.name) || user.isMod">
+                   ng-if="(comment.user2 === user.name) || user.modPermissions.includes('all')">
                   <span class="glyphicon glyphicon-trash"></span>
                 </a>
                 <span class="pull-right">{{comment.createdAt | date: "medium"}}</span>
@@ -75,7 +75,7 @@
         <div class="tab-pane" id="info">
           <%- partial('profileInfo.ejs') %>
         </div>
-        <div class="tab-pane" id="modEdit" ng-if="user.isMod">
+        <div class="tab-pane" id="modEdit" ng-if="user.isMod && user.modPermissions.includes('all')">
           <%- partial('modEdit.ejs') %>
         </div>
       </div>

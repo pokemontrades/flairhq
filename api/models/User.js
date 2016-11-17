@@ -42,6 +42,10 @@ module.exports = {
       friendCodeFormat: true
     },
     isMod: "boolean",
+    modPermissions: {
+      type: "array",
+      defaultsTo: null
+    },
     banned: "boolean",
     redToken: "string",
     flair: "json"

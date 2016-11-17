@@ -60,7 +60,7 @@ module.exports = function ($scope, $timeout) {
 
   function userAllowedSearch(search) {
     // Either all users can access, or only mods
-    return vm.user.isMod || !search.modOnly;
+    return vm.user.modPermissions && vm.user.modPermissions.includes('all') || !search.modOnly;
   }
 
   function getSearch() {

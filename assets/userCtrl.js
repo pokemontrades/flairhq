@@ -345,6 +345,7 @@ module.exports = function ($scope, $location, io) {
   $scope.init = function (params) {
     $scope = _.assign($scope, params);
     if ($scope.user) {
+      $scope.user.isFlairMod = $scope.user.isMod && ($scope.user.modPermissions.includes('all') || $scope.user.modPermissions.includes('flair'));
       try {
         var parsed = $scope.flairCheck($scope.user.flair.ptrades.flair_text, $scope.user.flair.svex.flair_text);
         $scope.user.flairFriendCodes = parsed.fcs;

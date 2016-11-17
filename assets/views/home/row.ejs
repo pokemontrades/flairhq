@@ -35,11 +35,11 @@
 </td>
 
 <td>
-  <input  ng-if="user.isMod && !onIndexPage && isApprovable(reference)" type="checkbox" ng-change="approve(reference.id, reference.approved)" ng-model="reference.approved"/>
-  <span ng-if="user.isMod && !onIndexPage && reference.edited" && isApprovable(reference)>
+  <input  ng-if="user.isFlairMod && !onIndexPage && isApprovable(reference)" type="checkbox" ng-change="approve(reference.id, reference.approved)" ng-model="reference.approved"/>
+  <span ng-if="user.isFlairMod && !onIndexPage && reference.edited" && isApprovable(reference)>
     <font class="editstar" title="This reference was edited at some point.">*</font>
   </span>
-  <span ng-if="user.isMod && !onIndexPage && reference.verified && isApprovable(reference)">
+  <span ng-if="user.isFlairMod && !onIndexPage && reference.verified && isApprovable(reference)">
     <sup><font class="greencheck" title="This trade has been approved and logged by both users.">✓</font></sup>
   </span>
 </td>
@@ -54,7 +54,7 @@
   </a>
   <a href="#" ng-really-switch="deleteRef" class="icon"
      ng-really-click="deleteRef(reference.id)"
-     ng-if="user.name === refUser.name || user.isMod">
+     ng-if="user.name === refUser.name || user.isFlairMod">
     <span class="glyphicon glyphicon-trash"></span>
   </a>
 </td>

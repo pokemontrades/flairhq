@@ -14,7 +14,7 @@ module.exports = {
     User.findOne(req.params.username, function (err, user) {
       if (!user) {
         return res.notFound("Can't find user");
-      } else if (user.name !== req.user.name && !req.user.isMod) {
+      } else if (user.name !== req.user.name && !Users.hasModPermission(req.user, 'all')) {
         return res.forbidden("You can't edit another user's information unless you are a mod.");
       } else {
         var updatedUser = {};
@@ -260,8 +260,8 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.checkModeratorStatus(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (modStatus) {
-      if (modStatus) { //User is a mod, clear session
+    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (permissions) {
+      if (_.includes(permissions, 'all') || _.includes(permissions, 'access')) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {
             return res.serverError(err);

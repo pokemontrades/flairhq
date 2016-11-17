@@ -12,7 +12,7 @@ module.exports = function (req, res, next) {
         }
         res.locals.query = req.query;
         res.locals.flairs = await Flairs.getFlairs();
-        if (req.user && req.user.isMod) {
+        if (Users.hasModPermission(req.user, 'flair')) {
           res.locals.flairApps = await Flairs.getApps();
         }
         next();

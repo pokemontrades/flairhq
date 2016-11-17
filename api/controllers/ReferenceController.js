@@ -125,7 +125,7 @@ module.exports = {
       if (err) {
         return res.serverError(err);
       }
-      if (ref.user === req.user.name || req.user.isMod) {
+      if (ref.user === req.user.name || Users.hasModPermission(req.user, 'flair')) {
         if (ref.verified) {
           var query = {
             user: ref.user2,
@@ -170,7 +170,7 @@ module.exports = {
       if (!comment || err) {
         return res.notFound(err);
       }
-      if (req.user.name === comment.user2 || req.user.isMod) {
+      if (req.user.name === comment.user2 || Users.hasModPermission(req.user, 'flair')) {
         Comment.destroy(id, function (err, result) {
           return res.ok(result);
         });

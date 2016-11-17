@@ -154,7 +154,7 @@ module.exports = {
       return flairService.formattedRequirements(flair, $scope.flairs);
     };
     $scope.clickRefLink = function (ref) {
-      if ($scope.user.isMod) {
+      if ($scope.user && $scope.user.isFlairMod) {
         io.socket.post('/flair/app/refreshClaim', ref, function (data, res) {
           if (res.statusCode !== 200) {
             console.log('Error ' + res.statusCode + ': Could not send link data to server.');

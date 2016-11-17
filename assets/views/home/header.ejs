@@ -25,14 +25,21 @@
       <ul class="nav navbar-nav">
         <li><a href="/info">Information</a></li>
         <li><a href="/tools">Tools</a></li>
-        <% if (user.isMod) {%>
+        <% if (user.isFlairMod) {%>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Moderation<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-inverse" role="menu">
-            <li><a href="/mod/banlist">Ban List</a></li>
-            <li><a href="#" data-toggle="modal" data-target="#flairAppList">Flair App List</a></li>
-            <li><a href="#" data-toggle="modal" data-target="#flairMod">Edit Flairs</a></li>
-            <li><a href="/mod/banuser">Ban a User</a></li>
+
+            <% if (user.modPermissions.indexOf('all') > -1) { %>
+              <li><a href="/mod/banlist">Ban List</a></li>
+            <% } %>
+            <% if (['all', 'flair'].some(permission => user.modPermissions.indexOf(permission) > -1)) { %>
+              <li><a href="#" data-toggle="modal" data-target="#flairAppList">Flair App List</a></li>
+              <li><a href="#" data-toggle="modal" data-target="#flairMod">Edit Flairs</a></li>
+            <% } %>
+            <% if (user.modPermissions.indexOf('all') > -1) { %>
+              <li><a href="/mod/banuser">Ban a User</a></li>
+            <% } %>
           </ul>
         </li>
         <% } %>

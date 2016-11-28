@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <!--STYLES-->
-    <link rel="stylesheet" href="/styles/importer.css">
+    <link rel="stylesheet" href="<%= sails.config.environment === 'development' ? '/styles/importer.css' : '/min/production.min.css' %>">
     <!--STYLES END-->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css">
 
@@ -64,7 +64,7 @@
     </div>
 
     <!--SCRIPTS-->
-    <script id="app" src="/js/app.js" <% if (typeof _csrf !== 'undefined') { %> _csrf="<%= _csrf %>" <% } %>></script>
+    <script id="app" src="<%= sails.config.environment === 'development' ? '/js/app.js' : '/min/production.min.js' %>" <% if (typeof _csrf !== 'undefined') { %> _csrf="<%= _csrf %>" <% } %>></script>
     <!--SCRIPTS END-->
     <% if(sails.config.environment == 'development' ){ %> <script src="http://localhost:35729/livereload.js"></script> <% } %>
     <%- partial('privacyPolicy.ejs') %>

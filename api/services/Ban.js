@@ -75,7 +75,7 @@ exports.markTSVThreads = async function (redToken, username) {
   return output;
 };
 //Update the public banlist with the user's information
-exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns, knownAlt) {
+exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns, knownAlt, tradeNote) {
   var valid_FCs = friend_codes.filter(Flairs.validFC);
   if (valid_FCs.length) {
     friend_codes = valid_FCs;
@@ -93,8 +93,8 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     if (knownAlt && lines[i].includes('/u/' + knownAlt) || lines[i].includes('/u/' + username)
         ||_.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
       // User was an alt account, modify the existing line instead of creating a new one
-      let blocks = lines[i].split(' | ');
-      if (blocks.length !== 4) {
+      let blocks = lines[i].split(/\s*\|\s*/);
+      if (blocks.length !== 5) {
         break;
       }
       blocks[0] = _.union(blocks[0].match(/\/?u\/[\w-]{1,20}/g), ['/u/' + username]).join(', ');
@@ -104,6 +104,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
       } catch (err) {
         blocks[3] += igns;
       }
+      blocks[4] = tradeNote || blocks[4] || '';
       let new_line = blocks.join(' | ');
       updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index, i)).concat(lines.slice(i + 1)).join('\n');
       break;
@@ -117,7 +118,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     } catch (err) {
       formatted_igns = igns;
     }
-    let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, formatted_igns].join(' | ');
+    let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, formatted_igns, tradeNote].join(' | ');
     updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
   }
   try {

@@ -76,6 +76,7 @@ module.exports = function ($scope, io) {
       "banNote": $scope.banInfo.banNote,
       "banMessage": $scope.banInfo.banMessage,
       "banlistEntry": $scope.banInfo.banlistEntry,
+      "tradeNote": $scope.banInfo.tradeNote,
       "duration": parseInt($scope.banInfo.duration),
       "knownAlt": $scope.banInfo.knownAlt,
       "additionalFCs": FCs
@@ -89,6 +90,7 @@ module.exports = function ($scope, io) {
         $scope.banInfo.banNote = "";
         $scope.banInfo.banMessage = "";
         $scope.banInfo.banlistEntry = "";
+        $scope.banInfo.tradeNote = "";
         $scope.banInfo.duration = "";
         $scope.banInfo.knownAlt = "";
         $scope.banInfo.additionalFCs = "";

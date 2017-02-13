@@ -31,7 +31,7 @@ module.exports.views = {
   ****************************************************************************/
 
   engine: 'ejs',
-  
+
 
   /****************************************************************************
   *                                                                           *
@@ -61,7 +61,8 @@ module.exports.views = {
 
   locals: {
     allTypes: require('../assets/search/types.js'),
-    flairService: require('../api/services/Flairs.js')
+    flairService: require('../api/services/Flairs.js'),
+    VERSION: require('../package.json').version
   }
 
   /****************************************************************************
@@ -82,5 +83,5 @@ module.exports.views = {
   *                                                                           *
   ****************************************************************************/
 
-  
+
 };

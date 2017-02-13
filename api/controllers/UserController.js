@@ -159,6 +159,10 @@ module.exports = {
         return res.status(400).json({error: "Invalid banlist entry"});
       }
 
+      if (typeof req.params.tradeNote !== 'string') {
+        return res.status(400).json({error: "Invalid trade note"});
+      }
+
       if (req.params.duration && (typeof req.params.duration !== 'number' || req.params.duration < 0 || req.params.duration > 999 || req.params.duration % 1 !== 0)) {
         return res.status(400).json({error: "Invalid duration"});
       }
@@ -216,7 +220,7 @@ module.exports = {
         promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
         promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
         promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
-        promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt));
+        promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt, req.params.tradeNote));
         promises.push(Ban.localBanUser(req.params.username));
       }
       Promise.all(promises).then(function () {

@@ -6,6 +6,7 @@ module.exports = function ($scope, io) {
     banNote: $scope.query.banNote || '',
     banMessage: $scope.query.banMessage || '',
     banlistEntry: $scope.query.banlistEntry || '',
+    tradeNode: $scope.query.tradeNote || '',
     duration: $scope.query.duration || '',
     knownAlt: $scope.query.knownAlt || '',
     additionalFCs: $scope.query.additionalFCs || ''

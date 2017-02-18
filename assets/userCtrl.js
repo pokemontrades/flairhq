@@ -290,8 +290,7 @@ module.exports = function ($scope, $location, io) {
 
     io.socket.post(url, {
       "ptrades": ptrades,
-      "svex": svex,
-      "extraFlair": $scope.user.extraFlair
+      "svex": svex
     }, function (data, res) {
       if (res.statusCode === 200) {
         $scope.userok.setFlairText = true;

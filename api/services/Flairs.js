@@ -3,10 +3,7 @@ var _ = require('lodash');
 var referenceService = require('./References.js');
 var NodeCache = require('node-cache');
 var app_claim_cache = new NodeCache({stdTTL: 300});
-var extraFlair = ['rowlet', 'litten', 'popplio'];
-var extraFlairRegExp = new RegExp("(" + extraFlair.join("|") + ")");
 
-exports.extraFlair = extraFlair;
 exports.formattedName = function(name) {
   if (!name) {
     return "";
@@ -263,13 +260,6 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
   }
   if (new_addition === 'involvement') {
     return previous_flair.replace(/( |$)/, '1$1');
-  }
-  if (_.includes(extraFlair, new_addition)) {
-    if (previous_flair.match(extraFlairRegExp)) {
-      return previous_flair.replace(extraFlairRegExp, new_addition);
-    } else {
-      return previous_flair + " " + new_addition;
-    }
   }
   if (subreddit === 'pokemontrades' || !/ribbon/.test(previous_flair + new_addition)) {
     return previous_flair.replace(/[^ 1]*/, new_addition);

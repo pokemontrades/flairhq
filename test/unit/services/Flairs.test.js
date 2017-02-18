@@ -1,6 +1,7 @@
 'use strict';
 var _ = require("lodash");
 var assert = require("chai").assert;
+var Flairs = require("../../../api/services/Flairs");
 
 var flairTexts = require("../data/flairTexts.json");
 var flairCssClasses = require("../data/flairCssClasses.json");
@@ -8,8 +9,6 @@ var stdFlairInfo = require("../data/standardFlairInfo.json");
 var fcs = require("../data/friendCodes.json");
 var users = require("../data/users.json");
 var refFactory = require("../data/referenceFactory.js");
-
-var Flairs = require("../../../api/services/Flairs");
 
 describe("Flair text", function () {
   it("Throws error on incorrect pokemontrades flair", function () {

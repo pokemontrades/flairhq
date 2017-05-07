@@ -135,7 +135,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason)
 
 exports.searchTSVThreads = function (refreshToken, username) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
-  var query = "(and (or (field flair 'banned') (field flair 'sv')) (field author '" + username + "'))";
+  var query = "(and (or flair_css_class:'banned' flair_css_class:'sv*') author:'" + username + "')";
   return exports.search(refreshToken, actual_sub, query, true, 'new', 'all', 'cloudsearch');
 };
 

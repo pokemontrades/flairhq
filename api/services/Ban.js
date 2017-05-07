@@ -90,14 +90,16 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   }
   let updated_content;
   for (let i = start_index; i < end_index; i++) {
-    if (knownAlt && lines[i].includes('/u/' + knownAlt) || lines[i].includes('/u/' + username)
+    if (knownAlt && lines[i].includes(knownAlt) || lines[i].includes(username)
         ||_.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
       // User was an alt account, modify the existing line instead of creating a new one
       let blocks = lines[i].split(/\s*\|\s*/);
-      if (blocks.length !== 5) {
-        break;
+      let user_regex = '(?:^|\\s)('+username+(knownAlt ? '|'+knownAlt : '')+')(?:,|$)';
+      let fc_match = _.intersection(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).length;
+      if (blocks.length !== 5 || !(fc_match || blocks[0].match(new RegExp(user_regex)))) {
+        continue;
       }
-      blocks[0] = _.union(blocks[0].match(/\/?u\/[\w-]{1,20}/g), ['/u/' + username]).join(', ');
+      blocks[0] = _.union(blocks[0].match(/[\w-]{1,20}/g), [username]).join(', ');
       blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
       try {
         blocks[3] = Flairs.formatGames(Flairs.combineGames(Flairs.parseGames(blocks[3]), Flairs.parseGames(igns)));
@@ -118,7 +120,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     } catch (err) {
       formatted_igns = igns;
     }
-    let new_line = ['/u/' + username, friend_codes.join(', '), banlistEntry, formatted_igns, tradeNote].join(' | ');
+    let new_line = [username, friend_codes.join(', '), banlistEntry, formatted_igns, tradeNote].join(' | ');
     updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
   }
   try {

@@ -44,7 +44,7 @@ module.exports = {
           if (err === 'banned') {
             return res.view(403, {error: 'You have been banned from FlairHQ'});
           }
-		  sails.log.error(err);
+          sails.log.error(err);
           return res.view(403, {error: 'Sorry, something went wrong. Try logging in again.'});
         }
         var login_info;

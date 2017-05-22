@@ -28,7 +28,7 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
         });
       }
     }, function (error) {
-      return res.serverError(error);
+      return done(error);
     });
   });
 };

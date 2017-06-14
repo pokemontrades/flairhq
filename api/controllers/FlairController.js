@@ -97,24 +97,24 @@ module.exports = {
       var ipAddress = req.headers['x-forwarded-for'] || req.ip;
       // Get IP matches with banned users
       var events_with_ip = await Event.find({content: {contains: ipAddress}, user: {not: req.user.name}});
-	  
+
       var matching_alt_usernames = _.uniq(_.map(events_with_ip, 'user'));
       var matching_users = await User.find({name: matching_alt_usernames});
       var matching_banned_users = matching_users.filter(user => user.banned);
       var alt_user_names = _.map(matching_users, 'name');
-	  
-	  var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs, name: {not: req.user.name}});
-	  var logged_fcs = _.flatten(_.map(users_with_matching_fcs, 'loggedFriendCodes'));
+
+      var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs, name: {not: req.user.name}});
+      var logged_fcs = _.flatten(_.map(users_with_matching_fcs, 'loggedFriendCodes'));
       var matching_friend_codes = _.intersection(flairs.fcs, logged_fcs);
       var alt_users_fc = _.map(users_with_matching_fcs, 'name');
-	  
+
       // Get friend codes that are similar (have a low edit distance) to banned friend codes
       var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
       // Get friend codes that are identical to banned users' friend codes
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
-	  
+
       var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
       var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       newsvFlair = newsvFlair.replace(/2/, "");
@@ -127,7 +127,7 @@ module.exports = {
         var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + alt_users_fc.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
-		  var altNote = "Alt of " + alt_users_fc;
+          var altNote = "Alt of " + alt_users_fc;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
           var otherAltNote = "Alt of" + req.user.name;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', alt_users_fc, otherAltNote, 'spamwarn', ''));
@@ -139,9 +139,7 @@ module.exports = {
         }
         if (alt_user_names.length !== 0) {
           message += 'This user may be an alt of the user' + (alt_user_names.length === 1 ? '' : 's') + ' /u/' + alt_user_names.join(', /u/') + '.\n\n';
-		  var altNote = "Alt of " + alt_users_fc;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
-          var otherAltNote = "Alt of" + req.user.name;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', alt_users_fc, otherAltNote, 'spamwarn', ''));
           if (matching_banned_users) {
             message += '**' + '/u/' + alt_user_names.join(', /u/') + ' is banned.**\n\n';

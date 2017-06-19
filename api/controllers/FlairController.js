@@ -97,9 +97,15 @@ module.exports = {
       var ipAddress = req.headers['x-forwarded-for'] || req.ip;
       // Get IP matches with banned users
       var events_with_ip = await Event.find({content: {contains: ipAddress}, user: {not: req.user.name}});
-      var matching_alt_usernames = _.uniq(_.map(events_with_ip, 'user'));
-      var matching_banned_users = await User.find({name: matching_alt_usernames, banned: true});
-      var banned_alts = _.map(matching_banned_users, 'name');
+
+      var matching_ip_usernames = _.uniq(_.map(events_with_ip, 'user'));
+      var matching_ip_users = await User.find({name: matching_ip_usernames});
+      var matching_ip_banned_users = matching_ip_users.filter(user => user.banned);
+
+      var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs, name: {not: req.user.name}});
+      var logged_fcs = _.flatten(_.map(users_with_matching_fcs, 'loggedFriendCodes'));
+      var matching_friend_codes = _.intersection(flairs.fcs, logged_fcs);
+      var matching_fc_usernames = _.map(users_with_matching_fcs, 'name');
 
       // Get friend codes that are similar (have a low edit distance) to banned friend codes
       var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
@@ -116,16 +122,27 @@ module.exports = {
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
-      if (!blockReport && (identical_banned_fcs.length || banned_alts.length || flagged.length)) {
+      if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
         var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
-        if (identical_banned_fcs.length) {
-          message += '**This flair contains a banned friend code: ' + identical_banned_fcs + '**\n\n';
-        } else if (flagged.length && similar_banned_fcs.length) {
-          message += '**This flair contains a friend code similar to the following banned friend code'  + (similar_banned_fcs.length > 1 ? 's: ' : ': ') +
-            similar_banned_fcs.join(', ') + '**\n\n';
+        if (users_with_matching_fcs.length !== 0) {
+          message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
+          var altNote = "Alt of " + matching_fc_usernames;
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
+          var otherAltNote = "Alt of" + req.user.name;
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
+          if (identical_banned_fcs.length) {
+            message += '**This flair contains a banned friend code: ' + identical_banned_fcs + '**\n\n';
+          } else if (flagged.length && similar_banned_fcs.length) {
+            message += '**This flair contains a friend code similar to the following banned friend code' + (  similar_banned_fcs.length > 1 ? 's: ' : ': ') + similar_banned_fcs.join(', ') + '**\n\n';
+          }
         }
-        if (banned_alts.length) {
-          message += '**This user may be an alt of the banned user' + (banned_alts.length === 1 ? '' : 's') + ' /u/' + banned_alts.join(', /u/') + '.**\n\n';
+        if (matching_ip_usernames.length !== 0) {
+          message += 'This user may be an alt of the user' + (matching_ip_usernames.length === 1 ? '' : 's') + ' /u/' + matching_ip_usernames.join(', /u/') + '.\n\n';
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
+          if (matching_ip_banned_users) {
+            message += '**' + '/u/' + matching_ip_banned_users.join(', /u/') + ' is banned.**\n\n';
+          }
         }
         if (flagged.length) {
           message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged.join(', ') + ' are') + ' invalid.\n\n';

@@ -99,7 +99,7 @@ module.exports = {
       var events_with_ip = await Event.find({content: {contains: ipAddress}, user: {not: req.user.name}});
 
       var matching_ip_usernames = _.uniq(_.map(events_with_ip, 'user'));
-      var matching_ip_users = await User.find({name: matching_ip_something});
+      var matching_ip_users = await User.find({name: matching_ip_usernames});
       var matching_ip_banned_users = matching_ip_users.filter(user => user.banned);
 
       var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs, name: {not: req.user.name}});

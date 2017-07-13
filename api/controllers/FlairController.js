@@ -128,7 +128,7 @@ module.exports = {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
-          var otherAltNote = "Alt of" + req.user.name;
+          var otherAltNote = "Alt of " + req.user.name;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
           if (identical_banned_fcs.length) {
             message += '**This flair contains a banned friend code: ' + identical_banned_fcs + '**\n\n';
@@ -140,7 +140,7 @@ module.exports = {
           message += 'This user may be an alt of the user' + (matching_ip_usernames.length === 1 ? '' : 's') + ' /u/' + matching_ip_usernames.join(', /u/') + '.\n\n';
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
-          if (matching_ip_banned_users) {
+          if (matching_ip_banned_users.length) {
             message += '**' + '/u/' + matching_ip_banned_users.join(', /u/') + ' is banned.**\n\n';
           }
         }

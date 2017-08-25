@@ -141,7 +141,7 @@ module.exports = {
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
           if (matching_ip_banned_users.length) {
-            message += '**' + '/u/' + matching_ip_banned_users.join(', /u/') + ' is banned.**\n\n';
+            message += '**' + '/u/' + matching_ip_banned_users.map(user => user.name).join(', /u/') + ' is banned.**\n\n';
           }
         }
         if (flagged.length) {

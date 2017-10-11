@@ -1,6 +1,6 @@
 # Flair HQ
 
-## Setup
+## How to setup your own dev environment
 
 1. Make sure you have Node (>=4.0.0), and MongoDB installed
 1. Clone the repository `git clone https://github.com/YaManicKill/flairhq.git`

@@ -21,13 +21,19 @@ Your first account will automatically get mod permission on both subreddits and 
    Go to the site [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps). If this is your first reddit application, scroll down and click `Are you a developer? Create an app` button.  
    Choose 'web app' as a type of your application. Set redirect uri to https://not-an-aardvark.github.io/reddit-oauth-helper/ (this is temporary link which will be needed in next step). Fill in 'name'. Other fields are optional.  
    Copy the Client ID and Secret (as per screenshot below) to `config/local.js`. Do not close the tab.
+   
+   ![dev-setup-1](https://user-images.githubusercontent.com/15113729/31516749-e7a5bfc6-af99-11e7-92c4-1f3519aa0c41.png)
 
 
 ### 5. Generate refresh token for a moderator account
 
    **Make sure to use the account with mod permissions in this step**.  
    Go to [this repo](https://github.com/not-an-aardvark/reddit-oauth-helper) to get a refresh token for a moderator on the subs. Scope you'll have to use is `flair modcontributors modflair modposts privatemessages read wikiedit wikiread`. **Remember to choose permanent token**.  
-   If you use web interface you should click `Allow` while redirected to reddit. After that the current tab will be closed and you'll see your tokens at the bottom of the tool as shown on the screenshot. Copy your **refresh token** to config/local.js.
+   If you use web interface you should click `Allow` while redirected to reddit  
+   After that the current tab will be closed and you'll see your tokens at the bottom of the tool as shown on the screenshot. Copy your **refresh token** to config/local.js.
+   
+  
+   ![dev-setup-3-1](https://user-images.githubusercontent.com/15113729/31516886-528e0596-af9a-11e7-9dd8-509fa469d0b6.png)
 	
 ### 6. Change subreddits names
 
@@ -46,3 +52,13 @@ Your first account will automatically get mod permission on both subreddits and 
 ### Have fun with coding FlairHQ!
 
    If you're not sure where to start, check [current issues](https://github.com/pokemontrades/flairhq/issues). Choose one, write a fix and make a pull request. Feel free to ask if you're not sure about anything.
+
+## Troubleshooting dev environment installation
+
+### How I can check if MongoDB started correctly?
+Check for 'waiting for connections' message as below:
+![dev-setup-4](https://user-images.githubusercontent.com/15113729/31516787-08c06e72-af9a-11e7-8472-b5222c23dc02.png)
+
+### How can I know that FlairHQ app started correctly?
+Check for the message 'Waiting' after 'watch' task is started:
+![dev-setup-5](https://user-images.githubusercontent.com/15113729/31516795-0d06f46a-af9a-11e7-9aca-efb808a9d2bf.png)

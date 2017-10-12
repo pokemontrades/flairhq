@@ -49,7 +49,7 @@ Your first account will automatically get mod permission on both subreddits and 
    Before you can start you'll have to go to your reddit app settings and change redirect uri to http://localhost:1337/auth/reddit/callback. Then you can start MongoDB (check [here](https://docs.mongodb.com/manual/tutorial/manage-mongodb-processes/)) and start sails with `npm start`.  
    Open http://localhost:1337 in your browser. You should see the starting page. Once you sign in as mod you can also add flair schema to both of your subreddits.
 	
-### Have fun with coding FlairHQ!
+### :tada:Have fun with coding FlairHQ!:tada:
 
    If you're not sure where to start, check [current issues](https://github.com/pokemontrades/flairhq/issues). Choose one, write a fix and make a pull request. Feel free to ask if you're not sure about anything.
 

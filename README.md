@@ -4,16 +4,16 @@
 
 ### 1. Create two subreddits for testing
 
-You probably don't to do testing on production so the we suggest to create two subreddits for testing purposes. [Start here](https://www.reddit.com/subreddits/create). You can choose any names for it (such as yourUsername and yourUsername1). Once you have the subreddits created, create another reddit account.  
+You don't want to do testing on production so the we suggest you create 2 subreddits for testing purposes. [Start here](https://www.reddit.com/subreddits/create). You can choose any names for it (such as yourUsername and yourUsername1). Once you have the subreddits created, create another reddit account.  
 Your first account will automatically get mod permission on both subreddits and the other one you can use to testing from end user point of view.
 
 ### 2. Install prerequisites
 
-   Make sure you have Node.js ([some helpful guides here](https://nodejs.org/en/download/package-manager/)) and MongoDB ([check it here](https://docs.mongodb.com/manual/installation/)) installed (you can install both of them using default settings). If possible install the newest stable release. For Node.js version 4.0.0 is minimal.
+   Make sure you have Node.js ([some helpful guides here](https://nodejs.org/en/download/package-manager/)) and MongoDB ([check it here](https://docs.mongodb.com/manual/installation/)) installed. Node.js 4.0.0 or greater is required. Install git.
    
 ### 3. Prepare the application folder 
 
-   Clone the repository using `git clone https://github.com/pokemontrades/flairhq.git` (you might have to install git first). Navigate into the directory `flairhq` and run `npm install` to install the dependencies. After all of them are installed you can start preparing your local configuration.  
+   Clone the repository using `git clone https://github.com/pokemontrades/flairhq.git`. Navigate into the directory `flairhq` and run `npm install` to install the dependencies. After all of them are installed you can start preparing your local configuration.  
    Copy `config/local.example.js` to `config/local.js`. You'll use it in next steps.
    
 ### 4. Create a reddit app
@@ -28,9 +28,9 @@ Your first account will automatically get mod permission on both subreddits and 
 ### 5. Generate refresh token for a moderator account
 
    **Make sure to use the account with mod permissions in this step**.  
-   Go to [this repo](https://github.com/not-an-aardvark/reddit-oauth-helper) to get a refresh token for a moderator on the subs. Scope you'll have to use is `flair modcontributors modflair modposts privatemessages read wikiedit wikiread`. **Remember to choose permanent token**.  
+   Install [reddit-oauth-helper](https://github.com/not-an-aardvark/reddit-oauth-helper) to get a refresh token for a moderator on the subs. Use the scope: `flair modcontributors modflair modposts privatemessages read wikiedit wikiread`. **Remember to choose permanent token**.  
    If you use web interface you should click `Allow` while redirected to reddit  
-   After that the current tab will be closed and you'll see your tokens at the bottom of the tool as shown on the screenshot. Copy your **refresh token** to config/local.js.
+   After that the current tab will be closed and you'll see your tokens at the bottom of the tool as shown on the screenshot. Copy your **refresh token** to config/local.js. In case any issues, try different browser.
    
   
    ![dev-setup-3-1](https://user-images.githubusercontent.com/15113729/31516886-528e0596-af9a-11e7-9dd8-509fa469d0b6.png)

@@ -58,12 +58,12 @@ module.exports = {
         return res.status(400).json({err: 'Already added that URL.'});
       }
       
-      // Return error when number of given is less than 0
-      // It's a little bit redundant as under normal circumstances this error is never triggered
-      // 0 or bigger value is enforced by using min="0"
-      if (req.params.number < 0) {
-        return res.badRequest({err: "Number must be 0 or more"});
-      }
+    // Return error when number of given is less than 0
+    // It's a little bit redundant as under normal circumstances this error is never triggered
+    // 0 or bigger value is enforced by using min="0"
+    if (req.params.number < 0) {
+      return res.badRequest({err: "Number must be 0 or more"});
+    }
 
       return Reference.create({
         url: req.params.url,
@@ -87,13 +87,13 @@ module.exports = {
       return res.badRequest({err: "Number must be a number"});
     }
 
-      // Return error when number of given is less than 0
-      // It's a little bit redundant as under normal circumstances this error is never triggered
-      // 0 or bigger value is enforced by using min="0"
+    // Return error when number of given is less than 0
+    // It's a little bit redundant as under normal circumstances this error is never triggered
+    // 0 or bigger value is enforced by using min="0"
 
-      if (req.params.number < 0) {
-        return res.badRequest({err: "Number must be 0 or more"});
-      }
+    if (req.params.number < 0) {
+      return res.badRequest({err: "Number must be 0 or more"});
+    }
 
     Reference.findOne({id: req.params.id, user: req.user.name}).exec(function (err, ref) {
       if (err || !ref) {

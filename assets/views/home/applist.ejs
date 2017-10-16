@@ -14,7 +14,7 @@
           <ul class="list-group col-md-11 center-block scrollable">
             <li ng-repeat="app in flairApps" class="list-group-item row">
               <h4>
-                <a href="/u/{{app.user}}">/u/{{app.user}}</a>
+                <a href="/u/{{app.user}}">{{app.createdAt.split('T')[0]}}: /u/{{app.user}}</a>
                 <span ng-if="app.claimedBy"><small>(/u/{{app.claimedBy}} is viewing)</small></span>
                 <span class="pull-right">
                   <span title={{formattedRequirements(app.flair)}} text-align="center">

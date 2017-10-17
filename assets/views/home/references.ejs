@@ -3,7 +3,9 @@
     <tr>
       <td class="firstHeading" colspan="2"><h3>Trades ({{numberOfTrades()}})</h3></td>
       <td><h3 class="text-center"><small></small></h3></td>
-      <td><h3 ng-if="user.isFlairMod && !onIndexPage"><small>Approved</small></h3></td>
+      <td><h3 ng-if="user.isFlairMod && !onIndexPage"><small>Approved: </small></h3>
+        <span ng-if="user.isFlairMod && !onIndexPage">{{refUser.references.filter(isTrade).filter(isApproved).length}}</span>
+      </td>
       <td class="hidden-sm hidden-xs"></td>
     </tr>
 

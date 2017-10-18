@@ -53,11 +53,7 @@ module.exports = {
     if (req.params.number && isNaN(req.params.number)) {
       return res.badRequest({err: "Number must be a number"});
     }
-    
-    // Return error when number of given is less than 0
-    // It's a little bit redundant as under normal circumstances this error is never triggered
-    // 0 or bigger value is enforced by using min="0"
-      
+     
     if (req.params.number < 0) {
       return res.badRequest({err: "Number must be 0 or more"});
     }

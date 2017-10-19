@@ -18,6 +18,7 @@ module.exports = {
     description: "string",
     number: {
       type: "integer",
+      min: 0,
       required: false
     },
     type: {

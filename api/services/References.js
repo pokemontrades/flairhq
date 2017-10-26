@@ -102,7 +102,7 @@ exports.numberOfPokemonGivenAway = function (refs) {
     return 0;
   }
   refs.filter(function (item) {
-    return exports.isGiveaway(item) && item.url.indexOf("pokemontrades") !== -1;
+    return exports.isGiveaway(item) && item.url.indexOf(sails.config.reddit.tradeSub) !== -1;
   }).forEach(function (ref) {
     givenAway += (ref.number || 0);
   });
@@ -114,7 +114,7 @@ exports.numberOfEggsGivenAway = function (refs) {
     return 0;
   }
   refs.filter(function (item) {
-    return exports.isGiveaway(item) && item.url.indexOf("SVExchange") > -1;
+    return exports.isGiveaway(item) && item.url.indexOf(sails.config.reddit.eggSub) > -1;
   }).forEach(function (ref) {
     givenAway += (ref.number || 0);
   });

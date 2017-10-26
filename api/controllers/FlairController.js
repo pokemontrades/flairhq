@@ -49,7 +49,7 @@ module.exports = {
         return res.status(404).json(await Flairs.getApps());
       }
       var user = await User.findOne(app.user);
-      var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
+      var shortened = app.sub === sails.config.reddit.tradeSub ? sails.config.reddit.tradeSubShort : sails.config.reddit.eggSubShort;
       var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
       user.flair[shortened].flair_css_class = relevant_flair;
       await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
@@ -118,8 +118,8 @@ module.exports = {
       var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, sails.config.reddit.tradeSub));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, sails.config.reddit.eggSub));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
@@ -127,9 +127,9 @@ module.exports = {
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', sail.config.reddit.tradeSub, req.user.name, altNote, 'spamwarn', ''));
           var otherAltNote = "Alt of " + req.user.name;
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', sail.config.reddit.tradeSub, matching_fc_usernames, otherAltNote, 'spamwarn', ''));
           if (identical_banned_fcs.length) {
             message += '**This flair contains a banned friend code: ' + identical_banned_fcs + '**\n\n';
           } else if (flagged.length && similar_banned_fcs.length) {
@@ -138,8 +138,8 @@ module.exports = {
         }
         if (matching_ip_usernames.length !== 0) {
           message += 'This user may be an alt of the user' + (matching_ip_usernames.length === 1 ? '' : 's') + ' /u/' + matching_ip_usernames.join(', /u/') + '.\n\n';
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', sail.config.reddit.tradeSub, req.user.name, altNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', sail.config.reddit.tradeSub, matching_fc_usernames, otherAltNote, 'spamwarn', ''));
           if (matching_ip_banned_users.length) {
             message += '**' + '/u/' + matching_ip_banned_users.map(user => user.name).join(', /u/') + ' is banned.**\n\n';
           }
@@ -147,10 +147,10 @@ module.exports = {
         if (flagged.length) {
           message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged.join(', ') + ' are') + ' invalid.\n\n';
           var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.join(', ');
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', sail.config.reddit.tradeSub, req.user.name, formattedNote, 'spamwarn', ''));
         }
         message = message.slice(0,-2);
-        promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
+        promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/" + sail.config.reddit.tradeSub));
       }
       Promise.all(promises).then(function () {
         Event.create([{

@@ -80,7 +80,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   if (valid_FCs.length) {
     friend_codes = valid_FCs;
   }
-  var current_list = await Reddit.getWikiPage(redToken, 'pokemontrades', 'banlist');
+  var current_list = await Reddit.getWikiPage(redToken, sails.config.reddit.tradeSub, 'banlist');
   var lines = current_list.replace(/\r/g, '').split("\n");
   var start_index = lines.indexOf('[//]:# (BEGIN BANLIST)') + 3;
   var end_index = lines.indexOf('[//]:# (END BANLIST)');
@@ -124,7 +124,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     updated_content = lines.slice(0, start_index).concat(new_line).concat(lines.slice(start_index)).join('\n');
   }
   try {
-    await Reddit.editWikiPage(redToken, 'pokemontrades', 'banlist', updated_content, '');
+    await Reddit.editWikiPage(redToken, sails.config.reddit.tradeSub, 'banlist', updated_content, '');
   } catch (e) {
     sails.log.error(e);
     throw {error: 'Failed to update public banlist'};

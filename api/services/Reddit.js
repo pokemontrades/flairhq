@@ -90,8 +90,8 @@ exports.getFlair = async function (refreshToken, user, subreddit) {
 };
 
 exports.getBothFlairs = async function (refreshToken, user) {
-  var ptradesFlairPromise = exports.getFlair(refreshToken, user, 'pokemontrades');
-  var svexFlairPromise = exports.getFlair(refreshToken, user, 'SVExchange');
+  var ptradesFlairPromise = exports.getFlair(refreshToken, user, sails.config.reddit.tradeSub);
+  var svexFlairPromise = exports.getFlair(refreshToken, user, sails.config.reddit.eggSub);
   return Promise.all([ptradesFlairPromise, svexFlairPromise]);
 };
 

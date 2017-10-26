@@ -207,19 +207,19 @@ module.exports = {
       let igns = _.compact(flair_texts).map(text => text.split(' || ')[1]).join(', ');
       var promises = [];
       if (flairs) {
-        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
-        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, sails.config.reddit.tradeSub, req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, sails.config.reddit.eggSub, req.params.duration));
       }
       if (!req.params.duration) {
         if (flairs) {
-          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
-          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, sails.config.reddit.tradeSub));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, sails.config.reddit.eggSub));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, sails.config.reddit.tradeSub, req.params.username, req.params.banNote));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, sails.config.reddit.eggSub, req.params.username, req.params.banNote));
         }
         promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
-        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
-        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, sails.config.reddit.tradeSub, unique_fcs));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, sails.config.reddit.eggSub, unique_fcs));
         promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt, req.params.tradeNote));
         promises.push(Ban.localBanUser(req.params.username));
       }
@@ -264,7 +264,7 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (permissions) {
+    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.name, sails.config.reddit.tradeSub).then(function (permissions) {
       if (_.includes(permissions, 'all') || _.includes(permissions, 'access')) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {

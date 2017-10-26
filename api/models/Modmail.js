@@ -19,7 +19,7 @@ module.exports = {
     body: 'string', //Body of the message
     author: 'string', //Username of the message author
     subreddit: { //The subreddit that the modmail was sent to
-      enum: ['pokemontrades', 'SVExchange']
+      enum: [sails.config.reddit.tradSub, sails.config.reddit.eggSub]
     },
     first_message_name: { //The fullname of the first message in this chain, or null if this is the first message
       stringOrNull: true

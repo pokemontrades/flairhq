@@ -9,6 +9,11 @@ module.exports = {
     redirectURL: "http://localhost:1337/auth/reddit/callback",
     adminRefreshToken: "ADMIN REFRESH TOKEN GOES HERE",
     userAgent: 'FlairHQ development version by /u/DEVELOPERS_USERNAME || hq.porygon.co/info || v' + require('../package.json').version
+    tradeSub: 'flairhqdevtesting',
+    tradeSubShort: 'tsub',
+    eggSub: 'flairhqdevtestingeggs',
+    eggSubShort: 'esub'
+
   },
   connections: {
     "default": "mongo",

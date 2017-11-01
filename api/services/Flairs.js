@@ -176,7 +176,7 @@ exports.formattedRequirements = function (flair, flairs) {
   return formatted;
 };
 
-exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M'].join('|');
+exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M', 'US', 'UM'].join('|');
 exports.legalIgn = '[^()|,]{0,11}[^()|,\\s]';
 
 // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]

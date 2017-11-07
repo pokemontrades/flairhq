@@ -328,7 +328,7 @@ exports.refreshAppClaim = function (ref, mod_username) {
   var query = {};
   if (References.isTrade(ref)) {
     query = {sub: sails.config.reddit.tradeSub, flair: {not: 'involvement'}};
-  } else if (References.isInvolvement(ref) || References.isGiveaway(ref) && new Regex("reddit\.com\/r\/" + sails.config.reddit.tradeSub + "/").test(ref.url)) {
+  } else if (References.isInvolvement(ref) || References.isGiveaway(ref) && new RegExp("reddit\.com\/r\/" + sails.config.reddit.tradeSub + "/").test(ref.url)) {
     query = {sub: sails.config.reddit.tradeSub, flair: 'involvement'};
   } else if (References.isEgg(ref)) {
     query = {sub: sails.config.reddit.eggSub, flair: {$not: /ribbon$/}};

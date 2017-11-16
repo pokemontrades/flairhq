@@ -1,6 +1,6 @@
 {
   "name": "FlairHQ",
-  "version": "2.7.4",
+  "version": "2.7.5",
   "description": "A project to allow easy adding of flair applications for subreddits (focusing initially on /r/pokemontrades) and easy moderation for moderators.",
   "scripts": {
     "start": "node ./node_modules/sails/bin/sails.js lift",

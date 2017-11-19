@@ -73,7 +73,7 @@ module.exports = {
             return res.redirect(url);
           });
         };
-        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
+        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, sails.config.reddit.tradeSub);
         if (modPermissions) { //User is a mod, set isMod to true
           User.update(user.name, {isMod: true, modPermissions}).exec(function () {
             /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/

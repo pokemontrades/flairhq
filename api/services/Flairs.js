@@ -1,10 +1,9 @@
 var sha1 = require('node-sha1');
-var sails = require('sails');
 var _ = require('lodash');
 var referenceService = require('./References.js');
 var NodeCache = require('node-cache');
 var app_claim_cache = new NodeCache({stdTTL: 300});
-var extraFlair = ['charmander', 'bulbasaur', 'squirtle', 'rowlet', 'litten', 'popplio', 'charmeleon', 'ivysaur', 'wartortle', 'dartrix', 'torracat', 'brionne', 'charizard', 'venasaur', 'blastoise', 'decidueye', 'incineroar', 'primarina'];
+var extraFlair = ['charmander-0', 'bulbasaur-0', 'squirtle-0', 'rowlet-0', 'litten-0', 'popplio-0', 'charmander-1', 'bulbasaur-1', 'squirtle-1', 'rowlet-1', 'litten-1', 'popplio-1', 'charmander-2', 'bulbasaur-2', 'squirtle-2', 'rowlet-2', 'litten-2', 'popplio-2'];
 var extraFlairRegExp = new RegExp("(" + extraFlair.join("|") + ")");
 
 exports.extraFlair = extraFlair;
@@ -180,7 +179,7 @@ exports.formattedRequirements = function (flair, flairs) {
   return formatted;
 };
 
-exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M'].join('|');
+exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M', 'US', 'UM'].join('|');
 exports.legalIgn = '[^()|,]{0,11}[^()|,\\s]';
 
 // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]

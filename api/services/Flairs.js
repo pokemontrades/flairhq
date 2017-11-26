@@ -7,6 +7,9 @@ var extraFlair = ['charmander-0', 'bulbasaur-0', 'squirtle-0', 'rowlet-0', 'litt
 var extraFlairRegExp = new RegExp("(" + extraFlair.join("|") + ")");
 
 exports.extraFlair = extraFlair;
+exports.hasExtraFlair = function(user) {
+  return (user.flair.ptrades.flair_css_class.split(' ').length>1);
+};
 exports.formattedName = function(name) {
   if (!name) {
     return "";

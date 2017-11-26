@@ -118,6 +118,12 @@ module.exports = {
       var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       newsvFlair = newsvFlair.replace(/2/, "");
       var promises = [];
+      var extraFlair = req.allParams().extraFlair;
+      if (extraFlair && _.includes(Flairs.extraFlair, extraFlair)) {
+        newPFlair = Flairs.makeNewCSSClass(newPFlair, extraFlair, "PokemonTrades");
+      } else if (extraFlair) {
+        return res.status(400).json({error: "Unexpected extra flair."});
+      }
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));

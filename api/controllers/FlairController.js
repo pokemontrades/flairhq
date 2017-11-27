@@ -114,18 +114,22 @@ module.exports = {
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
-      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
-      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
-      newsvFlair = newsvFlair.replace(/2/, "");
+      var pFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
+      var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
+      svFlair = svFlair.replace(/2/, "");
       var promises = [];
-      var extraFlair = req.allParams().extraFlair;
-      if (extraFlair && _.includes(Flairs.extraFlair, extraFlair)) {
-        newPFlair = Flairs.makeNewCSSClass(newPFlair, extraFlair, "PokemonTrades");
-      } else if (extraFlair) {
+      var eventFlair = req.allParams().eventFlair;
+
+      if (eventFlair && _.includes(Flairs.eventFlair, eventFlair) && !pFlair.includes(eventFlair)) {
+        req.user.team = _.includes(Flairs.kantoFlair, eventFlair) ? "kanto" : "alola";
+        pFlair = Flairs.makeNewCSSClass(pFlair, eventFlair, "PokemonTrades");
+
+        this.addMembershipPoints(req, res);
+      } else {
         return res.status(400).json({error: "Unexpected extra flair."});
       }
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
@@ -190,5 +194,42 @@ module.exports = {
     } catch (err) {
       return res.serverError(err);
     }
+  },
+
+  addMembershipPoints: async function (req, res) {
+
+    try {
+      var promises = [];
+
+      promises.push(PointLog.create({
+        time: new Date(),
+        team: req.user.team,
+        from: req.user.name,
+        pointType: "membershipPoints",
+        reason: "Joined Team",
+        points: 1
+      }));
+
+      promises.push(Team.native(function(err, collection) {
+        collection.findAndModify(
+          {"_id": req.user.team},
+          {$push: {"members": req.user.name}},
+          {$inc: {"membershipPoints":1}},
+          function(err, obj) {
+            if (err) {
+              sails.log.debug(err.message);
+            } else {
+              sails.log.debug(obj);
+            }
+          }
+        );
+      }));
+
+      await* promises;
+
+    } catch (err) {
+      return res.serverError(err);
+    }
+
   }
 };

@@ -3,13 +3,18 @@ var _ = require('lodash');
 var referenceService = require('./References.js');
 var NodeCache = require('node-cache');
 var app_claim_cache = new NodeCache({stdTTL: 300});
-var extraFlair = ['charmander-0', 'bulbasaur-0', 'squirtle-0', 'rowlet-0', 'litten-0', 'popplio-0', 'charmander-1', 'bulbasaur-1', 'squirtle-1', 'rowlet-1', 'litten-1', 'popplio-1', 'charmander-2', 'bulbasaur-2', 'squirtle-2', 'rowlet-2', 'litten-2', 'popplio-2'];
-var extraFlairRegExp = new RegExp("(" + extraFlair.join("|") + ")");
+var kantoFlair = ['charmander-0', 'bulbasaur-0', 'squirtle-0', 'charmander-1', 'bulbasaur-1', 'squirtle-1', 'charmander-2', 'bulbasaur-2', 'squirtle-2'];
+var alolaFlair = ['rowlet-0', 'litten-0', 'popplio-0', 'rowlet-1', 'litten-1', 'popplio-1', 'rowlet-2', 'litten-2', 'popplio-2'];
+var eventFlair = kantoFlair.concat(alolaFlair);
+var eventFlairRegExp = new RegExp("(" + eventFlair.join("|") + ")");
 
-exports.extraFlair = extraFlair;
-exports.hasExtraFlair = function(user) {
-  return (user.flair.ptrades.flair_css_class.split(' ').length>1);
+exports.eventFlair = eventFlair;
+exports.kantoFlair = kantoFlair;
+exports.hasEventFlair = function(user) {
+  var flairClasses = user.flair.ptrades.flair_css_class || 'default';
+  return (flairClasses.split(' ').length > 1) && _.intersection(eventFlair, flairClasses);
 };
+
 exports.formattedName = function(name) {
   if (!name) {
     return "";
@@ -267,13 +272,11 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
   if (new_addition === 'involvement') {
     return previous_flair.replace(/( |$)/, '1$1');
   }
-  if (_.includes(extraFlair, new_addition)) {
-    if (previous_flair.match(extraFlairRegExp)) {
-      return previous_flair.replace(extraFlairRegExp, new_addition);
-    } else {
+  if (_.includes(eventFlair, new_addition)) {
+    if (!previous_flair.match(eventFlairRegExp)) {
       return previous_flair + " " + new_addition;
     }
-  }  
+  }
   if (subreddit === 'pokemontrades' || !/ribbon/.test(previous_flair + new_addition)) {
     return previous_flair.replace(/[^ 1]*/, new_addition);
   }

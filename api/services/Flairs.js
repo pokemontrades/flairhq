@@ -3,16 +3,17 @@ var _ = require('lodash');
 var referenceService = require('./References.js');
 var NodeCache = require('node-cache');
 var app_claim_cache = new NodeCache({stdTTL: 300});
-var kantoFlair = ['charmander-0', 'bulbasaur-0', 'squirtle-0', 'charmander-1', 'bulbasaur-1', 'squirtle-1', 'charmander-2', 'bulbasaur-2', 'squirtle-2'];
-var alolaFlair = ['rowlet-0', 'litten-0', 'popplio-0', 'rowlet-1', 'litten-1', 'popplio-1', 'rowlet-2', 'litten-2', 'popplio-2'];
+var kantoFlair = ['bulbasaur', 'charmander', 'squirtle'];
+var alolaFlair = ['rowlet', 'litten', 'popplio'];
 var eventFlair = kantoFlair.concat(alolaFlair);
-var eventFlairRegExp = new RegExp("(" + eventFlair.join("|") + ")");
+var eventFlairRegExp = new RegExp('\\bkva-(' + eventFlair.join("|") + ')-[1-3]\\b');
 
 exports.eventFlair = eventFlair;
 exports.kantoFlair = kantoFlair;
+exports.eventFlairRegExp = eventFlairRegExp;
 exports.hasEventFlair = function(user) {
   var flairClasses = user.flair.ptrades.flair_css_class || 'default';
-  return (flairClasses.split(' ').length > 1) && _.intersection(eventFlair, flairClasses);
+  return !!flairClasses.match(eventFlairRegExp);
 };
 
 exports.formattedName = function(name) {
@@ -272,7 +273,7 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
   if (new_addition === 'involvement') {
     return previous_flair.replace(/( |$)/, '1$1');
   }
-  if (_.includes(eventFlair, new_addition)) {
+  if (new_addition.match(/^kva/)) {
     if (!previous_flair.match(eventFlairRegExp)) {
       return previous_flair + " " + new_addition;
     }

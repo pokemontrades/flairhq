@@ -92,24 +92,24 @@
               <label for="friendcode1" class="col-md-3 control-label">KvA Starter Flair: </label>
 
               <div class="col-md-13">
-                <div class="btn-group">
-                  <button class="btn btn-default" ng-model="user.eventFlair" ng-class="hasEventFlair() ? 'disabled' : ''" btn-radio="'bulbasaur-0'">
-                    <span class="flair-bulbasaur-0"></span>
+                <div class="btn-group" id="event-selection" ng-class="hasEventFlair() ? 'already-selected' : ''">
+                  <button class="btn btn-default" ng-model="user.eventFlair" ng-disabled="hasEventFlair()" btn-radio="'bulbasaur'">
+                    <span class="flair-kva-bulbasaur-1"></span>
                   </button>
-                  <button class="btn btn-default" ng-model="user.eventFlair" ng-class="hasEventFlair() ? 'disabled' : ''" btn-radio="'charmander-0'">
-                    <span class="flair-charmander-0"></span>
+                  <button class="btn btn-default" ng-model="user.eventFlair" ng-disabled="hasEventFlair()" btn-radio="'charmander'">
+                    <span class="flair-kva-charmander-1"></span>
                   </button>
-                  <button class="btn btn-default" ng-model="user.eventFlair" ng-class="hasEventFlair() ? 'disabled' : ''" btn-radio="'squirtle-0'">
-                    <span class="flair-squirtle-0"></span>
+                  <button class="btn btn-default" ng-model="user.eventFlair" ng-disabled="hasEventFlair()" btn-radio="'squirtle'">
+                    <span class="flair-kva-squirtle-1"></span>
                   </button>
-                  <button class="btn btn-default" ng-model="user.eventFlair" ng-class="hasEventFlair() ? 'disabled' : ''" btn-radio="'rowlet-0'">
-                    <span class="flair-rowlet-0"></span>
+                  <button class="btn btn-default" ng-model="user.eventFlair" ng-disabled="hasEventFlair()" btn-radio="'rowlet'">
+                    <span class="flair-kva-rowlet-1"></span>
                   </button>
-                  <button class="btn btn-default" ng-model="user.eventFlair" ng-class="hasEventFlair() ? 'disabled' : ''" btn-radio="'litten-0'">
-                    <span class="flair-litten-0"></span>
+                  <button class="btn btn-default" ng-model="user.eventFlair" ng-disabled="hasEventFlair()" btn-radio="'litten'">
+                    <span class="flair-kva-litten-1"></span>
                   </button>
-                  <button class="btn btn-default" ng-model="user.eventFlair" ng-class="hasEventFlair() ? 'disabled' : ''" btn-radio="'popplio-0'">
-                    <span class="flair-popplio-0"></span>
+                  <button class="btn btn-default" ng-model="user.eventFlair" ng-disabled="hasEventFlair()" btn-radio="'popplio'">
+                    <span class="flair-kva-popplio-1"></span>
                   </button>
                 </div>
               </div>
@@ -118,7 +118,7 @@
             <div class="form-group col-md-12">
                 <label for="friendcode1" class="col-md-3 control-label"> </label>
                 <div class="col-md-14">
-                  <strong>{{hasEventFlair() ? 'You have already selected a starter.' : 'Selecting a starter assigns you to the corresponding team (Kanto or Alola).'}}</strong>
+                  <strong id="event-text">{{hasEventFlair() ? 'You have already selected a starter.' : 'Selecting a starter assigns you to the corresponding team (Kanto or Alola).'}}</strong>
                 </div>
             </div>
 

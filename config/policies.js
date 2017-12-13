@@ -33,7 +33,9 @@ module.exports.policies = {
     '*': admin,
     applist: flairMod,
     apply: user,
-    setText: user
+    setText: user,
+    denyApp: flairMod,
+    approveApp: flairMod
   },
 
   HomeController: {

@@ -150,6 +150,9 @@ module.exports = {
         flairService.getUserFlairs($scope.user, $scope.flairs)
       ) && !$scope.applied(applicationFlair, $scope.flairs);
     };
+    $scope.hasEventFlair = function () {
+      return flairService.hasEventFlair($scope.user);
+    };
     $scope.formattedRequirements = function (flair) {
       return flairService.formattedRequirements(flair, $scope.flairs);
     };

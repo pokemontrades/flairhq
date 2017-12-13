@@ -290,9 +290,14 @@ module.exports = function ($scope, $location, io) {
 
     io.socket.post(url, {
       "ptrades": ptrades,
-      "svex": svex
+      "svex": svex,
+      "eventFlair": $scope.user.eventFlair
     }, function (data, res) {
       if (res.statusCode === 200) {
+        if ($('#event-selection:not(".already-selected")')) {
+          $('#event-selection button').attr('disabled', 'disabled');
+          $('#event-text').html("You have selected your starter. Good luck!");
+        }
         $scope.userok.setFlairText = true;
       } else if (res.statusCode === 400) {
         $("#setTextError").html(data.error).show();

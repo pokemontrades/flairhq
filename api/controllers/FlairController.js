@@ -114,12 +114,35 @@ module.exports = {
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
-      var newPFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
-      var newsvFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
-      newsvFlair = newsvFlair.replace(/2/, "");
+      var pFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
+      var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
+      svFlair = svFlair.replace(/2/, "");
       var promises = [];
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newPFlair, flairs.ptrades, "PokemonTrades"));
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, newsvFlair, flairs.svex, "SVExchange"));
+      var eventFlair = req.allParams().eventFlair;
+
+      if (eventFlair) {
+        if (_.includes(Flairs.eventFlair, eventFlair) && !(pFlair.match(Flairs.eventFlairRegExp))) {
+          let team = await Team.find({"members": req.user.name});
+          if (team.length) {
+            return res.status(400).json({error: "You have already selected a starter!"});
+          }
+          req.user.team = _.includes(Flairs.kantoFlair, eventFlair) ? "kanto" : "alola";
+          pFlair = Flairs.makeNewCSSClass(pFlair, `kva-${eventFlair}-1`, "PokemonTrades");
+          module.exports.addMembershipPoints(req, res, "add").then(() => {
+            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades").catch((err) => {
+              sails.log.warn(`Reverting team ${req.user.team} join for ${req.user.name} due to the following error:`);
+              sails.log.warn(err);
+              module.exports.addMembershipPoints(req, res, "remove");
+              throw err;
+            }));
+          });
+        } else {
+          return res.status(400).json({error: "Unexpected extra flair."});
+        }
+      } else {
+        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades"));
+      }
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
@@ -162,6 +185,16 @@ module.exports = {
           user: req.user.name,
           content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
         }]).exec(function () {});
+        User.native(function(err, collection) {
+          collection.update({"_id": req.user.name}, {
+            $set:{
+              "flair.ptrades.flair_text": flairs.ptrades,
+              "flair.ptrades.flair_css_class": pFlair,
+              "flair.svex.flair_text": flairs.svex,
+              "flair.svex.flair_css_class": svFlair
+            }
+          });
+        });
         return res.ok();
       });
     } catch (err) {
@@ -184,5 +217,48 @@ module.exports = {
     } catch (err) {
       return res.serverError(err);
     }
+  },
+
+  addMembershipPoints: async function (req, res, action) {
+
+    try {
+      var promises = [];
+
+      promises.push(PointLog.create({
+        time: new Date(),
+        team: req.user.team,
+        from: req.user.name,
+        pointType: "membershipPoints",
+        reason: action === "add" ? "Joined team" : "Reverted join",
+        points: action === "add" ? 1 : -1
+      }));
+
+      promises.push(Team.native(function(err, collection) {
+        collection.update(
+          {"_id": req.user.team},
+          action === "add" ? {$push: {"members": req.user.name}, $inc: {"membershipPoints": 1}} : {$pull: {"members": req.user.name}, $inc: {"membershipPoints": -1}}
+        );
+      }));
+
+      if (action === "remove") {
+        promises.push(ContestStats.native(function(err, collection) {
+          collection.deleteOne({
+            _id: req.user.name
+          });
+        }));
+      } else {
+        promises.push(ContestStats.create({
+          user: req.user.name,
+          expPoints: 1,
+          battleWins: 0
+        }));
+      }
+
+      await* promises;
+
+    } catch (err) {
+      return res.serverError(err);
+    }
+
   }
 };

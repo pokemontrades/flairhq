@@ -118,7 +118,7 @@ module.exports = {
       var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       svFlair = svFlair.replace(/2/, "");
       var promises = [];
-      var eventFlair = req.allParams().eventFlair;
+      var eventFlair = null; // Change to req.allParams().eventFlair during events
 
       if (eventFlair) {
         if (_.includes(Flairs.eventFlair, eventFlair) && !(pFlair.match(Flairs.eventFlairRegExp))) {

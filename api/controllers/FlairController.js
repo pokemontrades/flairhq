@@ -102,7 +102,8 @@ module.exports = {
       var matching_ip_users = await User.find({name: matching_ip_usernames});
       var matching_ip_banned_users = matching_ip_users.filter(user => user.banned);
 
-      var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs, name: {not: req.user.name}});
+      var ignoredAlts = ['0000-0000-0000', '1111-1111-1111'];
+      var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs.filter((fc) => !ignoredAlts.includes(fc)), name: {not: req.user.name}});
       var logged_fcs = _.flatten(_.map(users_with_matching_fcs, 'loggedFriendCodes'));
       var matching_friend_codes = _.intersection(flairs.fcs, logged_fcs);
       var matching_fc_usernames = _.map(users_with_matching_fcs, 'name');

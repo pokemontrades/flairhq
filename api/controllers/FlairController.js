@@ -113,8 +113,7 @@ module.exports = {
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
       
       var inAutomod1 = await Users.checkAutomod ("pokemontrades", req.user.name, flairs.fcs);
-   	  var inAutomod2 = await Users.checkAutomod ("SVExchange", req.user.name, flairs.fcs);
-
+      var inAutomod2 = await Users.checkAutomod ("SVExchange", req.user.name, flairs.fcs);
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 

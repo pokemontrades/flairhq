@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+var yaml = require('js-yaml');
 
 var removeSecretInformation = function (user) {
   user.redToken = undefined;
@@ -65,4 +66,109 @@ exports.getBannedUsers = function () {
 
 exports.hasModPermission = (user, modPermission) => {
   return user && user.isMod && user.modPermissions && (_.includes(user.modPermissions, 'all') || _.includes(user.modPermissions, modPermission));
+};
+
+
+exports.checkAutomod = async function(subreddit, user, FCs) {
+
+    var returnMessage = "";
+
+
+    var automodText = await Reddit.getWikiPage(sails.config.reddit.adminRefreshToken, subreddit, 'config/automoderator');
+
+    var splittedText = automodText.split("---\r\n");
+    var rulesConverted = new Array();
+
+    splittedText.forEach(function(rule) {
+
+        var convertedRule = yaml.safeLoad(rule);
+        if (convertedRule instanceof Object) { // skips all the commented rules
+            try {
+                var firstComment = rule.match(' *#.*')[0].toString().replace("#", "").trim();
+            } catch (e) {
+                var firstComment = null;
+
+            }
+            if (firstComment) {
+                convertedRule.firstComment = firstComment;
+            }
+        }
+        rulesConverted.push(convertedRule);
+    })
+
+
+
+    FCs.forEach(function(FC) {
+        rulesConverted.forEach(function(rule) {
+
+                for (var name in rule) {
+
+                    var property = rule[name];
+
+                    // for cases where 'author' is array of nicknames
+                    if (name.includes("author") && !(name.includes("~author")) && (Array.isArray(rule[name]))) {
+
+                        if (property.includes(user)) {
+                            returnMessage += ("User " + user + " found in " + ((rule.action_reason) ? rule.action_reason : rule.firstComment) + "\n\n");
+                        }
+                    }
+
+                    // for author with additional properties
+                    if (name.includes("author") && !(name.includes("~author")) && rule[name] instanceof Object) {
+                        for (var name in property) {
+                            if (name.includes("name") && !(name.includes("~name"))) {
+                                if (property[name].includes(user)) {
+                                    returnMessage += ("User " + user + " found in " + ((rule.action_reason) ? rule.action_reason : rule.firstComment) + "\n\n");
+                                }
+                            }
+
+                            if (name.includes("flair_text") && !(name.includes("~flair_text"))) {
+                                if ((rule.author['~name'] && (!(rule.author['~name'].includes(user)))) || !(rule.author['~name'])) {
+                                    if (FC) {
+                                        if (name.includes("regex")) {
+
+                                            if (FC.match(property[name][0])) {
+                                                returnMessage += ("FC " + FC + " found in " + ((rule.action_reason) ? rule.action_reason : rule.firstComment) + "\n\n");
+                                            }
+                                        } else {
+                                            if (property[name].includes(FC)) {
+                                                returnMessage += ("FC " + FC + " found in " + ((rule.action_reason) ? rule.action_reason : rule.firstComment) + "\n\n");;
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+
+                        }
+
+                    }
+
+                    // title and/or body regex checking
+                    if (name.includes("title") || (name.includes("body"))) {
+
+
+                        if (FC) {
+                            if (typeof property === "string") {
+                                var expression = property;
+                            } else {
+                                var expression = property[0];
+                            }
+                            if (FC.match(expression)) {
+                                returnMessage += ("FC " + FC + " found in " + ((rule.action_reason) ? rule.action_reason : rule.firstComment) + "\n\n");
+                            }
+                        }
+                    }
+
+
+                }
+            }
+
+        )
+    })
+    return returnMessage;
+
 };

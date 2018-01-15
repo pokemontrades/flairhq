@@ -176,11 +176,11 @@ module.exports = {
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
         }
         if (inAutomod1) {
-	    		message += inAutomod1;
-	    	}
-	  	 if (inAutomod2) {
-			    message += inAutomod2;
-		   }        
+	  message += inAutomod1;
+	}
+	if (inAutomod2) {
+	  message += inAutomod2;
+	}        
         message = message.slice(0,-2);
         promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
       }

@@ -111,6 +111,10 @@ module.exports = {
       var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
       // Get friend codes that are identical to banned users' friend codes
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
+      
+      var inAutomod1 = await Users.checkAutomod ("pokemontrades", req.user.name, flairs.fcs);
+   	  var inAutomod2 = await Users.checkAutomod ("SVExchange", req.user.name, flairs.fcs);
+
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
@@ -172,6 +176,12 @@ module.exports = {
           var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.join(', ');
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
         }
+        if (inAutomod1) {
+	    		message += inAutomod1;
+	    	}
+	  	 if (inAutomod2) {
+			    message += inAutomod2;
+		   }        
         message = message.slice(0,-2);
         promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
       }

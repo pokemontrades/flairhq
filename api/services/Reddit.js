@@ -135,13 +135,13 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason)
 
 exports.searchTSVThreads = function (refreshToken, username) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
-  var query = "(and (or flair_css_class:'banned' flair_css_class:'sv*') author:'" + username + "')";
-  return exports.search(refreshToken, actual_sub, query, true, 'new', 'all', 'cloudsearch');
+  var query = "((flair_css_class:'banned' OR flair_css_class:'sv*') AND author:'" + username + "')";
+  return exports.search(refreshToken, actual_sub, query, true, 'new', 'all', 'lucene');
 };
 
 exports.search = function (refreshToken, subreddit, query, restrict_sr, sort, time, syntax) {
   var querystring = '?q=' + encodeURIComponent(query) + (restrict_sr  ? '&restrict_sr=on' : '') +
-    (sort ? '&sort=' + sort : '') + (time ? '&t=' + time : '') + '&syntax=' + (syntax ? syntax : 'cloudsearch');
+    (sort ? '&sort=' + sort : '') + (time ? '&t=' + time : '') + '&syntax=' + (syntax ? syntax : 'lucene');
   var endpoint = 'https://oauth.reddit.com/r/' + subreddit + '/search';
   return getEntireListing(refreshToken, endpoint, querystring, 10);
 };

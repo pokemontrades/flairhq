@@ -19,6 +19,7 @@
 const anyone = ['passport'];
 const user = ['passport', 'sessionAuth'];
 const flairMod = ['passport', 'sessionAuth', 'isFlairMod'];
+const postMod = ['passport', 'sessionAuth', 'isPostMod'];
 const admin = ['passport', 'sessionAuth', 'isAdmin'];
 
 module.exports.policies = {
@@ -74,6 +75,12 @@ module.exports.policies = {
     '*': admin,
     edit: user,
     mine: user,
+	addNote: postMod,
     get: anyone
+  },
+  
+  ModNoteController: {
+    '*': admin,
+    find: postMod
   }
 };

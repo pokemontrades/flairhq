@@ -28,7 +28,7 @@ exports.get = async function (requester, username) {
     user.comments = result;
   }));
 
-  if (Users.hasModPermission(requester, 'access')) {
+  if (Users.hasModPermission(requester, 'posts') && Users.hasModPermission(requester, 'wiki')) {
     promises.push(ModNote.find({refUser: user.name}).sort({createdAt: 'desc'}).then(function (result) {
       user.modNotes = result;
     }));

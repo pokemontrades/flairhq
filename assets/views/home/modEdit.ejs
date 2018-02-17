@@ -17,7 +17,7 @@
                 <a ng-href="/u/{{note.user}}">{{note.user}}</a>
                 <span class="pull-right">
                   {{note.createdAt | date: "medium"}}
-                  <a href="#" ng-click="delNote(note.id)">
+                  <a ng-controller="referenceCtrl" ng-if="user.isMod && user.modPermissions && user.modPermissions.includes('all')" href="#" ng-click="delNote(note.id)">
                     <span class="glyphicon glyphicon-trash"></span>
                   </a>
                 </span>
@@ -42,7 +42,7 @@
     </div>
 
 
-    <div class="col-md-6">
+    <div class="col-md-6" ng-if="user.isMod && user.modPermissions && user.modPermissions.includes('all')">
       <div class="form-group">
         <label class="col-sm-3 control-label">Introduction:</label>
 

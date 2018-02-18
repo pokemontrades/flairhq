@@ -19,7 +19,12 @@ module.exports = {
       } else {
         var updatedUser = {};
         if (req.params.intro !== undefined) {
-          updatedUser.intro = req.params.intro;
+          if (req.params.intro.length > 10000) {
+            res.err("Introduction can't be longer than 10 000 characters");
+          }
+          else {
+            updatedUser.intro = req.params.intro;
+          }
         }
         if (req.params.fcs !== undefined) {
           updatedUser.friendCodes = req.params.fcs;
@@ -124,16 +129,16 @@ module.exports = {
           req.params.knownAlt: Known alt of the user for the public banlist (String)
           req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
         Ban process:
-          1. Ban user from /r/pokemontrades
-          2. Ban user from /r/SVExchange
-          3. Add "BANNED USER" to user's flair on /r/pokemontrades
-          4. Add "BANNED USER" to user's flair on /r/SVExchange
-          5. Add user's friend code to /r/pokemontrades AutoModerator config (2 separate lists)
-          6. Add user's friend code to /r/SVExchange AutoModerator config (2 separate lists)
-          7. Add a usernote for the user on /r/pokemontrades
-          8. Add a usernote for the user on /r/SVExchange
-          9. Remove all of the user's TSV threads on /r/SVExchange
-          10. Add user's info to banlist wiki on /r/pokemontrades
+          1. Ban user from /r/robdy
+          2. Ban user from /r/Robdy1
+          3. Add "BANNED USER" to user's flair on /r/robdy
+          4. Add "BANNED USER" to user's flair on /r/Robdy1
+          5. Add user's friend code to /r/robdy AutoModerator config (2 separate lists)
+          6. Add user's friend code to /r/Robdy1 AutoModerator config (2 separate lists)
+          7. Add a usernote for the user on /r/robdy
+          8. Add a usernote for the user on /r/Robdy1
+          9. Remove all of the user's TSV threads on /r/Robdy1
+          10. Add user's info to banlist wiki on /r/robdy
           11. Locally ban user from FlairHQ
     */
 
@@ -207,19 +212,19 @@ module.exports = {
       let igns = _.compact(flair_texts).map(text => text.split(' || ')[1]).join(', ');
       var promises = [];
       if (flairs) {
-        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'pokemontrades', req.params.duration));
-        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'SVExchange', req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'robdy', req.params.duration));
+        promises.push(Ban.banFromSub(req.user.redToken, req.params.username, req.params.banMessage, req.params.banNote, 'Robdy1', req.params.duration));
       }
       if (!req.params.duration) {
         if (flairs) {
-          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
-          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'robdy'));
+          promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'Robdy1'));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'robdy', req.params.username, req.params.banNote));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'Robdy1', req.params.username, req.params.banNote));
         }
         promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
-        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
-        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'SVExchange', unique_fcs));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'robdy', unique_fcs));
+        promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'Robdy1', unique_fcs));
         promises.push(Ban.updateBanlist(req.user.redToken, req.params.username, req.params.banlistEntry, unique_fcs, igns, req.params.knownAlt, req.params.tradeNote));
         promises.push(Ban.localBanUser(req.params.username));
       }
@@ -264,7 +269,7 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (permissions) {
+    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.name, 'robdy').then(function (permissions) {
       if (_.includes(permissions, 'all') || _.includes(permissions, 'access')) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {

@@ -93,13 +93,13 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
     if (knownAlt && lines[i].includes(knownAlt) || lines[i].includes(username)
         ||_.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
       // User was an alt account, modify the existing line instead of creating a new one
-      let blocks = lines[i].split(/\s*\|\s*/);
+      let blocks = lines[i].replace('\\_','_').split(/\s*\|\s*/);
       let user_regex = '(?:^|\\s)('+username+(knownAlt ? '|'+knownAlt : '')+')(?:,|$)';
       let fc_match = _.intersection(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).length;
       if (blocks.length !== 5 || !(fc_match || blocks[0].match(new RegExp(user_regex)))) {
         continue;
       }
-      blocks[0] = _.union(blocks[0].match(/[\w-]{1,20}/g), [username]).join(', ');
+      blocks[0] = _.union(blocks[0].match(/[\w-]{1,20}/g), [username]).join(', ').replace('_','\\_');
       blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
       try {
         blocks[3] = Flairs.formatGames(Flairs.combineGames(Flairs.parseGames(blocks[3]), Flairs.parseGames(igns)));

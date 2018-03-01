@@ -76,6 +76,11 @@ exports.markTSVThreads = async function (redToken, username) {
 };
 //Update the public banlist with the user's information
 exports.updateBanlist = async function (redToken, username, banlistEntry, friend_codes, igns, knownAlt, tradeNote) {
+  // Used to replace \_ with _ and then replace back
+  let underscore_regexp = new RegExp('_','g');
+  let escaped_underscore_regexp = new RegExp(String.fromCharCode(92,92,95),'g');
+  let escaped_underscore_string = String.fromCharCode(92,95);
+
   var valid_FCs = friend_codes.filter(Flairs.validFC);
   if (valid_FCs.length) {
     friend_codes = valid_FCs;
@@ -90,16 +95,17 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
   }
   let updated_content;
   for (let i = start_index; i < end_index; i++) {
+    lines[i] = lines[i].replace(escaped_underscore_regexp,'_');
     if (knownAlt && lines[i].includes(knownAlt) || lines[i].includes(username)
         ||_.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
       // User was an alt account, modify the existing line instead of creating a new one
-      let blocks = lines[i].replace('\\_','_').split(/\s*\|\s*/);
+      let blocks = lines[i].split(/\s*\|\s*/);
       let user_regex = '(?:^|\\s)('+username+(knownAlt ? '|'+knownAlt : '')+')(?:,|$)';
       let fc_match = _.intersection(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).length;
       if (blocks.length !== 5 || !(fc_match || blocks[0].match(new RegExp(user_regex)))) {
         continue;
       }
-      blocks[0] = _.union(blocks[0].match(/[\w-]{1,20}/g), [username]).join(', ').replace('_','\\_');
+      blocks[0] = _.union(blocks[0].match(/[\w-]{1,20}/g), [username]).join(', ').replace(underscore_regexp,escaped_underscore_string);
       blocks[1] = _.union(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).join(', ');
       try {
         blocks[3] = Flairs.formatGames(Flairs.combineGames(Flairs.parseGames(blocks[3]), Flairs.parseGames(igns)));

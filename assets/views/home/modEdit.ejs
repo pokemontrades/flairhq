@@ -48,6 +48,7 @@
 
         <div class="col-md-8">
           <textarea class="form-control" ng-model="refUser.intro" ng-maxlength="10000" maxlength="10000"></textarea>
+          <span style="float:right">{{refUser.intro.length || 0}}/10000</span>
         </div>
       </div>
 
@@ -58,6 +59,7 @@
           <input type="text" class="form-control"
                  ng-repeat="fc in refUser.friendCodes track by $index"
                  ng-model="refUser.friendCodes[$index]"></input>
+
         </div>
       </div>
 

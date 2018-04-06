@@ -40,9 +40,20 @@ Your first account will automatically get mod permission on both subreddits and 
    In your application folder change all occurences of `pokemontrades` and `SVExchange` to the names of your testing subreddits. On Linux you can use:
    
    ```
-   find . -type f -exec sed -i 's/pokemontrades/mySubreddit/gI' {} \;
-   find . -type f -exec sed -i 's/SVExchange/mySubreddit1/gI' {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/pokemontrades/firstsubname/g" {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/PokemonTrades/FIRSTSUBNAME/g" {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/svexchange/secondsubname/g" {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/SVExchange/SECONDSUBNAME/g" {} \;
    ```
+
+   Before commiting you can revert the changes using (if you use `username` and `username1` as sub names make sure to reverse the order of commands so `username` is not overwritten):
+   ```
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/secondsubname/svexchange/g" {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/SECONDSUBNAME/SVExchange/g" {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/firstsubname/pokemontrades/g" {} \;
+   find . -type f ! -path "./node_modules/*" ! -path "./.git/*" -exec sed -i "s/FIRSTSUBNAME/PokemonTrades/g" {} \;
+   ```
+
 
 ### 7. Start the application
 

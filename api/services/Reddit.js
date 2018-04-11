@@ -135,7 +135,7 @@ exports.editWikiPage = function (refreshToken, subreddit, page, content, reason)
 
 exports.searchTSVThreads = function (refreshToken, username) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : 'SVExchange';
-  var query = "(flair:banned OR flair:tsv) AND author:" + username;
+  var query = "flair:tsv AND author:" + username;
   return exports.search(refreshToken, actual_sub, query, true, 'new', 'all', 'lucene');
 };
 

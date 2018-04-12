@@ -19,7 +19,12 @@ module.exports = {
       } else {
         var updatedUser = {};
         if (req.params.intro !== undefined) {
-          updatedUser.intro = req.params.intro;
+          if (req.params.intro.length > 10000) {
+            res.err("Introduction can't be longer than 10 000 characters");
+          }
+          else {
+            updatedUser.intro = req.params.intro;
+          }
         }
         if (req.params.fcs !== undefined) {
           updatedUser.friendCodes = req.params.fcs;

@@ -14,7 +14,8 @@
               <label class="col-sm-3 control-label">Introduction:</label>
 
               <div class="col-md-8">
-                <textarea type="text" class="form-control" ng-model="user.intro"></textarea>
+                <textarea type="text" class="form-control" ng-model="user.intro" ng-maxlength="10000" maxlength="10000"></textarea>
+                <span style="float:right">{{user.intro.length || 0}}/10000</span>
               </div>
             </div>
             <div class="form-group">

@@ -32,7 +32,10 @@ module.exports = {
     email: "string",
     firstname: "string",
     lastname: "string",
-    intro: "text",
+    intro: {
+      type: "text",
+      maxLength: 10000
+    },
     friendCodes: {
       type: "array",
       friendCodeFormat: true

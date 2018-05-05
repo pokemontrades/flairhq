@@ -9,7 +9,7 @@ Your first account will automatically get mod permission on both subreddits and 
 
 ### 2. Install prerequisites
 
-   Make sure you have Node.js ([some helpful guides here](https://nodejs.org/en/download/package-manager/)) and MongoDB ([check it here](https://docs.mongodb.com/manual/installation/)) installed. Node.js 4.0.0 or greater is required. Install git.
+   Make sure you have Node.js ([some helpful guides here](https://nodejs.org/en/download/package-manager/)) and MongoDB ([check it here](https://docs.mongodb.com/manual/installation/)) installed. Node.js 6.0.0 or greater is required. Install git.
    
 ### 3. Prepare the application folder 
 

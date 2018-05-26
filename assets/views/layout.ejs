@@ -10,17 +10,6 @@
     <link rel="stylesheet" href="<%= sails.config.environment === 'development' ? '/styles/importer.css' : '/min/production.min.css' %>?v=<%= VERSION %>">
     <!--STYLES END-->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css">
-
-    <script>
-      !function(f,l,a,i,r,h,q){f.GoogleAnalyticsObject=a;f[a]||(f[a]=function(){
-      (f[a].q=f[a].q||[]).push(arguments)});f[a].l=+new Date;h=l.createElement(i);
-      q=l.getElementsByTagName(i)[0];h.src=r;q.parentNode.insertBefore(h,q)}
-      (window,document,'ga','script','//www.google-analytics.com/analytics.js');
-
-      ga('create', 'UA-23534541-2', 'auto');
-      ga('send', 'pageview', {page: location.pathname + location.search  + location.hash});
-
-    </script>
   </head>
 
   <body ng-controller="userCtrl" ng-cloak ng-init="init({<%=

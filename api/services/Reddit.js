@@ -115,7 +115,7 @@ exports.checkUsernameAvailable = async function (name) {
 exports.banUser = function (refreshToken, username, ban_message, note, subreddit, duration) {
   var actual_sub = sails.config.debug.reddit ? sails.config.debug.subreddit : subreddit;
   var url = 'https://oauth.reddit.com/r/' + actual_sub + '/api/friend';
-  var data = {api_type: 'json', ban_message: ban_message, duration: (duration ? duration : 'undefined'), name: username, note: note, type: 'banned'};
+  var data = {api_type: 'json', ban_message: ban_message, duration: (duration ? duration : ''), name: username, note: note, type: 'banned'};
   return makeRequest(refreshToken, 'POST', url, data, 5);
 };
 

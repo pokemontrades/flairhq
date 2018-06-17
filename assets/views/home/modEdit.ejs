@@ -27,7 +27,7 @@
               </div>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-if="user.isMod && user.modPermissions && user.modPermissions.includes('all')">
             <textarea class="form-control" ng-model="newStuff.newNote" ng-trim="false"
                       placeholder="Add Note with markdown"></textarea>
             <div class="panel panel-default">

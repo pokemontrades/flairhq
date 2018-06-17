@@ -75,7 +75,6 @@ module.exports.policies = {
     '*': admin,
     edit: user,
     mine: user,
-	addNote: postMod,
     get: anyone
   },
   

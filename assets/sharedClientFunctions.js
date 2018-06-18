@@ -27,6 +27,28 @@ module.exports = {
         $scope.$apply();
       });
     };
+    $scope.rejectWNote = function () {
+      var url = "/reference/rejectWithNote";
+      //$scope.editRefError = $scope.validateRef($scope.selectedRef);
+      //if ($scope.editRefError) {
+      //  return;
+      //}
+      //$scope.indexSpin.editRef = true;
+      io.socket.post(url, $scope.selectedRef, function (data, res) {
+        $scope.indexSpin.editRef = false;
+        if (res.statusCode === 200) {
+          $scope.indexOk.editRef = true;
+          var index = $scope.refUser.references.findIndex(function (searchRef) {
+            return searchRef.id === $scope.selectedRef.id;
+          });
+          $scope.refUser.references[index] = $scope.selectedRef;
+        } else {
+          $scope.editRefError = "There was an issue.";
+          console.log(res);
+        }
+        $scope.$apply();
+      });
+    };
     $scope.validateRef = function (ref) {
       var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
         regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,

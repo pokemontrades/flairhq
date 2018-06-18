@@ -23,11 +23,13 @@
                 ];
                 for (var i = 0; i < rejectionReasons.length; i++) { %>
                 <div class="checkbox">
-                  <label><input type="checkbox" value="<%= rejectionReasons[i] %>"><%= rejectionReasons[i] %></label>
+                  <label><input type="checkbox"  value="<%= rejectionReasons[i] %>"><%= rejectionReasons[i] %></label>
                 </div>
                  <% } %>
                 <div class="checkbox">
-                  <label><input type="checkbox" value="Other">Other</label>
+                  <label><input type="checkbox" ng-model="selectedRef.bla" value="Other">Other</label>
+                  <input ng-list class="form-control" ng-model="selectedRef.rejectnotes"></input>
+                  {{selectedRef.rejectnotes |json }}
                 </div>
 
               </div>
@@ -37,7 +39,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary has-spinner" ng-click="editRef()"
+        <button type="button" class="btn btn-primary has-spinner" ng-click="rejectWNote()"
                 ng-class="[indexOk.editRef ? 'glyphicon glyphicon-ok' : '',
                 indexSpin.editRef ? 'active' : '']">
           <span class="spinner"><i class="icon-spin icon-refresh"></i></span>

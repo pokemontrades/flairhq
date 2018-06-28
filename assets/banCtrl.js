@@ -10,6 +10,7 @@ module.exports = function ($scope, io) {
     banMessage: ($scope.query.banMessage || '') + messageAddition,
     banlistEntry: $scope.query.banlistEntry || '',
     tradeNote: $scope.query.tradeNote || '',
+    tradeNoteDescription: $scope.query.tradeNoteDescription || '',
     duration: $scope.query.duration || '',
     knownAlt: $scope.query.knownAlt || '',
     additionalFCs: $scope.query.additionalFCs || ''
@@ -18,6 +19,7 @@ module.exports = function ($scope, io) {
   $scope.banError = "";
   $scope.indexOk = {};
   $scope.indexSpin = {};
+  $scope.tradeNoteFull = "";
 
   $scope.focus = {
     gavegot: false
@@ -81,12 +83,20 @@ module.exports = function ($scope, io) {
       }
       FCs = $scope.banInfo.additionalFCs.match(/(\d{4}-){2}\d{4}/g);
     }
+
+    if ($scope.banInfo.tradeNote == "Some" && $scope.banInfo.tradeNoteDescription) {
+      $scope.tradeNoteFull = "[" + $scope.banInfo.tradeNoteDescription + "](#b " + $scope.banInfo.tradeNote + " (hover)" ;
+    }
+    else {
+      $scope.tradeNoteFull = $scope.banInfo.tradeNote;
+    }
+
     var post = {
       "username": $scope.banInfo.username,
       "banNote": $scope.banInfo.banNote,
       "banMessage": $scope.banInfo.banMessage,
       "banlistEntry": $scope.banInfo.banlistEntry,
-      "tradeNote": $scope.banInfo.tradeNote,
+      "tradeNote": $scope.tradeNoteFull,
       "duration": parseInt($scope.banInfo.duration),
       "knownAlt": $scope.banInfo.knownAlt,
       "additionalFCs": FCs

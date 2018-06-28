@@ -27,8 +27,28 @@
 
           <ng-tooltip data-label="Retrading allowed?"
                       title="The entry under 'Retrading allowed?' on the public banlist">
-            <input type="text" class="form-control" ng-model="banInfo.tradeNote">
+              <label>
+              <input type="radio" class="form-control" value="Yes" ng-model="banInfo.tradeNote">
+              Yes
+              </label>
+
+              <label>
+                <input type="radio" class="form-control" value="No" ng-model="banInfo.tradeNote">
+                No
+              </label>
+
+              <label>
+                <input type="radio" class="form-control" value="Some" ng-model="banInfo.tradeNote">
+                Some
+              </label>
+
           </ng-tooltip>
+
+          <ng-tooltip data-label="Retrading allowed - details"
+                      title="Which ones are allowed and which not.">
+            <input type="text" class="form-control" ng-model="banInfo.tradeNoteDescription">
+          </ng-tooltip>
+
 
           <ng-tooltip data-label="Duration"
                       title="The number of days that the user will be banned for. Leave blank for a permanent ban.">

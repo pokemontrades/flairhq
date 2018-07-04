@@ -85,7 +85,7 @@ module.exports = function ($scope, io) {
     }
 
     if ($scope.banInfo.tradeNote == "Some" && $scope.banInfo.tradeNoteDescription) {
-      $scope.tradeNoteFull = "[" + $scope.banInfo.tradeNoteDescription + "](#b " + $scope.banInfo.tradeNote + " (hover)" ;
+      $scope.tradeNoteFull = "[" + $scope.banInfo.tradeNoteDescription + "](#b \"" + $scope.banInfo.tradeNote + " (hover)\")" ;
     }
     else {
       $scope.tradeNoteFull = $scope.banInfo.tradeNote;

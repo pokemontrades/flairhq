@@ -36,6 +36,12 @@ module.exports = function ($scope, io) {
       return;
     }
 
+    if ($scope.banInfo.tradeNote == "Some" && !$scope.banInfo.tradeNoteDescription) {
+      $scope.banError = "Please specify details for hover.";
+      $scope.indexSpin.ban = false;
+      return;
+    }
+
     var names = ['username', 'knownAlt'];
     for (let i = 0; i < names.length; i++) {
 

@@ -194,6 +194,18 @@ exports.getModmail = async function (refreshToken, subreddit, after, before) {
   return getEntireListing(refreshToken, endpoint, '', 20, after, before);
 };
 
+exports.getNewModmail = async function (refreshToken, subreddits, after, state) {
+  var endpoint = 'https://oauth.reddit.com/api/mod/conversations';
+  return getAllModmailConversations(refreshToken, endpoint, '', 20, after, state, subreddits);
+};
+
+var getAllModmailConversations = async function (refreshToken, endpoint, query, rateThreshold, after, state, subreddits) {
+  var url = endpoint + '?limit=1&sort=recent' + (after ? '&after=' + after : '') + (state ? '&state=' + state : '') + (subreddits ? '&subreddits=' + subreddits.join(',') : '');
+  var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after);
+  var results = batch;
+  return results;
+};
+
 var updateRateLimits = function (res) {
   if (res && res.headers && res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];

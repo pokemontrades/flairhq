@@ -19,11 +19,11 @@
                   "No confirmation that a trade was completed",
                   "Pokémon was just given away and not actually negotiated for (outside giveaway thread)",
                   "Trade was discussed in part over PM",
-                  "IOU trade",
+                  "IOU trade"
                 ];
                 for (var i = 0; i < rejectionReasons.length; i++) { %>
                 <div class="checkbox">
-                  <label><input type="checkbox"  value="<%= rejectionReasons[i] %>"><%= rejectionReasons[i] %></label>
+                  <label><input type="checkbox" ng-model="rejectionReasonsState[0]" value="<%= rejectionReasons[i] %>"><%= rejectionReasons[i] %></label>
                 </div>
                  <% } %>
                 <div class="checkbox">

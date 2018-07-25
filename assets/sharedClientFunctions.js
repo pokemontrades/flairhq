@@ -27,6 +27,16 @@ module.exports = {
         $scope.$apply();
       });
     };
+    $scope.rejectionReasonsArray = [
+      "Full details not posted when trading",
+      "Details not posted on the subreddit after trading",
+      "Incorrect permalink",
+      "No confirmation that a trade was completed",
+      "Pokémon was just given away and not actually negotiated for (outside giveaway thread)",
+      "Trade was discussed in part over PM",
+      "IOU trade"
+    ];
+    $scope.rejectionReasonsState = [true, false, true, false];
     $scope.rejectWNote = function () {
       var url = "/reference/rejectWithNote";
       //$scope.editRefError = $scope.validateRef($scope.selectedRef);

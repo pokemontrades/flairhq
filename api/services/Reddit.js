@@ -196,12 +196,31 @@ exports.getModmail = async function (refreshToken, subreddit, after, before) {
 
 exports.getNewModmail = async function (refreshToken, subreddits, after, state) {
   var endpoint = 'https://oauth.reddit.com/api/mod/conversations';
-  return getAllModmailConversations(refreshToken, endpoint, '', 20, after, state, subreddits);
+  let conversationIds = (await (getAllModmailConversations(refreshToken, endpoint, 20, after, state, subreddits))).conversationIds;
+  // add filtering by last edit date
+  let fullConversations = [];
+  let promises = [];
+  promises = conversationIds.map(element => {
+    return getEntireModmailConversations(refreshToken, endpoint, 20, element, false);
+  });
+  return Promise.all(promises).then(function(element) {
+    fullConversations.push(element);
+  }).then(() => {
+    return fullConversations;
+  })
+
 };
 
-var getAllModmailConversations = async function (refreshToken, endpoint, query, rateThreshold, after, state, subreddits) {
-  var url = endpoint + '?limit=1&sort=recent' + (after ? '&after=' + after : '') + (state ? '&state=' + state : '') + (subreddits ? '&subreddits=' + subreddits.join(',') : '');
+var getAllModmailConversations = async function (refreshToken, endpoint, rateThreshold, after, state, subreddits) {
+  var url = endpoint + '?limit=10&sort=recent' + (after ? '&after=' + after : '') + (state ? '&state=' + state : '') + (subreddits ? '&subreddits=' + subreddits.join(',') : '');
   var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after);
+  var results = batch;
+  return results;
+};
+
+var getEntireModmailConversations = async function (refreshToken, endpoint, rateThreshold, convID, markRead) {
+  var url = endpoint + '/' + convID + (markRead ? '&markRead=' + markRead : '') ;
+  var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, undefined);
   var results = batch;
   return results;
 };

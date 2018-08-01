@@ -10,7 +10,7 @@ module.exports = {
 
   get: async function (req, res) {
     req.params = req.allParams();
-    console.log(await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '', 'new'));
+    res.ok(await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '', 'all'));
   }
 
 

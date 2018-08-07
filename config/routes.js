@@ -214,7 +214,7 @@ module.exports.routes = {
 
   'get /newModmail' : {
     controller : 'modmailv2',
-    action     : 'get'
+    action     : 'getAll'
   }
 
 

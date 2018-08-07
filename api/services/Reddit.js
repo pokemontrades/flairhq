@@ -196,7 +196,7 @@ exports.getModmail = async function (refreshToken, subreddit, after, before) {
 
 exports.getNewModmail = async function (refreshToken, subreddits, after, state) {
   var endpoint = 'https://oauth.reddit.com/api/mod/conversations';
-  let conversationIds = (await (getAllModmailConversations(refreshToken, endpoint, 20, after, state, subreddits))).conversationIds;
+  let conversationIds = await (getAllModmailConversations(refreshToken, endpoint, 20, after, state, subreddits));
   // add filtering by last edit date
   let fullConversations = [];
   let promises = [];
@@ -207,15 +207,25 @@ exports.getNewModmail = async function (refreshToken, subreddits, after, state) 
     fullConversations.push(element);
   }).then(() => {
     return fullConversations;
-  })
+  });
 
 };
 
 var getAllModmailConversations = async function (refreshToken, endpoint, rateThreshold, after, state, subreddits) {
-  var url = endpoint + '?limit=10&sort=recent' + (after ? '&after=' + after : '') + (state ? '&state=' + state : '') + (subreddits ? '&subreddits=' + subreddits.join(',') : '');
-  var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after);
+  let querystring = '?limit=10&sort=recent' + (after ? '&after=' + after : '') + (state ? '&state=' + state : '') + (subreddits ? '&subreddits=' + subreddits.join(',') : '');
+  let batch = await getEntireListing2(refreshToken, endpoint, querystring, 10);
+  return batch;
+};
+
+var getEntireListing2 = async function (refreshToken, endpoint, query, rateThreshold, after) {
+  var url = endpoint + query + (query ? '&' : '?') + 'count=102&limit=10' + (after ? '&after=' + after : '');
+  var batch = (await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after)).conversationIds;
   var results = batch;
-  return results;
+  after = results.slice(-1)[0]; // returns undefined if empty
+  if (!after) {
+    return results;
+  }
+  return _.union(results, await getEntireListing2(refreshToken, endpoint, query, rateThreshold, after));
 };
 
 var getEntireModmailConversations = async function (refreshToken, endpoint, rateThreshold, convID, markRead) {

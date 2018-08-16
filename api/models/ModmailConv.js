@@ -21,7 +21,7 @@ module.exports = {
       enum: ['0', '1', '2']
     },
     subreddit: { //The subreddit that the modmail was sent to
-      enum: ['pokemontrades', 'SVExchange']
+      enum: ['pokemontrades', 'svexchange']
     }
     
     // Not needed

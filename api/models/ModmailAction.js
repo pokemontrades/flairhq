@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-    date: 'integer',
+    date: 'string',
     actionTypeId: { // 0 - highlight, 1 - un-highlight, 2 - archive, 3 -	un-archive, 4 -reported to admins, 5 - mute, 6 - un-mute
       enum: ['0', '1', '2', '3', '4', '5', '6']
     },

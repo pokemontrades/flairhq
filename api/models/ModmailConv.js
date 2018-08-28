@@ -8,7 +8,14 @@
 module.exports = {
   attributes: {
     objIds: 'json', // all messages and mod actions
-    lastUpdated: 'integer', // last mod or user update
+    messages: {
+      collection: 'ModmailMsg',
+      via: 'id'
+    },
+    actions: {
+      collection: 'ModmailAction',
+    },
+    lastUpdated: 'string', // last mod or user update
     isInternal: 'boolean',
     id: { // base36id of the conversation
       columnName: 'id',
@@ -22,7 +29,7 @@ module.exports = {
     },
     subreddit: { //The subreddit that the modmail was sent to
       enum: ['pokemontrades', 'svexchange']
-    }
+    },
     
     // Not needed
     //isAuto: 'boolean',    

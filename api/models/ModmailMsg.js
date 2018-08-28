@@ -9,7 +9,7 @@ module.exports = {
   attributes: {
     author: 'string', // author.name
     isInternal: 'boolean',
-    date: 'integer',
+    date: 'string',
     bodyMarkdown: 'string',
     id: {
       columnName: 'id',

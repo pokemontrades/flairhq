@@ -10,18 +10,14 @@ module.exports = {
 
   getAll: async function (req, res) {
     req.params = req.allParams();
-    let resultsPromise = [];
-    resultsPromise.push (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'all')); // '347q1'
-    resultsPromise.push (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'mod'));
-    resultsPromise.push (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'notifications'));
-    resultsPromise.push (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'archived'));
-    //let allResults = allResultsAll.concat(allResultsMod, allResultsNot, allResultsArc);
-    // inprogress, new, highlighted are not necessar
     
-    let allResults = await Promise.all(resultsPromise)
-    .then (promise => {
-      console.log([].concat.apply([],promise)); // to be fixed
-    });
+    let resultsAll = (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'all')); // '347q1'
+    let resultsMod = (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'mod'));
+    let resultsNot = (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'notifications'));
+    let resultsArc = (await Reddit.getNewModmail(refreshToken, ['pokemontrades','svexchange'], '' , 'archived'));
+    let allResults = [Array.prototype.concat(resultsAll[0], resultsMod[0], resultsNot[0], resultsArc[0])];
+    // inprogress, new, highlighted are not necessary
+    
     let allConversations = Modmailv2.formatConversations(allResults);
     let allMessages      = Modmailv2.formatMessages(allResults);
     let allActions       = Modmailv2.formatActions(allResults);
@@ -29,7 +25,7 @@ module.exports = {
     if (allMessages.length > 0) {
       let msgAdd    = await ModmailMsg
         .findOrCreate(allMessages)
-        .catch( e => {console.log(e)});
+        .catch( e => {sails.log(e)});
     }
     if (allActions.length > 0) {
       let actionAdd = await ModmailAction
@@ -38,7 +34,12 @@ module.exports = {
     }
     if (allConversations.length > 0) {
       let convAdd   = await ModmailConv
-      .findOrCreate(allConversations)
+      .findOrCreate(allConversations) /* NEED TO FINISH UPDATING PART
+      .exec(function(err, newOrExistingRecord, wasCreated) {
+        if (!(wasCreated) && newOrExistingRecord.lastUpdated < allConversations.lastUpdated ) {
+
+        }
+      })*/
       .catch( e => {console.log(e)});
     }
 

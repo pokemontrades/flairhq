@@ -194,6 +194,47 @@ exports.getModmail = async function (refreshToken, subreddit, after, before) {
   return getEntireListing(refreshToken, endpoint, '', 20, after, before);
 };
 
+exports.getNewModmail = async function (refreshToken, subreddits, after, state) {
+  var endpoint = 'https://oauth.reddit.com/api/mod/conversations';
+  let conversationIds = await (getAllModmailConversations(refreshToken, endpoint, 20, after, state, subreddits));
+  // add filtering by last edit date
+  let fullConversations = [];
+  let promises = [];
+  promises = conversationIds.map(element => {
+    return getEntireModmailConversations(refreshToken, endpoint, 20, element, false);
+  });
+  return Promise.all(promises).then(function(element) {
+    fullConversations.push(element);
+  }).then(() => {
+    return fullConversations;
+  });
+
+};
+
+var getAllModmailConversations = async function (refreshToken, endpoint, rateThreshold, after, state, subreddits) {
+  let querystring = '?limit=10&sort=recent' + (after ? '&after=' + after : '') + (state ? '&state=' + state : '') + (subreddits ? '&subreddits=' + subreddits.join(',') : '');
+  let batch = await getEntireListing2(refreshToken, endpoint, querystring, 10);
+  return batch;
+};
+
+var getEntireListing2 = async function (refreshToken, endpoint, query, rateThreshold, after) {
+  var url = endpoint + query + (query ? '&' : '?') + 'count=102&limit=10' + (after ? '&after=' + after : '');
+  var batch = (await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, after)).conversationIds;
+  var results = batch;
+  after = results.slice(-1)[0]; // returns undefined if empty
+  if (!after) {
+    return results;
+  }
+  return _.union(results, await getEntireListing2(refreshToken, endpoint, query, rateThreshold, after));
+};
+
+var getEntireModmailConversations = async function (refreshToken, endpoint, rateThreshold, convID, markRead) {
+  var url = endpoint + '/' + convID + (markRead ? '&markRead=' + markRead : '') ;
+  var batch = await makeRequest(refreshToken, 'GET', url, undefined, rateThreshold, undefined);
+  var results = batch;
+  return results;
+};
+
 var updateRateLimits = function (res) {
   if (res && res.headers && res.headers['x-ratelimit-remaining'] && res.headers['x-ratelimit-reset']) {
     left = res.headers['x-ratelimit-remaining'];

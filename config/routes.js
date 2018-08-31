@@ -210,7 +210,20 @@ module.exports.routes = {
   'get /version' : {
     controller : 'home',
     action     : 'version'
+  },
+
+  'get /newModmail' : {
+    controller : 'modmailv2',
+    action     : 'getAll'
+  },
+
+  'get /newModmailAll' : {
+    controller : 'modmailv2',
+    action     : 'listAll'
   }
+
+
+
 };
 
 var searchTypes = require("../assets/search/types.js");

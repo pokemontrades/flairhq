@@ -28,7 +28,7 @@ Your first account will automatically get mod permission on both subreddits and 
 ### 5. Generate refresh token for a moderator account
 
    **Make sure to use the account with mod permissions in this step**.  
-   Install [reddit-oauth-helper](https://github.com/not-an-aardvark/reddit-oauth-helper) to get a refresh token for a moderator on the subs. Use the scope: `flair modcontributors modflair modposts privatemessages read wikiedit wikiread`. **Remember to choose permanent token**.  
+   Install [reddit-oauth-helper](https://github.com/not-an-aardvark/reddit-oauth-helper) to get a refresh token for a moderator on the subs. Use the scope: `flair modcontributors modflair modmail modposts privatemessages read wikiedit wikiread`. **Remember to choose permanent token**.  
    If you use web interface you should click `Allow` while redirected to reddit  
    After that the current tab will be closed and you'll see your tokens at the bottom of the tool as shown on the screenshot. Copy your **refresh token** to config/local.js. In case any issues, try different browser.
    

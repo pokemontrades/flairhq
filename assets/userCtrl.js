@@ -278,7 +278,7 @@ module.exports = function ($scope, $location, io) {
     return {correct: true};
   };
 
-  $scope.possibleGames = ["X", "Y", "ΩR", "αS", "S", "M", "US", "UM"];
+  $scope.possibleGames = ["X", "Y", "ΩR", "αS", "S", "M", "US", "UM", "LGP", "LGE"];
 
   $scope.setFlairText = function () {
     $("#setTextError").html("").hide();

@@ -95,6 +95,9 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
         ||_.intersection(lines[i].match(/(\d{4}-){2}\d{4}/g), friend_codes).length) {
       // User was an alt account, modify the existing line instead of creating a new one
       let blocks = lines[i].split(/\s*\|\s*/);
+      if (blocks.length === 6 && !(blocks[5])) { // to handle banlist entries with | at the end
+        blocks.pop();
+      }
       let user_regex = '(?:^|\\s)('+username+(knownAlt ? '|'+knownAlt : '')+')(?:,|$)';
       let fc_match = _.intersection(blocks[1].match(/(\d{4}-){2}\d{4}/g), friend_codes).length;
       if (blocks.length !== 5 || !(fc_match || blocks[0].match(new RegExp(user_regex)))) {

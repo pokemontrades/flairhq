@@ -10,7 +10,7 @@ module.exports = {
   types: {
     friendCodeFormat: function (codes) {
       for (var code in codes) {
-        var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+        var patt = /(?:SW-)?([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
         if (!patt.test(codes[code])) {
           return false;
         }

@@ -68,5 +68,11 @@ module.exports = {
 
   version: function(req, res) {
     res.ok(sails.config.version);
+  },
+  
+  discord: function (req, res) {
+    let redirect_uri = encodeURIComponent(sails.config.discord.redirect_host + '/discord/callback');
+    let authorize_uri = 'https://discordapp.com/api/oauth2/authorize?client_id='+ sails.config.discord.client_id + '&redirect_uri='+ redirect_uri + '&response_type=code&scope=identify';
+    res.redirect(authorize_uri);
   }
 };

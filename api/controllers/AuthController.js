@@ -11,6 +11,7 @@
 const passport = require('passport');
 const crypto = require('crypto');
 const _ = require('lodash');
+const request = require("request-promise");
 
 module.exports = {
 
@@ -73,7 +74,7 @@ module.exports = {
             return res.redirect(url);
           });
         };
-        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
+        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, 'robdy');
         if (modPermissions) { //User is a mod, set isMod to true
           User.update(user.name, {isMod: true, modPermissions}).exec(function () {
             /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
@@ -92,5 +93,23 @@ module.exports = {
         return res.serverError(err);
       }
     })(req, res);
+  },
+  
+  discordCallback: async function (req, res) {
+    let code = req.allParams().code;
+    if (code) {
+      let response = await Discord.getAccessToken(code)
+      .catch(function (error) {
+      throw {statusCode: 502, error: 'Error retrieving token; Discord responded with status code ' + error.statusCode};
+      })
+
+      let access_token = response.access_token;
+      let currentUser = await Discord.getCurrentUser(access_token)
+      .catch(function (error) {
+        throw {statusCode: 502, error: 'Error retrieving user data; Discord responded with status code ' + error.statusCode};
+      });
+      
+      res.ok(currentUser);
+    }
   }
 };

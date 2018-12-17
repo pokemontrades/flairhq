@@ -50,6 +50,9 @@ exports.formattedName = function(name) {
   return formatted;
 };
 exports.validFC = function (fc) {
+  if (fc.match(/^SW-\d{4}-\d{4}-\d{4}$/)) {
+    return true;
+  }
   fc = fc.replace(/-/g, '');
   if (!fc.match(/^\d{12}$/) || fc >= Math.pow(2, 39)) {
     return false;
@@ -188,7 +191,7 @@ exports.formattedRequirements = function (flair, flairs) {
   return formatted;
 };
 
-exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M', 'US', 'UM'].join('|');
+exports.gameOptions = ['X', 'Y', 'ΩR', 'αS', 'S', 'M', 'US', 'UM', 'LGP', 'LGE'].join('|');
 exports.legalIgn = '[^()|,]{0,11}[^()|,\\s]';
 
 // Parse the games. e.g. 'ExampleName (X, Y)' --> [{ign: 'ExampleName', game: 'X'}, {ign: 'ExampleName', game: 'Y'}]
@@ -233,7 +236,7 @@ exports.flairCheck = function (ptrades, svex) {
     throw "Flairs too long";
   }
 
-  const friendCodeGroup = /((?:\d{4}-){2}\d{4}(?:, (?:\d{4}-){2}\d{4})*)/;
+  const friendCodeGroup = /((?:SW-)?(?:\d{4}-){2}\d{4}(?:, (?:SW-)?(?:\d{4}-){2}\d{4})*)/;
   const gameGroup = '^(' + exports.legalIgn + '(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))(?:,(?: ' +
     exports.legalIgn + ')?(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))?)*)$';
   var tradesParts = ptrades.split(' || ');

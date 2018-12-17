@@ -153,7 +153,7 @@ module.exports = function ($scope, $location, io) {
       }
     }
 
-    var patt = /([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+    var patt = /(?:SW-)?([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
     for (var i = 0; i < fcs.length; i++) {
       if (!patt.test(fcs[i])) {
         $scope.userspin.saveProfile = false;
@@ -255,6 +255,13 @@ module.exports = function ($scope, $location, io) {
       }
     }
 
+    for (i = 0; i < $scope.user.console.length; i++) {
+      var console = $scope.user.console[i];
+      if (!console || !console.match(regex.consoleSingle)) {
+        return {correct: false, error: "Please select the appropriate game console type for each friend code."};
+      }
+    }
+
     var hasIGN = false;
     for (var j = 0; j < $scope.user.flairGames.length; j++) {
       var game = $scope.user.flairGames[j];
@@ -278,7 +285,8 @@ module.exports = function ($scope, $location, io) {
     return {correct: true};
   };
 
-  $scope.possibleGames = ["X", "Y", "ΩR", "αS", "S", "M", "US", "UM"];
+  $scope.possibleConsoles = ["Switch", "3DS"];
+  $scope.possibleGames = ["X", "Y", "ΩR", "αS", "S", "M", "US", "UM", "LGP", "LGE"];
 
   $scope.setFlairText = function () {
     $("#setTextError").html("").hide();
@@ -348,13 +356,18 @@ module.exports = function ($scope, $location, io) {
 
   $scope.init = function (params) {
     $scope = _.assign($scope, params);
+    $scope.user.console = new Array();
+    console.log("Created console array");
     if ($scope.user) {
       $scope.user.isFlairMod = $scope.user.isMod && ($scope.user.modPermissions.includes('all') || $scope.user.modPermissions.includes('flair'));
       try {
         var parsed = $scope.flairCheck($scope.user.flair.ptrades.flair_text, $scope.user.flair.svex.flair_text);
         $scope.user.flairFriendCodes = parsed.fcs;
+        for (var i = 0; i < parsed.fcs.length; i++) {
+          $scope.user.console.push(parsed.fcs[i].match(/^SW-/) ? "Switch" : "3DS");
+        }
         $scope.user.flairGames = parsed.games;
-        for (var i = 0; i < parsed.games.length; i++) {
+        for (i = 0; i < parsed.games.length; i++) {
           $scope.user.flairGames[i].tsv = parsed.tsvs[i];
         }
         $scope.user.friendCodes = $scope.user.flairFriendCodes;
@@ -372,6 +385,48 @@ module.exports = function ($scope, $location, io) {
   $(document).ready(function () {
     $scope.loaded = true;
     $scope.$apply();
+    $scope.$watchCollection('user.console', function(modifiedArray) {
+      for (var i = 0; i < modifiedArray.length; i++) {
+        console.log("Checking fc "+i);
+        console.log("New Value is "+$scope.user.flairFriendCodes[i]);
+        if ($scope.user.console[i] === 'Switch' && !$scope.user.flairFriendCodes[i].match(/^SW-/)) {
+          $scope.user.flairFriendCodes[i] = "SW-" + $scope.user.flairFriendCodes[i];
+        }
+        if ($scope.user.console[i] === '3DS') {
+          var switchFormatMatch = $scope.user.flairFriendCodes[i].match(/^SW-(\d{0,4}-?\d{0,4}-?\d{0,4})/);
+          $scope.user.flairFriendCodes[i] = switchFormatMatch[1];
+        }
+      }
+    });
+    $scope.$watchCollection('user.flairFriendCodes', function(modifiedArray, prevArray) {
+      for (var i = 0; i < modifiedArray.length; i++) {
+        console.log("Checking fc "+i);
+        console.log("New Value is "+$scope.user.flairFriendCodes[i]);
+        if (!$scope.user.flairFriendCodes[i]
+          || ($scope.user.console[i] === 'Switch' && $scope.user.flairFriendCodes[i].match(/^SW-(?:\d{0,3}|\d{4}(?:-\d{0,3}|-\d{4}(?:-\d{0,4})?)?)$/))
+          || ($scope.user.console[i] === '3DS' && $scope.user.flairFriendCodes[i].match(/^(?:\d{0,3}|\d{4}(?:-\d{0,3}|-\d{4}(?:-\d{0,4})?)?)$/))
+          || (!$scope.user.console[i] && $scope.user.flairFriendCodes[i].match(/^(?:S|SW|SW-)?(?:\d{0,3}|\d{4}(?:-\d{0,3}|-\d{4}(?:-\d{0,4})?)?)$/))) {
+          continue;
+        }
+        var regexMatch = $scope.user.flairFriendCodes[i].match(/^(?:SW-)?(\d{0,4})-?(\d{0,4})-?(\d{0,4})/);
+        if (regexMatch) {
+          var output = $scope.user.console[i] === 'Switch' ? 'SW-' : '';
+          var codeSection = 1;
+          console.log(regexMatch);
+          while (codeSection < 3 && regexMatch[codeSection].length > 3) {
+            output += regexMatch[codeSection];
+            codeSection++;
+            if ((regexMatch[codeSection]).length > 0) {
+              output += '-';
+            }
+          }
+          output += regexMatch[codeSection];
+          $scope.user.flairFriendCodes[i] = output;
+        } else {
+          $scope.user.flairFriendCodes[i] = prevArray[i];
+        }
+      }
+    });
     $('.plus-minus').parent().parent().on('click', function () {
       var plusminus = $(this).find('.plus-minus');
       plusminus.text(plusminus.text() === '+' ? '-' : '+');

@@ -104,12 +104,18 @@ module.exports = {
       })
 
       let access_token = response.access_token;
-      let currentUser = await Discord.getCurrentUser(access_token)
-      .catch(function (error) {
+      let currentUser = await Discord.getCurrentUser(access_token).catch(function (error) {
         throw {statusCode: 502, error: 'Error retrieving user data; Discord responded with status code ' + error.statusCode};
       });
+      let nick = req.user.name;
+      let joinedUser = await Discord.addUserToGuild(access_token, currentUser, nick).catch(function (error) {
+        if(error.statusCode === 204) { // not working
+          return ("Already a member");
+        }
+        throw {statusCode: 502, error: 'Error adding user to a guild; Discord responded with status code ' + error.statusCode};
+      });
       
-      res.ok(currentUser);
+      res.ok(joinedUser);
     }
   }
 };

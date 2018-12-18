@@ -46,7 +46,8 @@ module.exports.policies = {
     search: user,
     info: anyone,
     tools: anyone,
-    applist: flairMod
+    applist: flairMod,
+    discord: user
   },
 
   ReferenceController: {

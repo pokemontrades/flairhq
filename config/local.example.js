@@ -31,6 +31,9 @@ module.exports = {
   discord: {
     client_id: 'ID GOES HERE',
     client_secret: 'SECRET HERE',
-    redirect_host: 'https://localhost:1337'
+    redirect_host: 'http://localhost:1337',
+    server_id: '111111',
+    authenticatedRole_id: ['2222222'],
+    bot_token: 'aaaaaaaaaaa'
   }
 };

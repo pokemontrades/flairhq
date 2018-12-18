@@ -31,18 +31,22 @@ exports.getCurrentUser = async function (token) {
     });  
 };
 
-exports.addUserToGuild = async function (token, user) {
+exports.addUserToGuild = async function (token, user, nick) {
   let url = 'https://discordapp.com/api/guilds/' + sails.config.discord.server_id + '/members/' + user.id;
-  let auth = 'Bearer ' + token;
-  console.log(url);
-  let response = await request.post({
+  let auth = 'Bot ' + sails.config.discord.bot_token;
+  let body = { 
+    'access_token': token,
+    'roles' : sails.config.discord.authenticatedRole_id,
+    'nick': nick
+  };
+  let response = await request.put({
       url: url,
       json: true,
       headers: {
         "Authorization": auth,
-        "Content-Type": "application/x-www-form-urlencoded",
-        "roles": sails.config.discord.authenticatedRole_id
-      }
+        "Content-Type": "application/json",
+      },
+    body: body
     }).catch(function (error) {
       // Returns a 201 Created with the guild member as the body, or 204 No Content if the user is already a member of the guild.
       throw {statusCode: 502, error: 'Error adding user to a guild; Discord responded with status code ' + error.statusCode};

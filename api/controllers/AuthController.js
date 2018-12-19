@@ -114,8 +114,8 @@ module.exports = {
         }
         throw {statusCode: 502, error: 'Error adding user to a guild; Discord responded with status code ' + error.statusCode};
       });
-      
-      res.ok(joinedUser);
+      console.log(joinedUser);
+      res.view('home/addDiscord', {discordInfo: joinedUser})
     }
   }
 };

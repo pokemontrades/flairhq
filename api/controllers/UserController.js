@@ -206,13 +206,13 @@ module.exports = {
       var unique_fcs = _.union(logged_fcs, req.params.additionalFCs);
       if (flairs) {
         var fc_match = /(\d{4}-){2}\d{4}/g;
-        unique_fcs = _.union(_.compact(_.flatten(_.map(flairs, subFlair => {
+        unique_fcs = _.union(_.map(flairs, subFlair => {
           if (typeof subFlair.flair_text === 'string') {
             return subFlair.flair_text.match(fc_match);
           } else {
-            return null;
+            return [];
           }
-        }))), unique_fcs);
+        })[0], unique_fcs);
       }
       let flair_texts = flairs ? _.map(flairs, 'flair_text') : [user.flair.ptrades.flair_text, user.flair.svex.flair_text];
       let igns = _.compact(flair_texts).map(text => text.split(' || ')[1]).join(', ');

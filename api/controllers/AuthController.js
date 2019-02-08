@@ -108,6 +108,7 @@ module.exports = {
         throw {statusCode: 502, error: 'Error retrieving user data; Discord responded with status code ' + error.statusCode};
       });
       let nick = req.user.name;
+      await Event.create({type: "discordJoin", user: req.user.name,content: "Joined Discord as @" + currentUser.username + "#" + currentUser.discriminator + " (ID: " + currentUser.id + ")"});
       let joinedUser = await Discord.addUserToGuild(access_token, currentUser, nick).catch(function (error) {
         if(error.statusCode === 204) { // not working
           return ("Already a member");

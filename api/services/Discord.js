@@ -10,7 +10,7 @@ exports.getAccessToken = async function (code) {
       body: body,
       json: true,
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded"
       }
     });
     return token;
@@ -28,7 +28,7 @@ exports.getCurrentUser = async function (token) {
       json: true,
       headers: {
         "Authorization": auth,
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded"
       }
     });
     return currentUser;

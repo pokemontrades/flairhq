@@ -23,6 +23,7 @@
     "Modmails": true,
     "Team": true,
     "ContestStats": true,
+    "Discord": true,
     "_": true
   }
 }

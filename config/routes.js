@@ -210,6 +210,16 @@ module.exports.routes = {
   'get /version' : {
     controller : 'home',
     action     : 'version'
+  },
+  
+  'get /discord' : {
+    controller : 'home',
+    action     : 'discord'
+  },
+  
+  'get /discord/callback' : {
+    controller  : 'auth',
+    action      : 'discordCallback'
   }
 };
 

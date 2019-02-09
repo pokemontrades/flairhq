@@ -27,5 +27,13 @@ module.exports = {
     port: 27017,
     db: 'fapp',
     collection: 'sessions'
+  },
+  discord: {
+    client_id: 'ID GOES HERE',
+    client_secret: 'SECRET HERE',
+    redirect_host: 'http://localhost:1337',
+    server_id: '111111',
+    authenticatedRole_id: ['2222222'],
+    bot_token: 'aaaaaaaaaaa'
   }
 };

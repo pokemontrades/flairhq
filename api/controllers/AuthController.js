@@ -11,6 +11,7 @@
 const passport = require('passport');
 const crypto = require('crypto');
 const _ = require('lodash');
+const request = require("request-promise");
 
 module.exports = {
 
@@ -92,5 +93,29 @@ module.exports = {
         return res.serverError(err);
       }
     })(req, res);
+  },
+  
+  discordCallback: async function (req, res) {
+    const code = req.allParams().code;
+    if (!code) {
+      return res.view(403, {error: 'Sorry, something went wrong. Please try again.'});
+    }
+    try {
+      const response = await Discord.getAccessToken(code);
+      const accessToken = response.access_token;
+      const currentUser = await Discord.getCurrentUser(accessToken);
+      const nick = req.user.name;
+      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser, nick);
+      if (!joinedUser) {
+        return res.view(403, {error: 'You are already a member of the Discord.'});
+      }
+      sails.log(req.user.name + 
+        ' joined Discord as @' + currentUser.username + 
+        '#' + currentUser.discriminator + 
+        ' (ID: ' + currentUser.id + ')');
+      return res.redirect('/');
+    } catch (err) {
+      return res.serverError(err);
+    }
   }
 };

@@ -112,6 +112,9 @@ module.exports = {
       await Event.create({type: "discordJoin", user: req.user.name,content: "Joined Discord as @" + currentUser.username + "#" + currentUser.discriminator + " (ID: " + currentUser.id + ")"});
       return res.redirect('/');
     } catch (err) {
+      if (error.statusCode === 429){
+        return res.view(403, {error: 'Discord servers refused to cooperate due to high number of requests. Please try again later'});
+      }
       return res.serverError(err);
     }
   }

@@ -40,7 +40,7 @@ exports.getCurrentUser = async function (token) {
 exports.addUserToGuild = async function (token, user, nick) {
   try {
     const url = 'https://discordapp.com/api/guilds/' + sails.config.discord.server_id + '/members/' + user.id;
-    const auth = 'Bot ' + sails.config.discord.client_token;
+    const auth = 'Bot ' + sails.config.discord.bot_token;
     const body = { 
       'access_token': token,
       'nick': nick,

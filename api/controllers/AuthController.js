@@ -107,12 +107,9 @@ module.exports = {
       const nick = req.user.name;
       const joinedUser = await Discord.addUserToGuild(accessToken, currentUser, nick);
       if (!joinedUser) {
-        return res.view(403, {error: 'You are already a member of the Discord.'});
+        return res.view(403, {error: 'You are already a member of the Discord server.'});
       }
-      sails.log(req.user.name + 
-        ' joined Discord as @' + currentUser.username + 
-        '#' + currentUser.discriminator + 
-        ' (ID: ' + currentUser.id + ')');
+      await Event.create({type: "discordJoin", user: req.user.name,content: "Joined Discord as @" + currentUser.username + "#" + currentUser.discriminator + " (ID: " + currentUser.id + ")"});
       return res.redirect('/');
     } catch (err) {
       return res.serverError(err);

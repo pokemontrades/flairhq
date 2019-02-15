@@ -28,7 +28,7 @@ const makeRequest = async function (requestType, url, body, headers, route) {
     if (err.statusCode === 429) {
       if (err.error['global'] === true) {
         rateLimitedRoutes['global'] = (Number(Date.now()) + 
-          Number(resHeaders['retry-after'])) / 1000 + 1;
+          Number(err.error['retry_after'])) / 1000 + 1;
         globallyRateLimited = true;
       }
       throw {statusCode: err.statusCode, error: 'Rate Limited'};

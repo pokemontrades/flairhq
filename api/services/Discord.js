@@ -4,7 +4,7 @@ var request = require("request-promise"),
 let globallyRateLimited = false;
 let rateLimitedRoutes = {};
 
-let makeRequest = async function (requestType, url, body, headers, path) {
+const makeRequest = async function (requestType, url, body, headers) {
   removeNonRateLimited();
   if (globallyRateLimited || isRateLimited(url)) {
     throw {statusCode: 504, error: "Rate limited"};  
@@ -31,9 +31,9 @@ let makeRequest = async function (requestType, url, body, headers, path) {
   }
 };
 
-let updateRateLimits = function (resHeaders, url) {
+const updateRateLimits = function (resHeaders) {
   if (resHeaders['x-ratelimit-remaining'] === 0) {
-    rateLimitedRoutes.url = resHeaders['x-ratelimit-reset'];  
+    rateLimitedRoutes.url = Number(resHeaders['x-ratelimit-reset']) + 1;  
   } else if (resHeaders['x-ratelimit-global']) {
     globallyRateLimited = true;
     rateLimitedRoutes['global'] = Number(Date.now()) + 
@@ -41,13 +41,13 @@ let updateRateLimits = function (resHeaders, url) {
   }
 };
 
-let isRateLimited = function (url) {
+const isRateLimited = function (url) {
   return _.includes(rateLimitedRoutes, url);
 };
 
-let removeNonRateLimited = function () {
+const removeNonRateLimited = function () {
   for (let route in rateLimitedRoutes) {
-    if (resetTimePassed(rateLimitedRoutes[route])) {
+    if (isResetTimePassed(rateLimitedRoutes[route])) {
       delete rateLimitedRoutes[route];
       if(route === 'global') {
         globallyRateLimited = false;
@@ -56,13 +56,9 @@ let removeNonRateLimited = function () {
   }
 };
 
-let resetTimePassed = function (time) {
+const isResetTimePassed = function (time) {
   const timeDifference = Number(Date.now() - new Date(time).getTime());
-  if (timeDifference < 0) {
-    return true;  
-  } else {
-    return false;
-  }
+  return timeDifference < 0;
 };
 
 exports.getAccessToken = async function (code) {

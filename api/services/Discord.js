@@ -9,7 +9,10 @@ const makeRequest = async function (requestType, url, body, headers, route) {
   if (globallyRateLimited || isRateLimited(route)) {
     throw {statusCode: 429, 
       error: 'Request not sent due to rate limit: time remaining = ' 
-      + timeRemaining(rateLimitedRoutes[route]) + ' seconds'
+      + (globallyRateLimited ? 
+      timeRemaining(rateLimitedRoutes['global']) : 
+      timeRemaining(rateLimitedRoutes[route]))
+      + ' seconds'
     };
   }
   const options = {
@@ -73,23 +76,43 @@ const timeRemaining = function (time) {
 }
 
 exports.getAccessToken = async function (code) {
+  removeNonRateLimited();
   const redirect_uri = encodeURIComponent(sails.config.discord.redirect_host + '/discord/callback');
-  const url = 'https://discordapp.com/api/oauth2/token';
+  const route = 'https://discordapp.com/api/oauth2/token';
   const body =
     'client_id=' + sails.config.discord.client_id + 
     '&client_secret=' + sails.config.discord.client_secret + '&grant_type=authorization_code&code=' + code + 
     '&redirect_uri=' + redirect_uri +
     '&scope=identify%20guilds.join'
   const headers = { "Content-Type": "application/x-www-form-urlencoded" };
+  if (globallyRateLimited || isRateLimited(route)) {
+    throw {statusCode: 429, 
+      error: 'Request not sent due to rate limit: time remaining = ' 
+      + (globallyRateLimited ? 
+      timeRemaining(rateLimitedRoutes['global']) : 
+      timeRemaining(rateLimitedRoutes[route]))
+      + ' seconds'
+    };
+  }
   try {
     const token = await request.post({
-      url: url,
+      url: route,
       body: body,
       json: true,
-      headers: headers
+      headers: headers,
+      resolveWithFullResponse: true
     });
-    return token;
+    updateRateLimits(token.headers, route)
+    return token.body;
   } catch (err) {
+    if (err.statusCode === 429) {
+      if (err.error['global'] === true) {
+        rateLimitedRoutes['global'] = (Number(Date.now()) + 
+          Number(err.error['retry_after'])) / 1000 + 1;
+        globallyRateLimited = true;
+      }
+      throw {statusCode: err.statusCode, error: 'Rate Limited'};
+    }
     throw {error: 'Error retrieving token from Discord; Discord responded with status code ' + err.statusCode};
   }
 };
@@ -124,7 +147,6 @@ exports.addUserToGuild = async function (token, user, nick) {
   };
   const path = '';
   try {
-    let response;
     const response = await makeRequest('PUT', url, body, headers, route); 
     return response;
   } catch (err) {

@@ -4,9 +4,9 @@ var request = require("request-promise"),
 let globallyRateLimited = false;
 let rateLimitedRoutes = {};
 
-const makeRequest = async function (requestType, url, body, headers) {
+const makeRequest = async function (requestType, url, body, headers, route) {
   removeNonRateLimited();
-  if (globallyRateLimited || isRateLimited(url)) {
+  if (globallyRateLimited || isRateLimited(route)) {
     throw {statusCode: 504, error: "Rate limited"};  
   }
   const options = {
@@ -19,30 +19,34 @@ const makeRequest = async function (requestType, url, body, headers) {
   };
   try {
     const response = await request(options);
-    updateRateLimits(response.headers, url);
+    updateRateLimits(response.headers, route);
     return response.body;
-  } catch (error) {
+  } catch (err) {
+    if (err.statusCode === 429) {
+      updateRateLimits (err.headers, 'global');
+    }
     sails.log.error(
       'Discord error: ' + requestType + 
       ' request sent to ' + url + 
-      ' returned ' + error.statusCode);
+      ' returned ' + err.statusCode);
     sails.log.error('Form data sent: ' + JSON.stringify(body));
-    throw {statusCode: error.statusCode, error: '(Discord response)'};
+    throw {statusCode: err.statusCode, error: '(Discord response)'};
   }
 };
 
-const updateRateLimits = function (resHeaders) {
-  if (resHeaders['x-ratelimit-remaining'] === 0) {
-    rateLimitedRoutes.url = Number(resHeaders['x-ratelimit-reset']) + 1;  
-  } else if (resHeaders['x-ratelimit-global']) {
+const updateRateLimits = function (resHeaders, route) {
+  if (resHeaders['x-ratelimit-global']) {
     globallyRateLimited = true;
     rateLimitedRoutes['global'] = Number(Date.now()) + 
       Number(resHeaders['retry-after'])/1000 + 1;
+  } else
+  if (resHeaders['x-ratelimit-remaining'] === 0) {
+    rateLimitedRoutes[route] = Number(resHeaders['x-ratelimit-reset']) + 1;  
   }
 };
 
-const isRateLimited = function (url) {
-  return _.includes(rateLimitedRoutes, url);
+const isRateLimited = function (route) {
+  return _.includes(rateLimitedRoutes, route);
 };
 
 const removeNonRateLimited = function () {
@@ -91,7 +95,7 @@ exports.getCurrentUser = async function (token) {
     "Content-Type": "application/x-www-form-urlencoded" 
   };
   try {
-    const currentUser = await makeRequest('GET', url, undefined, headers);
+    const currentUser = await makeRequest('GET', url, undefined, headers, url);
     return currentUser.id;
   } catch (err) {
     throw {error: 'Error retrieving current user from Discord; Discord responded with status code ' + err.statusCode};
@@ -99,7 +103,8 @@ exports.getCurrentUser = async function (token) {
 };
 
 exports.addUserToGuild = async function (token, user, nick) {
-  const url = 'https://discordapp.com/api/guilds/' + sails.config.discord.server_id + '/members/' + user;
+  const route = 'https://discordapp.com/api/guilds/' + sails.config.discord.server_id + '/members/';
+  const url =  route + user;
   const auth = 'Bot ' + sails.config.discord.client_token;
   const body = { 
     'access_token': token,
@@ -112,7 +117,7 @@ exports.addUserToGuild = async function (token, user, nick) {
   };
   const path = '';
   try {
-    const response = await makeRequest('PUT', url, body, headers); 
+    const response = await makeRequest('PUT', url, body, headers, route); 
     return response;
   } catch (err) {
     throw {error: 'Error adding user to guild; Discord responded with status code ' + err.statusCode};

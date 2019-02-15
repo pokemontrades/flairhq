@@ -106,14 +106,15 @@ module.exports = {
       const currentUser = await Discord.getCurrentUser(accessToken);
       const nick = req.user.name;
       const joinedUser = await Discord.addUserToGuild(accessToken, currentUser, nick);
+      const serverUrl = 'https://discordapp.com/channels/' + sails.config.discord.server_id;
       if (!joinedUser) {
-        return res.view(403, {error: 'You are already a member of the Discord.'});
+        return res.redirect(serverUrl);
       }
       sails.log(req.user.name + 
         ' joined Discord as @' + currentUser.username + 
         '#' + currentUser.discriminator + 
         ' (ID: ' + currentUser.id + ')');
-      return res.redirect('/');
+      return res.redirect(serverUrl);
     } catch (err) {
       return res.serverError(err);
     }

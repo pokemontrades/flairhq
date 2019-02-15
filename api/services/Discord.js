@@ -1,10 +1,12 @@
-var request = require("request-promise");
+var request = require("request-promise"),
+    _ = require('lodash');
 
 let globallyRateLimited = false;
-let routes = {};
+let rateLimitedRoutes = { 'global': undefined };
 
-let makeRequest = async function (requestType, url, body, headers) {
-  if (globallyRateLimited) {
+let makeRequest = async function (requestType, url, body, headers, path) {
+  removeNonRateLimited();
+  if (globallyRateLimited || isRateLimited(url)) {
     throw {statusCode: 504, error: "Rate limited"};  
   }
   const options = {
@@ -15,28 +17,59 @@ let makeRequest = async function (requestType, url, body, headers) {
     headers: headers,
     resolveWithFullResponse: true
   };
-  const response = await request(options).catch(function (error)
-  {
-    sails.log.error('Discord error: ' + requestType + ' request sent to ' + url + ' returned ' + error.statusCode);
+  try {
+    const response = await request(options);
+    updateRateLimits(response.headers, url);
+    return response.body;
+  } catch (error) {
+    sails.log.error(
+      'Discord error: ' + requestType + 
+      ' request sent to ' + url + 
+      ' returned ' + error.statusCode);
     sails.log.error('Form data sent: ' + JSON.stringify(body));
     throw {statusCode: error.statusCode, error: '(Discord response)'};
-  });
-  updateRateLimits(response, url);
-  return response.body;
+  }
 };
 
-let updateRateLimits = function (res, url) {
-  
+let updateRateLimits = function (resHeaders, url) {
+  if (resHeaders['x-ratelimit-remaining'] === 0) {
+    rateLimitedRoutes.url = resHeaders['x-ratelimit-reset'];  
+  } else if (resHeaders['x-ratelimit-global']) {
+    globallyRateLimited = true;
+    rateLimitedRoutes['global'] = Number(Date.now()) + 
+      Number(resHeaders['retryafter'])/1000 + 1;
+  }
+};
+
+let isRateLimited = function (url) {
+  return _.includes(rateLimitedRoutes, url);
+};
+
+let removeNonRateLimited = function () {
+  for (let route in rateLimitedRoutes) {
+    if (resetTimePassed(rateLimitedRoutes[route])) {
+      delete rateLimitedRoutes.route;
+    }
+  }
+};
+
+let resetTimePassed = function (time) {
+  const timeDifference = Number(Date.now() - new Date(time).getTime());
+  if (timeDifference < 0) {
+    return true;  
+  } else {
+    return false;
+  }
 };
 
 exports.getAccessToken = async function (code) {
   const redirect_uri = encodeURIComponent(sails.config.discord.redirect_host + '/discord/callback');
   const url = 'https://discordapp.com/api/oauth2/token';
-  const body = 
+  const body =
     'client_id=' + sails.config.discord.client_id + 
     '&client_secret=' + sails.config.discord.client_secret + '&grant_type=authorization_code&code=' + code + 
     '&redirect_uri=' + redirect_uri +
-    '&scope=identify%20guilds.join';
+    '&scope=identify%20guilds.join'
   const headers = { "Content-Type": "application/x-www-form-urlencoded" };
   try {
     const token = await request.post({
@@ -57,7 +90,7 @@ exports.getCurrentUser = async function (token) {
   const headers = {
     "Authorization": auth,
     "Content-Type": "application/x-www-form-urlencoded" 
-  }
+  };
   try {
     const currentUser = await makeRequest('GET', url, undefined, headers);
     return currentUser.id;
@@ -77,7 +110,8 @@ exports.addUserToGuild = async function (token, user, nick) {
   const headers = {
     "Authorization": auth,
     "Content-Type": "application/json"
-  }
+  };
+  const path = '';
   try {
     const response = await makeRequest('PUT', url, body, headers); 
     return response;

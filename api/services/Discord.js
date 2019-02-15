@@ -49,6 +49,9 @@ let removeNonRateLimited = function () {
   for (let route in rateLimitedRoutes) {
     if (resetTimePassed(rateLimitedRoutes[route])) {
       delete rateLimitedRoutes.route;
+      if(route === 'global') {
+        globallyRateLimited = false;
+      }
     }
   }
 };

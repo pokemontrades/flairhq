@@ -96,7 +96,7 @@ exports.getCurrentUser = async function (token) {
   };
   try {
     const currentUser = await makeRequest('GET', url, undefined, headers, url);
-    return currentUser.id;
+    return currentUser;
   } catch (err) {
     throw {error: 'Error retrieving current user from Discord; Discord responded with status code ' + err.statusCode};
   }

@@ -105,7 +105,7 @@ module.exports = {
       const accessToken = response.access_token;
       const currentUser = await Discord.getCurrentUser(accessToken);
       const nick = req.user.name;
-      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser, nick);
+      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser.id, nick);
       const serverUrl = 'https://discordapp.com/channels/' + sails.config.discord.server_id;
       if (!joinedUser) {
         return res.redirect(serverUrl);

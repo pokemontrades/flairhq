@@ -2,7 +2,7 @@ var request = require("request-promise"),
     _ = require('lodash');
 
 let globallyRateLimited = false;
-let rateLimitedRoutes = { 'global': undefined };
+let rateLimitedRoutes = {};
 
 let makeRequest = async function (requestType, url, body, headers, path) {
   removeNonRateLimited();
@@ -37,7 +37,7 @@ let updateRateLimits = function (resHeaders, url) {
   } else if (resHeaders['x-ratelimit-global']) {
     globallyRateLimited = true;
     rateLimitedRoutes['global'] = Number(Date.now()) + 
-      Number(resHeaders['retryafter'])/1000 + 1;
+      Number(resHeaders['retry-after'])/1000 + 1;
   }
 };
 
@@ -48,7 +48,7 @@ let isRateLimited = function (url) {
 let removeNonRateLimited = function () {
   for (let route in rateLimitedRoutes) {
     if (resetTimePassed(rateLimitedRoutes[route])) {
-      delete rateLimitedRoutes.route;
+      delete rateLimitedRoutes[route];
       if(route === 'global') {
         globallyRateLimited = false;
       }

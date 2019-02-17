@@ -104,12 +104,16 @@ module.exports = {
       const accessToken = response.access_token;
       const currentUser = await Discord.getCurrentUser(accessToken);
       const nick = req.user.name;
-      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser, nick);
+      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser.id, nick);
+      const serverUrl = 'https://discordapp.com/channels/' + sails.config.discord.server_id;
       if (!joinedUser) {
-        return res.view(403, {error: 'You are already a member of the Discord server.'});
+        return res.redirect(serverUrl);
       }
-      await Event.create({type: "discordJoin", user: req.user.name,content: "Joined Discord as @" + currentUser.username + "#" + currentUser.discriminator + " (ID: " + currentUser.id + ")"});
-      return res.redirect('/');
+      sails.log(req.user.name + 
+        ' joined Discord as @' + currentUser.username + 
+        '#' + currentUser.discriminator + 
+        ' (ID: ' + currentUser.id + ')');
+      return res.redirect(serverUrl);
     } catch (err) {
       if (err.statusCode === 429){
         return res.view(403, {error: 'Discord servers refused to cooperate due to high number of requests. Please try again later'});

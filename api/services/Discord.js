@@ -1,5 +1,5 @@
 var request = require("request-promise"),
-    _ = require('lodash');
+  _ = require('lodash');
 
 let globallyRateLimited = false;
 let rateLimitedRoutes = {};
@@ -73,7 +73,7 @@ const isResetTimePassed = function (time) {
     
 const timeRemaining = function (time) {
   return time - (Number(Date.now() / 1000));
-}
+};
 
 exports.getAccessToken = async function (code) {
   const redirect_uri = encodeURIComponent(sails.config.discord.redirect_host + '/discord/callback');
@@ -82,7 +82,7 @@ exports.getAccessToken = async function (code) {
     'client_id=' + sails.config.discord.client_id + 
     '&client_secret=' + sails.config.discord.client_secret + '&grant_type=authorization_code&code=' + code + 
     '&redirect_uri=' + redirect_uri +
-    '&scope=identify%20guilds.join'
+    '&scope=identify%20guilds.join';
   const headers = { "Content-Type": "application/x-www-form-urlencoded" };
   try {
     const token = makeRequest('POST', url, body, headers, url);
@@ -120,12 +120,10 @@ exports.addUserToGuild = async function (token, user, nick) {
     "Authorization": auth,
     "Content-Type": "application/json"
   };
-  const path = '';
   try {
     const response = await makeRequest('PUT', url, body, headers, route); 
     return response;
   } catch (err) {
-    sails.log(err);
     throw {error: 'Error adding user to guild; Discord responded with status code ' + err.statusCode};
   }
 };

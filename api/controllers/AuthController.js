@@ -97,8 +97,14 @@ module.exports = {
   
   discordCallback: async function (req, res) {
     const code = req.allParams().code;
+    const user = req.user;
+    const ptradesFlair = user.flair.ptrades.flair_text;
+    const svexFlair = user.flair.svex.flair_text;
     if (!code) {
       return res.view(403, {error: 'Sorry, something went wrong. Please try again.'});
+    }
+    if (_.isNull(ptradesFlair) && _.isNull(svexFlair)) {
+      return res.view(403, {error: 'Please set your flair.'});
     }
     try {
       const response = await Discord.getAccessToken(code);

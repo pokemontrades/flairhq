@@ -18,7 +18,7 @@
             <a ng-href="/u/<%= user.name %>" class="btn btn-default">Public Profile</a>
             <a href="#flairText" class="btn btn-default" data-toggle="modal">Set Flair Text</a>
             <a href="#flairApplication" class="btn btn-default" data-toggle="modal">Apply for Flair</a>
-            <a href="/discord" class="btn btn-default" data-toggle="modal">Join /r/pokemontrades Discord</a>
+            <a href="/discord" class="btn btn-default" data-toggle="modal" ng-if="user.flair.ptrades.flair_text !== null && user.flair.svex.flair_text !== null" >Join /r/pokemontrades Discord</a>
           </p>
       </div>
 

@@ -11,7 +11,6 @@
 const passport = require('passport');
 const crypto = require('crypto');
 const _ = require('lodash');
-const request = require("request-promise");
 
 module.exports = {
 
@@ -122,6 +121,9 @@ module.exports = {
         ' (ID: ' + currentUser.id + ')');
       return res.redirect(serverUrl);
     } catch (err) {
+      if (err.statusCode === 429){
+        return res.view(403, {error: 'Discord servers refused to cooperate due to high number of requests. Please try again later'});
+      }
       return res.serverError(err);
     }
   }

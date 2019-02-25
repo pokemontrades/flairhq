@@ -124,6 +124,7 @@ exports.addUserToGuild = async function (token, user, nick) {
     const response = await makeRequest('PUT', url, body, headers, route); 
     return response;
   } catch (err) {
+    sails.log(err);
     throw {error: 'Error adding user to guild; Discord responded with status code ' + err.statusCode};
   }
 };

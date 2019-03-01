@@ -115,10 +115,7 @@ module.exports = {
       if (!joinedUser) {
         return res.redirect(serverUrl);
       }
-      sails.log(req.user.name + 
-        ' joined Discord as @' + currentUser.username + 
-        '#' + currentUser.discriminator + 
-        ' (ID: ' + currentUser.id + ')');
+      await Event.create({type: "discordJoin", user: nick,content: "Joined Discord as @" + currentUser.username + "#" + currentUser.discriminator + " (ID: " + currentUser.id + ")"});
       return res.redirect(serverUrl);
     } catch (err) {
       if (err.statusCode === 429){

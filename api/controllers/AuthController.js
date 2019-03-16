@@ -92,5 +92,36 @@ module.exports = {
         return res.serverError(err);
       }
     })(req, res);
+  },
+  
+  discordCallback: async function (req, res) {
+    const code = req.allParams().code;
+    const user = req.user;
+    const ptradesFlair = user.flair.ptrades.flair_text;
+    const svexFlair = user.flair.svex.flair_text;
+    if (!code) {
+      return res.view(403, {error: 'Sorry, something went wrong. Please try again.'});
+    }
+    if (_.isNull(ptradesFlair) && _.isNull(svexFlair)) {
+      return res.view(403, {error: 'Please set your flair.'});
+    }
+    try {
+      const response = await Discord.getAccessToken(code);
+      const accessToken = response.access_token;
+      const currentUser = await Discord.getCurrentUser(accessToken);
+      const nick = req.user.name;
+      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser.id, nick);
+      const serverUrl = 'https://discordapp.com/channels/' + sails.config.discord.server_id;
+      if (!joinedUser) {
+        return res.redirect(serverUrl);
+      }
+      await Event.create({type: "discordJoin", user: nick,content: "Joined Discord as @" + currentUser.username + "#" + currentUser.discriminator + " (ID: " + currentUser.id + ")"});
+      return res.redirect(serverUrl);
+    } catch (err) {
+      if (err.statusCode === 429){
+        return res.view(403, {error: 'Discord servers refused to cooperate due to high number of requests. Please try again later'});
+      }
+      return res.serverError(err);
+    }
   }
 };

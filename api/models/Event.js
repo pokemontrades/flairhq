@@ -14,7 +14,8 @@ module.exports = {
       enum: [
         "flairTextChange",
         "flairCssChange",
-        "banUser"
+        "banUser",
+        "discordJoin"
       ]
     },
     content: "string"

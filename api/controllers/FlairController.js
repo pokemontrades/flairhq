@@ -52,6 +52,7 @@ module.exports = {
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
       var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
       user.flair[shortened].flair_css_class = relevant_flair;
+      await Reddit.setUserFlair(req.user.redToken, user.name, " "+relevant_flair, " "+user.flair[shortened].flair_text, app.sub);
       await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
@@ -118,6 +119,13 @@ module.exports = {
       var pFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
       var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       svFlair = svFlair.replace(/2/, "");
+
+      var prelimPromises = [
+        Reddit.setUserFlair(refreshToken, req.user.name, " "+pFlair, " "+flairs.ptrades, "PokemonTrades"),
+        Reddit.setUserFlair(refreshToken, req.user.name, " "+svFlair, " "+flairs.svex, "SVExchange")
+      ];
+      await* prelimPromises;
+
       var promises = [];
       var eventFlair = null; // Change to req.allParams().eventFlair during events
 

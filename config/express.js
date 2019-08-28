@@ -56,6 +56,7 @@ module.exports.http = {
       verifyHandler(sails.config.reddit.adminRefreshToken, token, tokenSecret, profile, done);
     };
     passport.use(new RedditStrategy({
+      authorizationURL: 'https://old.reddit.com/api/v1/authorize',
       clientID: sails.config.reddit.clientID,
       clientSecret: sails.config.reddit.clientIDSecret,
       callbackURL: sails.config.reddit.redirectURL,

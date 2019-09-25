@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import { Router, Link } from "@reach/router";
+import Header from "./header/header";
 
 let Home = () => (
   <div>
@@ -12,15 +13,7 @@ let Tools = () => <div>Tools</div>;
 
 const App = () => (
   <div>
-    <header>
-      <h1>Home</h1>
-      <nav>
-        <Link to="/">Home</Link> |{" "}
-        <Link to="info">Info</Link> |{" "}
-        <Link to="tools">Tools</Link> |{" "}
-        <a href="/api/auth/reddit">Login</a>
-      </nav>
-    </header>
+    <Header></Header>
     <Router>
       <Home path="/" />
       <Info path="info" />

@@ -26,7 +26,12 @@
  *
  */
 
-module.exports.cors = {
+ module.exports.sockets = {
+   onlyAllowOrigins: ['http://hq.porygon.co','http://hq.porygon.co:8080','http://fapp.yamanickill.com','http://fapp.yamanickill.com:8080']
+ }
+
+module.exports.security = {
+  cors: {
 
   /***************************************************************************
   *                                                                          *
@@ -47,7 +52,7 @@ module.exports.cors = {
   *                                                                          *
   ***************************************************************************/
 
-  origin: 'http://hq.porygon.co,http://hq.porygon.co:8080,http://fapp.yamanickill.com,http://fapp.yamanickill.com:8080',
+  allowOrigins: ['http://hq.porygon.co','http://hq.porygon.co:8080','http://fapp.yamanickill.com','http://fapp.yamanickill.com:8080'],
 
   /***************************************************************************
   *                                                                          *
@@ -75,4 +80,5 @@ module.exports.cors = {
 
   // headers: 'content-type'
 
+  }
 };

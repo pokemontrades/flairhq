@@ -41,7 +41,7 @@ module.exports = {
         notes: params.notes || Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 20),
         privatenotes: params.privatenotes || Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 20),
         edited: params.edited || _.sample([true, false]),
-        number: _.random(0, Number.MAX_SAFE_INTEGER),
+        number: _.random(0, Number.MAX_SAFE_number),
         createdAt: params.createdAt || new Date(_.random(0, 4294967295000)).toISOString(),
         updatedAt: params.updatedAt || new Date(_.random(0, 4294967295000)).toISOString(),
         approved: approved,

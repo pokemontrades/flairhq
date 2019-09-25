@@ -5,49 +5,46 @@
  * @docs        :: http://sailsjs.org/#!documentation/models
  */
 
-module.exports = {
-
-  types: {
-    friendCodeFormat: function (codes) {
-      for (var code in codes) {
-        var patt = /(?:SW-)?([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
-        if (!patt.test(codes[code])) {
-          return false;
-        }
-      }
-      return true;
+const friendCodeFormat = function (codes) {
+  for (var code in codes) {
+    var patt = /(?:SW-)?([0-9]{4})(-?)(?:([0-9]{4})\2)([0-9]{4})/;
+    if (!patt.test(codes[code])) {
+      return false;
     }
-  },
+  }
+  return true;
+}
 
-  autoPK: false,
+module.exports = {
 
   attributes: {
     provider: 'STRING',
-    name: {
+    id: {
       type: "string",
-      columnName: 'id',
       unique: true,
-      primaryKey: true
     },
     email: "string",
     firstname: "string",
     lastname: "string",
     intro: {
-      type: "text",
+      type: "string",
       maxLength: 10000
     },
     friendCodes: {
-      type: "array",
-      friendCodeFormat: true
+      type: "string",
+      columnType: "array",
+      custom: friendCodeFormat
     },
     loggedFriendCodes: {
-      type: "array",
-      friendCodeFormat: true
+      type: "string",
+      columnType: "array",
+      custom: friendCodeFormat
     },
     isMod: "boolean",
     modPermissions: {
-      type: "array",
-      defaultsTo: null
+      type: "string",
+      columnType: "array",
+      allowNull: true
     },
     banned: "boolean",
     redToken: "string",

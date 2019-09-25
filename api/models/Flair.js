@@ -12,19 +12,19 @@ module.exports = {
     sub: "string",
 
     trades: {
-      type: "integer",
+      type: "number",
       defaultsTo: 0
     },
     involvement: {
-      type: "integer",
+      type: "number",
       defaultsTo: 0
     },
     eggs: {
-      type: "integer",
+      type: "number",
       defaultsTo: 0
     },
     giveaways: {
-      type: "integer",
+      type: "number",
       defaultsTo: 0
     }
   }

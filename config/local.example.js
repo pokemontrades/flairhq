@@ -2,7 +2,7 @@
 module.exports = {
   port: 1337,
   environment: "development",
-  hookTimeout: "50000",
+  hookTimeout: 50000,
   reddit: {
     clientID: "CLIENT ID GOES HERE",
     clientIDSecret: "SECRET ID GOES HERE",
@@ -10,23 +10,17 @@ module.exports = {
     adminRefreshToken: "ADMIN REFRESH TOKEN GOES HERE",
     userAgent: 'FlairHQ development version by /u/DEVELOPERS_USERNAME || hq.porygon.co/info || v' + require('../package.json').version
   },
-  connections: {
-    "default": "mongo",
-    mongo: {
-      adapter: 'sails-mongo',
-      host: 'localhost',
-      port: 27017,
-      user: '',
-      password: '',
-      database: 'fapp'
+  datastores: {
+    default: {
+      adapter: require('sails-mongo'),
+      url: 'mongodb://user:password@localhost:27017/fapp',
     }
   },
   session: {
-    adapter: 'mongo',
-    host: 'localhost',
-    port: 27017,
-    db: 'fapp',
-    collection: 'sessions'
+    default: {
+      adapter: require('sails-mongo'),
+      url: 'mongodb://user:password@localhost:27017/sessions',
+    }
   },
   discord: {
     client_id: 'ID GOES HERE',

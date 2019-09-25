@@ -12,6 +12,6 @@ module.exports = {
     from: "string",
     pointType: "string",
     reason: "string",
-    points: "integer"
+    points: "number"
   }
 };

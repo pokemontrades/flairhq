@@ -23,7 +23,6 @@ module.exports = {
     res.view({refUser: await Users.get(req.user, req.user.name)});
     Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name).then(function (flairs) {
       if (flairs[0] || flairs[1]) {
-        req.user.flair = {ptrades: flairs[0], svex: flairs[1]};
         var ptrades_fcs, svex_fcs;
         if (flairs[0] && flairs[0].flair_text) {
           ptrades_fcs = flairs[0].flair_text.match(/(\d{4}-){2}\d{4}/g);
@@ -31,12 +30,9 @@ module.exports = {
         if (flairs[1] && flairs[1].flair_text) {
           svex_fcs = flairs[1].flair_text.match(/(\d{4}-){2}\d{4}/g);
         }
-        req.user.loggedFriendCodes = _.union(ptrades_fcs, svex_fcs, req.user.loggedFriendCodes);
-        req.user.save(function (err) {
-          if (err) {
-            sails.log.error(err);
-          }
-        });
+        User.update({id: req.user.id})
+          .set({flair: {ptrades: flairs[0], svex: flairs[1]}, loggedFriendCodes: _.union(ptrades_fcs, svex_fcs, req.user.loggedFriendCodes)})
+          .catch((err) => sails.log.error(err));
       }
     }, sails.log.error);
   },

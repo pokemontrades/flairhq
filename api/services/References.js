@@ -1,7 +1,6 @@
 exports.approve = function (ref, approve) {
-  ref.approved = approve;
   if (!exports.isVerifiable(ref)) {
-    return ref.save();
+    return Reference.update({id: ref.id}).set({approved: approve}.fetch());
   }
   return Reference.findOne({
     user: ref.user2,
@@ -9,14 +8,14 @@ exports.approve = function (ref, approve) {
     url: {endsWith: ref.url.slice(ref.url.indexOf('/r/'))},
     or: exports.verifiableTypes.map(refType => ({type: refType}))
   }).then(otherRef => {
-    var refsToSave = [ref];
+    var refsToSave = [];
     if (otherRef) {
-      otherRef.approved = approve;
-      otherRef.verified = approve;
-      refsToSave.push(otherRef);
-      ref.verified = approve;
+      refsToSave.push(Reference.update({id: ref.id}).set({approved: approve, verified: approve}).fetch());
+      refsToSave.push(Reference.update({id: otherRef.id}).set({approved: approve, verified: approve}));
+    } else {
+      refsToSave.push(Reference.update({id: ref.id}).set({approved: approve}).fetch());
     }
-    return Promise.all(refsToSave.map(el => el.save())).then(refs => refs[0]);
+    return Promise.all(refsToSave).then(refs => refs[0]);
   });
 };
 exports.verifyIfNeeded = function (ref) {
@@ -30,14 +29,14 @@ exports.verifyIfNeeded = function (ref) {
     or: exports.verifiableTypes.map(refType => ({type: refType})),
     approved: true
   }).then(otherRef => {
-    var refsToSave = [ref];
+    var refsToSave = [];
     if (otherRef) {
-      ref.approved = true;
-      ref.verified = true;
-      otherRef.verified = true;
-      refsToSave.push(otherRef);
+      refsToSave.push(Reference.update({id: ref.id}).set({approved: true, verified: true}).fetch());
+      refsToSave.push(Reference.update({id: otherRef.id}).set({approved: true, verified: true}));
+    } else {
+      refsToSave.push(Reference.update({id: ref.id}).set({approved: true}).fetch());
     }
-    return Promise.all(refsToSave.map(el => el.save())).then(refs => refs[0]);
+    return Promise.all(refsToSave).then(refs => refs[0]);
   });
 };
 exports.omitModOnlyProperties = function (ref) {

@@ -11,10 +11,9 @@ module.exports = {
     user: "string",
     ign: "string",
     tsv: {
-      type: "int",
+      type: "number",
       max: 4095,
-      min: -1,
-      numeric: true
+      min: -1
     }
   }
 };

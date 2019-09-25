@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing Users
  */
 
-var Q = require('q');
 var _ = require('lodash');
 
 module.exports = {
@@ -77,7 +76,7 @@ module.exports = {
             }
           });
 
-          Q.all(promises).then(function () {
+          Promise.all(promises).then(function () {
             up.games = games;
             res.ok(up);
           });
@@ -125,7 +124,7 @@ module.exports = {
           req.params.banNote: The ban reason to go on the mod log (not visible to banned user, 300 characters max) (String)
           req.params.banMessage: The note that gets sent with the "you are banned" PM (String)
           req.params.banlistEntry: The ban reason to appear on the public banlist (String)
-          req.params.duration: The number of days that the user will be banned for. (Integer)
+          req.params.duration: The number of days that the user will be banned for. (number)
           req.params.knownAlt: Known alt of the user for the public banlist (String)
           req.params.additionalFCs: A list of additional friend codes that should be banned. (Array of Strings)
         Ban process:

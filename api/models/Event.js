@@ -11,7 +11,7 @@ module.exports = {
     user: "string",
     type: {
       type: "string",
-      enum: [
+      isIn: [
         "flairTextChange",
         "flairCssChange",
         "banUser",

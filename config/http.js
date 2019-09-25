@@ -11,6 +11,13 @@
 
 module.exports.http = {
 
+  cache: {
+
+    // The number of seconds to cache files being served from disk
+    // (only works in production mode)
+    maxAge: 31557600000
+  },
+
   /****************************************************************************
   *                                                                           *
   * Express middleware to use for every Sails request. To add custom          *
@@ -29,24 +36,21 @@ module.exports.http = {
   * router is invoked by the "router" middleware below.)                     *
   *                                                                          *
   ***************************************************************************/
-
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
+  passportInit    : require('passport').initialize(),
+  passportSession : require('passport').session(),
+     
+  order: [
+        'cookieParser',
+        'session',
+        'passportInit',
+        'passportSession',
+        'bodyParser',
+        'compress',
+        'poweredBy',
+        'router',
+        'www',
+        'favicon',
+      ],
 
   /****************************************************************************
   *                                                                           *

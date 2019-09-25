@@ -7,12 +7,10 @@
 
 module.exports = {
   attributes: {
-    user: {
-      type: "string",
-      columnName: 'id',
-      primaryKey: true
+    id: {
+      type: "string"
     },
-    expPoints: "integer",
-    battleWins: "integer"
+    expPoints: "number",
+    battleWins: "number"
   }
 };

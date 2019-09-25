@@ -6,28 +6,26 @@
  */
 
 module.exports = {
-  autoPK: false,
   attributes: {
-    team: {
+    id: {
       type: "string",
-      columnName: 'id',
-      enum: ['kanto', 'alola'],
-      primaryKey: true
+      isIn: ['kanto', 'alola'],
     },
     members: {
-      type: "array"
+      type: "string",
+      columnType: "array"
     },
     membershipPoints: {
-      type: "integer"
+      type: "number"
     },
     battlePoints: {
-      type: "integer"
+      type: "number"
     },
     contestPoints: {
-      type: "integer"
+      type: "number"
     },
     triviaPoints: {
-      type: "integer"
+      type: "number"
     }
   }
 };

@@ -6,8 +6,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-var Q = require('q'),
-  async = require('async');
+var async = require('async');
 
 module.exports = {
   all: function (req, res) {
@@ -238,7 +237,7 @@ module.exports = {
             })
         );
       });
-      Q.all(promises).then(function () {
+      Promise.all(promises).then(function () {
         res.ok(added);
       });
     });

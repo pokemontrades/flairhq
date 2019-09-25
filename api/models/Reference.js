@@ -17,7 +17,7 @@ module.exports = {
     got: "string",
     description: "string",
     number: {
-      type: "integer",
+      type: "number",
       min: 0,
       required: false
     },

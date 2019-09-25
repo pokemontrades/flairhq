@@ -8,6 +8,10 @@ var _ = require('lodash');
 
 module.exports = {
 
+  me: function(req, res) {
+    return res.json(req.user);
+  },
+
   edit: function (req, res) {
     req.params = req.allParams();
     User.findOne(req.params.username, function (err, user) {

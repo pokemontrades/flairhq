@@ -19,7 +19,7 @@ module.exports = {
 
   attributes: {
     provider: 'STRING',
-    id: {
+    name: {
       type: "string",
       unique: true,
     },

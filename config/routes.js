@@ -33,6 +33,11 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
+  'get /api/me' : {
+    controller : 'user',
+    action     : 'me'
+  },
+
   'get /api/user/get/:name' : {
     controller : 'user',
     action     : 'get'

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Not Found</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="main container clearfix">
+        <div class="content">
+          <%if (data && data.user) {%>
+          <h2 class="text-center" ng-non-bindable>User <%=data.user%> hasn't created a reference page on FlairHQ yet!</h2>
+          <h2 class="text-center">Be sure you have the right username.</h2>
+          <% } else {%>
+          <h2 class="text-center">404 Page Not Found</h2>
+          <h2 class="text-center">Judging Scatterbug judges you</h2>
+          <% }%>
+          <img class="center-block" src="/images/judging-scatterbug.png" />
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

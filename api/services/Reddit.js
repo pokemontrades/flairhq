@@ -24,6 +24,7 @@ exports.refreshToken = async function(refreshToken) {
       "Content-Length": data.length
     }
   }).catch(function (error) {
+    console.log(error);
     throw {statusCode: 502, error: 'Error retrieving token; Reddit responded with status code ' + error.statusCode};
   });
   if (body && body.access_token) {

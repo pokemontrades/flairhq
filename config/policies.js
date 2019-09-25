@@ -42,10 +42,7 @@ module.exports.policies = {
   HomeController: {
     '*': admin,
     index: user,
-    reference: anyone,
     search: user,
-    info: anyone,
-    tools: anyone,
     applist: flairMod,
     discord: user,
     ui: anyone
@@ -76,7 +73,7 @@ module.exports.policies = {
   UserController: {
     '*': admin,
     edit: user,
-    mine: user,
+    me: user,
     get: anyone
   },
   

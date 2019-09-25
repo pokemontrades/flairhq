@@ -6,7 +6,7 @@ module.exports = {
   reddit: {
     clientID: "CLIENT ID GOES HERE",
     clientIDSecret: "SECRET ID GOES HERE",
-    redirectURL: "http://localhost:1337/auth/reddit/callback",
+    redirectURL: "http://localhost:1337/api/auth/reddit/callback",
     adminRefreshToken: "ADMIN REFRESH TOKEN GOES HERE",
     userAgent: 'FlairHQ development version by /u/DEVELOPERS_USERNAME || hq.porygon.co/info || v' + require('../package.json').version
   },

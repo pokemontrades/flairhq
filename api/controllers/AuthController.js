@@ -62,7 +62,7 @@ module.exports = {
             }
             var url = decodeURIComponent(login_info.redirect);
             // Don't redirect to other callback urls (this may cause infinite loops) or to absolute url paths (which might lead to other sites).
-            if (url.indexOf('/auth/reddit/callback') === 0 || /^(?:[a-z]+:)?\/\//i.test(url)) {
+            if (url.indexOf('/api/auth/reddit/callback') === 0 || /^(?:[a-z]+:)?\/\//i.test(url)) {
               url = '/';
             }
             req.session.validation = '';
@@ -74,7 +74,7 @@ module.exports = {
           User.update(user.name, {isMod: true, modPermissions}).exec(function () {
             /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
             if (login_info.type !== 'mod' && ['all', 'access', 'mail', 'flair', 'wiki'].some(permission => _.includes(modPermissions, permission))) {
-              return res.redirect('/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
+              return res.redirect('/api/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
             }
             return finishLogin();
           });

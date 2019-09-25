@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "@reach/router";
 
 export default function App () {
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    if (!user || !user.name) {
+      async function fetchData() {
+        const userData = await fetch('/api/me').then((res) => res.json());
+        setUser(userData);
+      }
+      fetchData();
+    }
+  });
+
   return (
     <div>
       <header>
@@ -10,7 +22,7 @@ export default function App () {
           <Link to="/">Home</Link> |{" "}
           <Link to="info">Info</Link> |{" "}
           <Link to="tools">Tools</Link> |{" "}
-          <a href="/api/auth/reddit">Login</a>
+          {user && user.name ? <a href="/logout">Logout</a> : <a href="/api/auth/reddit">Login</a>}
         </nav>
       </header>
     </div>

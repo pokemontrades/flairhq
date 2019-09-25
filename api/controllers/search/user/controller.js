@@ -2,7 +2,7 @@
 module.exports = function(req, res) {
   var params = req.allParams();
   if (!params.keyword) {
-    return res.view("../search/main", { searchType: "log", searchTerm: "" });
+    return res.ok([]);
   }
   var searchData = {
     keyword: params.keyword
@@ -10,7 +10,7 @@ module.exports = function(req, res) {
 
   searchData.skip = params.skip || 0;
 
-  Search.logs(searchData, function(results) {
+  Search.users(searchData, function(results) {
     return res.ok(results);
   });
 };

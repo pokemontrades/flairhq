@@ -13,11 +13,7 @@ const crypto = require('crypto');
 const _ = require('lodash');
 
 module.exports = {
-
-  index: function (req, res) {
-    res.view();
-  },
-
+  
   logout: function (req, res) {
     req.logout();
     res.redirect('/');

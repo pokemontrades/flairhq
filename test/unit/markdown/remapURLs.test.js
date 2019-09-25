@@ -1,5 +1,5 @@
 var assert = require("chai").assert;
-var remapURLs = require("../../../assets/markdown/remapURLs");
+var remapURLs = require("../../../ui/markdown/remapURLs");
 
 var markdownData = require("../data/markdownStrings.json");
 

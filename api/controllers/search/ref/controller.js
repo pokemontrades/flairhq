@@ -2,7 +2,7 @@
 module.exports = function(req, res) {
   var params = req.allParams();
   if (!params.keyword) {
-    return res.view("../search/main", { searchType: "ref", searchTerm: "" });
+    return res.ok([]);
   }
   var searchData = {
     description: params.keyword

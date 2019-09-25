@@ -18,5 +18,9 @@ module.exports = function(req, res, next) {
   if (req.isSocket) {
     return res.status(403).json({status: 403, redirectTo: "/login"});
   }
+  console.log(req.url);
+  if (req.url === "/login") {
+    return next();
+  }
   return res.redirect('/login' + (req.url !== '/' ? '?redirect=' + encodeURIComponent(req.url) : ''));
 };

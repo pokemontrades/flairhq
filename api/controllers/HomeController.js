@@ -5,10 +5,20 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
+var fs = require("fs");
 var _ = require("lodash");
 
 module.exports = {
+  
+  ui: function(req, res) {
+    if (sails.config.environment === 'production') {
+      fs.createReadStream(__dirname + "/../../.tmp/public/index.html").pipe(res);
+    } else {
+      res.redirect("http://localhost:8080/");
+    }
+  },
 
+  // TODO: Delete this, after the code has been moved elsewhere
   index: async function (req, res) {
     res.view({refUser: await Users.get(req.user, req.user.name)});
     Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name).then(function (flairs) {
@@ -29,41 +39,6 @@ module.exports = {
         });
       }
     }, sails.log.error);
-  },
-
-  reference: async function(req, res) {
-    try {
-      return res.view({refUser: await Users.get(req.user, req.params.user)});
-    } catch (err) {
-      if (err.statusCode === 404) {
-        return res.view('404', {data: {user: req.params.user, error: "User not found"}});
-      }
-      return res.serverError(err);
-    }
-  },
-
-  banlist: async function (req, res) {
-    try {
-      return res.view({bannedUsers: await Users.getBannedUsers()});
-    } catch (err) {
-      return res.serverError(err);
-    }
-  },
-
-  banuser: function (req, res) {
-    res.view();
-  },
-
-  applist: function (req, res) {
-    res.view();
-  },
-
-  info: function (req, res) {
-    res.view();
-  },
-
-  tools: function (req, res) {
-    res.view("../tools/tools.ejs");
   },
 
   version: function(req, res) {

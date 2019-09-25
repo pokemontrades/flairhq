@@ -33,22 +33,17 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  'get /u/:user' : {
-    controller: 'home',
-    action: 'reference'
-  },
-
-  'get /user/get/:name' : {
+  'get /api/user/get/:name' : {
     controller : 'user',
     action     : 'get'
   },
 
-  'post /user/addNote' : {
+  'post /api/user/addNote' : {
     controller : 'user',
     action     : 'addNote'
   },
 
-  'post /user/delNote' : {
+  'post /api/user/delNote' : {
     controller : 'user',
     action     : 'delNote'
   },
@@ -58,158 +53,140 @@ module.exports.routes = {
     action     : 'logout'
   },
 
-  'get /auth/reddit': {
+  'get /api/auth/reddit': {
     controller: 'auth',
     action: 'reddit'
   },
 
-  'get /auth/reddit/callback' : {
+  'get /api/auth/reddit/callback' : {
     controller : 'auth',
     action     : 'callback'
   },
 
-  'post /reference/add' : {
+  'post /api/reference/add' : {
     controller : 'reference',
     action     : 'add'
   },
 
-  'post /reference/edit' : {
+  'post /api/reference/edit' : {
     controller : 'reference',
     action     : 'edit'
   },
 
-  'post /reference/approve' : {
+  'post /api/reference/approve' : {
     controller : 'reference',
     action     : 'approve'
   },
 
-  'post /reference/approve/all' : {
+  'post /api/reference/approve/all' : {
     controller : 'reference',
     action     : 'approveAll'
   },
 
-  'post /reference/delete' : {
+  'post /api/reference/delete' : {
     controller : 'reference',
     action     : 'deleteRef'
   },
 
-  'post /reference/comment/add' : {
+  'post /api/reference/comment/add' : {
     controller : 'reference',
     action     : 'comment'
   },
 
-  'post /reference/comment/del' : {
+  'post /api/reference/comment/del' : {
     controller : 'reference',
     action     : 'delComment'
   },
 
-  'get /flair/all' : {
+  'get /api/flair/all' : {
     controller : 'reference',
     action     : 'getFlairs'
   },
 
-  'post /flair/save' : {
+  'post /api/flair/save' : {
     controller : 'reference',
     action     : 'saveFlairs'
   },
 
-  'post /flair/apply' : {
+  'post /api/flair/apply' : {
     controller : 'flair',
     action     : 'apply'
   },
 
-  'get /flair/apps/all' : {
+  'get /api/flair/apps/all' : {
     controller : 'flair',
     action     : 'getApps'
   },
 
-  'post /flair/app/approve' :{
+  'post /api/flair/app/approve' :{
     controller : 'flair',
     action     : 'approveApp'
   },
 
-  'post /flair/app/deny' :{
+  'post /api/flair/app/deny' :{
     controller : 'flair',
     action     : 'denyApp'
   },
 
-  'post /flair/app/refreshClaim': {
+  'post /api/flair/app/refreshClaim': {
     controller: 'flair',
     action: 'refreshClaim'
   },
 
-  'post /flair/setText': {
+  'post /api/flair/setText': {
     controller: 'flair',
     action: 'setText'
   },
 
-  'post /user/edit' : {
+  'post /api/user/edit' : {
     controller : 'user',
     action     : 'edit'
   },
 
-  'post /user/ban' : {
+  'post /api/user/ban' : {
     controller : 'user',
     action     : 'ban'
   },
 
-  'post /mod/setlocalban' : {
+  'post /api/mod/setlocalban' : {
     controller : 'user',
     action     : 'setLocalBan'
   },
 
-  'get /mod/banuser' : {
-    controller  : 'home',
-    action      : 'banuser'
-  },
-  'get /user/banned' : {
+  'get /api/user/banned' : {
     controller : 'user',
     action     : 'bannedUsers'
   },
 
-  'post /clearsession/:name' : {
+  'post /api/clearsession/:name' : {
     controller : 'user',
     action     : 'clearSession'
   },
 
-  'get /mod/applist' : {
-    controller : 'home',
-    action     : 'applist'
-  },
-
-  'get /mod/banlist' : {
-    controller : 'home',
-    action     : 'banlist'
-  },
-
-  'get /event/get': {
+  'get /api/event/get': {
     controller: 'event',
     action: 'get'
   },
 
-  'get /info' : {
-    controller : 'home',
-    action     : 'info'
-  },
-
-  'get /tools' : {
-    controller : 'home',
-    action     : 'tools'
-  },
-
-  'get /version' : {
+  'get /api/version' : {
     controller : 'home',
     action     : 'version'
   },
   
-  'get /discord' : {
+  'get /api/discord' : {
     controller : 'home',
     action     : 'discord'
   },
   
-  'get /discord/callback' : {
+  'get /api/discord/callback' : {
     controller  : 'auth',
     action      : 'discordCallback'
+  },
+
+  "/*": {
+    controller  : 'home',
+    action      : 'ui', 
+    skipAssets: true
   }
 };
 
@@ -221,9 +198,5 @@ for (let i = 0; i < searchTypes.length; i++) {
   module.exports.routes['get /search/' + type.short] = {
     controller: 'search',
     action: type.short
-  };
-  module.exports.routes['get /search/' + type.short + "/:searchterm"] = {
-    controller: 'search',
-    action: type.short + "View"
   };
 }

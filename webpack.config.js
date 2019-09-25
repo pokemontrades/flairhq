@@ -3,11 +3,19 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    entry: './assets/index.js'
+    entry: './ui/index.js'
   },
   output: {
     path: __dirname + '/.tmp/public',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: "/"
+  },
+  devServer: {
+    historyApiFallback: true,
+    proxy: {
+      '/api': 'http://localhost:1337',
+      '/logout': 'http://localhost:1337'
+    }
   },
   module: {
     rules: [
@@ -18,11 +26,11 @@ module.exports = {
 
   plugins: [
     new HtmlPlugin({
-      template: './assets/index.html'
+      template: './ui/index.html'
     }),
     new CopyPlugin([
-      { from: './assets/favicon.ico' },
-      { from: './assets/manifest.json' },
+      { from: './ui/favicon.ico' },
+      { from: './ui/manifest.json' },
     ])
   ]
 };

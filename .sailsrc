@@ -2,7 +2,8 @@
   "generators": {
     "modules": {}
   },
+  "hooks": { "grunt": false },
   "paths": {
-    "views": "./assets/views"
+    "public": "./.tmp/public"
   }
 }

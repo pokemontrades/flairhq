@@ -52,7 +52,7 @@ exports.get = async function (requester, username) {
     });
     user.references = result;
   }));
-  await* promises;
+  await promises;
   return removeSecretInformation(user);
 };
 

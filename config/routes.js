@@ -33,11 +33,6 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  'get /' : {
-    controller : 'home',
-    action: 'index'
-  },
-
   'get /u/:user' : {
     controller: 'home',
     action: 'reference'
@@ -56,11 +51,6 @@ module.exports.routes = {
   'post /user/delNote' : {
     controller : 'user',
     action     : 'delNote'
-  },
-
-  'get /login' : {
-    controller : 'auth',
-    action     : 'index'
   },
 
   'get /logout' : {
@@ -223,7 +213,7 @@ module.exports.routes = {
   }
 };
 
-var searchTypes = require("../assets/search/types.js");
+var searchTypes = require("../ui/search/types.js");
 
 for (let i = 0; i < searchTypes.length; i++) {
   // Programatically add the routes for searches

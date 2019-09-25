@@ -31,3 +31,9 @@ node_modules
 config/local.js
 
 .DS_Store
+
+# testing
+/ui/coverage
+
+# production
+/ui/build

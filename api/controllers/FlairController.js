@@ -59,7 +59,7 @@ module.exports = {
       var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
       promises.push(Application.destroy({id: req.allParams().id}));
-      await* promises;
+      await promises;
       sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + relevant_flair);
       return res.ok(await Flairs.getApps());
     } catch (err) {
@@ -109,7 +109,7 @@ module.exports = {
       var matching_fc_usernames = _.map(users_with_matching_fcs, 'name');
 
       // Get friend codes that are similar (have a low edit distance) to banned friend codes
-      var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
+      var similar_banned_fcs = _.flatten(await flairs.fcs.map(Flairs.getSimilarBannedFCs));
       // Get friend codes that are identical to banned users' friend codes
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
 
@@ -255,7 +255,7 @@ module.exports = {
         }));
       }
 
-      await* promises;
+       promises;
 
     } catch (err) {
       return res.serverError(err);

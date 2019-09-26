@@ -295,7 +295,7 @@ module.exports = {
           }
           if (req.allParams().name === req.user.name) {
             req.session.destroy();
-            return res.redirect('/login');
+            return res.redirect('/');
           }
           return res.ok("Successfully cleared /u/" + req.allParams().name + "'s sessions.");
         });

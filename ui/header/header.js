@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Collapse,
+  Container,
   Navbar,
   NavbarToggler,
   NavbarBrand,
@@ -40,47 +41,47 @@ export default function App () {
 
 
   return (
-    <div>
-      <Navbar color="dark" dark expand="md">
-        <NavbarBrand href="/">FlairHQ</NavbarBrand>
-        <NavbarToggler onClick={toggle} />
-        <Collapse isOpen={isOpen} navbar>
-          <Nav className="ml-auto" navbar>
-            <NavItem>
-              <NavLink href="/info">Information</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/tools">Tools</NavLink>
-            </NavItem>
-            {user && user.isMod && (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  Moderator
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem>
-                    Stuff
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            )}
-            {user && user.name ? (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  {user.name}
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem href="/logout">
-                    Logout
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            ) : (
-              <NavItem><NavLink href="/api/auth/reddit">Login</NavLink></NavItem>
-            )}
-          </Nav>
-        </Collapse>
-      </Navbar>
-    </div>
+    <Navbar color="dark" dark expand="md">
+      <Container>
+      <NavbarBrand href="/">FlairHQ</NavbarBrand>
+      <NavbarToggler onClick={toggle} />
+      <Collapse isOpen={isOpen} navbar>
+        <Nav className="ml-auto" navbar>
+          <NavItem>
+            <NavLink href="/info">Information</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink href="/tools">Tools</NavLink>
+          </NavItem>
+          {user && user.isMod && (
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Moderator
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>
+                  Stuff
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          )}
+          {user && user.name ? (
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                {user.name}
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem href="/logout">
+                  Logout
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          ) : (
+            <NavItem><NavLink href="/api/auth/reddit">Login</NavLink></NavItem>
+          )}
+        </Nav>
+      </Collapse>
+      </Container>
+    </Navbar>
   );
 };

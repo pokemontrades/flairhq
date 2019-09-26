@@ -31,20 +31,16 @@ module.exports = {
       maxLength: 10000
     },
     friendCodes: {
-      type: "string",
-      columnType: "array",
+      type: "json",
       custom: friendCodeFormat
     },
     loggedFriendCodes: {
-      type: "string",
-      columnType: "array",
+      type: "json",
       custom: friendCodeFormat
     },
     isMod: "boolean",
     modPermissions: {
-      type: "string",
-      columnType: "array",
-      allowNull: true
+      type: "json"
     },
     banned: "boolean",
     redToken: "string",

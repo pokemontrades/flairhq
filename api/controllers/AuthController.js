@@ -71,7 +71,9 @@ module.exports = {
         };
         let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
         if (modPermissions) { //User is a mod, set isMod to true
-          User.update(user.name, {isMod: true, modPermissions}).exec(function () {
+          console.log("User is mod");
+          console.log(modPermissions);
+          User.update({name: user.name}).set({isMod: true, modPermissions}).then(function () {
             /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
             if (login_info.type !== 'mod' && ['all', 'access', 'mail', 'flair', 'wiki'].some(permission => _.includes(modPermissions, permission))) {
               return res.redirect('/api/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
@@ -80,7 +82,8 @@ module.exports = {
           });
         }
         else if (user.isMod || user.modPermissions) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
-          User.update(user.name, {isMod: false, modPermissions: null}).exec(finishLogin);
+          console.log("Removing mod stuff");
+          User.update({name: user.name}).set({isMod: false, modPermissions: null}).exec(finishLogin);
         } else { // Regular user
           return finishLogin();
         }

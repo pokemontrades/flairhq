@@ -33,7 +33,7 @@ module.exports = {
           updatedUser.friendCodes = req.params.fcs;
         }
 
-        User.update(user.name, updatedUser).exec(function (err, up) {
+        User.update({name: user.name}).set(updatedUser).fetch().exec(function (err, up) {
           if (err) {
             res.serverError(err);
           }
@@ -257,7 +257,7 @@ module.exports = {
     if (!_.isString(req.allParams().username)) {
       return res.badRequest('Missing username');
     }
-    User.update({name: req.allParams().username}, {banned: req.allParams().ban}).exec(function (err, users) {
+    User.update({name: req.allParams().username}).set({banned: req.allParams().ban}).fetch().exec(function (err, users) {
       if (err) {
         sails.log.error(err);
         return res.serverError(err);

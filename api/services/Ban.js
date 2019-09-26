@@ -138,7 +138,7 @@ exports.updateBanlist = async function (redToken, username, banlistEntry, friend
 };
 exports.localBanUser = async function(username) {
   try {
-    let update = await User.update(username, {banned: true});
+    let update = await User.update({name: username}).set({banned: true});
     sails.log('Updated local banlist');
     return update;
   } catch (err) {

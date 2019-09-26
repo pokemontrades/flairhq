@@ -12,8 +12,7 @@ module.exports = {
       isIn: ['kanto', 'alola'],
     },
     members: {
-      type: "string",
-      columnType: "array"
+      type: "json"
     },
     membershipPoints: {
       type: "number"

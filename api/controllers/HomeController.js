@@ -30,7 +30,7 @@ module.exports = {
         if (flairs[1] && flairs[1].flair_text) {
           svex_fcs = flairs[1].flair_text.match(/(\d{4}-){2}\d{4}/g);
         }
-        User.update({id: req.user.id})
+        User.update({name: req.user.name})
           .set({flair: {ptrades: flairs[0], svex: flairs[1]}, loggedFriendCodes: _.union(ptrades_fcs, svex_fcs, req.user.loggedFriendCodes)})
           .catch((err) => sails.log.error(err));
       }

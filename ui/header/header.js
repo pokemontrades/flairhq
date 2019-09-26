@@ -22,6 +22,7 @@ export default function App () {
           <Link to="/">Home</Link> |{" "}
           <Link to="info">Info</Link> |{" "}
           <Link to="tools">Tools</Link> |{" "}
+          {user && user.isMod && "You are a mod | "}
           {user && user.name ? <a href="/logout">Logout</a> : <a href="/api/auth/reddit">Login</a>}
         </nav>
       </header>

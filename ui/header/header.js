@@ -47,37 +47,37 @@ export default function App () {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ml-auto" navbar>
             <NavItem>
-              <NavLink href="/">Home</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/info">Info</NavLink>
+              <NavLink href="/info">Information</NavLink>
             </NavItem>
             <NavItem>
               <NavLink href="/tools">Tools</NavLink>
             </NavItem>
-            {user && user.isMod && <NavItem>You are a mod</NavItem>}
+            {user && user.isMod && (
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  Moderator
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem>
+                    Stuff
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            )}
             {user && user.name ? (
-              <NavItem><NavLink href="/logout">Logout</NavLink></NavItem>
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  {user.name}
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem href="/logout">
+                    Logout
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
             ) : (
               <NavItem><NavLink href="/api/auth/reddit">Login</NavLink></NavItem>
             )}
-            <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>
-                Options
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem>
-                  Option 1
-                </DropdownItem>
-                <DropdownItem>
-                  Option 2
-                </DropdownItem>
-                <DropdownItem divider />
-                <DropdownItem>
-                  Reset
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
           </Nav>
         </Collapse>
       </Navbar>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "@reach/router";
 import {
   Collapse,
   Navbar,
@@ -14,15 +13,25 @@ import {
   DropdownItem } from 'reactstrap';
 
 export default function App () {
+  const [loggedIn, setLoggedIn] = useState(undefined);
   const [user, setUser] = useState({});
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
 
   useEffect(() => {
-    if (!user || !user.name) {
+    if ((!user || !user.name) && loggedIn !== false) {
       async function fetchData() {
-        const userData = await fetch('/api/me').then((res) => res.json());
+        const res = await fetch('/api/me', {
+          headers: {
+            'Accept': 'application/json'
+          },
+        });
+        if (!res.ok) {
+          return setLoggedIn(false);
+        }
+        const userData = await res.json();
+        setLoggedIn(true);
         setUser(userData);
       }
       fetchData();

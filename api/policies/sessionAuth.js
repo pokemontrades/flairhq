@@ -15,8 +15,8 @@ module.exports = function(req, res, next) {
     }
     return next();
   }
-  if (req.isSocket) {
-    return res.status(403).json({status: 403, redirectTo: "/login"});
+  if (req.isSocket || !req.accepts('html')) {
+    return res.status(403).json({status: 403});
   }
   if (req.url === "/login") {
     return next();

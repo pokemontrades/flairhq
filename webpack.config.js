@@ -1,5 +1,7 @@
 const HtmlPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const precss = require('precss');
+const autoprefixer = require('autoprefixer');
 
 module.exports = {
   entry: {
@@ -21,7 +23,26 @@ module.exports = {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
       { test: /\.css$/i, use: ['style-loader', 'css-loader'] },
-      { test: /\.(png|svg|jpg|gif)$/, loader: 'file-loader' }
+      { test: /\.(png|svg|jpg|gif)$/, loader: 'file-loader' },
+      {
+        test: /\.scss$/,
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins() {
+                return [
+                  precss,
+                  autoprefixer,
+                ];
+              },
+            },
+          },
+          { loader: 'sass-loader' },
+        ],
+      }
     ]
   },
 

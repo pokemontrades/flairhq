@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import styled from 'styled-components';
+import { StoreContext } from '../state';
 import {
   Collapse,
   Container,
@@ -13,9 +15,19 @@ import {
   DropdownMenu,
   DropdownItem } from 'reactstrap';
 
+import logo from '../images/fhq-500.png';
+
+const LogoContainer = styled(NavbarBrand)`
+  height: 50px;
+`;
+
+const Logo = styled.img`
+  margin-top: -15px;
+  max-width: 100px;
+`;
+
 export default function App () {
   const [loggedIn, setLoggedIn] = useState(undefined);
-  const [user, setUser] = useState({});
   const [isOpen, setIsOpen] = useState(false);
 
   const { state: {user}, dispatch, actions: {SET_USER} } = useContext(StoreContext);
@@ -48,7 +60,7 @@ export default function App () {
   return (
     <Navbar color="dark" dark expand="md">
       <Container>
-      <NavbarBrand href="/">FlairHQ</NavbarBrand>
+      <LogoContainer href="/"><Logo src={logo}/></LogoContainer>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
         <Nav className="ml-auto" navbar>

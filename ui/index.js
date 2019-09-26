@@ -2,9 +2,10 @@ import React from "react";
 import { render } from "react-dom";
 import { Router, Link } from "@reach/router";
 import Header from "./header/header";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col } from 'reactstrap';
 import { StoreProvider } from './state';
+
+import './style.scss';
 
 let Home = () => (
   <div>

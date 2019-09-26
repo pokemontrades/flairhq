@@ -57,9 +57,11 @@ module.exports = {
 
           req.params.games.forEach(function (game) {
             if (game.id && (game.tsv || game.ign)) {
-              promises.push(Game.update(
-                {id: game.id},
-                {tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
+              promises.push(
+                Game.update({id: game.id})
+                .set({tsv: parseInt(game.tsv), ign: game.ign})
+                .fetch()
+                .exec(function (err, game) {
                   if (err) {
                     sails.log.error(err);
                     res.serverError(err);
@@ -69,14 +71,17 @@ module.exports = {
                 }
                 ));
             } else if (!game.id && (game.tsv || game.ign)) {
-              promises.push(Game.create({user: user.name, tsv: parseInt(game.tsv), ign: game.ign}).exec(function (err, game) {
-                if (err) {
-                  sails.log.error(err);
-                  res.serverError(err);
-                } else {
-                  games.push(game);
-                }
-              }));
+              promises.push(
+                Game.create({user: user.name, tsv: parseInt(game.tsv), ign: game.ign})
+                .fetch()
+                .exec(function (err, game) {
+                  if (err) {
+                    sails.log.error(err);
+                    res.serverError(err);
+                  } else {
+                    games.push(game);
+                  }
+                }));
             }
           });
 
@@ -105,7 +110,9 @@ module.exports = {
       user: req.user.name,
       refUser: req.allParams().username,
       note: req.allParams().note
-    }).exec(function (err, note) {
+    })
+    .fetch()
+    .exec(function (err, note) {
       if (err) {
         return res.serverError(err);
       }
@@ -114,7 +121,9 @@ module.exports = {
   },
 
   delNote: function (req, res) {
-    ModNote.destroy(req.allParams().id).exec(function (err, note) {
+    ModNote.destroy(req.allParams().id)
+    .fetch()
+    .exec(function (err, note) {
       if (err) {
         return res.serverError(err);
       }

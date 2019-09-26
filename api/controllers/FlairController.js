@@ -31,7 +31,7 @@ module.exports = {
 
   denyApp: async function (req, res) {
     try {
-      var matching_apps = await Application.destroy(req.allParams().id);
+      var matching_apps = await Application.destroy(req.allParams().id).fetch();
       var apps = await Flairs.getApps();
       if (!matching_apps.length) {
         return res.status(404).json(apps);
@@ -53,7 +53,7 @@ module.exports = {
       var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
       await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
       var promises = [];
-      promises.push(user.update({id: user.id}).set({flair: {...user.flair, shortened: {...user.flair.shortened, flair_css_class: relevant_flair}}}));
+      promises.push(User.update({id: user.id}).set({flair: {...user.flair, shortened: {...user.flair.shortened, flair_css_class: relevant_flair}}}));
       promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + relevant_flair}));
       var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
@@ -185,7 +185,7 @@ module.exports = {
           user: req.user.name,
           content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
         }]).exec(function () {});
-        User.native(function(err, collection) {
+        User.native(function(err, collection) { // TODO: this probably needs sorted out
           collection.update({"_id": req.user.name}, {
             $set:{
               "flair.ptrades.flair_text": flairs.ptrades,
@@ -234,7 +234,7 @@ module.exports = {
       }));
 
       promises.push(Team.native(function(err, collection) {
-        collection.update(
+        collection.update( // TODO: This, too
           {"_id": req.user.team},
           action === "add" ? {$push: {"members": req.user.name}, $inc: {"membershipPoints": 1}} : {$pull: {"members": req.user.name}, $inc: {"membershipPoints": -1}}
         );

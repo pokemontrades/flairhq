@@ -76,7 +76,7 @@ module.exports = {
         privatenotes: req.params.privatenotes,
         edited: false,
         number: req.params.number || 0
-      }).then(References.verifyIfNeeded).then(References.omitModOnlyProperties).then(res.ok);
+      }).then(References.verifyIfNeeded).then(References.omitModOnlyProperties).then(res.ok); //TODO: this *might* need sorted
     }).catch(res.serverError);
   },
 
@@ -101,7 +101,8 @@ module.exports = {
       if (ref.url !== req.params.url || ref.type !== req.params.type || ref.number !== req.params.number) {
         approved = false;
       }
-      Reference.update(req.params.id,
+      Reference.update(req.params.id)
+        .set(
         {
           url: req.params.url,
           user: req.user.name,
@@ -116,6 +117,7 @@ module.exports = {
           edited: true,
           number: req.params.number || 0
         })
+        .fetch()
         .exec(function (err, ref) {
           if (err) {
             return res.serverError(err);
@@ -145,13 +147,15 @@ module.exports = {
             user2: ref.user
           };
           //If a verified reference is deleted, its compelmentary reference is un-verified.
-          Reference.update(query, {verified: false}, function (err) {
+          Reference.update(query).set({verified: false}, function (err) {
             if (err) {
               sails.log.error("Error while updating complementary trade.");
             }
           });
         }
-        Reference.destroy(id).exec(function (err, refs) {
+        Reference.destroy(id)
+        .fetch()
+        .exec(function (err, refs) {
           if (err) {
             return res.serverError(err);
           }
@@ -168,7 +172,9 @@ module.exports = {
       user: req.allParams().refUsername,
       user2: req.user.name,
       message: req.allParams().comment
-    }, function (err, com) {
+    })
+    .fetch()
+    .exec(function (err, com) {
       if (err) {
         return res.serverError(err);
       }
@@ -183,7 +189,9 @@ module.exports = {
         return res.notFound(err);
       }
       if (req.user.name === comment.user2 || Users.hasModPermission(req.user, 'flair')) {
-        Comment.destroy(id, function (err, result) {
+        Comment.destroy(id)
+        .fetch()
+        .exec(function (err, result) {
           return res.ok(result);
         });
       } else {
@@ -232,6 +240,7 @@ module.exports = {
       flairs.forEach(function (flair) {
         promises.push(
           Flair.create(flair)
+            .fetch()
             .exec(function (err, newFlair) {
               added.push(newFlair);
             })

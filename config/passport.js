@@ -21,7 +21,7 @@ var verifyHandler = function (adminToken, token, tokenSecret, profile, done) {
           flair: {ptrades: flairs[0], svex: flairs[1]}
         };
 
-        User.create(data, function(err, user) {
+        User.create(data).fetch().exec(function(err, user) {
           return done(err, user);
         });
       }

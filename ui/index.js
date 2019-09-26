@@ -4,6 +4,7 @@ import { Router, Link } from "@reach/router";
 import Header from "./header/header";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col } from 'reactstrap';
+import { StoreProvider } from './state';
 
 let Home = () => (
   <div>
@@ -14,7 +15,7 @@ let Info = () => <div>Info</div>;
 let Tools = () => <div>Tools</div>;
 
 const App = () => (
-  <div>
+  <StoreProvider>
     <Header></Header>
     <Container>
       <Router>
@@ -23,7 +24,7 @@ const App = () => (
         <Tools path="tools" />
       </Router>
     </Container>
-  </div>
+  </StoreProvider>
 )
 
 render(<App />, document.getElementById("root"));

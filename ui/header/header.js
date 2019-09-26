@@ -18,6 +18,8 @@ export default function App () {
   const [user, setUser] = useState({});
   const [isOpen, setIsOpen] = useState(false);
 
+  const { state: {user}, dispatch, actions: {SET_USER} } = useContext(StoreContext);
+
   const toggle = () => setIsOpen(!isOpen);
 
   useEffect(() => {
@@ -33,7 +35,10 @@ export default function App () {
         }
         const userData = await res.json();
         setLoggedIn(true);
-        setUser(userData);
+        return dispatch({
+          type: SET_USER,
+          payload: userData
+        });
       }
       fetchData();
     }

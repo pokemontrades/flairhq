@@ -10,6 +10,8 @@ import './style.scss';
 
 const FlairHQContainer = styled.div`
   padding: 30px 30px 0 30px;
+  overflow: auto;
+  height: calc(100vh - 66px);
 `;
 
 let Info = () => <div>Info</div>;

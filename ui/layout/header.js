@@ -19,11 +19,18 @@ import logo from '../images/fhq-500.png';
 
 const LogoContainer = styled(NavbarBrand)`
   height: 50px;
+  z-index: 1;
 `;
 
 const Logo = styled.img`
   margin-top: -15px;
   max-width: 100px;
+`;
+
+const StyledCollapse = styled(Collapse)`
+  @media (max-width: 768px) {
+    padding-top: 30px;
+  }
 `;
 
 export default function App () {
@@ -61,7 +68,7 @@ export default function App () {
     <Navbar color="dark" dark expand="md">
       <LogoContainer href="/"><Logo src={logo}/></LogoContainer>
       <NavbarToggler onClick={toggle} />
-      <Collapse isOpen={isOpen} navbar>
+      <StyledCollapse isOpen={isOpen} navbar>
         <Nav className="ml-auto" navbar>
           <NavItem>
             <NavLink href="/info">Information</NavLink>
@@ -96,7 +103,7 @@ export default function App () {
             <NavItem><NavLink href="/api/auth/reddit">Login</NavLink></NavItem>
           )}
         </Nav>
-      </Collapse>
+      </StyledCollapse>
     </Navbar>
   );
 };

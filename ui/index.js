@@ -1,30 +1,30 @@
 import React from "react";
 import { render } from "react-dom";
 import { Router, Link } from "@reach/router";
-import Header from "./header/header";
-import { Container, Row, Col } from 'reactstrap';
+import Header from "./layout/header";
 import { StoreProvider } from './state';
+import styled from 'styled-components';
+import Home from './Home';
 
 import './style.scss';
 
-let Home = () => (
-  <div>
-    FLAIRHQ 3.0!
-  </div>
-);
+const FlairHQContainer = styled.div`
+  padding: 30px 30px 0 30px;
+`;
+
 let Info = () => <div>Info</div>;
 let Tools = () => <div>Tools</div>;
 
 const App = () => (
   <StoreProvider>
     <Header></Header>
-    <Container>
+    <FlairHQContainer>
       <Router>
         <Home path="/" />
         <Info path="info" />
         <Tools path="tools" />
       </Router>
-    </Container>
+    </FlairHQContainer>
   </StoreProvider>
 )
 

@@ -59,7 +59,6 @@ export default function App () {
 
   return (
     <Navbar color="dark" dark expand="md">
-      <Container>
       <LogoContainer href="/"><Logo src={logo}/></LogoContainer>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
@@ -98,7 +97,6 @@ export default function App () {
           )}
         </Nav>
       </Collapse>
-      </Container>
     </Navbar>
   );
 };

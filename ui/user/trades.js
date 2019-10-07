@@ -24,6 +24,8 @@ export const Trades = ({trades = []}) => (
                 Events: {trades.filter((trade) => trade.type === "event").length}
                 <br />
                 Shinies: {trades.filter((trade) => trade.type === "shiny").length}
+                <br />
+                Casual: {trades.filter((trade) => trade.type === "casual" || trade.type === "bank").length}
             </LowLighted>
         </CardBody>
     </Card>

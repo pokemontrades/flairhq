@@ -18,7 +18,7 @@ export const Comments = ({comments = []}) => {
             {comments.map((comment) => (
                 <div key={comment.id}>
                 <Card body>
-                    {comment.message} - <a href={"/u/" + comment.user2}>{comment.user2}</a>
+                    <p>{comment.message} - <a href={"/u/" + comment.user2}>{comment.user2}</a></p>
                 </Card>
                 <br />
                 </div>

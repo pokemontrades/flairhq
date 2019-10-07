@@ -47,6 +47,8 @@ export default ({name}) => {
       if (res.ok) {
         res.json()
         .then(res => setUser(res));
+      } else {
+          setUser(null);
       }
     }
   
@@ -54,10 +56,16 @@ export default ({name}) => {
       fetchData();
     }, []);
 
-    if (!otherUser) {
+    if (otherUser === undefined) {
         return (
             <div>
                 Loading
+            </div>
+        )
+    } else if (otherUser === null) {
+        return (
+            <div>
+                <h1>User {name} doesn't exist</h1>
             </div>
         )
     }

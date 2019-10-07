@@ -14,7 +14,7 @@ var removeSecretInformation = function (user) {
 };
 
 exports.get = async function (requester, username) {
-  var user = await User.findOne(username);
+  var user = await User.findOne(username).catch((err) => sails.log.warn(`There was an error fetching ${username}`));
   if (!user) {
     throw {statusCode: 404};
   }

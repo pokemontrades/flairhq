@@ -17,7 +17,7 @@ module.exports = {
     User.findOne(req.params.username, function (err, user) {
       if (!user) {
         return res.notFound("Can't find user");
-      } else if (user.name !== req.user.name && !Users.hasModPermission(req.user, 'all')) {
+      } else if (user.id !== req.user.id && !Users.hasModPermission(req.user, 'all')) {
         return res.forbidden("You can't edit another user's information unless you are a mod.");
       } else {
         var updatedUser = {};
@@ -33,7 +33,7 @@ module.exports = {
           updatedUser.friendCodes = req.params.fcs;
         }
 
-        User.update({name: user.name}).set(updatedUser).fetch().exec(function (err, up) {
+        User.update({name: user.id}).set(updatedUser).fetch().exec(function (err, up) {
           if (err) {
             res.serverError(err);
           }
@@ -41,7 +41,7 @@ module.exports = {
           var promises = [],
             games = [];
 
-          Game.find().where({user: user.name}).exec(function (err, games) {
+          Game.find().where({user: user.id}).exec(function (err, games) {
             games.forEach(function (game) {
               var deleteGame = true;
               req.params.games.forEach(function (game2) {
@@ -72,7 +72,7 @@ module.exports = {
                 ));
             } else if (!game.id && (game.tsv || game.ign)) {
               promises.push(
-                Game.create({user: user.name, tsv: parseInt(game.tsv), ign: game.ign})
+                Game.create({user: user.id, tsv: parseInt(game.tsv), ign: game.ign})
                 .fetch()
                 .exec(function (err, game) {
                   if (err) {
@@ -107,7 +107,7 @@ module.exports = {
 
   addNote: function (req, res) {
     ModNote.create({
-      user: req.user.name,
+      user: req.user.id,
       refUser: req.allParams().username,
       note: req.allParams().note
     })
@@ -196,7 +196,7 @@ module.exports = {
           return res.status(400).json({error: "Invalid friendcode list"});
         }
       }
-      sails.log("/u/" + req.user.name + ": Started process to ban /u/" + req.params.username);
+      sails.log("/u/" + req.user.id + ": Started process to ban /u/" + req.params.username);
       var user = await User.findOne(req.params.username);
       if (!user) {
         if (await Reddit.checkUsernameAvailable(req.params.username)) {
@@ -237,8 +237,8 @@ module.exports = {
         if (flairs) {
           promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[0].flair_css_class, flairs[0] && flairs[0].flair_text, 'pokemontrades'));
           promises.push(Ban.giveBannedUserFlair(req.user.redToken, req.params.username, flairs[0] && flairs[1].flair_css_class, flairs[1] && flairs[1].flair_text, 'SVExchange'));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'pokemontrades', req.params.username, req.params.banNote));
-          promises.push(Ban.addUsernote(req.user.redToken, req.user.name, 'SVExchange', req.params.username, req.params.banNote));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.id, 'pokemontrades', req.params.username, req.params.banNote));
+          promises.push(Ban.addUsernote(req.user.redToken, req.user.id, 'SVExchange', req.params.username, req.params.banNote));
         }
         promises.push(Ban.markTSVThreads(req.user.redToken, req.params.username));
         promises.push(Ban.updateAutomod(req.user.redToken, req.params.username, 'pokemontrades', unique_fcs));
@@ -253,7 +253,7 @@ module.exports = {
         res.status(error.statusCode || 500).json(error);
       });
       Event.create({
-        user: req.user.name,
+        user: req.user.id,
         type: "banUser",
         content: "Banned /u/" + req.params.username
       }).exec(function () {});
@@ -287,13 +287,13 @@ module.exports = {
   },
 
   clearSession: function (req, res) {
-    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.name, 'pokemontrades').then(function (permissions) {
+    Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, req.user.id, 'pokemontrades').then(function (permissions) {
       if (_.includes(permissions, 'all') || _.includes(permissions, 'access')) { //User is a mod, clear session
         Sessions.destroy({session: {'contains': '"user":"' + req.allParams().name + '"'}}).exec(function (err) {
           if (err) {
             return res.serverError(err);
           }
-          if (req.allParams().name === req.user.name) {
+          if (req.allParams().name === req.user.id) {
             req.session.destroy();
             return res.redirect('/');
           }

@@ -8,8 +8,8 @@ module.exports = {
   apply: async function (req, res) {
     try {
       var allFlairs = await Flair.find();
-      var userRefs = await Reference.find({user: req.user.name});
-      var appData = {user: req.user.name, flair: req.allParams().flair, sub: req.allParams().sub};
+      var userRefs = await Reference.find({user: req.user.id});
+      var appData = {user: req.user.id, flair: req.allParams().flair, sub: req.allParams().sub};
       if (await Application.findOne(appData)) {
         return res.status(400).json({error: 'You have already applied for that flair'});
       }
@@ -51,15 +51,15 @@ module.exports = {
       var user = await User.findOne(app.user);
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
       var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
-      await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
+      await Reddit.setUserFlair(req.user.redToken, user.id, relevant_flair, user.flair[shortened].flair_text, app.sub);
       var promises = [];
       promises.push(User.update({id: user.id}).set({flair: {...user.flair, shortened: {...user.flair.shortened, flair_css_class: relevant_flair}}}));
-      promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + relevant_flair}));
+      promises.push(Event.create({type: "flairTextChange", user: req.user.id,content: "Changed " + user.id + "'s flair to " + relevant_flair}));
       var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
-      promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
+      promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.id));
       promises.push(Application.destroy({id: req.allParams().id}));
-      await promises;
-      sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + relevant_flair);
+      await Promise.all(promises);
+      sails.log.info("/u/" + req.user.id + ": Changed " + user.id + "'s flair to " + relevant_flair);
       return res.ok(await Flairs.getApps());
     } catch (err) {
       return res.serverError(err);
@@ -77,7 +77,7 @@ module.exports = {
       var appData = {
         limit: 1,
         sort: "createdAt DESC",
-        user: req.user.name,
+        user: req.user.id,
         type: "flairTextChange"
       };
       var events = await Event.find(appData);
@@ -95,14 +95,14 @@ module.exports = {
       var flagged = _.reject(flairs.fcs, Flairs.validFC);
       var ipAddress = req.headers['x-forwarded-for'] || req.ip;
       // Get IP matches with banned users
-      var events_with_ip = await Event.find({content: {contains: ipAddress}, user: {not: req.user.name}});
+      var events_with_ip = await Event.find({content: {contains: ipAddress}, user: {not: req.user.id}});
 
       var matching_ip_usernames = _.uniq(_.map(events_with_ip, 'user'));
-      var matching_ip_users = await User.find({name: matching_ip_usernames});
+      var matching_ip_users = await User.find(matching_ip_usernames);
       var matching_ip_banned_users = matching_ip_users.filter(user => user.banned);
 
       var ignoredAlts = ['0000-0000-0000', '1111-1111-1111'];
-      var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs.filter((fc) => !ignoredAlts.includes(fc)), name: {not: req.user.name}});
+      var users_with_matching_fcs = await User.find({loggedFriendCodes: flairs.fcs.filter((fc) => !ignoredAlts.includes(fc)), id: {not: req.user.id}});
       var logged_fcs = _.flatten(_.map(users_with_matching_fcs, 'loggedFriendCodes'));
       var matching_friend_codes = _.intersection(flairs.fcs, logged_fcs);
       var matching_fc_usernames = _.map(users_with_matching_fcs, 'name');
@@ -122,15 +122,15 @@ module.exports = {
 
       if (eventFlair) {
         if (_.includes(Flairs.eventFlair, eventFlair) && !(pFlair.match(Flairs.eventFlairRegExp))) {
-          let team = await Team.find({"members": req.user.name});
+          let team = await Team.find({"members": req.user.id});
           if (team.length) {
             return res.status(400).json({error: "You have already selected a starter!"});
           }
           req.user.team = _.includes(Flairs.kantoFlair, eventFlair) ? "kanto" : "alola";
           pFlair = Flairs.makeNewCSSClass(pFlair, `kva-${eventFlair}-1`, "PokemonTrades");
           module.exports.addMembershipPoints(req, res, "add").then(() => {
-            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades").catch((err) => {
-              sails.log.warn(`Reverting team ${req.user.team} join for ${req.user.name} due to the following error:`);
+            promises.push(Reddit.setUserFlair(refreshToken, req.user.id, pFlair, flairs.ptrades, "PokemonTrades").catch((err) => {
+              sails.log.warn(`Reverting team ${req.user.team} join for ${req.user.id} due to the following error:`);
               sails.log.warn(err);
               module.exports.addMembershipPoints(req, res, "remove");
               throw err;
@@ -140,18 +140,18 @@ module.exports = {
           return res.status(400).json({error: "Unexpected extra flair."});
         }
       } else {
-        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades"));
+        promises.push(Reddit.setUserFlair(refreshToken, req.user.id, pFlair, flairs.ptrades, "PokemonTrades"));
       }
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
-      promises.push(User.update({name: req.user.name}).set({loggedFriendCodes: friend_codes}));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.id, svFlair, flairs.svex, "SVExchange"));
+      promises.push(User.update({name: req.user.id}).set({loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
-        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
+        var message = 'The user /u/' + req.user.id + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
-          var otherAltNote = "Alt of " + req.user.name;
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.id, altNote, 'spamwarn', ''));
+          var otherAltNote = "Alt of " + req.user.id;
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
           if (identical_banned_fcs.length) {
             message += '**This flair contains a banned friend code: ' + identical_banned_fcs + '**\n\n';
@@ -161,16 +161,16 @@ module.exports = {
         }
         if (matching_ip_usernames.length !== 0) {
           message += 'This user may be an alt of the user' + (matching_ip_usernames.length === 1 ? '' : 's') + ' /u/' + matching_ip_usernames.join(', /u/') + '.\n\n';
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, altNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.id, altNote, 'spamwarn', ''));
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', matching_fc_usernames, otherAltNote, 'spamwarn', ''));
           if (matching_ip_banned_users.length) {
-            message += '**' + '/u/' + matching_ip_banned_users.map(user => user.name).join(', /u/') + ' is banned.**\n\n';
+            message += '**' + '/u/' + matching_ip_banned_users.map(user => user.id).join(', /u/') + ' is banned.**\n\n';
           }
         }
         if (flagged.length) {
           message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged.join(', ') + ' are') + ' invalid.\n\n';
           var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.join(', ');
-          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
+          promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.id, formattedNote, 'spamwarn', ''));
         }
         message = message.slice(0,-2);
         promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
@@ -178,15 +178,15 @@ module.exports = {
       Promise.all(promises).then(function () {
         Event.create([{
           type: "flairTextChange",
-          user: req.user.name,
+          user: req.user.id,
           content: "Changed PokemonTrades flair text to: " + req.allParams().ptrades + ". IP: " + ipAddress
         }, {
           type: "flairTextChange",
-          user: req.user.name,
+          user: req.user.id,
           content: "Changed SVExchange flair text to: " + req.allParams().svex + ". IP: " + ipAddress
         }]).exec(function () {});
         User.native(function(err, collection) { // TODO: this probably needs sorted out
-          collection.update({"_id": req.user.name}, {
+          collection.update({"_id": req.user.id}, {
             $set:{
               "flair.ptrades.flair_text": flairs.ptrades,
               "flair.ptrades.flair_css_class": pFlair,
@@ -212,7 +212,7 @@ module.exports = {
 
   refreshClaim: async function (req, res) {
     try {
-      await Flairs.refreshAppClaim(req.allParams(), req.user.name);
+      await Flairs.refreshAppClaim(req.allParams(), req.user.id);
       return res.ok();
     } catch (err) {
       return res.serverError(err);
@@ -227,7 +227,7 @@ module.exports = {
       promises.push(PointLog.create({
         time: new Date(),
         team: req.user.team,
-        from: req.user.name,
+        from: req.user.id,
         pointType: "membershipPoints",
         reason: action === "add" ? "Joined team" : "Reverted join",
         points: action === "add" ? 1 : -1
@@ -236,19 +236,19 @@ module.exports = {
       promises.push(Team.native(function(err, collection) {
         collection.update( // TODO: This, too
           {"_id": req.user.team},
-          action === "add" ? {$push: {"members": req.user.name}, $inc: {"membershipPoints": 1}} : {$pull: {"members": req.user.name}, $inc: {"membershipPoints": -1}}
+          action === "add" ? {$push: {"members": req.user.id}, $inc: {"membershipPoints": 1}} : {$pull: {"members": req.user.id}, $inc: {"membershipPoints": -1}}
         );
       }));
 
       if (action === "remove") {
         promises.push(ContestStats.native(function(err, collection) {
           collection.deleteOne({
-            _id: req.user.name
+            _id: req.user.id
           });
         }));
       } else {
         promises.push(ContestStats.create({
-          user: req.user.name,
+          user: req.user.id,
           expPoints: 1,
           battleWins: 0
         }));

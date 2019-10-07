@@ -22,7 +22,7 @@ module.exports.refs = function (searchData, cb) {
   tempOrData.push({gave: {'contains': keyword}});
   tempOrData.push({got: {'contains': keyword}});
 
-  User.find({name: {contains: user}}).exec(function (err, users) {
+  User.find({id: {contains: user}}).exec(function (err, users) {
     if (!user) {
       orData = tempOrData;
       orData.push({user2: {'contains': keyword}});
@@ -32,7 +32,7 @@ module.exports.refs = function (searchData, cb) {
     } else {
       var usernames = [];
       users.forEach(function (user) {
-        usernames.push(user.name);
+        usernames.push(user.id);
       });
       tempOrData.forEach(function (elUser1) {
         var elUser2 = _.cloneDeep(elUser1);
@@ -47,9 +47,9 @@ module.exports.refs = function (searchData, cb) {
 
     Reference.find(appData).exec(function (err, apps) {
       async.map(apps, function (ref, callback) {
-        User.findOne({name: ref.user}).exec(function (err, refUser) {
+        User.findOne(ref.user).exec(function (err, refUser) {
           if (refUser) {
-            ref.user = refUser.name;
+            ref.user = refuser.id;
             callback(null, ref);
           } else {
             callback();
@@ -128,7 +128,7 @@ module.exports.modmails = function (searchData, cb) {
   //Finds modmails where all of the words in the search query appear somewhere in either the body, subject, or author.
   var mailData = {'$and': requirements};
   Modmail.native(function (err, collection) {
-    collection.find(mailData).sort({created_utc: -1}).skip(searchData.skip ? parseInt(searchData.skip) : 0).limit(20).toArray().then(function (mail) {
+    collection.find(mailData).sort('created_utc DESC').skip(searchData.skip ? parseInt(searchData.skip) : 0).limit(20).toArray().then(function (mail) {
       mail.forEach(function (message) {
         message.name = message._id;
         delete message._id;

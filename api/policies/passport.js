@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
       try {
         res.locals.user = req.user;
         if (req.user) {
-          res.locals.user.games = await Game.find({user: req.user.name});
+          res.locals.user.games = await Game.find({user: req.user.id});
         }
         res.locals.query = req.query;
         res.locals.flairs = await Flairs.getFlairs();

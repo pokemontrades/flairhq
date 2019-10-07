@@ -27,7 +27,7 @@ module.exports.models = {
   attributes: {
     createdAt: { type: 'string', autoCreatedAt: true, },
     updatedAt: { type: 'string', autoUpdatedAt: true, },
-    id: { type: 'number', autoIncrement: true, }
+    id: { type: 'string', }
   },
 
   /******************************************************************************
@@ -48,4 +48,4 @@ module.exports.models = {
   },
 
   migrate: 'safe',
-};``
+};

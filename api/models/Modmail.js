@@ -1,9 +1,5 @@
 module.exports = {
   attributes: {
-    id: { //The fullname ('t4_' + base36id) of the message
-      type: 'string',
-      unique: true
-    },
     subject: 'string', //Subject of the message
     body: 'string', //Body of the message
     author: 'string', //Username of the message author

@@ -7,9 +7,6 @@
 
 module.exports = {
   attributes: {
-    id: {
-      type: "string"
-    },
     expPoints: "number",
     battleWins: "number"
   }

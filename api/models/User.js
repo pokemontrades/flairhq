@@ -19,10 +19,6 @@ module.exports = {
 
   attributes: {
     provider: 'STRING',
-    name: {
-      type: "string",
-      unique: true,
-    },
     email: "string",
     firstname: "string",
     lastname: "string",
@@ -42,7 +38,10 @@ module.exports = {
     modPermissions: {
       type: "json"
     },
-    banned: "boolean",
+    banned: {
+      type: "boolean",
+      allowNull: true
+    },
     redToken: "string",
     flair: "json"
   }

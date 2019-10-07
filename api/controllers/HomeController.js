@@ -20,8 +20,8 @@ module.exports = {
 
   // TODO: Delete this, after the code has been moved elsewhere
   index: async function (req, res) {
-    res.view({refUser: await Users.get(req.user, req.user.name)});
-    Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.name).then(function (flairs) {
+    res.view({refUser: await Users.get(req.user, req.user.id)});
+    Reddit.getBothFlairs(sails.config.reddit.adminRefreshToken, req.user.id).then(function (flairs) {
       if (flairs[0] || flairs[1]) {
         var ptrades_fcs, svex_fcs;
         if (flairs[0] && flairs[0].flair_text) {
@@ -30,7 +30,7 @@ module.exports = {
         if (flairs[1] && flairs[1].flair_text) {
           svex_fcs = flairs[1].flair_text.match(/(\d{4}-){2}\d{4}/g);
         }
-        User.update({name: req.user.name})
+        User.update({name: req.user.id})
           .set({flair: {ptrades: flairs[0], svex: flairs[1]}, loggedFriendCodes: _.union(ptrades_fcs, svex_fcs, req.user.loggedFriendCodes)})
           .catch((err) => sails.log.error(err));
       }

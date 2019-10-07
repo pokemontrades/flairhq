@@ -42,7 +42,7 @@ export default function App () {
   const toggle = () => setIsOpen(!isOpen);
 
   useEffect(() => {
-    if ((!user || !user.name) && loggedIn !== false) {
+    if ((!user || !user.id) && loggedIn !== false) {
       async function fetchData() {
         const res = await fetch('/api/me', {
           headers: {
@@ -88,10 +88,10 @@ export default function App () {
               </DropdownMenu>
             </UncontrolledDropdown>
           )}
-          {user && user.name ? (
+          {user && user.id ? (
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>
-                {user.name}
+                {user.id}
               </DropdownToggle>
               <DropdownMenu right>
                 <DropdownItem href="/logout">

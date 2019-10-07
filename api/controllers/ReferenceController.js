@@ -26,13 +26,13 @@ module.exports = {
     }
 
     Reference.find(query)
-      .sort({createdAt: "asc"})
+      .sort('createdAt ASC')
       .exec(function (err, refs) {
         if (err) {
           return res.serverError(err);
         }
         async.map(refs, function (ref, callback) {
-          User.findOne({name: ref.user}).exec(function (err, refUser) {
+          User.findOne(ref.user).exec(function (err, refUser) {
             ref.user = refUser;
             callback(null, ref);
           });
@@ -57,7 +57,7 @@ module.exports = {
       return res.badRequest({err: "Number must be 0 or more"});
     }
     
-    return Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.name}).then(ref => {
+    return Reference.findOne({url: {endsWith: endOfUrl}, user: req.user.id}).then(ref => {
       if (ref && !(ref.type === 'egg' && req.params.type === 'egg')) {
         return res.status(400).json({err: 'Already added that URL.'});
       }
@@ -66,7 +66,7 @@ module.exports = {
 
       return Reference.create({
         url: req.params.url,
-        user: req.user.name,
+        user: req.user.id,
         user2: req.params.user2,
         description: req.params.descrip,
         type: req.params.type,
@@ -90,11 +90,11 @@ module.exports = {
       return res.badRequest({err: "Number must be 0 or more"});
     }
 
-    Reference.findOne({id: req.params.id, user: req.user.name}).exec(function (err, ref) {
+    Reference.findOne({id: req.params.id, user: req.user.id}).exec(function (err, ref) {
       if (err || !ref) {
         return res.notFound();
       }
-      if (req.user.name !== ref.user) {
+      if (req.user.id !== ref.user) {
         return res.forbidden();
       }
       var approved = ref.approved;
@@ -105,7 +105,7 @@ module.exports = {
         .set(
         {
           url: req.params.url,
-          user: req.user.name,
+          user: req.user.id,
           user2: req.params.user2,
           description: req.params.description,
           type: req.params.type,
@@ -139,7 +139,7 @@ module.exports = {
       if (err) {
         return res.serverError(err);
       }
-      if (ref.user === req.user.name || Users.hasModPermission(req.user, 'flair')) {
+      if (ref.user === req.user.id || Users.hasModPermission(req.user, 'flair')) {
         if (ref.verified) {
           var query = {
             user: ref.user2,
@@ -170,7 +170,7 @@ module.exports = {
   comment: function (req, res) {
     Comment.create({
       user: req.allParams().refUsername,
-      user2: req.user.name,
+      user2: req.user.id,
       message: req.allParams().comment
     })
     .fetch()
@@ -188,7 +188,7 @@ module.exports = {
       if (!comment || err) {
         return res.notFound(err);
       }
-      if (req.user.name === comment.user2 || Users.hasModPermission(req.user, 'flair')) {
+      if (req.user.id === comment.user2 || Users.hasModPermission(req.user, 'flair')) {
         Comment.destroy(id)
         .fetch()
         .exec(function (err, result) {

@@ -10,7 +10,7 @@ module.exports = {
   attributes: {
     user: "string",
     user2: "string",
-    message: "text"
+    message: "string"
   }
 
 };

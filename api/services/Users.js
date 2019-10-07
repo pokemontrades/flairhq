@@ -20,29 +20,29 @@ exports.get = async function (requester, username) {
   }
   var promises = [];
 
-  promises.push(Game.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
+  promises.push(Game.find({user: user.id}).sort('createdAt DESC').then(function (result) {
     user.games = result;
   }));
 
-  promises.push(Comment.find({user: user.name}).sort({createdAt: 'desc'}).then(function (result) {
+  promises.push(Comment.find({user: user.id}).sort('createdAt DESC').then(function (result) {
     user.comments = result;
   }));
 
   if (Users.hasModPermission(requester, 'posts') && Users.hasModPermission(requester, 'wiki')) {
-    promises.push(ModNote.find({refUser: user.name}).sort({createdAt: 'desc'}).then(function (result) {
+    promises.push(ModNote.find({refUser: user.id}).sort('createdAt DESC').then(function (result) {
       user.modNotes = result;
     }));
   }
 
-  if (requester && requester.name === user.name) {
-    promises.push(Flairs.getApps(user.name).then(function (result) {
+  if (requester && requester.id === user.id) {
+    promises.push(Flairs.getApps(user.id).then(function (result) {
       user.apps = result;
     }));
   }
 
-  promises.push(Reference.find({user: user.name}).sort({type: 'asc', createdAt: 'desc'}).then(function (result) {
+  promises.push(Reference.find({user: user.id}).sort([{type: 'asc'}, {createdAt: 'desc'}]).then(function (result) {
     result.forEach(function (ref) {
-      if (!requester || requester.name !== user.name) {
+      if (!requester || requester.id !== user.id) {
         ref.privatenotes = undefined;
       }
       if (!Users.hasModPermission(requester, 'flair')) {
@@ -52,7 +52,7 @@ exports.get = async function (requester, username) {
     });
     user.references = result;
   }));
-  await promises;
+  await Promise.all(promises);
   return removeSecretInformation(user);
 };
 

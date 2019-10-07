@@ -11,11 +11,11 @@ const Highlighted = styled.div`
     font-size: 5rem;
 `;
 
-export const Hatches = () => (
+export const Hatches = ({hatches}) => (
     <Card body>
         <CardTitle><h1>Hatches</h1></CardTitle>
         <CardBody>
-            <Highlighted>50</Highlighted>
+            <Highlighted>{hatches.length}</Highlighted>
         </CardBody>
     </Card>
 );

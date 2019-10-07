@@ -10,16 +10,15 @@ const CommentList = styled.div`
     overflow: auto;
 `;
 
-export const Comments = () => {
-    let i = 0;
+export const Comments = ({comments = []}) => {
     return (
     <CommentsCard body>
         <CardTitle><h1>Comments</h1></CardTitle>
         <CommentList>
-            {Array.from(Array(10)).map(() => (
-                <div key={i++}>
+            {comments.map((comment) => (
+                <div key={comment.id}>
                 <Card body>
-                    This user is perfect, I have no issues with him.
+                    {comment.message} - <a href={"/u/" + comment.user2}>{comment.user2}</a>
                 </Card>
                 <br />
                 </div>

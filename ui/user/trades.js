@@ -15,14 +15,15 @@ const LowLighted = styled.div`
     margin: auto;
 `;
 
-export const Trades = () => (
+export const Trades = ({trades = []}) => (
     <Card body>
         <CardTitle><h1>Trades</h1></CardTitle>
         <CardBody>
-            <Highlighted>123</Highlighted>
+            <Highlighted>{trades.length}</Highlighted>
             <LowLighted>
-                Events: 100
-                Shinies: 10
+                Events: {trades.filter((trade) => trade.type === "event").length}
+                <br />
+                Shinies: {trades.filter((trade) => trade.type === "shiny").length}
             </LowLighted>
         </CardBody>
     </Card>

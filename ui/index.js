@@ -5,6 +5,7 @@ import Header from "./layout/header";
 import { StoreProvider } from './state';
 import styled from 'styled-components';
 import Home from './Home';
+import User from './user/User'
 
 import './style.scss';
 
@@ -23,6 +24,7 @@ const App = () => (
     <FlairHQContainer>
       <Router>
         <Home path="/" />
+        <User path="/u/:name" />
         <Info path="info" />
         <Tools path="tools" />
       </Router>

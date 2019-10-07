@@ -47,11 +47,11 @@ module.exports = {
         try {
           login_info = JSON.parse(req.query.state);
         } catch (err) {
-          sails.log.warn('/u/' + user.name + '\'s session state was in an invalid format.');
+          sails.log.warn('/u/' + user.id + '\'s session state was in an invalid format.');
           return res.badRequest(err);
         }
         if (login_info.validation !== req.session.validation) {
-          sails.log.warn("Failed login for /u/" + user.name + ": invalid session state");
+          sails.log.warn("Failed login for /u/" + user.id + ": invalid session state");
           return res.view(403, {error: 'You have an invalid session state. (Try logging in again.)'});
         }
         let finishLogin = function () {
@@ -69,9 +69,9 @@ module.exports = {
             return res.redirect(url);
           });
         };
-        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.name, 'pokemontrades');
+        let modPermissions = await Reddit.getModeratorPermissions(sails.config.reddit.adminRefreshToken, user.id, 'pokemontrades');
         if (modPermissions) { //User is a mod, set isMod to true
-          User.update({name: user.name}).set({isMod: true, modPermissions}).then(function () {
+          User.update({name: user.id}).set({isMod: true, modPermissions}).then(function () {
             /* Redirect to the mod authentication page, or to the desired url if this was mod authentication.*/
             if (login_info.type !== 'mod' && ['all', 'access', 'mail', 'flair', 'wiki'].some(permission => _.includes(modPermissions, permission))) {
               return res.redirect('/api/auth/reddit?loginType=mod' + (login_info.redirect ? '&redirect=' + encodeURIComponent(login_info.redirect) : ''));
@@ -80,7 +80,7 @@ module.exports = {
           });
         }
         else if (user.isMod || user.modPermissions) { // User is not a mod, but had isMod set for some reason (e.g. maybe the user used to be a mod). Set isMod to false.
-          User.update({name: user.name}).set({isMod: false, modPermissions: null}).exec(finishLogin);
+          User.update({name: user.id}).set({isMod: false, modPermissions: null}).exec(finishLogin);
         } else { // Regular user
           return finishLogin();
         }
@@ -105,7 +105,7 @@ module.exports = {
       const response = await Discord.getAccessToken(code);
       const accessToken = response.access_token;
       const currentUser = await Discord.getCurrentUser(accessToken);
-      const nick = req.user.name;
+      const nick = req.user.id;
       const joinedUser = await Discord.addUserToGuild(accessToken, currentUser.id, nick);
       const serverUrl = 'https://discordapp.com/channels/' + sails.config.discord.server_id;
       if (!joinedUser) {

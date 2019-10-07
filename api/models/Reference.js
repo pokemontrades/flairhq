@@ -13,17 +13,26 @@ module.exports = {
     },
     user: "string",
     user2: "string",
-    gave: "string",
-    got: "string",
-    description: "string",
-    number: {
-      type: "number",
-      min: 0,
-      required: false
+    gave: {
+      type: "string",
+      allowNull: true
     },
+    got: {
+      type: "string",
+      allowNull: true
+    },
+    description: {
+      type: "string",
+      allowNull: true
+    },
+    // TODO: fix this
+    // number: {
+    //   type: "string",
+    //   allowNull: true
+    // },
     type: {
       type: "string",
-      enum: [
+      isIn: [
         "event",
         "shiny",
         "casual",
@@ -38,9 +47,21 @@ module.exports = {
     // This is true if the other user has added the same url, and the trade has been approved.
     verified: "boolean",
     // This defines if the mods have approved it as a trade that can count
-    approved: "boolean",
-    edited: "boolean",
-    notes: "string",
-    privatenotes: "string"
+    approved: {
+      type: "boolean",
+      allowNull: true
+    },
+    edited: {
+      type: "boolean",
+      allowNull: true
+    },
+    notes: {
+      type: "string",
+      allowNull: true
+    },
+    privatenotes: {
+      type: "string",
+      allowNull: true
+    }
   }
 };

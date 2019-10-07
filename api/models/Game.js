@@ -11,9 +11,8 @@ module.exports = {
     user: "string",
     ign: "string",
     tsv: {
-      type: "number",
-      max: 4095,
-      min: -1
+      type: "string",
+      custom: (val) => !isNaN(val) && Number(val) > -1 && Number(val) <= 4095
     }
   }
 };

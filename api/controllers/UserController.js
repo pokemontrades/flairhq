@@ -9,7 +9,7 @@ var _ = require('lodash');
 module.exports = {
 
   me: function(req, res) {
-    return res.json(req.user);
+    return res.json(Users.removeSecretInformation(req.user));
   },
 
   edit: function (req, res) {

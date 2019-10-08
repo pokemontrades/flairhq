@@ -13,6 +13,8 @@ var removeSecretInformation = function (user) {
   return user;
 };
 
+exports.removeSecretInformation = removeSecretInformation;
+
 exports.get = async function (requester, username) {
   var user = await User.findOne(username).catch((err) => sails.log.warn(`There was an error fetching ${username}`));
   if (!user) {

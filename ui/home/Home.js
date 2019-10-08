@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Button, Card, CardTitle } from 'reactstrap';
 import styled from 'styled-components';
-import { StoreContext } from './state';
-import { AddReference } from './home/addReference';
+import { StoreContext } from '../state';
+import { AddReference } from './addReference';
+import { Link } from 'react-router-dom';
 
 const CardBody = styled.div`
     display:grid;
@@ -41,18 +42,18 @@ export default () => {
             <Card body>
                 <CardTitle><h1>Links</h1></CardTitle>
                 <div>
-                    <p class="text-center">You can add references below, and then they will appear on your public profile.</p>
+                    <p className="text-center">You can add references below, and then they will appear on your public profile.</p>
 
-                    <p class="text-center">If you are unsure what to do, go 
+                    <p className="text-center">If you are unsure what to do, go 
                     to <a href="http://www.reddit.com/r/pokemontrades/wiki/flairhq">/r/pokemontrades how to</a> or <a href="https://www.reddit.com/r/svexchange/wiki/flairhq">/r/svexchange how to</a>.</p>
 
-                    <p class="text-center">
-                        <Button color="primary" outline ng-href="/u/YaManicKill" href="/u/YaManicKill">Public Profile</Button> 
-                         <Button color="primary" outline href="#flairText" data-toggle="modal">Set Flair Text</Button> 
-                         <Button color="primary" outline href="#flairApplication" data-toggle="modal">Apply for Flair</Button>
+                    <p className="text-center">
+                        <Link to="/u/YaManicKill"><Button color="primary" outline>Public Profile</Button></Link>
+                        <Button color="primary" outline href="#flairText" data-toggle="modal">Set Flair Text</Button> 
+                        <Button color="primary" outline href="#flairApplication" data-toggle="modal">Apply for Flair</Button>
                     </p>
-                    <p class="text-center">
-                        <Button color="primary" outline href="/discord" data-toggle="modal" ng-if="user.flair.ptrades.flair_text !== null &amp;&amp; user.flair.svex.flair_text !== null">Join /r/pokemontrades Discord</Button>
+                    <p className="text-center">
+                        <Button color="primary" outline href="/discord" data-toggle="modal">Join /r/pokemontrades Discord</Button>
                     </p>
                 </div>
             </Card>

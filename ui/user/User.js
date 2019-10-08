@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import styled from 'styled-components';
 import { Comments, Hatches, Info, ModComments, Trades } from './';
 import { StoreContext } from '../state';
+import { useParams } from 'react-router-dom';
 
 const Grid = styled.div`
     display: grid;
@@ -38,23 +39,24 @@ const ModCommentsContainer = styled.div`
     }
 `;
 
-export default ({name}) => {
+export default () => {
+    let { name } = useParams();
     const { state: {user} } = useContext(StoreContext);
     const [otherUser, setUser] = useState(undefined);
   
     async function fetchData() {
-      const res = await fetch(`/api/user/get/${name}`);
-      if (res.ok) {
-        res.json()
-        .then(res => setUser(res));
-      } else {
-          setUser(null);
-      }
+        setUser(undefined);
+        const res = await fetch(`/api/user/get/${name}`);
+        if (res.ok) {
+            res.json().then(res => setUser(res));
+        } else {
+            setUser(null);
+        }
     }
   
     useEffect(() => {
       fetchData();
-    }, []);
+    }, [name]);
 
     if (otherUser === undefined) {
         return (

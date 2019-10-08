@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { StoreContext } from '../state';
 import {
   Collapse,
-  Container,
   Navbar,
   NavbarToggler,
   NavbarBrand,
@@ -14,6 +13,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 import logo from '../images/fhq-500.png';
 
@@ -66,15 +66,15 @@ export default function App () {
 
   return (
     <Navbar color="dark" dark expand="md">
-      <LogoContainer href="/"><Logo src={logo}/></LogoContainer>
+      <LogoContainer tag={Link} to="/"><Logo src={logo}/></LogoContainer>
       <NavbarToggler onClick={toggle} />
       <StyledCollapse isOpen={isOpen} navbar>
         <Nav className="ml-auto" navbar>
           <NavItem>
-            <NavLink href="/info">Information</NavLink>
+            <NavLink tag={Link} to="/info">Information</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink href="/tools">Tools</NavLink>
+            <NavLink tag={Link} to="/tools">Tools</NavLink>
           </NavItem>
           {user && user.isMod && (
             <UncontrolledDropdown nav inNavbar>

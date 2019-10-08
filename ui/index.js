@@ -1,10 +1,10 @@
 import React from "react";
 import { render } from "react-dom";
-import { Router, Link } from "@reach/router";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Header from "./layout/header";
 import { StoreProvider } from './state';
 import styled from 'styled-components';
-import Home from './Home';
+import Home from './home/Home';
 import User from './user/User'
 
 import './style.scss';
@@ -20,15 +20,19 @@ let Tools = () => <div>Tools</div>;
 
 const App = () => (
   <StoreProvider>
-    <Header></Header>
-    <FlairHQContainer>
-      <Router>
-        <Home path="/" />
-        <User path="/u/:name" />
-        <Info path="info" />
-        <Tools path="tools" />
-      </Router>
-    </FlairHQContainer>
+    <Router>
+      <Header></Header>
+      <FlairHQContainer>
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/info" component={Info} />
+            <Route path="/tools" component={Tools} />
+            <Route path="/u/:name">
+              <User />
+            </Route>
+          </Switch>
+      </FlairHQContainer>
+    </Router>
   </StoreProvider>
 )
 

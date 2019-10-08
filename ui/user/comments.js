@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardTitle } from 'reactstrap';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const CommentsCard = styled(Card)`
     height: 100%;
@@ -18,7 +19,7 @@ export const Comments = ({comments = []}) => {
             {comments.map((comment) => (
                 <div key={comment.id}>
                 <Card body>
-                    <p>{comment.message} - <a href={"/u/" + comment.user2}>{comment.user2}</a></p>
+                    <p>{comment.message} - <Link to={"/u/" + comment.user2}>{comment.user2}</Link></p>
                 </Card>
                 <br />
                 </div>

@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
-import { Card, CardTitle } from 'reactstrap';
+import { Button, Card, CardTitle } from 'reactstrap';
 import styled from 'styled-components';
 import { StoreContext } from './state';
+import { AddReference } from './home/addReference';
 
 const CardBody = styled.div`
     display:grid;
@@ -38,11 +39,24 @@ export default () => {
 
         <Grid>
             <Card body>
-                <CardTitle><h1>Add a Reference</h1></CardTitle>
-                <CardBody>
-                    Form here
-                </CardBody>
+                <CardTitle><h1>Links</h1></CardTitle>
+                <div>
+                    <p class="text-center">You can add references below, and then they will appear on your public profile.</p>
+
+                    <p class="text-center">If you are unsure what to do, go 
+                    to <a href="http://www.reddit.com/r/pokemontrades/wiki/flairhq">/r/pokemontrades how to</a> or <a href="https://www.reddit.com/r/svexchange/wiki/flairhq">/r/svexchange how to</a>.</p>
+
+                    <p class="text-center">
+                        <Button color="primary" outline ng-href="/u/YaManicKill" href="/u/YaManicKill">Public Profile</Button> 
+                         <Button color="primary" outline href="#flairText" data-toggle="modal">Set Flair Text</Button> 
+                         <Button color="primary" outline href="#flairApplication" data-toggle="modal">Apply for Flair</Button>
+                    </p>
+                    <p class="text-center">
+                        <Button color="primary" outline href="/discord" data-toggle="modal" ng-if="user.flair.ptrades.flair_text !== null &amp;&amp; user.flair.svex.flair_text !== null">Join /r/pokemontrades Discord</Button>
+                    </p>
+                </div>
             </Card>
+            <AddReference />
             <CommentsContainer>
                 <CommentsCard body>
                     <CardTitle><h1>Recent comments</h1></CardTitle>
@@ -51,12 +65,6 @@ export default () => {
                     </CardBody>
                 </CommentsCard>
             </CommentsContainer>
-            <Card body>
-                <CardTitle><h1>Links</h1></CardTitle>
-                <CardBody>
-                    /shrug
-                </CardBody>
-            </Card>
         </Grid>
     </div>
 )};

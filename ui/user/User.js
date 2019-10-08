@@ -18,7 +18,7 @@ const Grid = styled.div`
 
 const CommentsContainer = styled.div`
     @media (min-width: 768px) {
-        grid-row: 1 / 4;
+        grid-row: 1 / 3;
         grid-column: 2;
     }
     @media (min-width: 992px) {
@@ -28,7 +28,7 @@ const CommentsContainer = styled.div`
 
 const InfoContainer = styled.div`
     @media (min-width: 992px) {
-        grid-column: auto / span 2;
+        grid-column: 1 / -2;
     }
 `;
 

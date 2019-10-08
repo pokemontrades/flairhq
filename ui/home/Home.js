@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { StoreContext } from '../state';
 import { AddReference } from './addReference';
 import { Link } from 'react-router-dom';
+import stepsImageSrc from '../images/steps.png';
 
 const CardBody = styled.div`
     display:grid;
@@ -32,7 +33,25 @@ const CommentsCard = styled(Card)`
     height: 100%;
 `;
 
+const StepsImage = styled.img`
+    max-width: 100%;
+`;
+
 export default () => {
+    const { state: {user} } = useContext(StoreContext);
+
+    if (!user) {
+        return (
+            <div>
+                <h1>Welcome to FlairHQ</h1>
+                <p>This is a site that helps with the application of flairs on Reddit.</p>
+
+                <p>To get started, <a href="/api/auth/reddit">login with Reddit</a> and then start adding your trades.</p>
+
+                <StepsImage src={stepsImageSrc}></StepsImage>
+            </div>
+        )
+    }
 
     return (
     <div>

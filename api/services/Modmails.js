@@ -14,7 +14,7 @@ var makeModmailObjects = function (modmails) {
   return all_modmails;
 };
 exports.updateArchive = async function (subreddit) {
-  let most_recent = await Modmail.find({subreddit: subreddit, limit: 1, sort: 'created_utc DESC'});
+  let most_recent = await Modmail.find({subreddit: subreddit}).sort('created_utc DESC').limit(1);
   if (!most_recent.length) {
     sails.log.warn('Modmail archives for /r/' + subreddit + ' could not be found for some reason. Recreating from scratch...');
     return Modmail.findOrCreate(makeModmailObjects(await Reddit.getModmail(sails.config.reddit.adminRefreshToken, subreddit)));

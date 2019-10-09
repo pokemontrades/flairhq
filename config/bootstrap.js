@@ -31,6 +31,12 @@ module.exports.bootstrap = function(cb) {
       });
     });
   });
+  
+  // Set up all our scheduled cron jobs
+  var schedule = require("node-schedule");
+  sails.config.schedule.jobs.forEach(function(item){
+    schedule.scheduleJob(item.cron, item.method.bind(this, sails));
+  });
 
   // It's very important to trigger this callback method when you are finished
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)

@@ -1,10 +1,10 @@
-var ptradesFlair = "((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE))*\\))?))*";
+var ptradesFlair = "((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?))*";
 var regex = {
   tsv: "[0-3]\\d{3}|40(?:[0-8]\\d|9[0-5])",
   tsvBars: "(\\|\\| [0-9]{4})|(, [0-9]{4})",
   fc: "((?:SW-)?([0-9]{4}-){2}[0-9]{4})",
   console: "Switch|3DS",
-  game: "((\\()|(,))(X|Y|ΩR|αS|S|M|US|UM|LGP|LGE)((,)|(\\)))",
+  game: "((\\()|(,))(X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)((,)|(\\)))",
   ign: "((\\d \\|\\|)|(\\),)) [^(|,]*( (\\()|(\\|)|(,)|$)",
 
   ptradesFlair: ptradesFlair,

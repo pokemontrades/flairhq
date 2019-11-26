@@ -121,6 +121,11 @@ module.exports = {
       var promises = [];
       var eventFlair = null; // Change to req.allParams().eventFlair during events
 
+      if (identical_banned_fcs.length) {
+        pFlair = pFlair.match(/\bs\b/) ? pFlair : (pFlair + " s").trim();
+        svFlair = svFlair.match(/\bs\b/) ? svFlair : (svFlair + " s").trim();
+      }
+
       if (eventFlair) {
         if (_.includes(Flairs.eventFlair, eventFlair) && !(pFlair.match(Flairs.eventFlairRegExp))) {
           let team = await Team.find({"members": req.user.name});

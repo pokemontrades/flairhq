@@ -86,7 +86,7 @@
                   ng-if="!refUser.banned">Ban User</button>
           <button type="button" class="btn btn-danger" ng-click="setLocalBan(refUser.name, false)"
                   ng-if="refUser.banned">Unban User</button>
-          <button type="button" class="btn btn-danger has-spinner" ng-click="modClearSessions()"
+          <button type="button" class="btn btn-danger has-spinner" ng-click="modClearSessions(refUser.name)"
                   ng-class="[ok.modClearSessions ? 'glyphicon glyphicon-ok' : '',
                   spin.modClearSessions ? 'active' : '']">
             <span class="spinner"><i class="icon-spin icon-refresh"></i></span>

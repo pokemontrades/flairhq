@@ -42,6 +42,21 @@ module.exports = function ($scope, $location, io) {
     {name: "smartribbon"},
     {name: "toughribbon"}
   ];
+  $scope.emojiNames = [
+    {name: ":pokeball-gen1:"},
+    {name: ":pokeball-gen2:"},
+    {name: ":pokeball:"},
+    {name: ":premierball:"},
+    {name: ":greatball:"},
+    {name: ":ultraball:"},
+    {name: ":luxuryball:"},
+    {name: ":masterball:"},
+    {name: ":dreamball:"},
+    {name: ":cherishball:"},
+    {name: ":ovalcharm:"},
+    {name: ":shinycharm:"},
+    {name: ":gsball:"}
+  ];
   $scope.subNames = [
     {name: "pokemontrades", view: "Pokemon Trades"},
     {name: "svexchange", view: "SV Exchange"}

@@ -57,10 +57,10 @@ module.exports = {
       var flair_text = '';
       var flair_arr = user.flair[shortened].flair_text.split(' ');
       if (shortened === 'ptrades') {
-        flair_arr[0] = ':' + app.flair + ': ';
+        flair_arr[0] = ':' + app.flair + ':';
       }
       for (const p of flair_arr) {
-        flair_text += p;
+        flair_text += ' ' + p;
       }
                   
       await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);

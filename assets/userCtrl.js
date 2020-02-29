@@ -289,9 +289,11 @@ module.exports = function ($scope, $location, io) {
         if (illegal_match) {
           return {correct: false, error: 'Your in-game name contains an illegal character: ' + illegal_match};
         }
+          
+        // Since Reddit's flair_text system is emoji based, we want to prevent users from submitting an IGN with colons to prevent conflicts.
         var has_colon = game.ign.match(/:/);
         if (has_colon) {
-          return {correct: false, error: 'Your in-game name contains a colon. Please omit the colons to prevent conflicts with flair.'}
+          return {correct: false, error: 'Your in-game name contains a colon. Please omit the colons to prevent conflicts with emoji-based flair text.'}
         }
       }
       if (game.tsv >= 4096) {

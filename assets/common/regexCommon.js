@@ -1,5 +1,6 @@
-var ptradesFlair = "((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?))*";
+var ptradesFlair = "(:[a-z0-9_-]*:)((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?))*";
 var regex = {
+  emoji: "(:[a-z0-9_-]*:)",
   tsv: "[0-3]\\d{3}|40(?:[0-8]\\d|9[0-5])",
   tsvBars: "(\\|\\| [0-9]{4})|(, [0-9]{4})",
   fc: "((?:SW-)?([0-9]{4}-){2}[0-9]{4})",
@@ -19,6 +20,7 @@ var global = function (reg) {
 };
 
 module.exports = {
+  emoji: global(regex.emoji),
   tsv: global(regex.tsvBars),
   fc: global(regex.fc),
   game: global(regex.game),

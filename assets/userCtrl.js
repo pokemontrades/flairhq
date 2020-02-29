@@ -220,7 +220,7 @@ module.exports = function ($scope, $location, io) {
     let first = flairArray[0];
     if(first.charAt(0) === ":")
     {
-      text += first;
+      text += first + ' ';
     } else {
       text += ":default: ";
     }

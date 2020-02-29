@@ -210,8 +210,21 @@ module.exports = function ($scope, $location, io) {
     if (!$scope.user || !$scope.user.flairFriendCodes) {
       return "";
     }
+      
     var fcs = $scope.user.flairFriendCodes.slice(0),
       text = "";
+      
+    // Obtain current user emoji - defaults to pokeball gen 1 if no emoji is there, otherwise it keeps its current emoji
+    const currentFlair = $scope.user.flair.ptrades["flair_text"];
+    let flairArray = currentFlair.split(" ");
+    let first = flairArray[0];
+    if(first.charAt(0) === ":")
+    {
+      text += first;
+    } else {
+      text += ":pokeball-gen1:";
+    }
+      
     for (var i = 0; i < fcs.length; i++) {
       text += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
       if (i + 1 !== fcs.length) {
@@ -293,7 +306,7 @@ module.exports = function ($scope, $location, io) {
         // Since Reddit's flair_text system is emoji based, we want to prevent users from submitting an IGN with colons to prevent conflicts.
         var has_colon = game.ign.match(/:/);
         if (has_colon) {
-          return {correct: false, error: 'Your in-game name contains a colon. Please omit the colons to prevent conflicts with emoji-based flair text.'}
+          return {correct: false, error: 'Your in-game name contains a colon. Please omit the colons to prevent conflicts with emoji-based flair text.'};
         }
       }
       if (game.tsv >= 4096) {
@@ -313,10 +326,11 @@ module.exports = function ($scope, $location, io) {
     $("#setTextError").html("").hide();
     $scope.userok.setFlairText = false;
     $scope.userspin.setFlairText = true;
+      
     var ptrades = $scope.ptradesCreatedFlair(),
       svex = $scope.svexCreatedFlair(),
       url = "/flair/setText";
-
+    
     io.socket.post(url, {
       "ptrades": ptrades,
       "svex": svex,
@@ -337,7 +351,7 @@ module.exports = function ($scope, $location, io) {
       $scope.userspin.setFlairText = false;
       $scope.$apply();
     });
-
+    
   };
 
   $scope.addFlair = function () {

@@ -1,4 +1,4 @@
-var ptradesFlair = "(:[a-z0-9_-]*:)*((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?))*";
+var ptradesFlair = "(:[a-zA-Z0-9_-]*:)*((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH))*\\))?))*";
 var regex = {
   emoji: "(:[a-z0-9_-]*:)",
   tsv: "[0-3]\\d{3}|40(?:[0-8]\\d|9[0-5])",

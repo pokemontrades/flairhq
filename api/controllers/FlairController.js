@@ -54,15 +54,31 @@ module.exports = {
       user.flair[shortened].flair_css_class = css_flair;
         
       // If a ptrades app, update flair_text emoji
+      var flair_mappings = {
+        "default" : ":0:",
+        "gen2" : ":2:",
+        "pokeball" : ":10:",
+        "premierball" : ":20:",
+        "greatball" : ":30:",
+        "ultraball" : ":40:",
+        "luxuryball" : ":50:",
+        "masterball" : ":60:",
+        "dreamball" : ":70:",
+        "cherishball" : ":80:",
+        "ovalcharm" : ":90:",
+        "shinycharm" : ":100:"
+      };
+
       var flair_text = '';
       var flair_arr = user.flair[shortened].flair_text.split(' ');
       if (shortened === 'ptrades') {
-        flair_arr[0] = ':' + app.flair + ':';
+        flair_arr[0] = flair_mappings[css_flair];
       }
       for (const p of flair_arr) {
         flair_text += ' ' + p;
       }
-                  
+    
+      /*
       await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
@@ -72,6 +88,7 @@ module.exports = {
       promises.push(Application.destroy({id: req.allParams().id}));
       await* promises;
       sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_flair);
+      */
       return res.ok(await Flairs.getApps());
     } catch (err) {
       return res.serverError(err);

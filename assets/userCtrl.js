@@ -43,8 +43,8 @@ module.exports = function ($scope, $location, io) {
     {name: "toughribbon"}
   ];
   $scope.emojiNames = [
-    {name: ":pokeball-gen1:"},
-    {name: ":pokeball-gen2:"},
+    {name: ":gen1ball:"},
+    {name: ":gen2ball:"},
     {name: ":pokeball:"},
     {name: ":premierball:"},
     {name: ":greatball:"},
@@ -214,7 +214,7 @@ module.exports = function ($scope, $location, io) {
     var fcs = $scope.user.flairFriendCodes.slice(0),
       text = "";
       
-    // Obtain current user emoji - defaults to pokeball gen 1 if no emoji is there, otherwise it keeps its current emoji
+    // Obtain current user emoji - defaults to gen1 ball if no emoji is there, otherwise it keeps its current emoji
     const currentFlair = $scope.user.flair.ptrades["flair_text"];
     let flairArray = currentFlair.split(" ");
     let first = flairArray[0];
@@ -222,7 +222,7 @@ module.exports = function ($scope, $location, io) {
     {
       text += first;
     } else {
-      text += ":pokeball-gen1:";
+      text += ":gen1ball:";
     }
       
     for (var i = 0; i < fcs.length; i++) {

@@ -43,8 +43,8 @@ module.exports = function ($scope, $location, io) {
     {name: "toughribbon"}
   ];
   $scope.emojiNames = [
-    {name: ":gen1ball:"},
-    {name: ":gen2ball:"},
+    {name: ":default:"},
+    {name: ":gen2:"},
     {name: ":pokeball:"},
     {name: ":premierball:"},
     {name: ":greatball:"},
@@ -209,7 +209,7 @@ module.exports = function ($scope, $location, io) {
   $scope.ptradesCreatedFlair = function () {
     if (!$scope.user || !$scope.user.flairFriendCodes) {
       return "";
-    }
+    } 
       
     var fcs = $scope.user.flairFriendCodes.slice(0),
       text = "";
@@ -222,7 +222,7 @@ module.exports = function ($scope, $location, io) {
     {
       text += first;
     } else {
-      text += ":gen1ball:";
+      text += ":default: ";
     }
       
     for (var i = 0; i < fcs.length; i++) {

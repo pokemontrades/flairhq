@@ -50,17 +50,28 @@ module.exports = {
       }
       var user = await User.findOne(app.user);
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
-      var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
-      user.flair[shortened].flair_css_class = relevant_flair;
-      await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
+      var css_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
+      user.flair[shortened].flair_css_class = css_flair;
+        
+      // If a ptrades app, update flair_text emoji
+      var flair_text = '';
+      var flair_arr = user.flair[shortened].flair_text.split(' ');
+      if (shortened === 'ptrades') {
+        flair_arr[0] = ':' + app.flair + ': ';
+      }
+      for (const p of flair_arr) {
+        flair_text += p;
+      }
+                  
+      await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
-      promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + relevant_flair}));
+      promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + css_flair}));
       var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
       promises.push(Application.destroy({id: req.allParams().id}));
       await* promises;
-      sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + relevant_flair);
+      sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_flair);
       return res.ok(await Flairs.getApps());
     } catch (err) {
       return res.serverError(err);

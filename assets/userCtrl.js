@@ -42,21 +42,20 @@ module.exports = function ($scope, $location, io) {
     {name: "smartribbon"},
     {name: "toughribbon"}
   ];
-  $scope.emojiNames = [
-    {name: ":default:"},
-    {name: ":gen2:"},
-    {name: ":pokeball:"},
-    {name: ":premierball:"},
-    {name: ":greatball:"},
-    {name: ":ultraball:"},
-    {name: ":luxuryball:"},
-    {name: ":masterball:"},
-    {name: ":dreamball:"},
-    {name: ":cherishball:"},
-    {name: ":ovalcharm:"},
-    {name: ":shinycharm:"},
-    {name: ":gsball:"}
-  ];
+  $scope.emojiNames = {
+    "default" : ":0:",
+    "gen2" : ":2:",
+    "pokeball" : ":10:",
+    "premierball" : ":20:",
+    "greatball" : ":30:",
+    "ultraball" : ":40:",
+    "luxuryball" : ":50:",
+    "masterball" : ":60:",
+    "dreamball" : ":70:",
+    "cherishball" : ":80:",
+    "ovalcharm" : ":90:",
+    "shinycharm" : ":100:"
+  };
   $scope.subNames = [
     {name: "pokemontrades", view: "Pokemon Trades"},
     {name: "svexchange", view: "SV Exchange"}
@@ -222,7 +221,7 @@ module.exports = function ($scope, $location, io) {
     {
       text += first + ' ';
     } else {
-      text += ":default: ";
+      text += ":0: ";
     }
       
     for (var i = 0; i < fcs.length; i++) {

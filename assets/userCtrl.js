@@ -289,6 +289,10 @@ module.exports = function ($scope, $location, io) {
         if (illegal_match) {
           return {correct: false, error: 'Your in-game name contains an illegal character: ' + illegal_match};
         }
+        var has_colon = game.ign.match(/:/);
+        if (has_colon) {
+          return {correct: false, error: 'Your in-game name contains a colon. Please omit the colons to prevent conflicts with flair.'}
+        }
       }
       if (game.tsv >= 4096) {
         return {correct: false, error: "Invalid TSV, they should be between 0 and 4095."};

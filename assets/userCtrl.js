@@ -42,7 +42,7 @@ module.exports = function ($scope, $location, io) {
     {name: "smartribbon"},
     {name: "toughribbon"}
   ];
-  $scope.emojiNames = {
+  $scope.emojiMappings = {
     "default" : ":0:",
     "gen2" : ":2:",
     "pokeball" : ":10:",

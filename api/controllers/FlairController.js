@@ -169,9 +169,9 @@ module.exports = {
       var emoji = '';
       if (pFlair.indexOf(1) !== -1) {
         var noInvolvement = pFlair.slice(0,-1);
-        emoji += flair_mappings[noInvolvement].slice(0, -1) + 'i:';    
+        emoji = flair_mappings[noInvolvement].slice(0, -1) + 'i:';    
       } else {
-        emoji += flair_mappings[pFlair];
+        emoji = flair_mappings[pFlair];
       }
       flair_arr[0] = emoji;
       flair_text = flair_arr.join(' ');

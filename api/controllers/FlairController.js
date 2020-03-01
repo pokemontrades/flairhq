@@ -72,7 +72,7 @@ module.exports = {
 
       // Grab flair text and split by spaces to swap out emoji text
       var hasInvolvement = css_flair.indexOf('1') !== -1;
-      var flair_text = ''
+      var flair_text = '';
       if (shortened === 'ptrades') {
         var flair_arr = user.flair[shortened].flair_text.split(' ');
         

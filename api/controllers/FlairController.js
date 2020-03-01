@@ -5,19 +5,19 @@ var _ = require("lodash");
 
 // Mappings from css_flair to emoji names
 var flair_mappings = {
-        "default" : ":0:",
-        "gen2" : ":2:",
-        "pokeball" : ":10:",
-        "premierball" : ":20:",
-        "greatball" : ":30:",
-        "ultraball" : ":40:",
-        "luxuryball" : ":50:",
-        "masterball" : ":60:",
-        "dreamball" : ":70:",
-        "cherishball" : ":80:",
-        "ovalcharm" : ":90:",
-        "shinycharm" : ":100:",
-        "gsball" : ":GS:"
+  "default" : ":0:",
+  "gen2" : ":2:",
+  "pokeball" : ":10:",
+  "premierball" : ":20:",
+  "greatball" : ":30:",
+  "ultraball" : ":40:",
+  "luxuryball" : ":50:",
+  "masterball" : ":60:",
+  "dreamball" : ":70:",
+  "cherishball" : ":80:",
+  "ovalcharm" : ":90:",
+  "shinycharm" : ":100:",
+  "gsball" : ":GS:"
 };    
 
 module.exports = {

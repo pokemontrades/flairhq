@@ -95,11 +95,21 @@ module.exports = {
       }
       flair_text = flair_arr.join(' ');
       
+      // Check length of flair_text and give a warning message
+      var warning = '';
+      if (flair_text.length > 64) {
+        warning = ' However, the length of your flair was too long, so your flair text was trimmed automatically. Please go to [FHQ](https://hq.porygon.co) to set your flair again.';
+        flair_text = newEmoji;
+      }
+        
+      // Set the user's flair
       await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
       promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + css_flair}));
-      var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
+      
+      // Send a PM to let them know application was accepted.
+      var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.' + warning;
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
       promises.push(Application.destroy({id: req.allParams().id}));
       await* promises;

@@ -12,7 +12,19 @@ exports.banFromSub = async function (redToken, username, banMessage, banNote, su
 //Give the 'BANNED USER' flair on a subreddit
 exports.giveBannedUserFlair = async function (redToken, username, current_css_class, current_flair_text, subreddit) {
   try {
-    var flair_text = current_flair_text || '';
+    // Remove emoji if it exists
+    var flair_arr = current_flair_text.split(' ');
+    if (flair_arr[0].indexOf(':') !== -1) {
+      flair_arr.shift();
+    }
+    flair_arr = flair_arr.join(' ');
+    
+    // Add BANNED USER to flair text
+    var flair_text = 'BANNED USER ' + (current_flair_text || '');
+    if (flair_text.length >= 64) {
+      flair_text = flair_text.slice(0, 64);
+    }
+      
     var css_class = Flairs.makeNewCSSClass(current_css_class, 'banned', subreddit);
     await Reddit.setUserFlair(redToken, username, css_class, flair_text, subreddit);
     sails.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);

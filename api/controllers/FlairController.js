@@ -84,20 +84,13 @@ module.exports = {
           newEmoji = flair_mappings[css_flair.slice(0,-1)]
         }
         
-        /* 
-        Check to see if user has flair with emoji. 
-        If it doesn't, insert emoji.
-        Otherwise, update current emoji
-        */
+        // Inserts emoji into flair if it doesn't have one
         var firstPart = flair_arr[0];
         if (firstPart.indexOf(':') === -1) {
           flair_arr.splice(0, 0, newEmoji);
         }
           
-        /*
-        If application is for involvement, make sure to add i to the flair_text
-        Otherwise, set it to the new emoji
-        */
+        // Adjust new emoji if the flair is for involvement
         if (app.flair === 'involvement') {
           newEmoji = newEmoji.slice(0, -1) + 'i:';
         }

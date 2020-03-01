@@ -3,8 +3,25 @@ var moment = require('moment');
 var refreshToken = sails.config.reddit.adminRefreshToken;
 var _ = require("lodash");
 
-module.exports = {
+// Mappings from css_flair to emoji names
+var flair_mappings = {
+        "default" : ":0:",
+        "gen2" : ":2:",
+        "pokeball" : ":10:",
+        "premierball" : ":20:",
+        "greatball" : ":30:",
+        "ultraball" : ":40:",
+        "luxuryball" : ":50:",
+        "masterball" : ":60:",
+        "dreamball" : ":70:",
+        "cherishball" : ":80:",
+        "ovalcharm" : ":90:",
+        "shinycharm" : ":100:",
+        "gsball" : ":GS:"
+};    
 
+module.exports = {
+    
   apply: async function (req, res) {
     try {
       var allFlairs = await Flair.find();
@@ -51,40 +68,40 @@ module.exports = {
       var user = await User.findOne(app.user);
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
       var css_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
-      user.flair[shortened].flair_css_class = css_flair;
-        
-      // If a ptrades app, update flair_text emoji
-        
-      // Mappings from css_flair to emoji names
-      var flair_mappings = {
-        "default" : ":0:",
-        "gen2" : ":2:",
-        "pokeball" : ":10:",
-        "premierball" : ":20:",
-        "greatball" : ":30:",
-        "ultraball" : ":40:",
-        "luxuryball" : ":50:",
-        "masterball" : ":60:",
-        "dreamball" : ":70:",
-        "cherishball" : ":80:",
-        "ovalcharm" : ":90:",
-        "shinycharm" : ":100:",
-        "gsball" : ":GS:"
-      };
+      user.flair[shortened].flair_css_class = css_flair;        
 
       // Grab flair text and split by spaces to swap out emoji text
       var flair_text = '';
-      var flair_arr = user.flair[shortened].flair_text.split(' ');
       if (shortened === 'ptrades') {
-        flair_arr[0] = flair_mappings[css_flair];
-        if(app.flair.name === 'involvement') {
-          flair_arr[0] = flair_arr[0].substr(0, flair_arr[0].length - 1) + 'i:';
+        var flair_arr = user.flair[shortened].flair_text.split(' ');
+          
+        // Check to see if user has flair with emoji. If not, insert emoji
+        var emoji = flair_arr[0];
+        var newEmoji = flair_mappings[css_flair];
+        if (emoji.indexOf(':') === -1) {
+          flair_arr.splice(0, 0, newEmoji);
+        } else {
+          /*
+          If the app is for involvement, add i to the emoji text.
+          Otherwise, check for involvement flair (otherwise map won't work).
+          If they have involvement flair, adjust key. Otherwise, just use the map to grab the correct emoji.
+          */
+          if (app.flair === 'involvement') {
+            emoji = emoji.slice(0, emoji.length - 1) + 'i:';
+            console.log(emoji);
+          } else {
+            if (css_flair.indexOf('1') !== -1) { 
+              emoji = flair_mappings[css_flair.slice(0,-1)];
+              emoji = emoji.slice(0, -1) + 'i:';
+            } else {
+              emoji = newEmoji;
+            }
+          }
+          flair_arr[0] = emoji;
         }
       }
-      for (const p of flair_arr) {
-        flair_text += ' ' + p;
-      }
-            
+      flair_text = flair_arr.join(' ');
+      
       await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
@@ -152,6 +169,20 @@ module.exports = {
       var pFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
       var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       svFlair = svFlair.replace(/2/, "");
+      
+      // For safety, remove all colons from flair and reset emoji.
+      var flair_text = flairs.ptrades.replace(/:/g, "");
+      var flair_arr = flair_text.split(' ');
+      var emoji = '';
+      if (pFlair.indexOf(1) !== -1) {
+        var noInvolvement = pFlair.slice(0,-1);
+        emoji += flair_mappings[noInvolvement].slice(0, -1) + 'i:';    
+      } else {
+        emoji += flair_mappings[pFlair];
+      }
+      flair_arr[0] = emoji;
+      flair_text = flair_arr.join(' ');
+      
       var promises = [];
       var eventFlair = null; // Change to req.allParams().eventFlair during events
 
@@ -164,7 +195,7 @@ module.exports = {
           req.user.team = _.includes(Flairs.kantoFlair, eventFlair) ? "kanto" : "alola";
           pFlair = Flairs.makeNewCSSClass(pFlair, `kva-${eventFlair}-1`, "PokemonTrades");
           module.exports.addMembershipPoints(req, res, "add").then(() => {
-            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades").catch((err) => {
+            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flair_text, "PokemonTrades").catch((err) => {
               sails.log.warn(`Reverting team ${req.user.team} join for ${req.user.name} due to the following error:`);
               sails.log.warn(err);
               module.exports.addMembershipPoints(req, res, "remove");
@@ -175,13 +206,13 @@ module.exports = {
           return res.status(400).json({error: "Unexpected extra flair."});
         }
       } else {
-        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades"));
+        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flair_text, "PokemonTrades"));
       }
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
-        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
+        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flair_text + '\n\n' + flairs.svex + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;
@@ -208,7 +239,9 @@ module.exports = {
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
         }
         message = message.slice(0,-2);
+        
         promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
+        
       }
       Promise.all(promises).then(function () {
         Event.create([{
@@ -223,15 +256,17 @@ module.exports = {
         User.native(function(err, collection) {
           collection.update({"_id": req.user.name}, {
             $set:{
-              "flair.ptrades.flair_text": flairs.ptrades,
+              "flair.ptrades.flair_text": flair_text,
               "flair.ptrades.flair_css_class": pFlair,
               "flair.svex.flair_text": flairs.svex,
               "flair.svex.flair_css_class": svFlair
             }
           });
         });
+        
         return res.ok();
       });
+      
     } catch (err) {
       return res.serverError(err);
     }

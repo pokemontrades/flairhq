@@ -72,27 +72,22 @@ module.exports = {
 
       // Grab flair text and split by spaces to swap out emoji text
       var hasInvolvement = css_flair.indexOf('1') !== -1;
-      var flair_text = '';
+      var flair_text = ''
       if (shortened === 'ptrades') {
         var flair_arr = user.flair[shortened].flair_text.split(' ');
-          
-        // Check to see if user has involvement. Finds new emoji to be inserted.
+        
+        // Check to see if user has / will have involvement. Finds new emoji to be inserted.
         var newEmoji = '';
         if (!hasInvolvement) { 
           newEmoji = flair_mappings[css_flair];
         } else {
-          newEmoji = flair_mappings[css_flair.slice(0,-1)]
+          newEmoji = flair_mappings[css_flair.slice(0,-1)].slice(0,-1) + 'i:';
         }
         
         // Inserts emoji into flair if it doesn't have one
         var firstPart = flair_arr[0];
         if (firstPart.indexOf(':') === -1) {
           flair_arr.splice(0, 0, newEmoji);
-        }
-          
-        // Adjust new emoji if the flair is for involvement
-        if (app.flair === 'involvement') {
-          newEmoji = newEmoji.slice(0, -1) + 'i:';
         }
         
         // Set the first part to be the new emoji

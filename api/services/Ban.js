@@ -17,10 +17,9 @@ exports.giveBannedUserFlair = async function (redToken, username, current_css_cl
     if (flair_arr[0].indexOf(':') !== -1) {
       flair_arr.shift();
     }
-    flair_arr = flair_arr.join(' ');
     
     // Add BANNED USER to flair text
-    var flair_text = 'BANNED USER ' + (current_flair_text || '');
+    var flair_text = 'BANNED USER ' + (flair_arr.join(' ') || '');
     if (flair_text.length >= 64) {
       flair_text = flair_text.slice(0, 64);
     }

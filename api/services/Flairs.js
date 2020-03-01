@@ -258,7 +258,7 @@ exports.flairCheck = function (ptrades, svex) {
     svex: svex,
     games: exports.combineGames(exports.parseGames(tradesParts[1]), exports.parseGames(svexParts[1])),
     tsvs: svexParts[2].split(', '),
-    fcs: _.union(tradesParts[0].split(', '), svexParts[0].split(', '))
+    fcs: _.union(tradesParts[0].replace(/:[a-zA-Z0-9_-]*: /, "").split(', '), svexParts[0].split(', '))
   };
   return response;
 };

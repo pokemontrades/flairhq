@@ -68,37 +68,42 @@ module.exports = {
       var user = await User.findOne(app.user);
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
       var css_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
-      user.flair[shortened].flair_css_class = css_flair;        
+      user.flair[shortened].flair_css_class = css_flair;   
 
       // Grab flair text and split by spaces to swap out emoji text
+      var hasInvolvement = css_flair.indexOf('1') !== -1;
       var flair_text = '';
       if (shortened === 'ptrades') {
         var flair_arr = user.flair[shortened].flair_text.split(' ');
           
-        // Check to see if user has flair with emoji. If not, insert emoji
-        var emoji = flair_arr[0];
-        var newEmoji = flair_mappings[css_flair];
-        if (emoji.indexOf(':') === -1) {
-          flair_arr.splice(0, 0, newEmoji);
+        // Check to see if user has involvement. Finds new emoji to be inserted.
+        var newEmoji = '';
+        if (!hasInvolvement) { 
+          newEmoji = flair_mappings[css_flair];
         } else {
-          /*
-          If the app is for involvement, add i to the emoji text.
-          Otherwise, check for involvement flair (otherwise map won't work).
-          If they have involvement flair, adjust key. Otherwise, just use the map to grab the correct emoji.
-          */
-          if (app.flair === 'involvement') {
-            emoji = emoji.slice(0, emoji.length - 1) + 'i:';
-            console.log(emoji);
-          } else {
-            if (css_flair.indexOf('1') !== -1) { 
-              emoji = flair_mappings[css_flair.slice(0,-1)];
-              emoji = emoji.slice(0, -1) + 'i:';
-            } else {
-              emoji = newEmoji;
-            }
-          }
-          flair_arr[0] = emoji;
+          newEmoji = flair_mappings[css_flair.slice(0,-1)]
         }
+        
+        /* 
+        Check to see if user has flair with emoji. 
+        If it doesn't, insert emoji.
+        Otherwise, update current emoji
+        */
+        var firstPart = flair_arr[0];
+        if (firstPart.indexOf(':') === -1) {
+          flair_arr.splice(0, 0, newEmoji);
+        }
+          
+        /*
+        If application is for involvement, make sure to add i to the flair_text
+        Otherwise, set it to the new emoji
+        */
+        if (app.flair === 'involvement') {
+          newEmoji = newEmoji.slice(0, -1) + 'i:';
+        }
+        
+        // Set the first part to be the new emoji
+        flair_arr[0] = newEmoji;
       }
       flair_text = flair_arr.join(' ');
       

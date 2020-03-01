@@ -28,10 +28,9 @@ exports.giveBannedUserFlair = async function (redToken, username, current_css_cl
       flair_text = flair_text.slice(0, 64);
     }
       
-    var css_class = Flairs.makeNewCSSClass(current_css_class, 'banned', subreddit);
-    await Reddit.setUserFlair(redToken, username, css_class, flair_text, subreddit);
-    sails.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
-    return 'Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit;
+    await Reddit.setUserFlair(redToken, username, 'banned', flair_text, subreddit);
+    sails.log('Changed ' + username + '\'s flair to banned on /r/' + subreddit);
+    return 'Changed ' + username + '\'s flair to banned on /r/' + subreddit;
   } catch (err) {
     throw {error: 'Failed to give banned user flair'};
   }

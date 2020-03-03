@@ -267,11 +267,11 @@ exports.formatGames = function (parsed) {
 };
 
 exports.flairCheck = function (ptrades, svex) {
-  var ptrades_flair_text = ptrades.replace(/:[a-zA-Z0-9_-]*:/g,'');
-  var svex_flair_text = svex.replace(/:[a-zA-Z0-9_-]*:/g,'');
   if (!ptrades || !svex) {
     throw "Need both flairs.";
   }
+  var ptrades_flair_text = ptrades.replace(/:[a-zA-Z0-9_-]*:/g,'');
+  var svex_flair_text = svex.replace(/:[a-zA-Z0-9_-]*:/g,'');
   if (ptrades_flair_text.length > 55 || svex_flair_text.length > 55) {
     throw "Flairs too long";
   }

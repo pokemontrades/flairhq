@@ -25,8 +25,23 @@ const ptrades_mappings = {
   "gsball" : ":GS:"
 };    
 
-const svex_mappings = {
+const svex_egg_mappings = {
+  "lucky" : ":1e:",
+  "egg" : ":5e:",
+  "eevee" : ":10e:",
+  "togepi" : ":20e:",
+  "torchic" : ":30e:",
+  "pichu" : ":50e:",
+  "manaphy" : ":75e:",
+  "eggcup" : ":100e:"
+};
 
+const svex_ribbon_mappings = {
+  "cuteribbon" : "30r",
+  "coolribbon" : "100r",
+  "beautyribbon" : "200r",
+  "smartribbon" : "400r",
+  "toughribbon" : "800r"
 };
 
 const event_mappings = { };
@@ -252,10 +267,12 @@ exports.formatGames = function (parsed) {
 };
 
 exports.flairCheck = function (ptrades, svex) {
+  var ptrades_flair_text = ptrades.replace(/:[a-zA-Z0-9_-]*:/g,'');
+  var svex_flair_text = svex.replace(/:[a-zA-Z0-9_-]*:/g,'');
   if (!ptrades || !svex) {
     throw "Need both flairs.";
   }
-  if (ptrades.length > 64 || svex.length > 64) {
+  if (ptrades_flair_text.length > 55 || svex_flair_text.length > 55) {
     throw "Flairs too long";
   }
 
@@ -321,14 +338,9 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
   var flair_emoji = '';
   var helper_emoji = '';
   var event_emoji = '';
-  var flair_mappings = { };
+  var egg_emoji = '';
+  var ribbon_emoji = '';
   var hasInvolvement = exports.hasInvolvement(css_class);
-    
-  if (subreddit === 'ptrades') {
-    flair_mappings = ptrades_mappings;
-  } else {
-    flair_mappings = svex_mappings;
-  }
     
   // Loop through CSS class and grab the appropriate emoji
   let css_parts = css_class.split(' ');
@@ -339,7 +351,7 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
       noInvolvement = part.slice(0,-1);
     }
     // If the word is a key in the flair map, then grab the appropriate emoji
-    if (noInvolvement in flair_mappings) {
+    if (noInvolvement in ptrades_mappings) {
       if (hasInvolvement) {
         helper_emoji = flair_mappings[noInvolvement].slice(0,-1) + 'i:';
       } else {
@@ -354,15 +366,26 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
     if (part in event_mappings) {
       event_emoji = event_mappings[part];    
     }
+      
+    // SVEx emojis
+    if (part in svex_egg_mappings) {
+      egg_emoji = svex_egg_mappings[part];
+    }
+    if (part in svex_ribbon_mappings) {
+      ribbon_emoji = svex_ribbon_mappings[part];
+    }
   }
-  
-  return flair_emoji + helper_emoji + current_text + event_emoji;
+  if(subreddit === 'ptrades') {
+    return flair_emoji + helper_emoji + current_text + event_emoji;
+  } else {
+    return egg_emoji + current_text + ribbon_emoji;
+  }
 };
 
 // Check if user has involvement flair
 exports.hasInvolvement = function (css_class) {
   return css_class.indexOf('1') !== -1;
-}
+};
 
 // Get the Damerau–Levenshtein distance (edit distance) between two strings.
 exports.edit_distance = function (string1, string2) {

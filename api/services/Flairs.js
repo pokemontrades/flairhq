@@ -353,9 +353,9 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
     // If the word is a key in the flair map, then grab the appropriate emoji
     if (noInvolvement in ptrades_mappings) {
       if (hasInvolvement) {
-        helper_emoji = flair_mappings[noInvolvement].slice(0,-1) + 'i:';
+        helper_emoji = ptrades_mappings[noInvolvement].slice(0,-1) + 'i:';
       } else {
-        helper_emoji = flair_mappings[noInvolvement];
+        helper_emoji = ptrades_mappings[noInvolvement];
       }
     }
     // If the user is a helper, grab the helper emoji

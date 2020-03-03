@@ -3,23 +3,6 @@ var moment = require('moment');
 var refreshToken = sails.config.reddit.adminRefreshToken;
 var _ = require("lodash");
 
-// Mappings from css_flair to emoji names
-var flair_mappings = {
-  "default" : ":0:",
-  "gen2" : ":2:",
-  "pokeball" : ":10:",
-  "premierball" : ":20:",
-  "greatball" : ":30:",
-  "ultraball" : ":40:",
-  "luxuryball" : ":50:",
-  "masterball" : ":60:",
-  "dreamball" : ":70:",
-  "cherishball" : ":80:",
-  "ovalcharm" : ":90:",
-  "shinycharm" : ":100:",
-  "gsball" : ":GS:"
-};    
-
 module.exports = {
     
   apply: async function (req, res) {
@@ -69,37 +52,15 @@ module.exports = {
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
       var css_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
       user.flair[shortened].flair_css_class = css_flair;   
-
-      // Grab flair text and split by spaces to swap out emoji text
-      var hasInvolvement = css_flair.indexOf('1') !== -1;
-      var flair_text = '';
-      if (shortened === 'ptrades') {
-        var flair_arr = user.flair[shortened].flair_text.split(' ');
+      let current_text = user.flair[shortened].flair_text.replace(/:[a-zA-Z0-9_-]*:/g,'');
         
-        // Check to see if user has / will have involvement. Finds new emoji to be inserted.
-        var newEmoji = '';
-        if (!hasInvolvement) { 
-          newEmoji = flair_mappings[css_flair];
-        } else {
-          newEmoji = flair_mappings[css_flair.slice(0,-1)].slice(0,-1) + 'i:';
-        }
-        
-        // Inserts emoji into flair if it doesn't have one
-        var firstPart = flair_arr[0];
-        if (firstPart.indexOf(':') === -1) {
-          flair_arr.splice(0, 0, newEmoji);
-        }
-        
-        // Set the first part to be the new emoji
-        flair_arr[0] = newEmoji;
-      }
-      flair_text = flair_arr.join(' ');
-      
+      let flair_text = Flairs.makeNewFlairText(css_flair, current_text, shortened);
+                
       // Check length of flair_text and give a warning message
       var warning = '';
       if (flair_text.length > 64) {
         warning = ' However, the length of your flair was too long, so your flair text was trimmed automatically. Please go to [FHQ](https://hq.porygon.co) to set your flair again.';
-        flair_text = newEmoji;
+        flair_text = Flairs.makeNewFlairText(css_flair, current_text.slice(0,55), shortened);
       }
         
       // Set the user's flair
@@ -173,18 +134,14 @@ module.exports = {
       var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       svFlair = svFlair.replace(/2/, "");
       
+      console.log(flairs);
+        
       // For safety, remove all colons from flair and reset emoji.
-      var flair_text = flairs.ptrades.replace(/:/g, "");
-      var flair_arr = flair_text.split(' ');
-      var emoji = '';
-      if (pFlair.indexOf(1) !== -1) {
-        var noInvolvement = pFlair.slice(0,-1);
-        emoji = flair_mappings[noInvolvement].slice(0, -1) + 'i:';    
-      } else {
-        emoji = flair_mappings[pFlair];
-      }
-      flair_arr[0] = emoji;
-      flair_text = flair_arr.join(' ');
+      let ptrades_current_text = flairs.ptrades.replace(/:[a-zA-Z0-9_-]*:/g,'');
+      var ptrades_flair_text = Flairs.makeNewFlairText(pFlair, ptrades_current_text, 'ptrades');
+      
+      let svex_current_text = flairs.svex.replace(/:[a-zA-Z0-9_-]*:/g,'');
+      var svex_flair_text = Flairs.makeNewFlairText(svFlair, svex_current_text, 'svex');
       
       var promises = [];
       var eventFlair = null; // Change to req.allParams().eventFlair during events
@@ -198,7 +155,7 @@ module.exports = {
           req.user.team = _.includes(Flairs.kantoFlair, eventFlair) ? "kanto" : "alola";
           pFlair = Flairs.makeNewCSSClass(pFlair, `kva-${eventFlair}-1`, "PokemonTrades");
           module.exports.addMembershipPoints(req, res, "add").then(() => {
-            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flair_text, "PokemonTrades").catch((err) => {
+            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, ptrades_flair_text, "PokemonTrades").catch((err) => {
               sails.log.warn(`Reverting team ${req.user.team} join for ${req.user.name} due to the following error:`);
               sails.log.warn(err);
               module.exports.addMembershipPoints(req, res, "remove");
@@ -209,13 +166,13 @@ module.exports = {
           return res.status(400).json({error: "Unexpected extra flair."});
         }
       } else {
-        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flair_text, "PokemonTrades"));
+        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, ptrades_flair_text, "PokemonTrades"));
       }
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, svex_flair_text, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
-        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flair_text + '\n\n' + flairs.svex + '\n\n';
+        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + svex_flair_text + '\n\n' + flairs.svex + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;
@@ -259,9 +216,9 @@ module.exports = {
         User.native(function(err, collection) {
           collection.update({"_id": req.user.name}, {
             $set:{
-              "flair.ptrades.flair_text": flair_text,
+              "flair.ptrades.flair_text": ptrades_flair_text,
               "flair.ptrades.flair_css_class": pFlair,
-              "flair.svex.flair_text": flairs.svex,
+              "flair.svex.flair_text": svex_flair_text,
               "flair.svex.flair_css_class": svFlair
             }
           });

@@ -8,6 +8,29 @@ var alolaFlair = ['rowlet', 'litten', 'popplio'];
 var eventFlair = kantoFlair.concat(alolaFlair);
 var eventFlairRegExp = new RegExp('\\bkva-(' + eventFlair.join("|") + ')-[1-3]\\b');
 
+// Mappings from css_flair to emoji names
+const ptrades_mappings = {
+  "default" : ":0:",
+  "gen2" : ":2:",
+  "pokeball" : ":10:",
+  "premierball" : ":20:",
+  "greatball" : ":30:",
+  "ultraball" : ":40:",
+  "luxuryball" : ":50:",
+  "masterball" : ":60:",
+  "dreamball" : ":70:",
+  "cherishball" : ":80:",
+  "ovalcharm" : ":90:",
+  "shinycharm" : ":100:",
+  "gsball" : ":GS:"
+};    
+
+const svex_mappings = {
+
+};
+
+const event_mappings = { };
+
 exports.eventFlair = eventFlair;
 exports.kantoFlair = kantoFlair;
 exports.eventFlairRegExp = eventFlairRegExp;
@@ -258,7 +281,7 @@ exports.flairCheck = function (ptrades, svex) {
     svex: svex,
     games: exports.combineGames(exports.parseGames(tradesParts[1]), exports.parseGames(svexParts[1])),
     tsvs: svexParts[2].split(', '),
-    fcs: _.union(tradesParts[0].replace(/:[a-zA-Z0-9_-]*: /, "").split(', '), svexParts[0].split(', '))
+    fcs: _.union(tradesParts[0].replace(/:[a-zA-Z0-9_-]*:/, "").split(', '), svexParts[0].split(', '))
   };
   return response;
 };
@@ -292,6 +315,54 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
   }
   return previous_flair.replace(/([^ ]*)(.*)/, '$1 ' + new_addition + '$2');
 };
+
+// Create new flair text with emojis
+exports.makeNewFlairText = function (css_class, current_text, subreddit) {
+  var flair_emoji = '';
+  var helper_emoji = '';
+  var event_emoji = '';
+  var flair_mappings = { };
+  var hasInvolvement = exports.hasInvolvement(css_class);
+    
+  if (subreddit === 'ptrades') {
+    flair_mappings = ptrades_mappings;
+  } else {
+    flair_mappings = svex_mappings;
+  }
+    
+  // Loop through CSS class and grab the appropriate emoji
+  let css_parts = css_class.split(' ');
+  for (let part of css_parts) {
+    // If the user has involvement, make sure to remove the 1 in order for it to map correctly
+    let noInvolvement = part;
+    if (hasInvolvement) {
+      noInvolvement = part.slice(0,-1);
+    }
+    // If the word is a key in the flair map, then grab the appropriate emoji
+    if (noInvolvement in flair_mappings) {
+      if (hasInvolvement) {
+        helper_emoji = flair_mappings[noInvolvement].slice(0,-1) + 'i:';
+      } else {
+        helper_emoji = flair_mappings[noInvolvement];
+      }
+    }
+    // If the user is a helper, grab the helper emoji
+    if (part === 'eventribbon') {
+      helper_emoji = ':CH:';
+    }
+    // If there is an event going on, grab event flair
+    if (part in event_mappings) {
+      event_emoji = event_mappings[part];    
+    }
+  }
+  
+  return flair_emoji + helper_emoji + current_text + event_emoji;
+};
+
+// Check if user has involvement flair
+exports.hasInvolvement = function (css_class) {
+  return css_class.indexOf('1') !== -1;
+}
 
 // Get the Damerau–Levenshtein distance (edit distance) between two strings.
 exports.edit_distance = function (string1, string2) {

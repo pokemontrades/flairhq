@@ -219,9 +219,9 @@ module.exports = function ($scope, $location, io) {
     let first = flairArray[0];
     if(first.charAt(0) === ":")
     {
-      text += first + ' ';
+      text += currentFlair.match(/^(:[a-zA-Z0-9]*:){0,2}/g)[0];
     } else {
-      text += ":0: ";
+      text += ":0:";
     }
       
     for (var i = 0; i < fcs.length; i++) {

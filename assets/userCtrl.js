@@ -326,8 +326,9 @@ module.exports = function ($scope, $location, io) {
     $scope.userok.setFlairText = false;
     $scope.userspin.setFlairText = true;
       
-    var ptrades = $scope.ptradesCreatedFlair(),
-      svex = $scope.svexCreatedFlair(),
+    const regex_emoji = /:[a-zA-Z0-9_-]*:/g;
+    var ptrades = $scope.ptradesCreatedFlair().replace(regex_emoji,''),
+      svex = $scope.svexCreatedFlair().replace(regex_emoji,''),
       url = "/flair/setText";
     
     io.socket.post(url, {

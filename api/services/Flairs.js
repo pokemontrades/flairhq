@@ -27,21 +27,21 @@ const ptrades_mappings = {
 
 const svex_egg_mappings = {
   "lucky" : ":1e:",
-  "egg" : ":5e:",
-  "eevee" : ":10e:",
-  "togepi" : ":20e:",
-  "torchic" : ":30e:",
-  "pichu" : ":50e:",
-  "manaphy" : ":75e:",
-  "eggcup" : ":100e:"
+  "egg" : ":2e:",
+  "eevee" : ":3e:",
+  "togepi" : ":4e:",
+  "torchic" : ":5e:",
+  "pichu" : ":6e:",
+  "manaphy" : ":7e:",
+  "eggcup" : ":8e:"
 };
 
 const svex_ribbon_mappings = {
-  "cuteribbon" : "30r",
-  "coolribbon" : "100r",
-  "beautyribbon" : "200r",
-  "smartribbon" : "400r",
-  "toughribbon" : "800r"
+  "cuteribbon" : ":1r:",
+  "coolribbon" : ":2r:",
+  "beautyribbon" : ":3r:",
+  "smartribbon" : ":4r:",
+  "toughribbon" : ":5r:"
 };
 
 const event_mappings = { };
@@ -270,9 +270,13 @@ exports.flairCheck = function (ptrades, svex) {
   if (!ptrades || !svex) {
     throw "Need both flairs.";
   }
-  var ptrades_flair_text = ptrades.replace(/:[a-zA-Z0-9_-]*:/g,'');
-  var svex_flair_text = svex.replace(/:[a-zA-Z0-9_-]*:/g,'');
-  if (ptrades_flair_text.length > 55 || svex_flair_text.length > 55) {
+
+  const regex_emoji = /:[a-zA-Z0-9_-]*:/;
+  if (ptrades.match(regex_emoji) || svex.match(regex_emoji)) {
+    throw "Flair has emoji"
+  }
+
+  if (ptrades.length > 55 || svex.length > 56) {
     throw "Flairs too long";
   }
 

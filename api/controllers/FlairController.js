@@ -134,13 +134,11 @@ module.exports = {
       var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       svFlair = svFlair.replace(/2/, "");
       
-      console.log(flairs);
-        
-      // For safety, remove all colons from flair and reset emoji.
-      let ptrades_current_text = flairs.ptrades.replace(/:[a-zA-Z0-9_-]*:/g,'');
+      // Build flair text for ptrades and svex from css class
+      var ptrades_current_text = flairs.ptrades;
       var ptrades_flair_text = Flairs.makeNewFlairText(pFlair, ptrades_current_text, 'ptrades');
       
-      let svex_current_text = flairs.svex.replace(/:[a-zA-Z0-9_-]*:/g,'');
+      var svex_current_text = flairs.svex;
       var svex_flair_text = Flairs.makeNewFlairText(svFlair, svex_current_text, 'svex');
       
       var promises = [];
@@ -172,7 +170,7 @@ module.exports = {
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
-        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + svex_flair_text + '\n\n' + flairs.svex + '\n\n';
+        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + ptrades_flair_text + '\n\n' + svex_flair_text + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;

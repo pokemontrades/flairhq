@@ -273,11 +273,11 @@ exports.flairCheck = function (ptrades, svex) {
 
   const regex_emoji = /:[a-zA-Z0-9_-]*:/;
   if (ptrades.match(regex_emoji) || svex.match(regex_emoji)) {
-    throw "Flair has emoji"
+    throw "Flair has emoji.";
   }
 
   if (ptrades.length > 55 || svex.length > 56) {
-    throw "Flairs too long";
+    throw "Flairs too long.";
   }
 
   const friendCodeGroup = /((?:SW-)?(?:\d{4}-){2}\d{4}(?:, (?:SW-)?(?:\d{4}-){2}\d{4})*)/;

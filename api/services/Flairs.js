@@ -341,6 +341,7 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
 exports.makeNewFlairText = function (css_class, current_text, subreddit) {
   var flair_emoji = '';
   var helper_emoji = '';
+  var upgrade_emoji = '';
   var event_emoji = '';
   var egg_emoji = '';
   var ribbon_emoji = '';
@@ -365,6 +366,9 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
     // If the user is a helper, grab the helper emoji
     if (part === 'eventribbon') {
       helper_emoji = ':CH:';
+    // If the user has upgrade flair, grab the upgrade emoji
+    if (part === 'upgrade') {
+      upgrade_emoji = ':u:';
     }
     // If there is an event going on, grab event flair
     if (part in event_mappings) {
@@ -380,7 +384,7 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
     }
   }
   if(subreddit === 'ptrades') {
-    return flair_emoji + helper_emoji + current_text + event_emoji;
+    return flair_emoji + helper_emoji + upgrade_emoji + current_text + event_emoji;
   } else {
     return egg_emoji + current_text + ribbon_emoji;
   }

@@ -281,8 +281,8 @@ exports.flairCheck = function (ptrades, svex) {
   }
 
   const friendCodeGroup = /((?:SW-)?(?:\d{4}-){2}\d{4}(?:, (?:SW-)?(?:\d{4}-){2}\d{4})*)/;
-  const gameGroup = '^(' + exports.legalIgn + '(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))(?:,(?: ' +
-    exports.legalIgn + ')?(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))?)*)$';
+  // const gameGroup = '^(' + exports.legalIgn + '(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))(?:,(?: ' +
+  //   exports.legalIgn + ')?(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))?)*)$';
   var tradesParts = ptrades.split(' || ');
   var svexParts = svex.split(' || ');
   if (tradesParts.length !== 2 || svexParts.length !== 3) {
@@ -291,8 +291,8 @@ exports.flairCheck = function (ptrades, svex) {
   if (!tradesParts[0].match(friendCodeGroup) || !svexParts[0].match(friendCodeGroup)) {
     throw "Error with FCs";
   }
-  if (!tradesParts[1].match(RegExp(gameGroup)) || !svexParts[1].match(RegExp(gameGroup))) {
-    throw "We need at least 1 game.";
+  if (!tradesParts[1].match(RegExp(exports.legalIgn)) || !svexParts[1].match(RegExp(exports.legalIgn))) {
+    throw "We need at least one IGN.";
   }
   if (!/\d{4}(, \d{4})*|XXXX/.test(svexParts[2])) {
     throw "Error with TSVs";

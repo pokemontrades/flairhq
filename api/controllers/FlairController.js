@@ -112,6 +112,9 @@ module.exports = {
       var similar_banned_fcs = _.flatten(await* flairs.fcs.map(Flairs.getSimilarBannedFCs));
       // Get friend codes that are identical to banned users' friend codes
       var identical_banned_fcs = _.intersection(flairs.fcs, similar_banned_fcs);
+      
+      var inAutomod1 = await Users.checkAutomod ("pokemontrades", req.user.name, flairs.fcs);
+      var inAutomod2 = await Users.checkAutomod ("SVExchange", req.user.name, flairs.fcs);
 
       var friend_codes = _.union(flairs.fcs, req.user.loggedFriendCodes);
 
@@ -146,7 +149,7 @@ module.exports = {
       promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
-      if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
+      if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length || inAutomod1 || inAutomod2)) {
         var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
@@ -172,6 +175,12 @@ module.exports = {
           message += 'The friend code' + (flagged.length === 1 ? ' ' + flagged + ' is' : 's ' + flagged.join(', ') + ' are') + ' invalid.\n\n';
           var formattedNote = "Invalid friend code" + (flagged.length == 1 ? "" : "s") + ": " + flagged.join(', ');
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
+        }
+        if (inAutomod1) {
+          message += 'Automod /r/pokemontrades:\n\n' + inAutomod1;
+        }
+        if (inAutomod2) {
+          message += 'Automod /r/SVExchange:\n\n' + inAutomod2;
         }
         message = message.slice(0,-2);
         promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));

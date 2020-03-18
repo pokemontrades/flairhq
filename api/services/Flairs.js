@@ -382,9 +382,9 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
       }
     }
     if (subreddit === 'ptrades') {
-      return flair_emoji + helper_emoji + upgrade_emoji + current_text + event_emoji;
+      return flair_emoji + helper_emoji + upgrade_emoji + event_emoji + current_text;
     } else {
-      return egg_emoji + current_text + ribbon_emoji;
+      return egg_emoji + ribbon_emoji + current_text;
     }
   }
 };

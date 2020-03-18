@@ -363,7 +363,7 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
     }
     // If the user is a helper, grab the helper emoji
     if (part === 'eventribbon') {
-      helper_emoji = ':CH:';
+      helper_emoji = ':helper:';
       // If the user has upgrade flair, grab the upgrade emoji
       if (part === 'upgrade') {
         upgrade_emoji = ':u:';

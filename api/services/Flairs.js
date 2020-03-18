@@ -23,7 +23,7 @@ const ptrades_mappings = {
   "ovalcharm" : ":90:",
   "shinycharm" : ":100:",
   "gsball" : ":GS:"
-};    
+};
 
 const svex_egg_mappings = {
   "lucky" : ":1e:",
@@ -281,8 +281,6 @@ exports.flairCheck = function (ptrades, svex) {
   }
 
   const friendCodeGroup = /((?:SW-)?(?:\d{4}-){2}\d{4}(?:, (?:SW-)?(?:\d{4}-){2}\d{4})*)/;
-  // const gameGroup = '^(' + exports.legalIgn + '(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))(?:,(?: ' +
-  //   exports.legalIgn + ')?(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))?)*)$';
   var tradesParts = ptrades.split(' || ');
   var svexParts = svex.split(' || ');
   if (tradesParts.length !== 2 || svexParts.length !== 3) {
@@ -346,19 +344,19 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
   var egg_emoji = '';
   var ribbon_emoji = '';
   var hasInvolvement = exports.hasInvolvement(css_class);
-    
+
   // Loop through CSS class and grab the appropriate emoji
   let css_parts = css_class.split(' ');
   for (let part of css_parts) {
     // If the user has involvement, make sure to remove the 1 in order for it to map correctly
     let noInvolvement = part;
     if (hasInvolvement) {
-      noInvolvement = part.slice(0,-1);
+      noInvolvement = part.slice(0, -1);
     }
     // If the word is a key in the flair map, then grab the appropriate emoji
     if (noInvolvement in ptrades_mappings) {
       if (hasInvolvement) {
-        flair_emoji = ptrades_mappings[noInvolvement].slice(0,-1) + 'i:';
+        flair_emoji = ptrades_mappings[noInvolvement].slice(0, -1) + 'i:';
       } else {
         flair_emoji = ptrades_mappings[noInvolvement];
       }
@@ -366,27 +364,28 @@ exports.makeNewFlairText = function (css_class, current_text, subreddit) {
     // If the user is a helper, grab the helper emoji
     if (part === 'eventribbon') {
       helper_emoji = ':CH:';
-    // If the user has upgrade flair, grab the upgrade emoji
-    if (part === 'upgrade') {
-      upgrade_emoji = ':u:';
+      // If the user has upgrade flair, grab the upgrade emoji
+      if (part === 'upgrade') {
+        upgrade_emoji = ':u:';
+      }
+      // If there is an event going on, grab event flair
+      if (part in event_mappings) {
+        event_emoji = event_mappings[part];
+      }
+
+      // SVEx emojis
+      if (part in svex_egg_mappings) {
+        egg_emoji = svex_egg_mappings[part];
+      }
+      if (part in svex_ribbon_mappings) {
+        ribbon_emoji = svex_ribbon_mappings[part];
+      }
     }
-    // If there is an event going on, grab event flair
-    if (part in event_mappings) {
-      event_emoji = event_mappings[part];    
+    if (subreddit === 'ptrades') {
+      return flair_emoji + helper_emoji + upgrade_emoji + current_text + event_emoji;
+    } else {
+      return egg_emoji + current_text + ribbon_emoji;
     }
-      
-    // SVEx emojis
-    if (part in svex_egg_mappings) {
-      egg_emoji = svex_egg_mappings[part];
-    }
-    if (part in svex_ribbon_mappings) {
-      ribbon_emoji = svex_ribbon_mappings[part];
-    }
-  }
-  if(subreddit === 'ptrades') {
-    return flair_emoji + helper_emoji + upgrade_emoji + current_text + event_emoji;
-  } else {
-    return egg_emoji + current_text + ribbon_emoji;
   }
 };
 

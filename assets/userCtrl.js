@@ -214,7 +214,7 @@ module.exports = function ($scope, $location, io) {
       text = "";
       
     // Obtain current user emoji - defaults to gen1 ball if no emoji is there, otherwise it keeps its current emoji
-    const currentFlair = $scope.user.flair.ptrades["flair_text"];
+    const currentFlair = $scope.user.flair.ptrades["flair_text"] || "";
     let flairArray = currentFlair.split(" ");
     let first = flairArray[0];
     if(first.charAt(0) === ":")

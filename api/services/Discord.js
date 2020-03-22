@@ -107,21 +107,40 @@ exports.getCurrentUser = async function (token) {
   }
 };
 
-exports.addUserToGuild = async function (token, user, nick) {
+exports.getUserRoles = function (css_class) {
+
+  var userRoles = [];
+  var roleMap = sails.config.discord.flairRoleMap;
+
+  let class_array = css_class.split(' ');
+  for (let single_class of class_array) {
+    if (Flairs.hasInvolvement(single_class)) {
+      userRoles.push(roleMap['involvement'])
+      single_class = single_class.slice(0, -1)
+    }
+    if (roleMap[single_class]) {
+      userRoles.push(roleMap[single_class])
+    }
+  }
+  return userRoles;
+}
+
+exports.addUserToGuild = async function (token, user, nick, flairRoles) {
   const route = 'https://discordapp.com/api/guilds/' + sails.config.discord.server_id + '/members';
   const url =  route + '/' + user;
   const auth = 'Bot ' + sails.config.discord.bot_token;
-  const body = { 
+
+  const body = {
     'access_token': token,
     'nick': nick,
-    'roles' : sails.config.discord.authenticatedRole_id
+    'roles' : sails.config.discord.authenticatedRole_id.concat(flairRoles)
   };
   const headers = {
     "Authorization": auth,
     "Content-Type": "application/json"
   };
   try {
-    const response = await makeRequest('PUT', url, body, headers, route); 
+    const response = await makeRequest('PUT', url, body, headers, route);
     return response;
   } catch (err) {
     sails.log(err);

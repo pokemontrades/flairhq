@@ -93,11 +93,11 @@ module.exports = {
       }
     })(req, res);
   },
-  
+
   discordCallback: async function (req, res) {
     const code = req.allParams().code;
     const user = req.user;
-    const ptradesFlair = user.flair.ptrades.flair_text;
+    const ptradesFlair = user.flair.ptrades.flair_css_class;
     const svexFlair = user.flair.svex.flair_text;
     if (!code) {
       return res.view(403, {error: 'Sorry, something went wrong. Please try again.'});
@@ -110,7 +110,8 @@ module.exports = {
       const accessToken = response.access_token;
       const currentUser = await Discord.getCurrentUser(accessToken);
       const nick = req.user.name;
-      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser.id, nick);
+      const ptradesRoles = Discord.getUserRoles(ptradesFlair)
+      const joinedUser = await Discord.addUserToGuild(accessToken, currentUser.id, nick, ptradesRoles);
       const serverUrl = 'https://discordapp.com/channels/' + sails.config.discord.server_id;
       if (!joinedUser) {
         return res.redirect(serverUrl);

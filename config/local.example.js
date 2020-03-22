@@ -34,6 +34,20 @@ module.exports = {
     redirect_host: 'http://localhost:1337',
     server_id: '111111',
     authenticatedRole_id: ['2222222'],
-    bot_token: 'aaaaaaaaaaa'
+    bot_token: 'aaaaaaaaaaa',
+    flairRoleMap: {
+      'default' : '333333',
+      'gen2' : '444444',
+      'pokeball' : '555555',
+      'premierball' : '666666',
+      'greatball' : '777777',
+      'ultraball' : '888888',
+      'luxuryball' : '999999',
+      'masterball' : '000000',
+      'dreamball' : '111111',
+      'cherishball' : '222222',
+      'ovalcharm' : '333333',
+      'shinycharm' : '444444',
+      'involvement': '555555'
   }
 };

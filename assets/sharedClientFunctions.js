@@ -134,8 +134,17 @@ module.exports = {
     $scope.numberOfApprovedEggChecks = function () {
       return referenceService.numberOfApprovedEggChecks(_.get($scope, pathToRefs));
     };
-    $scope.getFlairTextForSVEx = function () {
-      return flairService.getFlairTextForSVEx($scope.refUser);
+    $scope.renderCSSClass = function(classes) {
+      if (typeof classes !== 'string') {
+        return '';
+      }
+      return classes.replace(/(\S+)/g, "flair-$1");
+    };
+    $scope.renderFlair = function(flair) {
+      if (typeof flair !== 'string') {
+        return '';
+      }
+      return flair.replace(/:([^:]+):/g,'');
     };
     $scope.applied = function (flair) {
       return flairService.applied(_.get($scope, pathToApps), flair);

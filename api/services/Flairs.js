@@ -153,17 +153,6 @@ exports.getUserFlairs = function (user, allflairs) {
     return exports.userHasFlair(user, flair);
   });
 };
-exports.getFlairTextForSVEx = function (user) {
-  if (!user || !user.flair || !user.flair.svex || !user.flair.svex.flair_css_class) {
-    return;
-  }
-  var flairs = user.flair.svex.flair_css_class.split(' '),
-    flairText = "";
-  for (var i = 0; i < flairs.length; i++) {
-    flairText += "flair-" + flairs[i] + " ";
-  }
-  return flairText;
-};
 exports.canUserApply = function (refs, applicationFlair, currentFlairs) {
   if (!applicationFlair) {
     return false;

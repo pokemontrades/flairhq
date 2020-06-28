@@ -8,14 +8,9 @@
             {{refUser.name}}
           </h1>
           <div class="flairs">
-            <h5 class="flairTop">
-              <span ng-class="'flair-' + refUser.flair.ptrades.flair_css_class">
-                {{refUser.flair.ptrades.flair_text || ''}}
-              </span>
-            </h5>
-            <h5 class="flairBottom">
-              <span ng-class="getFlairTextForSVEx()">
-                {{refUser.flair.svex.flair_text || ''}}
+            <h5 class="flairListing" ng-repeat="flair in refUser.flair">
+              <span ng-class="renderCSSClass(flair.flair_css_class)">
+                {{renderFlair(flair.flair_text)}}
               </span>
             </h5>
           </div>

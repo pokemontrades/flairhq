@@ -99,11 +99,11 @@
                 <div class="alert">
                   <div>
                     <strong>/r/pokemontrades: </strong>
-                    {{ptradesCreatedFlair()}}
+                    <span class="flair-default" ng-class="renderCSSClass(user.flair.ptrades.flair_css_class)">{{renderFlairTextString("{fcs} || {games}")}}</span>
                   </div>
                   <div>
                     <strong>/r/SVExchange: </strong>
-                    {{svexCreatedFlair()}}
+                    <span ng-class="renderCSSClass(user.flair.svex.flair_css_class)">{{renderFlairTextString("{fcs} || {games} || {tsvs}")}}</span>
                   </div>
                   Note: With emojis supported in the flair text, the preview should indicate your current flair level.
                 </div>

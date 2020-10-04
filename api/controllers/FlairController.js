@@ -4,7 +4,7 @@ var refreshToken = sails.config.reddit.adminRefreshToken;
 var _ = require("lodash");
 
 module.exports = {
-    
+
   apply: async function (req, res) {
     try {
       var allFlairs = await Flair.find();
@@ -53,29 +53,27 @@ module.exports = {
       var css_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
       user.flair[shortened].flair_css_class = css_flair;   
       let current_text = user.flair[shortened].flair_text.replace(/:[a-zA-Z0-9_-]*:/g,'');
-        
       let flair_text = Flairs.makeNewFlairText(css_flair, current_text, shortened);
-                
+
       // Check length of flair_text and give a warning message
       var warning = '';
       if (flair_text.length > 64) {
         warning = ' However, the length of your flair was too long, so your flair text was trimmed automatically. Please go to [FHQ](https://hq.porygon.co) to set your flair again.';
         flair_text = Flairs.makeNewFlairText(css_flair, current_text.slice(0,55), shortened);
       }
-        
+
       // Set the user's flair
       await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
       promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + css_flair}));
-      
+
       // Send a PM to let them know application was accepted.
       var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.' + warning;
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
       promises.push(Application.destroy({id: req.allParams().id}));
       await* promises;
       sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_flair);
-      
       return res.ok(await Flairs.getApps());
     } catch (err) {
       return res.serverError(err);
@@ -140,7 +138,7 @@ module.exports = {
       
       var svex_current_text = flairs.svex;
       var svex_flair_text = Flairs.makeNewFlairText(svFlair, svex_current_text, 'svex');
-      
+
       var promises = [];
       var eventFlair = null; // Change to req.allParams().eventFlair during events
 
@@ -197,9 +195,7 @@ module.exports = {
           promises.push(Usernotes.addUsernote(refreshToken, 'FlairHQ', 'pokemontrades', req.user.name, formattedNote, 'spamwarn', ''));
         }
         message = message.slice(0,-2);
-        
         promises.push(Reddit.sendPrivateMessage(refreshToken, "FlairHQ notification", message, "/r/pokemontrades"));
-        
       }
       Promise.all(promises).then(function () {
         Event.create([{
@@ -221,7 +217,6 @@ module.exports = {
             }
           });
         });
-        
         return res.ok();
       });
       

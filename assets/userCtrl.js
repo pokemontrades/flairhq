@@ -42,20 +42,6 @@ module.exports = function ($scope, $location, io) {
     {name: "smartribbon"},
     {name: "toughribbon"}
   ];
-  $scope.emojiMappings = {
-    "default" : ":0:",
-    "gen2" : ":2:",
-    "pokeball" : ":10:",
-    "premierball" : ":20:",
-    "greatball" : ":30:",
-    "ultraball" : ":40:",
-    "luxuryball" : ":50:",
-    "masterball" : ":60:",
-    "dreamball" : ":70:",
-    "cherishball" : ":80:",
-    "ovalcharm" : ":90:",
-    "shinycharm" : ":100:"
-  };
   $scope.subNames = [
     {name: "pokemontrades", view: "Pokemon Trades"},
     {name: "svexchange", view: "SV Exchange"}
@@ -287,7 +273,7 @@ module.exports = function ($scope, $location, io) {
         if (illegal_match) {
           return {correct: false, error: 'Your in-game name contains an illegal character: ' + illegal_match};
         }
-          
+
         // Since Reddit's flair_text system is emoji based, we want to prevent users from submitting an IGN with colons to prevent conflicts.
         var has_colon = game.ign.match(/:/);
         if (has_colon) {
@@ -311,10 +297,9 @@ module.exports = function ($scope, $location, io) {
     $("#setTextError").html("").hide();
     $scope.userok.setFlairText = false;
     $scope.userspin.setFlairText = true;
-      
-    const regex_emoji = /:[a-zA-Z0-9_-]*:/g;
+
     var url = "/flair/setText";
-    
+
     io.socket.post(url, {
       "ptrades": $scope.renderFlairTextString("{fcs} || {games}"),
       "svex": $scope.renderFlairTextString("{fcs} || {games} || {tsvs}"),
@@ -335,7 +320,7 @@ module.exports = function ($scope, $location, io) {
       $scope.userspin.setFlairText = false;
       $scope.$apply();
     });
-    
+
   };
 
   $scope.addFlair = function () {

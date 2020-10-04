@@ -9,42 +9,51 @@ var eventFlair = kantoFlair.concat(alolaFlair);
 var eventFlairRegExp = new RegExp('\\bkva-(' + eventFlair.join("|") + ')-[1-3]\\b');
 
 // Mappings from css_flair to emoji names
-const ptrades_mappings = {
-  "default" : ":0:",
-  "gen2" : ":2:",
-  "pokeball" : ":10:",
-  "premierball" : ":20:",
-  "greatball" : ":30:",
-  "ultraball" : ":40:",
-  "luxuryball" : ":50:",
-  "masterball" : ":60:",
-  "dreamball" : ":70:",
-  "cherishball" : ":80:",
-  "ovalcharm" : ":90:",
-  "shinycharm" : ":100:",
-  "gsball" : ":GS:"
+const emojiMap = {
+  "ptrades": {
+    "default" : ":0:",
+    "gen2" : ":2:",
+    "pokeball" : ":10:",
+    "premierball" : ":20:",
+    "greatball" : ":30:",
+    "ultraball" : ":40:",
+    "luxuryball" : ":50:",
+    "masterball" : ":60:",
+    "dreamball" : ":70:",
+    "cherishball" : ":80:",
+    "ovalcharm" : ":90:",
+    "shinycharm" : ":100:",
+    "pokeball1" : ":10i:",
+    "premierball1" : ":20i:",
+    "greatball1" : ":30i:",
+    "ultraball1" : ":40i:",
+    "luxuryball1" : ":50i:",
+    "masterball1" : ":60i:",
+    "dreamball1" : ":70i:",
+    "cherishball1" : ":80i:",
+    "ovalcharm1" : ":90i:",
+    "shinycharm1" : ":100i:",
+    "gsball1" : ":GSi:",
+    "upgrade" : ":u:",
+    "eventribbon" : ":helper:"
+  },
+  "svex": {
+    "lucky" : ":1:",
+    "egg" : ":5:",
+    "eevee" : ":10:",
+    "togepi" : ":20:",
+    "torchic" : ":30:",
+    "pichu" : ":50:",
+    "manaphy" : ":75:",
+    "eggcup" : ":100:",
+    "cuteribbon" : ":1r:",
+    "coolribbon" : ":2r:",
+    "beautyribbon" : ":3r:",
+    "smartribbon" : ":4r:",
+    "toughribbon" : ":5r:",
+    "upgrade" : ":u:"
+  }
 };
-
-const svex_egg_mappings = {
-  "lucky" : ":1e:",
-  "egg" : ":2e:",
-  "eevee" : ":3e:",
-  "togepi" : ":4e:",
-  "torchic" : ":5e:",
-  "pichu" : ":6e:",
-  "manaphy" : ":7e:",
-  "eggcup" : ":8e:"
-};
-
-const svex_ribbon_mappings = {
-  "cuteribbon" : ":1r:",
-  "coolribbon" : ":2r:",
-  "beautyribbon" : ":3r:",
-  "smartribbon" : ":4r:",
-  "toughribbon" : ":5r:"
-};
-
-const event_mappings = { };
 
 exports.eventFlair = eventFlair;
 exports.kantoFlair = kantoFlair;
@@ -326,61 +335,17 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
 
 // Create new flair text with emojis
 exports.makeNewFlairText = function (css_class, current_text, subreddit) {
-  var flair_emoji = '';
-  var helper_emoji = '';
-  var upgrade_emoji = '';
-  var event_emoji = '';
-  var egg_emoji = '';
-  var ribbon_emoji = '';
-  var hasInvolvement = exports.hasInvolvement(css_class);
 
   // Loop through CSS class and grab the appropriate emoji
-  let css_parts = css_class.split(' ');
-  for (let part of css_parts) {
-    // If the user has involvement, make sure to remove the 1 in order for it to map correctly
-    let noInvolvement = part;
-    if (hasInvolvement) {
-      noInvolvement = part.slice(0, -1);
-    }
+  const cssClasses = css_class.split(' ');
+  let emoji = '';
+  for (let cssClass of cssClasses) {
     // If the word is a key in the flair map, then grab the appropriate emoji
-    if (noInvolvement in ptrades_mappings) {
-      if (hasInvolvement) {
-        flair_emoji = ptrades_mappings[noInvolvement].slice(0, -1) + 'i:';
-      } else {
-        flair_emoji = ptrades_mappings[noInvolvement];
-      }
-    }
-    // If the user is a helper, grab the helper emoji
-    if (part === 'eventribbon') {
-      helper_emoji = ':helper:';
-      // If the user has upgrade flair, grab the upgrade emoji
-      if (part === 'upgrade') {
-        upgrade_emoji = ':u:';
-      }
-      // If there is an event going on, grab event flair
-      if (part in event_mappings) {
-        event_emoji = event_mappings[part];
-      }
-
-      // SVEx emojis
-      if (part in svex_egg_mappings) {
-        egg_emoji = svex_egg_mappings[part];
-      }
-      if (part in svex_ribbon_mappings) {
-        ribbon_emoji = svex_ribbon_mappings[part];
-      }
-    }
-    if (subreddit === 'ptrades') {
-      return flair_emoji + helper_emoji + upgrade_emoji + event_emoji + current_text;
-    } else {
-      return egg_emoji + ribbon_emoji + current_text;
+    if (cssClass in emojiMap[subreddit]) {
+      emoji += emojiMap[subreddit][cssClass];
     }
   }
-};
-
-// Check if user has involvement flair
-exports.hasInvolvement = function (css_class) {
-  return css_class.indexOf('1') !== -1;
+  return emoji + current_text;
 };
 
 // Get the Damerau–Levenshtein distance (edit distance) between two strings.

@@ -257,8 +257,8 @@ module.exports = function ($scope, $location, io) {
       return;
     }
 
-    if (svex.length > 64 || ptrades.length > 64) {
-      return {correct: false, error: "Your flair is too long; Reddit's maximum is 64 characters. Please delete something."};
+    if (svex.length > 55 || ptrades.length > 55) {
+      return {correct: false, error: "Your flair text is too long; it may be at most 55 characters. If you have multiple games or friend codes listed, please consider removing the least frequently used one from your flair."};
     }
 
     for (var i = 0; i < $scope.user.flairFriendCodes.length; i++) {

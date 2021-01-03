@@ -8,6 +8,53 @@ var alolaFlair = ['rowlet', 'litten', 'popplio'];
 var eventFlair = kantoFlair.concat(alolaFlair);
 var eventFlairRegExp = new RegExp('\\bkva-(' + eventFlair.join("|") + ')-[1-3]\\b');
 
+// Mappings from css_flair to emoji names
+const emojiMap = {
+  "ptrades": {
+    "default" : ":0:",
+    "gen2" : ":2:",
+    "pokeball" : ":10:",
+    "premierball" : ":20:",
+    "greatball" : ":30:",
+    "ultraball" : ":40:",
+    "luxuryball" : ":50:",
+    "masterball" : ":60:",
+    "dreamball" : ":70:",
+    "cherishball" : ":80:",
+    "ovalcharm" : ":90:",
+    "shinycharm" : ":100:",
+    "pokeball1" : ":10i:",
+    "premierball1" : ":20i:",
+    "greatball1" : ":30i:",
+    "ultraball1" : ":40i:",
+    "luxuryball1" : ":50i:",
+    "masterball1" : ":60i:",
+    "dreamball1" : ":70i:",
+    "cherishball1" : ":80i:",
+    "ovalcharm1" : ":90i:",
+    "shinycharm1" : ":100i:",
+    "gsball1" : ":GSi:",
+    "upgrade" : ":u:",
+    "eventribbon" : ":helper:"
+  },
+  "svex": {
+    "lucky" : ":1:",
+    "egg" : ":5:",
+    "eevee" : ":10:",
+    "togepi" : ":20:",
+    "torchic" : ":30:",
+    "pichu" : ":50:",
+    "manaphy" : ":75:",
+    "eggcup" : ":100:",
+    "cuteribbon" : ":1r:",
+    "coolribbon" : ":2r:",
+    "beautyribbon" : ":3r:",
+    "smartribbon" : ":4r:",
+    "toughribbon" : ":5r:",
+    "upgrade" : ":u:"
+  }
+};
+
 exports.eventFlair = eventFlair;
 exports.kantoFlair = kantoFlair;
 exports.eventFlairRegExp = eventFlairRegExp;
@@ -115,17 +162,6 @@ exports.getUserFlairs = function (user, allflairs) {
     return exports.userHasFlair(user, flair);
   });
 };
-exports.getFlairTextForSVEx = function (user) {
-  if (!user || !user.flair || !user.flair.svex || !user.flair.svex.flair_css_class) {
-    return;
-  }
-  var flairs = user.flair.svex.flair_css_class.split(' '),
-    flairText = "";
-  for (var i = 0; i < flairs.length; i++) {
-    flairText += "flair-" + flairs[i] + " ";
-  }
-  return flairText;
-};
 exports.canUserApply = function (refs, applicationFlair, currentFlairs) {
   if (!applicationFlair) {
     return false;
@@ -232,13 +268,17 @@ exports.flairCheck = function (ptrades, svex) {
   if (!ptrades || !svex) {
     throw "Need both flairs.";
   }
-  if (ptrades.length > 64 || svex.length > 64) {
-    throw "Flairs too long";
+
+  const regex_emoji = /:[a-zA-Z0-9_-]*:/;
+  if (ptrades.match(regex_emoji) || svex.match(regex_emoji)) {
+    throw "Flair has emoji.";
+  }
+
+  if (ptrades.length > 55 || svex.length > 56) {
+    throw "Flairs too long.";
   }
 
   const friendCodeGroup = /((?:SW-)?(?:\d{4}-){2}\d{4}(?:, (?:SW-)?(?:\d{4}-){2}\d{4})*)/;
-  const gameGroup = '^(' + exports.legalIgn + '(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))(?:,(?: ' +
-    exports.legalIgn + ')?(?: \\((?:' + exports.gameOptions + ')(?:, (?:' + exports.gameOptions + '))*\\))?)*)$';
   var tradesParts = ptrades.split(' || ');
   var svexParts = svex.split(' || ');
   if (tradesParts.length !== 2 || svexParts.length !== 3) {
@@ -247,8 +287,8 @@ exports.flairCheck = function (ptrades, svex) {
   if (!tradesParts[0].match(friendCodeGroup) || !svexParts[0].match(friendCodeGroup)) {
     throw "Error with FCs";
   }
-  if (!tradesParts[1].match(RegExp(gameGroup)) || !svexParts[1].match(RegExp(gameGroup))) {
-    throw "We need at least 1 game.";
+  if (!tradesParts[1].match(RegExp(exports.legalIgn)) || !svexParts[1].match(RegExp(exports.legalIgn))) {
+    throw "We need at least one IGN.";
   }
   if (!/\d{4}(, \d{4})*|XXXX/.test(svexParts[2])) {
     throw "Error with TSVs";
@@ -258,7 +298,7 @@ exports.flairCheck = function (ptrades, svex) {
     svex: svex,
     games: exports.combineGames(exports.parseGames(tradesParts[1]), exports.parseGames(svexParts[1])),
     tsvs: svexParts[2].split(', '),
-    fcs: _.union(tradesParts[0].split(', '), svexParts[0].split(', '))
+    fcs: _.union(tradesParts[0].replace(/:[a-zA-Z0-9_-]*:/, "").split(', '), svexParts[0].split(', '))
   };
   return response;
 };
@@ -291,6 +331,21 @@ exports.makeNewCSSClass = function (previous_flair, new_addition, subreddit) {
     return previous_flair.replace(/^.*?([^ ]*ribbon.*)/, new_addition + ' $1');
   }
   return previous_flair.replace(/([^ ]*)(.*)/, '$1 ' + new_addition + '$2');
+};
+
+// Create new flair text with emojis
+exports.makeNewFlairText = function (css_class, current_text, subreddit) {
+
+  // Loop through CSS class and grab the appropriate emoji
+  const cssClasses = css_class.split(' ');
+  let emoji = '';
+  for (let cssClass of cssClasses) {
+    // If the word is a key in the flair map, then grab the appropriate emoji
+    if (cssClass in emojiMap[subreddit]) {
+      emoji += emojiMap[subreddit][cssClass];
+    }
+  }
+  return emoji + current_text;
 };
 
 // Get the Damerau–Levenshtein distance (edit distance) between two strings.

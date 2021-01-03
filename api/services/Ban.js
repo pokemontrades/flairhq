@@ -13,10 +13,24 @@ exports.banFromSub = async function (redToken, username, banMessage, banNote, su
 exports.giveBannedUserFlair = async function (redToken, username, current_css_class, current_flair_text, subreddit) {
   try {
     var flair_text = current_flair_text || '';
-    var css_class = Flairs.makeNewCSSClass(current_css_class, 'banned', subreddit);
-    await Reddit.setUserFlair(redToken, username, css_class, flair_text, subreddit);
-    sails.log('Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit);
-    return 'Changed ' + username + '\'s flair to ' + css_class + ' on /r/' + subreddit;
+    
+    // Remove emoji if it exists
+    var flair_arr = flair_text.split(' ');
+    if (flair_arr[0] !== null) {
+      if (flair_arr[0].indexOf(':') !== -1) {
+        flair_arr.shift();
+      }
+    }
+    
+    // Add BANNED USER to flair text
+    flair_text = 'BANNED USER ' + flair_arr.join(' ');
+    if (flair_text.length >= 64) {
+      flair_text = flair_text.slice(0, 64);
+    }
+      
+    await Reddit.setUserFlair(redToken, username, 'banned', flair_text, subreddit);
+    sails.log('Changed ' + username + '\'s flair to banned on /r/' + subreddit);
+    return 'Changed ' + username + '\'s flair to banned on /r/' + subreddit;
   } catch (err) {
     throw {error: 'Failed to give banned user flair'};
   }

@@ -50,17 +50,30 @@ module.exports = {
       }
       var user = await User.findOne(app.user);
       var shortened = app.sub === 'pokemontrades' ? 'ptrades' : 'svex';
-      var relevant_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
-      user.flair[shortened].flair_css_class = relevant_flair;
-      await Reddit.setUserFlair(req.user.redToken, user.name, relevant_flair, user.flair[shortened].flair_text, app.sub);
+      var css_flair = Flairs.makeNewCSSClass(_.get(user, 'flair.' + shortened + '.flair_css_class') || '', app.flair, app.sub);
+      user.flair[shortened].flair_css_class = css_flair;   
+      let current_text = user.flair[shortened].flair_text.replace(/:[a-zA-Z0-9_-]*:/g,'');
+      let flair_text = Flairs.makeNewFlairText(css_flair, current_text, shortened);
+
+      // Check length of flair_text and give a warning message
+      var warning = '';
+      if (flair_text.length > 64) {
+        warning = ' However, the length of your flair was too long, so your flair text was trimmed automatically. Please go to [FHQ](https://hq.porygon.co) to set your flair again.';
+        flair_text = Flairs.makeNewFlairText(css_flair, current_text.slice(0,55), shortened);
+      }
+
+      // Set the user's flair
+      await Reddit.setUserFlair(req.user.redToken, user.name, css_flair, flair_text, app.sub);
       var promises = [];
       promises.push(user.save());
-      promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + relevant_flair}));
-      var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.';
+      promises.push(Event.create({type: "flairTextChange", user: req.user.name,content: "Changed " + user.name + "'s flair to " + css_flair}));
+
+      // Send a PM to let them know application was accepted.
+      var pmContent = 'Your application for ' + Flairs.formattedName(app.flair) + ' flair on /r/' + app.sub + ' has been approved.' + warning;
       promises.push(Reddit.sendPrivateMessage(refreshToken, 'FlairHQ Notification', pmContent, user.name));
       promises.push(Application.destroy({id: req.allParams().id}));
       await* promises;
-      sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + relevant_flair);
+      sails.log.info("/u/" + req.user.name + ": Changed " + user.name + "'s flair to " + css_flair);
       return res.ok(await Flairs.getApps());
     } catch (err) {
       return res.serverError(err);
@@ -118,6 +131,14 @@ module.exports = {
       var pFlair = _.get(req, "user.flair.ptrades.flair_css_class") || "default";
       var svFlair = _.get(req, "user.flair.svex.flair_css_class") || "";
       svFlair = svFlair.replace(/2/, "");
+      
+      // Build flair text for ptrades and svex from css class
+      var ptrades_current_text = flairs.ptrades;
+      var ptrades_flair_text = Flairs.makeNewFlairText(pFlair, ptrades_current_text, 'ptrades');
+      
+      var svex_current_text = flairs.svex;
+      var svex_flair_text = Flairs.makeNewFlairText(svFlair, svex_current_text, 'svex');
+
       var promises = [];
       var eventFlair = null; // Change to req.allParams().eventFlair during events
 
@@ -130,7 +151,7 @@ module.exports = {
           req.user.team = _.includes(Flairs.kantoFlair, eventFlair) ? "kanto" : "alola";
           pFlair = Flairs.makeNewCSSClass(pFlair, `kva-${eventFlair}-1`, "PokemonTrades");
           module.exports.addMembershipPoints(req, res, "add").then(() => {
-            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades").catch((err) => {
+            promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, ptrades_flair_text, "PokemonTrades").catch((err) => {
               sails.log.warn(`Reverting team ${req.user.team} join for ${req.user.name} due to the following error:`);
               sails.log.warn(err);
               module.exports.addMembershipPoints(req, res, "remove");
@@ -141,13 +162,13 @@ module.exports = {
           return res.status(400).json({error: "Unexpected extra flair."});
         }
       } else {
-        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, flairs.ptrades, "PokemonTrades"));
+        promises.push(Reddit.setUserFlair(refreshToken, req.user.name, pFlair, ptrades_flair_text, "PokemonTrades"));
       }
-      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, flairs.svex, "SVExchange"));
+      promises.push(Reddit.setUserFlair(refreshToken, req.user.name, svFlair, svex_flair_text, "SVExchange"));
       promises.push(User.update({name: req.user.name}, {loggedFriendCodes: friend_codes}));
 
       if (!blockReport && (users_with_matching_fcs.length !== 0 || matching_ip_usernames.length !== 0 || flagged.length)) {
-        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + flairs.ptrades + '\n\n' + flairs.svex + '\n\n';
+        var message = 'The user /u/' + req.user.name + ' set the following flairs:\n\n' + ptrades_flair_text + '\n\n' + svex_flair_text + '\n\n';
         if (users_with_matching_fcs.length !== 0) {
           message += 'This flair contains a friend code that matches ' + '/u/' + matching_fc_usernames.join(', /u/') + '\'s friend code: ' + matching_friend_codes + '\n\n';
           var altNote = "Alt of " + matching_fc_usernames;
@@ -189,15 +210,16 @@ module.exports = {
         User.native(function(err, collection) {
           collection.update({"_id": req.user.name}, {
             $set:{
-              "flair.ptrades.flair_text": flairs.ptrades,
+              "flair.ptrades.flair_text": ptrades_flair_text,
               "flair.ptrades.flair_css_class": pFlair,
-              "flair.svex.flair_text": flairs.svex,
+              "flair.svex.flair_text": svex_flair_text,
               "flair.svex.flair_css_class": svFlair
             }
           });
         });
         return res.ok();
       });
+      
     } catch (err) {
       return res.serverError(err);
     }

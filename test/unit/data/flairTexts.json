@@ -8,16 +8,15 @@
   "SMFlair": "1111-1111-1111 || YMK (S) || Nothing",
   "SMFlair2": "1111-1111-1111 || YMK (S, M), YaManicKill (X, Y) || Nothing",
   "lotsOfGames": {
-    "ptrades": "1111-1111-1111 || AAA (Y, ΩR), Joe, Bob (X), (αS)",
-    "svex": "1111-9999-1111 || AAA (Y, ΩR), Joe, Bob (X), (αS) || 0000, 1111",
+    "ptrades": "1111-1111-1111 || AAA (Y, ΩR), Joe, Bob (X)",
+    "svex": "1111-9999-1111 || AAA (Y, ΩR), Joe, Bob (X) || 0000",
     "fcs": ["1111-1111-1111", "1111-9999-1111"],
     "games": [
       {"ign": "AAA", "game": "Y"},
       {"ign": "AAA", "game": "ΩR"},
       {"ign": "Joe", "game": ""},
-      {"ign": "Bob", "game": "X"},
-      {"ign": "", "game": "αS"}
+      {"ign": "Bob", "game": "X"}
     ],
-    "tsvs": ["0000", "1111"]
+    "tsvs": ["0000"]
   }
 }

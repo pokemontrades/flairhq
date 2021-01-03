@@ -90,7 +90,7 @@ describe("Flair text", function () {
       try{
         Flairs.flairCheck("1234-1234-1234 || ", flairTexts.svexFlairStd);
       } catch (e) {
-        return assert.strictEqual(e, "We need at least 1 game.");
+        return assert.strictEqual(e, "We need at least one IGN.");
       }
       assert.fail(null, null, "Shouldn't reach this point.");
     });
@@ -99,7 +99,7 @@ describe("Flair text", function () {
       try{
         Flairs.flairCheck(flairTexts.tradesFlairStd, "1234-1234-1234 ||  || 1234");
       } catch (e) {
-        return assert.strictEqual(e, "We need at least 1 game.");
+        return assert.strictEqual(e, "We need at least one IGN.");
       }
       assert.fail(null, null, "Shouldn't reach this point.");
     });

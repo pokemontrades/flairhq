@@ -191,61 +191,60 @@ module.exports = function ($scope, $location, io) {
       $scope.$apply();
     });
   };
-  $scope.ptradesCreatedFlair = function () {
-    if (!$scope.user || !$scope.user.flairFriendCodes) {
-      return "";
-    }
-    var fcs = $scope.user.flairFriendCodes.slice(0),
-      text = "";
-    for (var i = 0; i < fcs.length; i++) {
-      text += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
-      if (i + 1 !== fcs.length) {
-        text += ", ";
-      }
-    }
-    return text + " || " + (flairService.formatGames($scope.user.flairGames) || "");
-  };
 
-  $scope.svexCreatedFlair = function () {
-    if (!$scope.user || !$scope.user.flairFriendCodes) {
+  $scope.renderFlairTextString = function (format) {
+    if (!$scope.user) {
       return "";
     }
-    var fcs = $scope.user.flairFriendCodes.slice(0),
-      games = $scope.user.flairGames,
-      text = "";
-    var fcText = "";
-    for (var i = 0; i < fcs.length; i++) {
-      fcText += fcs[i] && fcs[i].match(regex.fc) ? fcs[i] : "";
-      if (i + 1 !== fcs.length) {
-        fcText += ", ";
+    return format.replace(/\{([^\}]+?)\}/g, function (match, replacement, offset, string) {
+      if (replacement === "fcs") {
+        if (!$scope.user.flairFriendCodes) {
+          return "";
+        }
+        var validFCs = [];
+        $scope.user.flairFriendCodes.forEach(function (fc) {
+          if (fc.match(regex.fc)) {
+            validFCs.push(fc);
+          }
+        });
+        if (validFCs.length > 0) {
+          return validFCs.join(", ");
+        } else {
+          return "";
+        }
       }
-    }
-    text += fcText + " || " + flairService.formatGames($scope.user.flairGames) + " || ";
-    var tsvText = "";
-    for (var k = 0; k < games.length; k++) {
-      var tsv = "";
-      if (games[k].tsv && games[k].tsv < 4096) {
-        // The server will reject any TSV that isn't 4 characters long, so pad it with zeros.
-        // something something npm install left-pad
-        tsv = ('0000' + games[k].tsv).slice(-4);
+      if (replacement === "games") {
+        if (!$scope.user.flairGames) {
+          return "";
+        }
+        return flairService.formatGames($scope.user.flairGames);
       }
-      if (tsv && tsvText) {
-        tsvText += ", ";
+      if (replacement === "tsvs") {
+        var validTSVs = [];
+        $scope.user.flairGames.forEach(function (game) {
+          if (game.tsv && game.tsv < 4096) {
+            validTSVs.push(game.tsv.toString().padStart(4, "0"));
+          }
+        });
+        if (validTSVs.length > 0) {
+          return validTSVs.join(", ");
+        } else {
+          return "XXXX";
+        }
       }
-      tsvText += tsv;
-    }
-    return text + (tsvText || "XXXX");
+      return string;
+    });
   };
 
   $scope.isCorrectFlairText = function () {
-    var svex = $scope.svexCreatedFlair();
-    var ptrades = $scope.ptradesCreatedFlair();
+    var svex = $scope.renderFlairTextString("{fcs} || {games} || {tsvs}");
+    var ptrades = $scope.renderFlairTextString("{fcs} || {games}");
     if (!$scope.user || !$scope.user.flairFriendCodes || !$scope.user.flairGames) {
       return;
     }
 
-    if (svex.length > 64 || ptrades.length > 64) {
-      return {correct: false, error: "Your flair is too long; Reddit's maximum is 64 characters. Please delete something."};
+    if (svex.length > 55 || ptrades.length > 55) {
+      return {correct: false, error: "Your flair text is too long; it may be at most 55 characters. If you have multiple games or friend codes listed, please consider removing the least frequently used one from your flair."};
     }
 
     for (var i = 0; i < $scope.user.flairFriendCodes.length; i++) {
@@ -274,6 +273,12 @@ module.exports = function ($scope, $location, io) {
         if (illegal_match) {
           return {correct: false, error: 'Your in-game name contains an illegal character: ' + illegal_match};
         }
+
+        // Since Reddit's flair_text system is emoji based, we want to prevent users from submitting an IGN with colons to prevent conflicts.
+        var has_colon = game.ign.match(/:/);
+        if (has_colon) {
+          return {correct: false, error: 'Your in-game name contains a colon. Please omit the colons to prevent conflicts with emoji-based flair text.'};
+        }
       }
       if (game.tsv >= 4096) {
         return {correct: false, error: "Invalid TSV, they should be between 0 and 4095."};
@@ -292,13 +297,12 @@ module.exports = function ($scope, $location, io) {
     $("#setTextError").html("").hide();
     $scope.userok.setFlairText = false;
     $scope.userspin.setFlairText = true;
-    var ptrades = $scope.ptradesCreatedFlair(),
-      svex = $scope.svexCreatedFlair(),
-      url = "/flair/setText";
+
+    var url = "/flair/setText";
 
     io.socket.post(url, {
-      "ptrades": ptrades,
-      "svex": svex,
+      "ptrades": $scope.renderFlairTextString("{fcs} || {games}"),
+      "svex": $scope.renderFlairTextString("{fcs} || {games} || {tsvs}"),
       "eventFlair": $scope.user.eventFlair
     }, function (data, res) {
       if (res.statusCode === 200) {
@@ -358,6 +362,11 @@ module.exports = function ($scope, $location, io) {
     $scope = _.assign($scope, params);
     $scope.user.console = new Array();
     console.log("Created console array");
+    for (var subreddit in $scope.user.flair) {
+      if ($scope.user.flair[subreddit].flair_text) {
+        $scope.user.flair[subreddit].flair_text = $scope.user.flair[subreddit].flair_text.replace(/:[^:]+:/,'');
+      }
+    }
     if ($scope.user) {
       $scope.user.isFlairMod = $scope.user.isMod && ($scope.user.modPermissions.includes('all') || $scope.user.modPermissions.includes('flair'));
       try {

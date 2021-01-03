@@ -96,7 +96,7 @@ module.exports = {
       var flagged = _.reject(flairs.fcs, Flairs.validFC);
       var ipAddress = req.headers['x-forwarded-for'] || req.ip;
       // Get IP matches with banned users
-      var events_with_ip = await Event.find({content: {contains: ipAddress}, user: {not: req.user.name}});
+      var events_with_ip = await Event.find({content: RegExp('IP: '+ipAddress.replace(/\./,'\\.')+'$'), user: {not: req.user.name}});
 
       var matching_ip_usernames = _.uniq(_.map(events_with_ip, 'user'));
       var matching_ip_users = await User.find({name: matching_ip_usernames});

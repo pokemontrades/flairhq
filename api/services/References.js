@@ -11,10 +11,10 @@ exports.approve = function (ref, approve) {
   }).then(otherRef => {
     var refsToSave = [ref];
     if (otherRef) {
-      //otherRef.approved = approve;
-      otherRef.verified = true;
+      otherRef.approved = approve;
+      otherRef.verified = approve;
       refsToSave.push(otherRef);
-      ref.verified = true;
+      ref.verified = approve;
     }
     return Promise.all(refsToSave.map(el => el.save())).then(refs => refs[0]);
   });

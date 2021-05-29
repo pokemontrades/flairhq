@@ -43,7 +43,7 @@ before_install:
   - rm package-lock.json
   - npm cache clean --f
   - rm -rf node_modules
-  - npm install -g npm
+  - npm install -g npm@latest-6
 
 before_script:
   - npm install -g grunt-cli

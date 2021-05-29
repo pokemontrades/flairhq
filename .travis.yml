@@ -39,9 +39,9 @@ before_install:
   - gcc --version
   - g++ --version
   - rm package-lock.json
-  - rm -rf ./**/node_modules
-  - npm cache clean --force
-  - npm install -g npm
+  - npm cache clean --f
+  - rm -rf node_modules
+  - npm install i -g npm
 
 before_script:
   - npm install -g grunt-cli

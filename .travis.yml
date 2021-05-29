@@ -22,9 +22,9 @@ addons:
     packages:
       - gcc-4.7
       - g++-4.7
+      
 
 before_install:
-  - sudo apt install build-essential checkinstall libssl-dev
   - git submodule update --init --recursive
   - git clone https://github.com/creationix/nvm.git ./.nvm
   - source ./.nvm/nvm.sh
@@ -36,6 +36,7 @@ before_install:
       export CXX="g++-4.7";
       export LINK="gcc-4.7";
       export LINKXX="g++-4.7";
+      sudo apt install build-essential checkinstall libssl-dev
     fi
   - gcc --version
   - g++ --version

@@ -40,8 +40,8 @@ before_install:
   - g++ --version
   - rm package-lock.json
   - rm -rf ./**/node_modules
-  - npm cache verify
   - npm cache clean --force
+  - npm cache verify
   - npm install i -g npm
 
 before_script:

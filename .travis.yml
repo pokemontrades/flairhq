@@ -38,7 +38,7 @@ before_install:
     fi
   - gcc --version
   - g++ --version
-  - npm i -g npm
+  - rm package-lock.json && npm i -g npm
 
 before_script:
   - npm install -g grunt-cli

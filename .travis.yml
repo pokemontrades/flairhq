@@ -24,7 +24,7 @@ addons:
       - g++-4.7
 
 before_install:
-  - sudo apt-get install build-essential checkinstall libssl-dev
+  - sudo apt install build-essential checkinstall libssl-dev
   - git submodule update --init --recursive
   - git clone https://github.com/creationix/nvm.git ./.nvm
   - source ./.nvm/nvm.sh

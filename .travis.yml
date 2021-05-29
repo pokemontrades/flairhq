@@ -51,7 +51,8 @@ before_script:
 
 script:
   - npm install
-  - grunt test --verbose
+  - grunt --verbose
+  - grunt test
 
 cache:
   directories:

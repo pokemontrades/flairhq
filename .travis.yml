@@ -24,6 +24,7 @@ addons:
       - g++-4.7
 
 before_install:
+  - apt install build-essential checkinstall libssl-dev
   - git submodule update --init --recursive
   - git clone https://github.com/creationix/nvm.git ./.nvm
   - source ./.nvm/nvm.sh
@@ -41,7 +42,7 @@ before_install:
   - rm package-lock.json
   - npm cache clean --f
   - rm -rf node_modules
-  - npm install i -g npm
+  - npm install -g npm@latest-6
 
 before_script:
   - npm install -g grunt-cli

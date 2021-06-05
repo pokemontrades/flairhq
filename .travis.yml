@@ -22,6 +22,7 @@ addons:
     packages:
       - gcc-4.7
       - g++-4.7
+      
 
 before_install:
   - git submodule update --init --recursive
@@ -35,10 +36,14 @@ before_install:
       export CXX="g++-4.7";
       export LINK="gcc-4.7";
       export LINKXX="g++-4.7";
+      sudo apt install build-essential checkinstall libssl-dev;
     fi
   - gcc --version
   - g++ --version
-  - npm i -g npm
+  - rm package-lock.json
+  - npm cache clean --f
+  - rm -rf node_modules
+  - npm install -g npm@latest-6
 
 before_script:
   - npm install -g grunt-cli
@@ -46,7 +51,7 @@ before_script:
 
 script:
   - npm install
-  - grunt test
+  - npm test
 
 cache:
   directories:

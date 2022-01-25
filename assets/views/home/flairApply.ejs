@@ -43,7 +43,7 @@
                     </a>
                 </div>
                 <div class="list-group col-md-6">
-                    <h4>Giveaway-er</h4>
+                    <h4>Helper</h4>
                     <a ng-repeat="flair in flairs | filter:inSVExchangeGiver | orderBy: 'giveaways' track by flair.id"
                        class="list-group-item" ng-class="[canUserApply(flair) ? '' : 'disabled',
                  (selectedFlair === flair.name) ? 'active' : '']"
@@ -55,6 +55,13 @@
           <div class="row">
             <div class="col-md-10 col-md-offset-1">
               <div class="alert alert-danger" ng-show="errors.flairApp">{{errors.flairApp}}</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="alert alert-warning col-md-10 col-md-offset-1">
+              <p><strong>Due to increased demand, the team will prioritize processing applications for Poké Ball flairs to allow more traders to meet the shiny/event flair requirement.</strong> Higher flairs will take longer.</p>
+              <p>Please keep in mind that flair applications are handled manually by volunteers.</p>
+              <p>Thank you for your understanding.</p>
             </div>
           </div>
         </div>

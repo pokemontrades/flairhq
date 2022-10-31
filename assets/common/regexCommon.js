@@ -1,11 +1,11 @@
-var ptradesFlair = "(:[a-zA-Z0-9_-]*:)*((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA))*\\))?))*";
+var ptradesFlair = "(:[a-zA-Z0-9_-]*:)*((?:SW-)?([0-9]{4}-){2}[0-9]{4})(, ((?:SW-)?([0-9]{4}-){2}[0-9]{4}))* \\|\\| ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA|SV)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA|SV))*\\))?)(, ([^ ,|(]*( \\((X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA|SV)(, (X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA|SV))*\\))?))*";
 var regex = {
   emoji: "(:[a-zA-Z0-9_-]*:)",
   tsv: "[0-3]\\d{3}|40(?:[0-8]\\d|9[0-5])",
   tsvBars: "(\\|\\| [0-9]{4})|(, [0-9]{4})",
   fc: "((?:SW-)?([0-9]{4}-){2}[0-9]{4})",
   console: "Switch|3DS",
-  game: "((\\()|(,))(X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA)((,)|(\\)))",
+  game: "((\\()|(,))(X|Y|ΩR|αS|S|M|US|UM|LGP|LGE|SW|SH|BD|SP|PLA|SV)((,)|(\\)))",
   ign: "((\\d \\|\\|)|(\\),)) [^(|,]*( (\\()|(\\|)|(,)|$)",
 
   ptradesFlair: ptradesFlair,

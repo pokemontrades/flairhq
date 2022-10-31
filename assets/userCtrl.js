@@ -291,7 +291,7 @@ module.exports = function ($scope, $location, io) {
   };
 
   $scope.possibleConsoles = ["Switch", "3DS"];
-  $scope.possibleGames = ["X", "Y", "ΩR", "αS", "S", "M", "US", "UM", "LGP", "LGE", "SW", "SH", "BD", "SP", "PLA"];
+  $scope.possibleGames = ["X", "Y", "ΩR", "αS", "S", "M", "US", "UM", "LGP", "LGE", "SW", "SH", "BD", "SP", "PLA", "SV"];
 
   $scope.setFlairText = function () {
     $("#setTextError").html("").hide();

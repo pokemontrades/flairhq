@@ -29,6 +29,7 @@ module.exports = {
     };
     $scope.validateRef = function (ref) {
       var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+        regexpMobile = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/s\/([a-zA-Z\d]*)/,
         regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
         regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
         regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/,
@@ -47,7 +48,7 @@ module.exports = {
         return "Make sure you enter all the information";
       }
       if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(url)) ||
-        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !regexp.test(url)) ||
+        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && (!regexp.test(url) && !regexpMobile.test(url))) ||
         (ref.type === "misc" && !regexpMisc.test(url))) {
         return "Looks like you didn't input a proper permalink";
       }

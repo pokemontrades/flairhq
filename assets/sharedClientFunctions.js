@@ -28,12 +28,6 @@ module.exports = {
       });
     };
     $scope.validateRef = function (ref) {
-      var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
-        regexpMobile = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/s\/([a-zA-Z\d]*)/,
-        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
-        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/,
-        regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/,
-        url = ref.url || ref.refUrl;
       if (!ref.type) {
         return "Please choose a type.";
       }
@@ -44,20 +38,32 @@ module.exports = {
       } else if (!ref.got || !ref.gave) {
         return "Make sure you enter all the information";
       }
+
+      var url = ref.url || ref.refUrl;
       if (!url || ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !ref.user2) {
         return "Make sure you enter all the information";
       }
-      if (((ref.type === "giveaway" || ref.type === "eggcheck") && !regexpGive.test(url)) ||
-        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && (!regexp.test(url) && !regexpMobile.test(url))) ||
+
+      var regexp = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/comments\/([a-z\d]*)\/([^\/]+)\/([a-z\d]+)(\?[a-z\d]+)?/,
+        regexpMobile = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((pokemontrades)|(SVExchange)|(poketradereferences))\/s\/([a-zA-Z\d]*)/,
+        regexpGive = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com\/r\/((SVExchange)|(pokemontrades)|(poketradereferences)|(Pokemongiveaway)|(SVgiveaway))\/comments\/([a-z\d]*)\/([^\/]+)\/?/,
+        regexpMisc = /(http(s?):\/\/)?(www|[a-z]*\.)?reddit\.com.*/
+      var isValidTradePermalink = regexp.test(url) || regexpMobile.test(url),
+        isValidGiveawayPermalink = regexpGive.test(url) || regexpMobile.test(url)
+      if (((ref.type === "giveaway" || ref.type === "eggcheck") && !isValidGiveawayPermalink) ||
+        (ref.type !== "giveaway" && ref.type !== "misc" && ref.type !== "eggcheck" && !isValidTradePermalink) ||
         (ref.type === "misc" && !regexpMisc.test(url))) {
         return "Looks like you didn't input a proper permalink";
       }
+
       if (ref.user2.substring(0,3) === "/u/") {
         ref.user2 = ref.user2.slice(3);
       }
       if (ref.user2 === ($scope.user.name)) {
         return "Don't put your own username there.";
       }
+
+      var regexpUser = /^(\/u\/)?[A-Za-z0-9_\-]*$/
       if (($scope.type !== "giveaway" && $scope.type !== "misc") && !regexpUser.test(ref.user2)) {
         return "Please put a username on its own, or in format: /u/username. Not the full url, or anything else.";
       }

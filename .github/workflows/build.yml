@@ -1,0 +1,58 @@
+name: CI Action
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  build:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-latest]
+        node: [6]
+    steps:
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |-
+          sudo apt-get update
+          sudo apt-get install -y g++-4.7 gcc-4.7
+      - name: Cache NPM
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{hashFiles('**/package-lock.json')}}
+          restore-keys: |
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/checkout@v4
+      - run: git submodule update --init --recursive
+      - run: 'git clone https://github.com/creationix/nvm.git ./.nvm'
+      - run: source ./.nvm/nvm.sh
+      - run: nvm install ${{matrix.node}}
+      - run: nvm use ${{matrix.node}}
+      - run: npm config set python `which python`
+      - name: Before Install
+        if: runner.os == 'Linux'
+        run: |-
+          export CC="gcc-4.7"
+          export CXX="g++-4.7"
+          export LINK="gcc-4.7"
+          export LINKXX="g++-4.7"
+          sudo apt install build-essential checkinstall libssl-dev
+      - run: gcc --version
+      - run: g++ --version
+      - run: rm package-lock.json
+      - run: npm cache clean --f
+      - run: rm -rf node_modules
+      - run: npm install -g npm@latest-6
+      - run: npm install -g grunt-cli
+      - run: npm install -g eslint
+      - run: npm install
+      - run: npm test

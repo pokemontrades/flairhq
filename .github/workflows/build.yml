@@ -16,13 +16,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]
-        node: [6]
+        node: [12]
     steps:
       - name: Install dependencies (Ubuntu)
         if: runner.os == 'Linux'
         run: |-
           sudo apt-get update
-          sudo apt-get install -y g++-4.7 gcc-4.7
+          sudo apt-get install -y g++-6 gcc-6
       - name: Cache NPM
         uses: actions/cache@v3
         with:
@@ -41,17 +41,17 @@ jobs:
       - name: Before Install
         if: runner.os == 'Linux'
         run: |-
-          export CC="gcc-4.7"
-          export CXX="g++-4.7"
-          export LINK="gcc-4.7"
-          export LINKXX="g++-4.7"
+          export CC="gcc-6"
+          export CXX="g++-6"
+          export LINK="gcc-6"
+          export LINKXX="g++-6"
           sudo apt install build-essential checkinstall libssl-dev
       - run: gcc --version
       - run: g++ --version
       - run: rm package-lock.json
       - run: npm cache clean --f
       - run: rm -rf node_modules
-      - run: npm install -g npm@latest-6
+      - run: npm install -g npm@latest-12
       - run: npm install -g grunt-cli
       - run: npm install -g eslint
       - run: npm install

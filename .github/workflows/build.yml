@@ -27,11 +27,9 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - uses: actions/checkout@v4
-      - run: git submodule update --init --recursive
-      - run: 'git clone https://github.com/creationix/nvm.git ./.nvm'
-      - run: source ./.nvm/nvm.sh
-      - run: nvm install ${{matrix.node}}
-      - run: nvm use ${{matrix.node}}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node}}
       - run: npm config set python `which python`
       - name: Before Install
         if: runner.os == 'Linux'

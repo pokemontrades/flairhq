@@ -44,7 +44,6 @@ jobs:
       - run: rm package-lock.json
       - run: npm cache clean --f
       - run: rm -rf node_modules
-      - run: npm install -g npm@latest-12
       - run: npm install -g grunt-cli
       - run: npm install -g eslint
       - run: npm install

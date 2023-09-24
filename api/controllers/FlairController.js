@@ -107,7 +107,7 @@ module.exports = {
       var blockReport = _.isEqual(flairs.fcs, req.user.loggedFriendCodes.slice(0, flairs.fcs.length));
 
       var flagged = _.reject(flairs.fcs, Flairs.validFC);
-      var ipAddress = req.headers['x-forwarded-for'] || req.ip;
+      var ipAddress = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
       // Get IP matches with banned users
       var events_with_ip = await Event.find({content: RegExp('IP: '+ipAddress.replace(/\./,'\\.')+'$'), user: {not: req.user.name}});
 

@@ -1,0 +1,50 @@
+name: CI Action
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  build:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        node: [12]
+    steps:
+      - name: Cache NPM
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{hashFiles('**/package-lock.json')}}
+          restore-keys: |
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node}}
+      - run: npm config set python `which python`
+      - name: Before Install
+        if: runner.os == 'Linux'
+        run: |-
+          export CC="gcc-9.3.0"
+          export CXX="g++-9.3.0"
+          export LINK="gcc-9.3.0"
+          export LINKXX="g++-9.3.0"
+          sudo apt install build-essential checkinstall libssl-dev
+      - run: gcc --version
+      - run: g++ --version
+      - run: rm package-lock.json
+      - run: npm cache clean --f
+      - run: rm -rf node_modules
+      - run: npm install -g grunt-cli
+      - run: npm install -g eslint
+      - run: npm install
+      - run: npm test
